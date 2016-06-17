@@ -116,7 +116,7 @@
 \alias{coerce,CompressedAtomicList,list-method}
 \alias{as.vector,AtomicList-method}
 \alias{coerce,vector,AtomicList-method}
-\alias{as.matrix,CompressedAtomicList-method}
+\alias{as.matrix,AtomicList-method}
 \alias{lapply,CompressedAtomicList-method}
 
 \alias{coerce,vector,CompressedLogicalList-method}
@@ -256,6 +256,17 @@
       length one, and, if so, unlists \code{x}. Otherwise, an error is
       thrown.
     }
+    \item{}{\code{as.matrix(x, col.names=NULL)}: Maps the elements of
+      the list to rows of a matrix. The column mapping depends on
+      whether there are inner names (either on the object or provided
+      via \code{col.names} as a List object). If there are no inner
+      names, each row is padded with NAs to reach the length of the
+      longest element. If there are inner names, there is a column for
+      each unique name and the mapping is by name. To provide inner
+      names, the \code{col.names} argument should be a List, usually a
+      CharacterList or FactorList (which is particularly efficient). If
+      \code{col.names} is a character vector, it names the columns of
+      the result, but does not imply inner names.
   }
 }
 

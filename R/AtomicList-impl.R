@@ -172,14 +172,36 @@ setMethod("as.vector", "AtomicList",
     }
 )
 
-as.matrix.AtomicList <- function(x, ...) {
+as.matrix.AtomicList <- function(x, col.names=NULL, ...) {
     p <- PartitioningByEnd(x)
-    m <- matrix(nrow=length(x), ncol=max(width(p)))
-    ind <- cbind(togroup(p), as.integer(IRanges(1, width(p))))
-    m[ind] <- unlist(x, use.names=FALSE)
+    vx <- unlist(x, use.names=FALSE)
+    if (is.null(col.names)) {
+        col.names <- names(vx)
+    }
+    if (is.null(col.names) || is.character(col.names)) {
+        col.ind <- as.integer(IRanges(1, width(p)))
+    } else if (is.list(col.names) || is(col.names, "List")) {
+        col.names <- unlist(col.names, use.names=FALSE)
+        if (is.factor(col.names)) {
+            col.ind <- as.integer(col.names)
+            col.names <- levels(col.names)
+        } else {
+            col.ind <- selfmatch(col.names)
+            col.names <- col.names[col.ind == seq_along(col.ind)]
+        }
+    } else {
+        stop("'col.names' should be NULL, a character vector or list")
+    }
+    row.ind <- togroup(p)
+    nc <- if (!is.null(col.names)) length(col.names) else max(width(p))
+    m <- matrix(nrow=length(x), ncol=nc)
+    m[cbind(row.ind, col.ind)] <- vx
+    if (!is.null(col.names))
+        colnames(m) <- col.names
     m
 }
-setMethod("as.matrix", "AtomicList", function(x) as.matrix.AtomicList(x))
+setMethod("as.matrix", "AtomicList", function(x, col.names=NULL)
+    as.matrix.AtomicList(x, col.names))
 
 setMethod("drop", "AtomicList", function(x) {
   x_eltNROWS <- elementNROWS(x)
