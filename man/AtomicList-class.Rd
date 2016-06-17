@@ -144,8 +144,8 @@
 \alias{RleList,AtomicList,RleList-method}
 \alias{coerce,CompressedRleList,CompressedIRangesList-method}
 
-\alias{unlist,SimpleFactorList}
-\alias{unlist,SimpleRleList}
+\alias{unlist,SimpleFactorList-method}
+\alias{unlist,SimpleRleList-method}
 
 \alias{unique,RleList-method}
 \alias{unique,CompressedList-method}
@@ -267,6 +267,7 @@
       CharacterList or FactorList (which is particularly efficient). If
       \code{col.names} is a character vector, it names the columns of
       the result, but does not imply inner names.
+    }
   }
 }
 

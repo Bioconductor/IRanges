@@ -9,6 +9,7 @@
 \alias{nobj}
 \alias{grouplengths}
 \alias{grouplengths,Grouping-method}
+\alias{grouplengths,CompressedGrouping-method}
 \alias{show,Grouping-method}
 
 % ManyToOneGrouping objects
@@ -17,6 +18,7 @@
 \alias{ManyToOneGrouping}
 
 \alias{nobj,ManyToOneGrouping-method}
+\alias{nobj,CompressedManyToOneGrouping-method}
 \alias{members}
 \alias{members,ManyToOneGrouping-method}
 \alias{vmembers}
@@ -31,6 +33,14 @@
 \alias{coerce,vector,Grouping-method}
 \alias{coerce,vector,ManyToOneGrouping-method}
 \alias{coerce,ManyToOneGrouping,factor-method}
+\alias{coerce,DataFrame,Grouping-method}
+\alias{coerce,FactorList,Grouping-method}
+\alias{coerce,Hits,Grouping-method}
+
+% ManyToManyGrouping objects
+\alias{nobj,BaseManyToManyGrouping-method}
+
+\alias{coerce,vector,ManyToManyGrouping-method}
 
 % H2LGrouping and Dups objects
 \alias{class:H2LGrouping}

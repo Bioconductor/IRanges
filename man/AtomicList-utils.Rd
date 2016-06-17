@@ -29,13 +29,24 @@
 \alias{which,CompressedRleList-method}
 \alias{which,SimpleRleList-method}
 \alias{which.max,CompressedRleList-method}
+\alias{which.max,RleList-method}
+\alias{which.max,IntegerList-method}
+\alias{which.max,NumericList-method}
 \alias{which.min,CompressedRleList-method}
+\alias{which.min,RleList-method}
+\alias{which.min,IntegerList-method}
+\alias{which.min,NumericList-method}
 \alias{all,CompressedRleList-method}
+\alias{all,CompressedAtomicList-method}
+\alias{any,CompressedAtomicList-method}
 \alias{anyNA,CompressedAtomicList-method}
 
 \alias{diff,IntegerList-method}
 \alias{diff,NumericList-method}
 \alias{diff,RleList-method}
+\alias{diff,CompressedIntegerList-method}
+\alias{diff,CompressedNumericList-method}
+\alias{diff,CompressedRleList-method}
 
 \alias{pmax,IntegerList-method}
 \alias{pmax,NumericList-method}
@@ -51,6 +62,9 @@
 \alias{pmin.int,RleList-method}
 
 \alias{mean,AtomicList-method}
+\alias{mean,CompressedLogicalList-method}
+\alias{mean,CompressedIntegerList-method}
+\alias{mean,CompressedNumericList-method}
 \alias{var,AtomicList,missing-method}
 \alias{var,AtomicList,AtomicList-method}
 \alias{cov,AtomicList,AtomicList-method}
@@ -64,6 +78,9 @@
 \alias{cumprod,CompressedAtomicList-method}
 \alias{cummin,CompressedAtomicList-method}
 \alias{cummax,CompressedAtomicList-method}
+\alias{range,CompressedIntegerList-method}
+\alias{range,CompressedNumericList-method}
+\alias{range,CompressedLogicalList-method}
 
 \alias{smoothEnds,CompressedIntegerList-method}
 \alias{smoothEnds,SimpleIntegerList-method}
@@ -104,10 +121,12 @@
 \alias{gsub,ANY,ANY,SimpleRleList-method}
 \alias{unstrsplit,CharacterList-method}
 \alias{unstrsplit,RleList-method}
+\alias{paste,CompressedAtomicList-method}
 
-\alias{rank,CompressedAtomicList}
-\alias{order,CompressedAtomicList}
-\alias{selfmatch,CompressedAtomicList}
+\alias{rank,CompressedAtomicList-method}
+\alias{order,CompressedAtomicList-method}
+\alias{selfmatch,CompressedAtomicList-method}
+\alias{intersect,CompressedAtomicList,CompressedAtomicList-method}
 
 \title{Common operations on AtomicList objects}
 

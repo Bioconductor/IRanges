@@ -12,6 +12,7 @@
 \alias{elementNROWS,CompressedList-method}
 \alias{$<-,CompressedList-method}
 \alias{[[<-,CompressedList-method}
+\alias{is.na,CompressedList-method}
 
 % coercion
 \alias{unlist,CompressedList-method}
@@ -31,6 +32,9 @@
 
 % ops
 \alias{!,CompressedList-method}
+
+% setops
+\alias{match,CompressedList,vector-method}
 
 \title{CompressedList objects}
 

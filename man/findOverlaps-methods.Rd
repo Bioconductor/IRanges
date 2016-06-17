@@ -61,6 +61,11 @@
 
 \alias{findOverlapPairs}
 
+\alias{poverlaps}
+\alias{poverlaps,Ranges,Ranges-method}
+\alias{poverlaps,Ranges,integer-method}
+\alias{poverlaps,integer,Ranges-method}
+
 \title{Finding overlapping ranges}
 
 \description{
@@ -99,6 +104,9 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
 
 mergeByOverlaps(query, subject, ...)
 findOverlapPairs(query, subject, ...)
+
+poverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
+          type = c("any", "start", "end", "within", "equal"))
 
 \S4method{ranges}{Hits}(x, query, subject)
 \S4method{ranges}{HitsList}(x, query, subject)
@@ -245,6 +253,11 @@ findOverlapPairs(query, subject, ...)
   that provides useful downstream conveniences, such as finding the
   intersection of the overlapping ranges with \code{\link{pintersect}}.
 
+  \code{poverlaps} compares \code{query} and \code{subject} in parallel
+  (like e.g., \code{pmin}) and returns a logical vector indicating
+  whether each pair of ranges overlaps. Integer vectors are treated as
+  width-one ranges.
+  
   When \code{x} is a \link[S4Vectors]{Hits} (or \link[S4Vectors]{HitsList})
   object, \code{ranges(x, query, subject)} returns a \link{Ranges}
   (or \link{RangesList}) object of the \emph{same shape} as \code{x}

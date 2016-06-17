@@ -51,6 +51,8 @@
 \alias{coerce,RleList,CompressedNormalIRangesList-method}
 \alias{coerce,RleList,SimpleNormalIRangesList-method}
 
+\alias{coerce,Ranges,RangesList-method}
+
 \alias{coerce,list,RangesList-method}
 
 \alias{merge,RangesList,missing-method}
@@ -153,6 +155,16 @@
       \code{from}, to a \code{\linkS4class{CompressedNormalIRangesList}},
       requiring that all \code{Ranges} elements are coerced to internal
       \code{NormalIRanges} elements.
+    }
+  }
+
+  In the following code snippets, \code{from} is something other than a
+  \code{RangesList}:
+
+  \describe{
+    \item{}{
+      \code{as(from, "RangesList")}: When \code{from} is a
+      \code{Ranges}, analogous to \code{as.list} on a vector.
     }
   }
 }
