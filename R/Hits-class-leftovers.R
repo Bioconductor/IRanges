@@ -66,7 +66,7 @@ setMethod("as.list", "SortedByQueryHits", .as.list.SortedByQueryHits)
 
 .from_Hits_to_CompressedIntegerList <- function(from)
 {
-    as(as(x, "SortedByQueryHits"), "CompressedIntegerList")
+    as(as(from, "SortedByQueryHits"), "CompressedIntegerList")
 }
 
 setAs("Hits", "List", .from_Hits_to_CompressedIntegerList)
