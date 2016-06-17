@@ -152,7 +152,7 @@ findOverlapPairs(query, subject, ...)
     overlap types. For \code{start}, \code{end}, and \code{equal},
     it specifies the maximum difference in the starts, ends or both,
     respectively. For \code{within}, it is the maximum amount by which
-    the query may be wider than the subject.
+    the subject may be wider than the query.
   }
   \item{select}{
     If \code{query} is a \link{Ranges} or \link{Views} object:
