@@ -69,3 +69,24 @@ setMethod("stack", "List",
             }
           })
 
+setMethod("stack", "matrix",
+          function(x, row.var = names(dimnames(x))[1L],
+                   col.var = names(dimnames(x))[2L])
+          {
+              l <- x
+              attributes(l) <- NULL
+              lens <- elementNROWS(l)
+              rn <- rownames(x)
+              if (is.null(rn))
+                  rn <- seq_along(nrow(x))
+              cn <- colnames(x)
+              if (is.null(cn))
+                  cn <- seq_along(ncol(x))
+              ans <- DataFrame(row=rep(rn[row(x)], lens),
+                               col=rep(Rle(cn, rep(nrow(x), ncol(x))), lens),
+                               stack(List(l)))
+              if (is.null(row.var)) row.var <- "row"
+              if (is.null(col.var)) col.var <- "col"
+              colnames(ans) <- c(row.var, col.var)
+              ans
+          })
