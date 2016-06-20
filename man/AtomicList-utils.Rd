@@ -71,6 +71,7 @@
 \alias{cor,AtomicList,AtomicList-method}
 \alias{sd,AtomicList-method}
 \alias{median,AtomicList-method}
+\alias{median,CompressedAtomicList-method}
 \alias{quantile,AtomicList-method}
 \alias{mad,AtomicList-method}
 \alias{IQR,AtomicList-method}

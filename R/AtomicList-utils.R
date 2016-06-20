@@ -624,6 +624,27 @@ setMethod("median", "AtomicList",
     function(x, na.rm=FALSE) sapply(x, median, na.rm=na.rm)
 )
 
+setMethod("median", "CompressedAtomicList", function(x, na.rm=FALSE) {
+    stopifnot(isTRUEorFALSE(na.rm))
+    sx <- sort(x)
+    n <- lengths(sx)
+    half <- (n + 1L)%/%2L
+    odd <- n%%2L == 1L
+    ind <- IRanges(half, width=1L+odd)
+    NAs <- half == 0L
+    ind <- relist(ind[!NAs], PartitioningByWidth(as.integer(!NAs)))
+    ## ind <- as(half, "IntegerList")
+    ## ind[odd] <- ind[odd] + as(0:1, "IntegerList")
+    ans <- mean(sx[ind])
+    if (!na.rm) {
+        NAs <- NAs | anyNA(x)
+    }
+    if (any(NAs)) {
+        ans[NAs] <- as(NA, elementType(x))
+    }
+    ans
+})
+
 setMethod("quantile", "AtomicList",
     function(x, ...) sapply(x, quantile, ...)
 )
@@ -806,13 +827,13 @@ setMethod("order", "CompressedAtomicList",
              "can only take one input object")
     x <- args[[1L]]
     p <- PartitioningByEnd(x)
-    o <- order(togroup(p),
-               unlist(x, use.names=FALSE), na.last=na.last,
+    ux <- unlist(x, use.names=FALSE)
+    o <- order(togroup(p), ux, na.last=na.last,
                decreasing=decreasing, method=method)
-    if (is.na(na.last) && anyNA(x)) {
-        x <- x[!is.na(x)]
-    }
-    relist(o, x) - start(p) + 1L
+    skeleton <- if (is.na(na.last) && anyNA(ux)) {
+        skeleton <- PartitioningByWidth(width(p) - sum(is.na(x)))
+    } else p
+    relist(o, skeleton) - start(p) + 1L
 })
     
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
