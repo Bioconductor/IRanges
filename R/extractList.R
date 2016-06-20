@@ -260,16 +260,33 @@ normSplitFactor <- function(f, x) {
   f
 }
 
+## about 3X faster than as.factor on a ~450k tx ids
+## caveats: no NAs, and radix sort of levels does not support all encodings
+## todo: Would be faster if sort() returned grouping info,
+##       but then we might coalesce this with the order/split.
+## todo: if we could pass na.rm=TRUE to grouping(), NAs would be handled
+as.factor2 <- function(x) {
+    if (is.factor(x))
+        return(x)
+    g <- grouping(x)
+    p <- PartitioningByEnd(relist(g))
+    levs <- as.character(x[g[end(p)]])
+    o <- order(levs, method="radix")
+    v <- integer(length(levs)) # or rep(NA_integer_, length(levs)) for NAs
+    v[o] <- seq_along(o)
+    f <- integer(length(x))
+    f[g] <- v[togroup(p)]
+    structure(f, levels=levs[o], class="factor")
+}
+
 splitAsList_default <- function(x, f, drop=FALSE)
 {
     if (!isTRUEorFALSE(drop))
         stop("'drop' must be TRUE or FALSE")
 
     f <- normSplitFactor(f, x)
-    is_na <- is.na(f)
-    na_idx <- which(is_na)
-    if (length(na_idx) != 0L) {
-        keep_idx <- seq_len(NROW(x))[-na_idx]
+    if (anyNA(f)) {
+        keep_idx <- which(!is.na(f))
         x <- extractROWS(x, keep_idx)
         f <- f[keep_idx]
     }
@@ -277,7 +294,7 @@ splitAsList_default <- function(x, f, drop=FALSE)
     if (is.integer(f))
         return(.splitAsList_by_integer(x, f, drop))
     if (!is(f, "Rle")) {
-        f <- as.factor(f)
+        f <- as.factor2(f)
         return(.splitAsList_by_factor(x, f, drop))
     }
     ## From now on, 'f' is guaranteed to be an Rle.
