@@ -131,6 +131,7 @@ exportMethods(
     table,
     tapply,
     union, intersect, setdiff,
+    ifelse,
     values, "values<-",
     classNameForDisplay,
     from, to,
