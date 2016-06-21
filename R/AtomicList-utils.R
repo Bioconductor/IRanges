@@ -629,12 +629,12 @@ setMethod("median", "CompressedAtomicList", function(x, na.rm=FALSE) {
     sx <- sort(x)
     n <- lengths(sx)
     half <- (n + 1L)%/%2L
-    odd <- n%%2L == 1L
-    ind <- IRanges(half, width=1L+odd)
+    even <- n%%2L != 1L
+    ind <- IRanges(half, width=1L+even)
     NAs <- half == 0L
     ind <- relist(ind[!NAs], PartitioningByWidth(as.integer(!NAs)))
     ## ind <- as(half, "IntegerList")
-    ## ind[odd] <- ind[odd] + as(0:1, "IntegerList")
+    ## ind[even] <- ind[even] + as(0:1, "IntegerList")
     ans <- mean(sx[ind])
     if (!na.rm) {
         NAs <- NAs | anyNA(x)
