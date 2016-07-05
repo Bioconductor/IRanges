@@ -65,6 +65,7 @@
 \alias{mean,CompressedLogicalList-method}
 \alias{mean,CompressedIntegerList-method}
 \alias{mean,CompressedNumericList-method}
+\alias{mean,CompressedRleList-method}
 \alias{var,AtomicList,missing-method}
 \alias{var,AtomicList,AtomicList-method}
 \alias{cov,AtomicList,AtomicList-method}

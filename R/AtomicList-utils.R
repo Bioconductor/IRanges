@@ -576,7 +576,8 @@ setMethod("mean", "AtomicList",
 setMethods("mean",
            list("CompressedLogicalList",
                 "CompressedIntegerList",
-                "CompressedNumericList"),
+                "CompressedNumericList",
+                "CompressedRleList"),
            function(x, trim = 0, na.rm = FALSE) {
                stopifnot(isTRUEorFALSE(na.rm))
                stopifnot(isSingleNumber(trim))
