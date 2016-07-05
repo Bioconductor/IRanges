@@ -33,7 +33,7 @@ setMethod("Views", "Rle",
 
 setAs("AtomicList", "RleViews", function(from) {
   to <- Views(as(unlist(from, use.names = FALSE), "Rle"),
-              PartitioningByWidth(elementNROWS(from)))
+              PartitioningByEnd(from))
   names(to) <- names(from)
   to
 })

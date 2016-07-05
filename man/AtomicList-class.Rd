@@ -143,6 +143,7 @@
 \alias{coerce,AtomicList,RleList-method}
 \alias{RleList,AtomicList,RleList-method}
 \alias{coerce,CompressedRleList,CompressedIRangesList-method}
+\alias{coerce,AtomicList,RleViews}
 
 \alias{unlist,SimpleFactorList-method}
 \alias{unlist,SimpleRleList-method}
@@ -255,6 +256,10 @@
     \item{}{\code{drop(x)}: Checks if every element of \code{x} is of
       length one, and, if so, unlists \code{x}. Otherwise, an error is
       thrown.
+    }
+    \item{}{\code{as(from, "RleViews")}: Creates an RleViews where each
+      view corresponds to an element of \code{from}. The subject is
+      \code{unlist(from)}.
     }
     \item{}{\code{as.matrix(x, col.names=NULL)}: Maps the elements of
       the list to rows of a matrix. The column mapping depends on
