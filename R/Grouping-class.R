@@ -409,56 +409,12 @@ H2LGrouping <- function(high2low=integer())
 Dups <- function(high2low=integer())
     .newH2LGrouping("Dups", high2low)
 
-### If 'x' is a vector-like object for which "[" and "==" are defined, then
-### 'high2low(x)' can be *conceptually* defined with:
-###
-###   high2low <- function(x)
-###       sapply(seq_along(x),
-###              function(i) match(x[i], x[seq_len(i-1L)]))
-###
-### Of course this is *very* inefficient (quadratic in time), its only value
-### being to describe the semantic:
-###
-###   > x <- as.integer(c(2,77,4,4,7,2,8,8,4,99))
-###   > high2low(x)
-###    [1] NA NA NA  3 NA  1 NA  7  3 NA
-###   > bigx <- rep.int(x, 10000)
-###   > system.time(high2low(bigx))
-###      user  system elapsed 
-###   284.805   9.792 294.888
-###
-setMethod("high2low", "vector",
+setMethod("high2low", "ANY",
     function(x)
     {
-        ## Author: Harris A. Jaffee
-        ans <- match(x, x)
+        ans <- selfmatch(x)
         ans[ans == seq_along(x)] <- NA_integer_
-        return(ans)
-    }
-)
-
-### The "high2low" method for Vector objects uses an implementation that
-### is O(n*log(n)) in time but it requires that "order" be defined for 'x'
-### (in addition to "[" and "==").
-setMethod("high2low", "Vector",
-    function(x)
-    {
-        ## The 2 lines below are equivalent but much faster than
-        ## ans <- rep.int(NA_integer_, length(x))
-        ans <- integer(length(x))
-        ans[] <- NA_integer_
-        if (length(x) <= 1L)
-            return(ans)
-        x_order <- order(x)
-        low <- x_order[1L]
-        for (i in 2:length(x)) {
-            high <- x_order[i]
-            if (x[high] == x[low])
-                ans[high] <- low
-            else
-                low <- high
-        }
-        return(ans)
+        ans
     }
 )
 
