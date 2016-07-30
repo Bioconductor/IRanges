@@ -486,7 +486,7 @@ setMethod("showAsCell", "AtomicList",
               if (length(object) == 0L)
                 return(character(0))
               unlist(lapply(object, function(x) {
-                str <- paste(as.vector(head(x, 3)), collapse = ",") 
+                str <- paste(head(x, 3), collapse = ",") 
                 if (length(x) > 3)
                   str <- paste(str, "...", sep = ",")
                 str
