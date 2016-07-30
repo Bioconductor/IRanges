@@ -12,8 +12,7 @@
 ### Internal utility
 ###
 
-setMethod("showAsCell", "list", function(object)
-          rep.int("########", length(object)))
+setMethod("showAsCell", "list", function(object) showAsCell(List(object)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
