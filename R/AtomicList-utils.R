@@ -859,12 +859,12 @@ setMethod("unique", "RleList", .unique.RleList)
     if (length(list(...)) > 0L) {
         stop("arguments in '...' are not supported")
     }
+    stopifnot(isTRUEorFALSE(fromLast))
     g <- subgrouping(x)
-    first <- unlist(g)[start(PartitioningByEnd(g))]
+    p <- PartitioningByEnd(g)
+    first <- unlist(g)[if (fromLast) end(p) else start(p)]
     v <- rep(TRUE, length(unlist(g)))
     v[first] <- FALSE
-    if (fromLast)
-        ans <- rev(ans)
     relist(v, x)
 }
 setMethod("duplicated", "CompressedAtomicList",
