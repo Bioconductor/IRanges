@@ -408,8 +408,9 @@ resplit <- function(x, f) {
 
 regroup <- function(x, g) {
     g <- as(g, "Grouping")
-    ends <- end(PartitioningByEnd(g))
-    ix <- unlist(g, use.names=FALSE)
-    p <- PartitioningByEnd(end(PartitioningByEnd(x))[ix][ends])
-    relist(unlist(x[ix], use.names=FALSE), p)
+    gends <- end(PartitioningByEnd(g))
+    xg <- x[unlist(g, use.names=FALSE)]
+    p <- PartitioningByEnd(end(PartitioningByEnd(xg))[gends])
+    names(p) <- names(g)
+    relist(unlist(xg, use.names=FALSE, recursive=FALSE), p)
 }

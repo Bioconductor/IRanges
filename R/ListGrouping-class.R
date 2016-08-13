@@ -97,8 +97,14 @@ setAs("vector", "Grouping", function(from) {
       })
 
 setAs("vector", "ManyToOneGrouping", function(from) {
-          as(grouping(from), "Grouping")
-      })
+    to <- as(grouping(from), "Grouping")
+    names(to) <- from[unlist(to)[end(PartitioningByEnd(to))]]
+    to
+})
+
+setAs("factor", "ManyToOneGrouping", function(from) {
+    ManyToOneGrouping(splitAsList(seq_along(from), from))
+})
 
 setAs("vector", "ManyToManyGrouping", function(from) {
          g <- as(from, "ManyToOneGrouping")
