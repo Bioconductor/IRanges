@@ -108,7 +108,7 @@ setMethod("range", "RangedData", function(x, ..., na.rm) {
 ###
 
 setGeneric("reduce", signature="x",
-    function(x, ...) standardGeneric("reduce")
+    function(x, drop.empty.ranges=FALSE, ...) standardGeneric("reduce")
 )
 
 ### Always return an IRanges (or NormalIRanges) *instance* whatever Ranges
@@ -217,7 +217,7 @@ setMethod("reduce", "CompressedIRangesList",
 )
 
 setMethod("reduce", "RangedData",
-          function(x, by = character(), drop.empty.ranges=FALSE,
+          function(x, drop.empty.ranges=FALSE, by=character(),
                    min.gapwidth=1L, with.inframe.attrib=FALSE)
           {
             .Defunct(msg=c("the \"reduce\" method for RangedData object ",

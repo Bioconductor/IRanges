@@ -70,7 +70,7 @@
 
 ## reduce()
 ## --------
-reduce(x, ...)
+reduce(x, drop.empty.ranges=FALSE, ...)
 
 \S4method{reduce}{Ranges}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
        with.revmap=FALSE, with.inframe.attrib=FALSE)
