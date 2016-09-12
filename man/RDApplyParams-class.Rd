@@ -15,7 +15,6 @@
 \alias{applyParams,RDApplyParams-method}
 \alias{applyParams<-}
 \alias{applyParams<-,RDApplyParams-method}
-\alias{filterRules}
 \alias{filterRules,RDApplyParams-method}
 \alias{filterRules<-}
 \alias{filterRules<-,RDApplyParams-method}
