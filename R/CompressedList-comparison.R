@@ -37,7 +37,7 @@ setMethod("match", c("CompressedList", "vector"),
 ###
 
 .duplicated.CompressedList <- function(x, incomparables=FALSE,
-                                          fromLast=FALSE)
+                                       fromLast=FALSE, nmax=NA)
 {
     if (!identical(incomparables, FALSE))
         stop("\"duplicated\" method for CompressedList objects ",
@@ -50,13 +50,9 @@ setMethod("match", c("CompressedList", "vector"),
 }
 setMethod("duplicated", "CompressedList", .duplicated.CompressedList)
 
-.unique.CompressedList <- function(x, incomparables=FALSE,
-                                      fromLast=FALSE)
+.unique.CompressedList <- function(x, ...)
 {
-    if (!identical(incomparables, FALSE))
-        stop("\"unique\" method for CompressedList objects ",
-             "does not support the 'incomparables' argument")
-    is_dup <- duplicated(x, incomparables=incomparables, fromLast=fromLast)
+    is_dup <- duplicated(x, ...)
     x_unlistData <- x@unlistData
     keep_idx <- which(!is_dup@unlistData)
     ans_unlistData <- x_unlistData[keep_idx]

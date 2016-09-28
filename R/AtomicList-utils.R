@@ -851,7 +851,7 @@ subgrouping <- function(x) {
 setMethod("unique", "RleList", .unique.RleList)
 
 .duplicated.CompressedAtomicList <- function(x, incomparables=FALSE,
-                                             fromLast=FALSE, ...)
+                                             fromLast=FALSE, nmax=NA, ...)
 {
     if (!identical(incomparables, FALSE))
         stop("\"duplicated\" method for CompressedList objects ",
