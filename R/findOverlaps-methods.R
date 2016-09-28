@@ -772,5 +772,8 @@ setMethod("ranges", "HitsList", function(x, query, subject) {
 
 findOverlapPairs <- function(query, subject, ...) {
     hits <- findOverlaps(query, subject, ...)
+    if (missing(subject)) {
+        subject <- query
+    }
     Pairs(query, subject, hits=hits)
 }
