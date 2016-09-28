@@ -244,7 +244,7 @@ normSplitFactor <- function(f, x) {
   }
   if (is.list(f) || is(f, "List")) {
       if (length(f) == 1L) {
-          f <- f[[1L]]
+          f <- toFactor(f[[1L]])
       } else {
           f <- interaction2(f)
       }
