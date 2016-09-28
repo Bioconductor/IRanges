@@ -174,7 +174,7 @@ setMethod("as.vector", "AtomicList",
 
 as.matrix.AtomicList <- function(x, col.names=NULL, ...) {
     p <- PartitioningByEnd(x)
-    vx <- unlist(x, use.names=FALSE)
+    vx <- decode(unlist(x, use.names=FALSE))
     if (is.null(col.names)) {
         col.names <- names(vx)
     }
