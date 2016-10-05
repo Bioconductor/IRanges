@@ -485,7 +485,7 @@ setMethod("isDisjoint", "Ranges",
 setMethod("isDisjoint", "NormalIRanges", function(x) TRUE)
 
 setMethod("isDisjoint", "RangesList",
-    function(x) unlist(lapply(x, isDisjoint))
+    function(x) vapply(x, isDisjoint, logical(1))
 )
 
 
