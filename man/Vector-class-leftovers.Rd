@@ -1,8 +1,6 @@
 \name{Vector-class-leftovers}
 \docType{class}
 
-\alias{showAsCell,list-method}
-
 \alias{window<-,Vector-method}
 \alias{window<-.Vector}
 \alias{window<-,vector-method}

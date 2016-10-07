@@ -171,8 +171,6 @@
 
 \alias{show,AtomicList-method}
 \alias{show,RleList-method}
-\alias{showAsCell,AtomicList-method}
-
 
 \title{Lists of Atomic Vectors in Natural and Rle Form}
 \description{An extension of \code{\linkS4class{List}} that holds
