@@ -7,14 +7,6 @@
 ### or in IRanges).
 ###
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Internal utility
-###
-
-setMethod("showAsCell", "list", function(object) showAsCell(List(object)))
-
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Other subsetting-related operations
 ###
