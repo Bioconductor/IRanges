@@ -3,6 +3,16 @@
 ### -------------------------------------------------------------------------
 ###
 
+### TODO: We have a profileration of tools for creating these "sliding
+### windows" or "tiles": successiveIRanges(), tileGenome(), tile(), and now
+### slidingWindows(). With no visible coherent naming scheme. Introducing
+### a new verb each time we get frustrated because the existing tools don't
+### let us create tiles or windows exactly the way we'd like for the use case
+### of the day is not a sustainable strategy in the long run. This just adds
+### more and more confusion for the end-user.
+### So some effort will need to be done towards unification of all these
+### tools. H.P. -- Oct 16, 2016.
+
 setGeneric("tile", function(x, n, width, ...) standardGeneric("tile"),
            signature="x")
 

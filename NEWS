@@ -1,3 +1,68 @@
+CHANGES IN VERSION 2.8.0
+------------------------
+
+NEW FEATURES
+
+    o "disjoin" methods now support 'with.revmap' argument.
+
+    o Add 'invert' argument to subsetByOverlaps(), like grep()'s invert.
+
+    o Add "unstrsplit" method for RleList objects.
+
+    o findOverlapPairs() allows 'subject' to be missing for self pairing.
+
+    o Add "union", "intersect" and "setdiff" methods for Pairs.
+
+    o Add distance,Pairs,missing method.
+
+    o Add ManyToManyGrouping, with coercion targets from FactorList and
+      DataFrame.
+
+    o Add Hits->List and Hits->(ManyToMany)Grouping coercions.
+
+    o Add "as.matrix" method for AtomicList objects.
+
+    o Add "selfmatch", "duplicated", "order", "rank", and "median" methods
+      for CompressedAtomicList objects.
+
+    o Add "anyNA" method for CompressedAtomicList objects that ensures
+      recursive=FALSE.
+
+    o Add "mean" method for CompressedRleList objects.
+
+    o Support 'global' argument on "which.min" and "which.max" methods for
+      CompressedAtomicList objects.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Make mstack,Vector method more consistent with stack,List method.
+
+    o Optimize and document coercion from AtomicList to RleViews objects.
+
+DEPRECATED AND DEFUNCT
+
+    o Are now defunct (were deprecated in BioC 3.3):
+      - RangedDataList objects.
+      - RDApplyParams objects and rdapply().
+      - The "split" and "reduce" methods for RangedData objects.
+      - The 'ignoreSelf' and/or 'ignoreRedundant' arguments of the
+        findOverlaps,Vector,missing method (a.k.a. "self findOverlaps" method).
+      - grouplength()
+      - GappedRanges objects. 
+
+BUG FIXES
+
+    o Fix special meaning of findOverlaps's maxgap argument when type="within".
+
+    o isDisjoint(IRangesList()) now returns logical(0) instead of NULL.
+
+    o Fixes to regroup() and Grouping construction.
+
+    o Fix rank,CompressedAtomicList method.
+
+    o Fix fromLast=TRUE for duplicated,CompressedAtomicList method.
+
+
 CHANGES IN VERSION 2.6.0
 ------------------------
 
