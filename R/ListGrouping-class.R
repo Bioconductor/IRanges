@@ -114,9 +114,13 @@ setAs("vector", "ManyToManyGrouping", function(from) {
       })
 
 setAs("ManyToOneGrouping", "factor", function(from) {
-          structure(togroup(from), levels=as.character(seq_along(from)),
-                    class="factor")
-      })
+    levels <- if (!is.null(names(from))) {
+        names(from)
+    } else {
+        as.character(seq_along(from))
+    }
+    structure(togroup(from), levels=levels, class="factor")
+})
 
 setMethod("as.factor", "ManyToOneGrouping", function(x) {
     as(x, "factor")
