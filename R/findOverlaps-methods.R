@@ -84,28 +84,8 @@ setMethod("findOverlaps", c("Vector", "missing"),
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
              ...,
-             drop.self=FALSE, drop.redundant=FALSE,
-             ignoreSelf=FALSE, ignoreRedundant=FALSE)
+             drop.self=FALSE, drop.redundant=FALSE)
     {
-        if (!identical(ignoreSelf, FALSE) ||
-            !identical(ignoreRedundant, FALSE)) {
-            .Defunct(msg=wmsg(
-                "Please use 'drop.self' and/or 'drop.redundant' instead ",
-                "of the 'ignoreSelf' and/or 'ignoreRedundant' arguments."
-            ))
-            if (!identical(ignoreSelf, FALSE)) {
-                if (!identical(drop.self, FALSE))
-                    stop(wmsg("either 'drop.self' or 'ignoreSelf' ",
-                              "can be specified, but not both"))
-                drop.self <- ignoreSelf
-            }
-            if (!identical(ignoreRedundant, FALSE)) {
-                if (!identical(drop.redundant, FALSE))
-                    stop(wmsg("either 'drop.redundant' or 'ignoreRedundant' ",
-                              "can be specified, but not both"))
-                drop.redundant <- ignoreRedundant
-            }
-        }
         select <- match.arg(select)
         result <- findOverlaps(query, query,
                                maxgap=maxgap, minoverlap=minoverlap,
