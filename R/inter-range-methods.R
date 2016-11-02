@@ -22,6 +22,11 @@ global2local_revmap <- function(unlisted_revmap, y, x)
     unlisted_revmap - offsets
 }
 
+local2global_revmap <- function(unlisted_revmap, y, x)
+{
+    offsets <- rep.int(start(PartitioningByEnd(x)) - 1L, lengths(y))
+    unlisted_revmap + offsets
+}
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### range()
@@ -58,7 +63,14 @@ setMethod("range", "RangesList",
     {
         if (length(list(x, ...)) >= 2L)
             x <- merge(x, ...)
-        endoapply(x, range, with.revmap=with.revmap)
+        ans <- endoapply(x, range, with.revmap=with.revmap)
+        #if (with.revmap) {
+        #    unlisted_ans <- unlist(ans, use.names=FALSE)
+        #    mcols(unlisted_ans)$revmap <-
+        #      local2global_revmap(mcols(unlisted_ans)$revmap, ans, x)
+        #    ans <- relist(unlisted_ans, ans)
+        #}
+        ans
     }
 )
 
@@ -82,7 +94,10 @@ setMethod("range", "RangesList",
     if (with.revmap) {
         col_len <- unname(unlist(lapply(x, length)))
         mcols(ans_unlistData) <-  DataFrame(revmap= IntegerList(
-                                                lapply(col_len, FUN=seq_len)))
+                             lapply(col_len, FUN=seq_len)[is_not_empty_view]))
+    #    seq = mapply(FUN = function(a, b) { seq(from = a, to = b, by=1) },
+    #        a = start(x_start@partitioning), b = end(x_start@partitioning))
+    #    mcols(ans_unlistData) <-  DataFrame(revmap= IntegerList(seq[is_not_empty_view]))
     }
     ans_partitioning <- new2("PartitioningByEnd",
                                          end=cumsum(is_not_empty_view),
@@ -91,8 +106,7 @@ setMethod("range", "RangesList",
                                          partitioning=ans_partitioning,
                                          check=FALSE)
     names(ans) <- names(x)
-    # I don't think this mcols assignment works as expected
-    if (!with.revmap) mcols(ans) <- mcols(x)
+    #mcols(ans) <- mcols(x)
     ans
 }
 
