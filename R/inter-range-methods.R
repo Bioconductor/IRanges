@@ -30,7 +30,7 @@ global2local_revmap <- function(unlisted_revmap, y, x)
 ### Always return an IRanges (or NormalIRanges) *instance* whatever Ranges
 ### derivative the input is, so does NOT act like an endomorphism in general. 
 setMethod("range", "Ranges",
-    function(x, ..., na.rm=FALSE)
+    function(x, ..., with.revmap=FALSE, na.rm=FALSE)
     {
         if (!identical(na.rm, FALSE))
             warning("\"range\" method for Ranges objects ",
@@ -46,21 +46,24 @@ setMethod("range", "Ranges",
         ans <- .Call2("IRanges_range", ir, PACKAGE="IRanges")
         if (is(x, "NormalIRanges"))
             ans <- as(ans, "NormalIRanges")
+        if (with.revmap){
+            mcols(ans) <- DataFrame(revmap=IntegerList(seq_along(ir)))
+        }
         ans
     }
 )
 
 setMethod("range", "RangesList",
-    function(x, ..., na.rm=FALSE)
+    function(x, ..., with.revmap=FALSE, na.rm=FALSE)
     {
         if (length(list(x, ...)) >= 2L)
             x <- merge(x, ...)
-        endoapply(x, range)
+        endoapply(x, range, with.revmap=with.revmap)
     }
 )
 
 ### Equivalent to, but much faster than, 'endoapply(x, range)'.
-.CompressedIRangesList.range <- function(x)
+.CompressedIRangesList.range <- function(x, with.revmap=FALSE)
 {
     ## 'x_start' and 'x_end' are CompressedIntegerList objects with the
     ## same shape as 'x'.
@@ -76,6 +79,11 @@ setMethod("range", "RangesList",
     is_not_empty_view <- width(sv) != 0L  # same as 'width(ev) != 0L'
     ans_unlistData <- IRanges(viewMins(sv)[is_not_empty_view],
                               viewMaxs(ev)[is_not_empty_view])
+    if (with.revmap) {
+        col_len <- unname(unlist(lapply(x, length)))
+        mcols(ans_unlistData) <-  DataFrame(revmap= IntegerList(
+                                                lapply(col_len, FUN=seq_len)))
+    }
     ans_partitioning <- new2("PartitioningByEnd",
                                          end=cumsum(is_not_empty_view),
                                          check=FALSE)
@@ -83,16 +91,17 @@ setMethod("range", "RangesList",
                                          partitioning=ans_partitioning,
                                          check=FALSE)
     names(ans) <- names(x)
-    mcols(ans) <- mcols(x)
+    # I don't think this mcols assignment works as expected
+    if (!with.revmap) mcols(ans) <- mcols(x)
     ans
 }
 
 setMethod("range", "CompressedIRangesList",
-    function(x, ..., na.rm=FALSE)
+    function(x, ..., with.revmap=FALSE, na.rm=FALSE)
     {
         if (length(list(x, ...)) >= 2L)
             x <- merge(x, ...)
-        .CompressedIRangesList.range(x)
+        .CompressedIRangesList.range(x, with.revmap=with.revmap)
     }
 )
 

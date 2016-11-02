@@ -64,9 +64,9 @@
 \usage{
 ## range()
 ## -------
-\S4method{range}{Ranges}(x, ..., na.rm=FALSE)
+\S4method{range}{Ranges}(x, ..., with.revmap=FALSE, na.rm=FALSE)
 
-\S4method{range}{RangesList}(x, ..., na.rm=FALSE)
+\S4method{range}{RangesList}(x, ..., with.revmap=FALSE, na.rm=FALSE)
 
 ## reduce()
 ## --------
