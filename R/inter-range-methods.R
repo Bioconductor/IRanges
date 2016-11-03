@@ -22,12 +22,6 @@ global2local_revmap <- function(unlisted_revmap, y, x)
     unlisted_revmap - offsets
 }
 
-local2global_revmap <- function(unlisted_revmap, y, x)
-{
-    offsets <- rep.int(start(PartitioningByEnd(x)) - 1L, lengths(y))
-    unlisted_revmap + offsets
-}
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### range()
 ###
@@ -37,6 +31,8 @@ local2global_revmap <- function(unlisted_revmap, y, x)
 setMethod("range", "Ranges",
     function(x, ..., with.revmap=FALSE, na.rm=FALSE)
     {
+        if (!isTRUEorFALSE(with.revmap))
+            stop("'with.revmap' must be TRUE or FALSE")
         if (!identical(na.rm, FALSE))
             warning("\"range\" method for Ranges objects ",
                     "ignores the 'na.rm' argument")
@@ -63,14 +59,7 @@ setMethod("range", "RangesList",
     {
         if (length(list(x, ...)) >= 2L)
             x <- merge(x, ...)
-        ans <- endoapply(x, range, with.revmap=with.revmap)
-        #if (with.revmap) {
-        #    unlisted_ans <- unlist(ans, use.names=FALSE)
-        #    mcols(unlisted_ans)$revmap <-
-        #      local2global_revmap(mcols(unlisted_ans)$revmap, ans, x)
-        #    ans <- relist(unlisted_ans, ans)
-        #}
-        ans
+        endoapply(x, range, with.revmap=with.revmap)
     }
 )
 
@@ -91,28 +80,35 @@ setMethod("range", "RangesList",
     is_not_empty_view <- width(sv) != 0L  # same as 'width(ev) != 0L'
     ans_unlistData <- IRanges(viewMins(sv)[is_not_empty_view],
                               viewMaxs(ev)[is_not_empty_view])
-    if (with.revmap) {
-        col_len <- unname(unlist(lapply(x, length)))
-        mcols(ans_unlistData) <-  DataFrame(revmap= IntegerList(
-                             lapply(col_len, FUN=seq_len)[is_not_empty_view]))
-    #    seq = mapply(FUN = function(a, b) { seq(from = a, to = b, by=1) },
-    #        a = start(x_start@partitioning), b = end(x_start@partitioning))
-    #    mcols(ans_unlistData) <-  DataFrame(revmap= IntegerList(seq[is_not_empty_view]))
-    }
     ans_partitioning <- new2("PartitioningByEnd",
                                          end=cumsum(is_not_empty_view),
                                          check=FALSE)
     ans <- new2("CompressedIRangesList", unlistData=ans_unlistData,
                                          partitioning=ans_partitioning,
                                          check=FALSE)
+    if (with.revmap) {
+        x_partitioning <- PartitioningByEnd(x)
+        global_revmap <- relist(seq_along(unlist(x, use.names=FALSE)),
+                              x_partitioning)[width(x_partitioning) != 0L]
+        # can't use helper function, structure is different
+        offsets <- rep.int(start(PartitioningByEnd(x)) - 1L,
+            width(PartitioningByEnd(x)))
+        new_unlist_revmap <- unname(unlist(global_revmap) - offsets)
+        unlisted_ans <- unlist(ans)
+        mcols(unlisted_ans)$revmap = relist(new_unlist_revmap, x_partitioning)
+        ans <- relist(unlisted_ans, ans)
+    }
+    # investigate more
+    # if removing views that are empty may have dropped??
     names(ans) <- names(x)
-    #mcols(ans) <- mcols(x)
     ans
 }
 
 setMethod("range", "CompressedIRangesList",
     function(x, ..., with.revmap=FALSE, na.rm=FALSE)
     {
+        if (!isTRUEorFALSE(with.revmap))
+            stop("'with.revmap' must be TRUE or FALSE")
         if (length(list(x, ...)) >= 2L)
             x <- merge(x, ...)
         .CompressedIRangesList.range(x, with.revmap=with.revmap)
@@ -413,6 +409,8 @@ setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
 setMethod("disjoin", "Ranges",
     function(x, with.revmap=FALSE)
     {
+        if (!isTRUEorFALSE(with.revmap))
+            stop("'with.revmap' must be TRUE or FALSE")
         ## starts: original starts and end+1 when inside another interval
         ## ends: original ends and start-1 when inside another interval
         starts <- unique(start(x))
@@ -443,6 +441,8 @@ setMethod("disjoin", "RangesList",
 setMethod("disjoin", "CompressedIRangesList",
           function(x, with.revmap=FALSE, ...)
           {
+              if (!isTRUEorFALSE(with.revmap))
+                  stop("'with.revmap' must be TRUE or FALSE")        
               .wunlist <- function(x)
                   ## unlist CompressedIntegerList, with integer(0) as 0
               {

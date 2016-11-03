@@ -5,6 +5,13 @@ test_range_Ranges <- function() {
   checkIdentical(range(ir1, ir2), IRanges(0, 7))
   checkIdentical(range(IRanges()), IRanges())
   checkException(range(ir1, c(2,3)), silent = TRUE)
+  # check with.revmap
+  rng1 <- range(ir1, with.revmap=TRUE)
+  rng2 <- range(ir2, with.revmap=TRUE)
+  rng3 <- range(ir1,ir2, with.revmap=TRUE)
+  checkIdentical(mcols(rng1)$revmap, IntegerList(seq(3)))
+  checkIdentical(mcols(rng2)$revmap, IntegerList(seq(3)))
+  checkIdentical(mcols(rng3)$revmap, IntegerList(seq(6)))
 }
 
 test_range_RangesList <- function() {
@@ -22,6 +29,12 @@ test_range_RangesList <- function() {
     ## must be same length
     checkException(range(rl2, rep.int(rl2, 2L)), silent=TRUE)
   }
+  # check with.revmap
+  revmap1 <- mcols(range(rl1,rl2, with.revmap=TRUE)[[1]])$revmap
+  revmap2 <- mcols(range(rl1,rl2, with.revmap=TRUE)[[2]])$revmap
+  ans <- IntegerList(seq(4))
+  checkIdentical(revmap1, ans)
+  checkIdentical(revmap2, ans)  
 }
 
 test_reduce_Ranges <- function() {
