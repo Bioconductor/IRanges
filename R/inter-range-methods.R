@@ -95,11 +95,9 @@ setMethod("range", "RangesList",
             width(PartitioningByEnd(x)))
         new_unlist_revmap <- unname(unlist(global_revmap) - offsets)
         unlisted_ans <- unlist(ans)
-        mcols(unlisted_ans)$revmap = relist(new_unlist_revmap, x_partitioning)
+        mcols(unlisted_ans)$revmap = relist(new_unlist_revmap, x_partitioning)[width(x_partitioning) != 0L]
         ans <- relist(unlisted_ans, ans)
     }
-    # investigate more
-    # if removing views that are empty may have dropped??
     names(ans) <- names(x)
     ans
 }
