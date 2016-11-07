@@ -137,9 +137,9 @@ setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),
           function(x, y) {
             nonempty <- elementNROWS(x) != 0L
             rx <- unlist(range(x), use.names = FALSE)
-            startx <- integer()
+            startx <- rep(NA_integer_, length(x))
             startx[nonempty] <- start(rx)
-            endx <- integer()
+            endx <- rep(NA_integer_, length(x))
             endx[nonempty] <- end(rx)
             gaps(union(gaps(x), y), start = startx, end = endx)
           })
