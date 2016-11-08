@@ -40,7 +40,6 @@ exportClasses(
     RangesList, SimpleRangesList,
     IRangesList, CompressedIRangesList, SimpleIRangesList,
     NormalIRangesList, CompressedNormalIRangesList, SimpleNormalIRangesList,
-    GappedRanges,
     ViewsList, SimpleViewsList,
     RleViewsList, SimpleRleViewsList,
     DataFrameList, SimpleDataFrameList,
@@ -228,9 +227,6 @@ export(
     ## RangesList-class.R:
     universe, "universe<-", space,
 
-    ## GappedRanges-class.R:
-    ngap,
-
     ## MaskCollection-class.R:
     nir_list,
     desc, "desc<-",
@@ -305,7 +301,6 @@ exportMethods(
     extractList,
     columnMetadata, "columnMetadata<-",
     universe, "universe<-", space,
-    ngap,
     nir_list,
     desc, "desc<-",
     maskedwidth, maskedratio,
