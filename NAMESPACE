@@ -16,7 +16,6 @@ importFrom(stats4, summary, update)
 ###
 
 exportClasses(
-    functionORNULL,
     Ranges, RangesORmissing,
     IRanges, NormalIRanges,
     NCList, NCLists,
@@ -44,7 +43,7 @@ exportClasses(
     RleViewsList, SimpleRleViewsList,
     DataFrameList, SimpleDataFrameList,
     SplitDataFrameList, CompressedSplitDataFrameList, SimpleSplitDataFrameList,
-    RangedData, RangedDataList, RDApplyParams,
+    RangedData,
     RangedSelection,
     SimpleGrouping, CompressedGrouping,
     SimpleManyToOneGrouping, CompressedManyToOneGrouping,
@@ -144,7 +143,7 @@ exportMethods(
     endoapply, mendoapply,
     revElements,
     as.env,
-    active, "active<-", filterRules
+    active, "active<-"
 )
 
 
@@ -166,9 +165,8 @@ export(
     H2LGrouping, Dups,
     PartitioningByEnd, PartitioningByWidth, PartitioningMap,
     grouplength,
-    RangedData, RangedDataList,
+    RangedData,
     RangedSelection,
-    RDApplyParams,
     RangesList,
     IRangesList,
     RleViewsList,
@@ -236,20 +234,6 @@ export(
     ## RangedData-class.R:
     score, "score<-",
 
-    ## RDApplyParams-class.R:
-    rangedData, "rangedData<-",
-    applyFun, "applyFun<-",
-    applyParams, "applyParams<-",
-    ##excludePattern, "excludePattern<-",
-    "filterRules<-",
-    simplify, "simplify<-",
-    reducerFun, "reducerFun<-",
-    reducerParams, "reducerParams<-",
-    iteratorFun, "iteratorFun<-",
-
-    ## RangedData-utils.R:
-    rdapply,
-
     ## findOverlaps-methods.R:
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps, mergeByOverlaps,
     poverlaps,
@@ -306,16 +290,6 @@ exportMethods(
     maskedwidth, maskedratio,
     collapse,
     score, "score<-",
-    rangedData, "rangedData<-",
-    applyFun, "applyFun<-",
-    applyParams, "applyParams<-",
-    ##excludePattern, "excludePattern<-",
-    "filterRules<-",
-    simplify, "simplify<-",
-    reducerFun, "reducerFun<-",
-    reducerParams, "reducerParams<-",
-    iteratorFun, "iteratorFun<-",
-    rdapply,
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     poverlaps,
     shift, narrow, resize, flank, reflect, promoters, restrict, threebands,

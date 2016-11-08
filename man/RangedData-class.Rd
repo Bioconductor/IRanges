@@ -54,7 +54,6 @@
 % Combining and splitting
 \alias{c,RangedData-method}
 \alias{rbind,RangedData-method}
-\alias{split,RangedData,ANY-method}
 
 % Subsetting:
 \alias{[,RangedData-method}
@@ -74,16 +73,12 @@
 
 \title{Data on ranges}
 \description{
-  IMPORTANT NOTE: Starting with BioC 3.4, \code{RangedDataList} objects are
-  defunct in favor of \code{\link[GenomicRanges]{GRangesList}} objects
-  (the \code{\link[GenomicRanges]{GRangesList}} class is defined in the
-  \pkg{GenomicRanges} package).
+  IMPORTANT NOTE: \code{RangedData} objects will be deprecated in BioC 3.6!
 
-  Note that the use of \code{RangedData} and \code{RangedDataList} objects
-  has been discouraged in favor of \code{\link[GenomicRanges]{GRanges}} and
-  \code{\link[GenomicRanges]{GRangesList}} objects since BioC 2.12.
-
-  \code{RangedData} objects will be deprecated soon.
+  The use of \code{RangedData} objects has been discouraged in favor
+  of \link[GenomicRanges]{GRanges} objects since BioC 2.12. The
+  \link[GenomicRanges]{GRanges} class is defined in the \pkg{GenomicRanges}
+  package.
 
   \code{RangedData} supports storing data, i.e. a set of variables, on a
   set of ranges spanning multiple spaces (e.g. chromosomes). Although
@@ -399,18 +394,9 @@
   
   \describe{
     \item{}{
-      \code{split(x, f, drop = FALSE)}: Split \code{x} according to
-      \code{f}, which should be of length equal to \code{nrow(x)}. Note
-      that \code{drop} is ignored here. The result is a
-      \code{\linkS4class{RangedDataList}} where every element has the same 
-      length (number of spaces) but different sets of ranges within each
-      space.
-    }
-    \item{}{
       \code{rbind(...)}: Matches the spaces from
       the \code{RangedData} objects in \code{...} by name and combines
-      them row-wise. In a way, this is the reverse of the \code{split}
-      operation described above.
+      them row-wise.
     }
     \item{}{
       \code{c(x, ..., recursive = FALSE)}: Combines \code{x} with
@@ -538,7 +524,7 @@
   ncol(rd) # is only 1
   rd$score2 <- score
   
-  ## combining/splitting
+  ## combining
 
   rd <- RangedData(ranges, score, space = c(1, 2, 1))
   c(rd[1], rd[2]) # equal to 'rd'

@@ -537,18 +537,6 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
   rd
 })
 
-.split_RangedData_defunct_msg <- wmsg(
-    "The \"split\" method for RangedData objects is defunct. ",
-    "Please replace the RangedData object with a GRanges object ",
-    "and split it. This will produce a GRangesList instead of a ",
-    "RangedDataList object. (The GRanges and GRangesList classes ",
-    "are defined in the GenomicRanges package.)"
-)
-
-setMethod("split", "RangedData", function(x, f, drop = FALSE)
-  .Defunct(msg=.split_RangedData_defunct_msg)
-)
-
 setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   args <- unname(list(...))
   rls <- lapply(args, ranges)
@@ -855,46 +843,3 @@ setMethod("show", "RangedData", function(object) {
   }
 })
 
-### =========================================================================
-### RangedDataList objects
-### -------------------------------------------------------------------------
-
-### Lists of RangedData objects
-
-setClass("RangedDataList",
-         prototype = prototype(elementType = "RangedData"),
-         contains = "SimpleList")
-
-.RangedDataList_defunct_msg <- wmsg(
-    "RangedDataList objects are defunct in favor of GRangesList objects ",
-    "(the GRangesList class is defined in the GenomicRanges package)."
-)
-
-RangedDataList <- function(...) .Defunct(msg=.RangedDataList_defunct_msg)
-
-setMethod("show", "RangedDataList",
-    function(object) .Defunct(msg=.RangedDataList_defunct_msg)
-)
-
-setMethod("unlist", "RangedDataList",
-          function(x, recursive = TRUE, use.names = TRUE) {
-            if (!identical(recursive, TRUE))
-              stop("\"unlist\" method for RangedDataList objects ",
-                   "does not support the 'recursive' argument")
-            ans <- do.call(rbind, unname(as.list(x)))
-            if (!use.names)
-              rownames(ans) <- NULL
-            ans
-          })
-
-setMethod("stack", "RangedDataList",
-          function(x, index.var = "name") {
-            rd <- do.call(rbind, unname(as.list(x)))
-            spaces <- unlist(lapply(x, space), use.names=FALSE)
-            ids <- names(x)
-            if (is.null(ids))
-              ids <- seq_len(length(x))
-            spaceOrd <- order(factor(spaces, names(rd)))
-            rd[[index.var]] <- rep(factor(ids), sapply(x, nrow))[spaceOrd]
-            rd
-          })

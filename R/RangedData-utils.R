@@ -23,12 +23,6 @@ setMethod("endoapply", "RangedData",
             ans
           })
 
-setGeneric("rdapply", function(x, ...) standardGeneric("rdapply"))
-
-setMethod("rdapply", "RDApplyParams", function(x)
-  .Defunct(msg="RDApplyParams objects and rdapply() are defunct")
-)
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### within()
 ###

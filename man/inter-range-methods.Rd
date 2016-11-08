@@ -13,7 +13,6 @@
 \alias{reduce,Views-method}
 \alias{reduce,RangesList-method}
 \alias{reduce,CompressedIRangesList-method}
-\alias{reduce,RangedData-method}
 
 \alias{gaps}
 \alias{gaps,Ranges-method}
