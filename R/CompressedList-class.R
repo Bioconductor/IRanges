@@ -197,9 +197,6 @@ setUnlistDataNames <- function(unlisted_x, grouping, use.names, x_class)
 setMethod("unlist", "CompressedList",
     function(x, recursive=TRUE, use.names=TRUE)
     {
-        if (!identical(recursive, TRUE))
-            stop("\"unlist\" method for CompressedList objects ",
-                 "does not support the 'recursive' argument")
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
         setUnlistDataNames(x@unlistData, x@partitioning, use.names, class(x))
