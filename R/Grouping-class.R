@@ -682,7 +682,7 @@ PartitioningByEnd <- function(x=integer(0), NG=NULL, names=NULL)
 setAs("Ranges", "PartitioningByEnd",
     function(from)
     {
-        ans <- PartitioningByEnd(end(from), names(from))
+        ans <- PartitioningByEnd(end(from), names=names(from))
         if (!identical(start(ans), start(from)))
             stop(wmsg("the Ranges object to coerce does not represent ",
                       "a partitioning"))
