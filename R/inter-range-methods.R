@@ -87,15 +87,11 @@ setMethod("range", "RangesList",
                                          partitioning=ans_partitioning,
                                          check=FALSE)
     if (with.revmap) {
+        unlisted_ans <- unlist(ans)
         x_partitioning <- PartitioningByEnd(x)
         global_revmap <- relist(seq_along(unlist(x, use.names=FALSE)),
-                              x_partitioning)[width(x_partitioning) != 0L]
-        # can't use helper function, structure is different
-        offsets <- rep.int(start(PartitioningByEnd(x)) - 1L,
-            width(PartitioningByEnd(x)))
-        new_unlist_revmap <- unname(unlist(global_revmap) - offsets)
-        unlisted_ans <- unlist(ans)
-        mcols(unlisted_ans)$revmap = relist(new_unlist_revmap, x_partitioning)[width(x_partitioning) != 0L]
+                                x_partitioning[width(x_partitioning) != 0L])
+        mcols(unlisted_ans)$revmap <- global2local_revmap(global_revmap, ans, x)
         ans <- relist(unlisted_ans, ans)
     }
     names(ans) <- names(x)

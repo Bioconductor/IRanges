@@ -43,10 +43,13 @@ test_range_RangesList <- function() {
   range4 <- IRanges(start=c(-2, 6, 7), width=c(8, 0, 0))
   collection <- IRangesList(range1, range2, range3, range4)
   rng <- range(collection, with.revmap=TRUE)
-  checkIdentical(mcols(rng[[1]])$revmap, IntegerList(c(1:3)))
-  checkIdentical(mcols(rng[[2]])$revmap, IntegerList(c(1:4)))
+  checkIdentical(mcols(rng[[1]])$revmap, IntegerList(1:3))
+  checkIdentical(mcols(rng[[2]])$revmap, IntegerList(1:4))
   checkIdentical(mcols(rng[[3]])$revmap, IntegerList())
-  checkIdentical(mcols(rng[[4]])$revmap, IntegerList(c(1:3)))  
+  checkIdentical(mcols(rng[[4]])$revmap, IntegerList(1:3))
+  rng <- range(IRangesList(IRanges(), IRanges()), with.revmap=TRUE)
+  checkIdentical(mcols(rng[[1]])$revmap, IntegerList())
+  checkIdentical(mcols(rng[[2]])$revmap, IntegerList())
 }
 
 test_reduce_Ranges <- function() {
