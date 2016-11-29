@@ -18,7 +18,7 @@
 ### NOT exported but used in the GenomicRanges package
 global2local_revmap <- function(unlisted_revmap, y, x)
 {
-    offsets <- rep.int(start(PartitioningByEnd(x)) - 1L, lengths(y))
+    offsets <- rep.int(start(PartitioningByEnd(x)) - 1L, elementNROWS(y))
     unlisted_revmap - offsets
 }
 
@@ -64,7 +64,7 @@ setMethod("range", "RangesList",
 )
 
 ### Equivalent to, but much faster than, 'endoapply(x, range)'.
-.CompressedIRangesList.range <- function(x, with.revmap=FALSE)
+.range_CompressedIRangesList <- function(x, with.revmap=FALSE)
 {
     ## 'x_start' and 'x_end' are CompressedIntegerList objects with the
     ## same shape as 'x'.
@@ -78,22 +78,17 @@ setMethod("range", "RangesList",
     sv <- Views(x_start@unlistData, x_start@partitioning)
     ev <- Views(x_end@unlistData, x_end@partitioning)
     is_not_empty_view <- width(sv) != 0L  # same as 'width(ev) != 0L'
-    ans_unlistData <- IRanges(viewMins(sv)[is_not_empty_view],
-                              viewMaxs(ev)[is_not_empty_view])
-    ans_partitioning <- new2("PartitioningByEnd",
-                                         end=cumsum(is_not_empty_view),
-                                         check=FALSE)
-    ans <- new2("CompressedIRangesList", unlistData=ans_unlistData,
-                                         partitioning=ans_partitioning,
-                                         check=FALSE)
+    unlisted_ans <- IRanges(viewMins(sv)[is_not_empty_view],
+                            viewMaxs(ev)[is_not_empty_view])
+    ans_partitioning <- PartitioningByEnd(cumsum(is_not_empty_view))
     if (with.revmap) {
-        unlisted_ans <- unlist(ans)
-        x_partitioning <- PartitioningByEnd(x)
+        x_partitioning <- unname(PartitioningByEnd(x))
         global_revmap <- relist(seq_along(unlist(x, use.names=FALSE)),
                                 x_partitioning[width(x_partitioning) != 0L])
-        mcols(unlisted_ans)$revmap <- global2local_revmap(global_revmap, ans, x)
-        ans <- relist(unlisted_ans, ans)
+        local_revmap <- global2local_revmap(global_revmap, ans_partitioning, x)
+        mcols(unlisted_ans)$revmap <- local_revmap
     }
+    ans <- relist(unlisted_ans, ans_partitioning)
     names(ans) <- names(x)
     ans
 }
@@ -105,7 +100,7 @@ setMethod("range", "CompressedIRangesList",
             stop("'with.revmap' must be TRUE or FALSE")
         if (length(list(x, ...)) >= 2L)
             x <- merge(x, ...)
-        .CompressedIRangesList.range(x, with.revmap=with.revmap)
+        .range_CompressedIRangesList(x, with.revmap=with.revmap)
     }
 )
 
@@ -195,39 +190,38 @@ setMethod("reduce", "RangesList",
 
 ### 'with.inframe.attrib' is ignored for now.
 ### TODO: Support 'with.inframe.attrib=TRUE'.
-setMethod("reduce", "CompressedIRangesList",
-    function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
-                with.revmap=FALSE,
-                with.inframe.attrib=FALSE)
-    {
-        if (!isTRUEorFALSE(drop.empty.ranges))
-            stop("'drop.empty.ranges' must be TRUE or FALSE")
-        if (!isSingleNumber(min.gapwidth))
-            stop("'min.gapwidth' must be a single integer")
-        if (!is.integer(min.gapwidth))
-            min.gapwidth <- as.integer(min.gapwidth)
-        if (min.gapwidth < 0L)
-            stop("'min.gapwidth' must be non-negative")
-        if (!isTRUEorFALSE(with.revmap))
-            stop("'with.revmap' must be TRUE or FALSE")
-        if (!identical(with.inframe.attrib, FALSE))
-            stop("'with.inframe.attrib' argument not yet supported ",
-                 "when reducing a CompressedIRangesList object")
-        C_ans <- .Call2("CompressedIRangesList_reduce",
-                        x, drop.empty.ranges, min.gapwidth,
-                        with.revmap,
-                        PACKAGE="IRanges")
-        ans_unlistData <- new2("IRanges", start=C_ans$start,
-                                          width=C_ans$width,
-                                          check=FALSE)
-        if (with.revmap) {
-            mcols(ans_unlistData) <- DataFrame(revmap=IntegerList(C_ans$revmap))
-        }
-        ans_partitioning <- PartitioningByEnd(C_ans$partitioning_by_end)
-        names(ans_partitioning) <- names(x)
-        relist(ans_unlistData, ans_partitioning)
-    }
-)
+.reduce_CompressedIRangesList <- function(x, drop.empty.ranges=FALSE,
+                                             min.gapwidth=1L,
+                                             with.revmap=FALSE,
+                                             with.inframe.attrib=FALSE)
+{
+    if (!isTRUEorFALSE(drop.empty.ranges))
+        stop("'drop.empty.ranges' must be TRUE or FALSE")
+    if (!isSingleNumber(min.gapwidth))
+        stop("'min.gapwidth' must be a single integer")
+    if (!is.integer(min.gapwidth))
+        min.gapwidth <- as.integer(min.gapwidth)
+    if (min.gapwidth < 0L)
+        stop("'min.gapwidth' must be non-negative")
+    if (!isTRUEorFALSE(with.revmap))
+        stop("'with.revmap' must be TRUE or FALSE")
+    if (!identical(with.inframe.attrib, FALSE))
+        stop("'with.inframe.attrib' argument not yet supported ",
+             "when reducing a CompressedIRangesList object")
+    C_ans <- .Call2("CompressedIRangesList_reduce",
+                    x, drop.empty.ranges, min.gapwidth, with.revmap,
+                    PACKAGE="IRanges")
+    unlisted_ans <- new2("IRanges", start=C_ans$start,
+                                    width=C_ans$width,
+                                    check=FALSE)
+    if (with.revmap)
+        mcols(unlisted_ans) <- DataFrame(revmap=IntegerList(C_ans$revmap))
+    ans_partitioning <- PartitioningByEnd(C_ans$breakpoints)
+    names(ans_partitioning) <- names(x)
+    relist(unlisted_ans, ans_partitioning)
+}
+
+setMethod("reduce", "CompressedIRangesList", .reduce_CompressedIRangesList)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -408,8 +402,9 @@ setMethod("disjoin", "CompressedIRangesList",
               ## localize 'revmap'
               if (with.revmap) {
                   unlisted_ans <- unlist(ans, use.names=FALSE)
-                  mcols(unlisted_ans)$revmap <-
-                      global2local_revmap(mcols(unlisted_ans)$revmap, ans, x)
+                  global_revmap <- mcols(unlisted_ans)$revmap
+                  local_revmap <- global2local_revmap(global_revmap, ans, x)
+                  mcols(unlisted_ans)$revmap <- local_revmap
                   ans <- relist(unlisted_ans, ans)
               }
 

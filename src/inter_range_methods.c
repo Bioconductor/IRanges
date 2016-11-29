@@ -270,7 +270,7 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	SET_STRING_ELT(ans_names, 0, mkChar("start"));
 	SET_STRING_ELT(ans_names, 1, mkChar("width"));
 	SET_STRING_ELT(ans_names, 2, mkChar("revmap"));
-	SET_STRING_ELT(ans_names, 3, mkChar("partitioning_by_end"));
+	SET_STRING_ELT(ans_names, 3, mkChar("breakpoints"));
 	SET_NAMES(ans, ans_names);
 	UNPROTECT(1);
 	SET_VECTOR_ELT(ans, 0, new_INTEGER_from_IntAE(out_ranges->a));
