@@ -271,44 +271,77 @@ setMethod("gaps", "Views",
     }
 )
 
-setMethod("gaps", "RangesList",
-    function(x, start = NA, end = NA)
-    {
-        lx <- length(x)
-        if (!S4Vectors:::isNumericOrNAs(start))
-            stop("'start' must be an integer vector or NA")
-        if (!is.integer(start))
-            start <- as.integer(start)
-        if (!S4Vectors:::isNumericOrNAs(end))
-            stop("'end' must be an integer vector or NA")
-        if (!is.integer(end))
-            end <- as.integer(end)
-        start <- IntegerList(as.list(S4Vectors:::recycleVector(start, lx)))
-        end <- IntegerList(as.list(S4Vectors:::recycleVector(end, lx)))
-        mendoapply(gaps, x, start = start, end = end)
-    }
-)
+.gaps_RangesList <- function(x, start=NA, end=NA)
+{
+    x_len <- length(x)
+    if (!S4Vectors:::isNumericOrNAs(start))
+        stop("'start' must be an integer vector or NA")
+    if (!is.integer(start))
+        start <- as.integer(start)
+    if (!S4Vectors:::isNumericOrNAs(end))
+        stop("'end' must be an integer vector or NA")
+    if (!is.integer(end))
+        end <- as.integer(end)
+    start <- IntegerList(as.list(S4Vectors:::recycleVector(start, x_len)))
+    end <- IntegerList(as.list(S4Vectors:::recycleVector(end, x_len)))
+    mendoapply(gaps, x, start = start, end = end)
+}
 
-setMethod("gaps", "CompressedIRangesList",
-    function(x, start = NA, end = NA)
-    {
-        lx <- length(x)
-        if (!S4Vectors:::isNumericOrNAs(start))
-            stop("'start' must be an integer vector or NA")
-        if (!is.integer(start))
-            start <- as.integer(start)
-        if (!S4Vectors:::isNumericOrNAs(end))
-            stop("'end' must be an integer vector or NA")
-        if (!is.integer(end))
-            end <- as.integer(end)
-        if ((length(start) != 1) || (length(end) != 1)) {
-            start <- S4Vectors:::recycleVector(start, lx)
-            end <- S4Vectors:::recycleVector(end, lx)
-        }
-        .Call2("CompressedIRangesList_gaps", x, start, end,
-               PACKAGE="IRanges")
+setMethod("gaps", "RangesList", .gaps_RangesList)
+
+.gaps_CompressedIRangesList <- function(x, start=NA, end=NA)
+{
+    ## Normalize 'start'.
+    if (!S4Vectors:::isNumericOrNAs(start))
+        stop("'start' must be an integer vector or NA")
+    if (!is.integer(start))
+        start <- as.integer(start)
+    if (length(start) != 1L)
+        start <- S4Vectors:::V_recycle(start, x,
+                                       x_what="start", skeleton_what="x")
+    ## Normalize 'end'.
+    if (!S4Vectors:::isNumericOrNAs(end))
+        stop("'end' must be an integer vector or NA")
+    if (!is.integer(end))
+        end <- as.integer(end)
+    if (length(end) != 1L)
+        end <- S4Vectors:::V_recycle(end, x,
+                                     x_what="end", skeleton_what="x")
+
+    chunksize <- 10000000L
+    if (length(x) <= chunksize) {
+        ## Process all at once.
+        ans <- .Call2("CompressedIRangesList_gaps",
+                      x, start, end,
+                      PACKAGE="IRanges")
+        return(ans)
     }
-)
+
+    ## Process by chunk.
+    verbose <- getOption("verbose", default=FALSE)
+    chunks <- as(breakInChunks(length(x), chunksize), "IRanges")
+    ans_chunks <- lapply(seq_along(chunks),
+        function(i) {
+            if (verbose)
+                cat("Processing chunk #", i, "/", length(chunks), " ... ",
+                    sep="")
+            chunk <- chunks[i]
+            x_chunk <- extractROWS(x, chunk)
+            start_chunk <- if (length(start) == 1L) start
+                           else extractROWS(start, chunk)
+            end_chunk <- if (length(end) == 1L) end
+                         else extractROWS(end, chunk)
+            ans_chunk <- .gaps_CompressedIRangesList(x_chunk,
+                                                     start=start_chunk,
+                                                     end=end_chunk)
+            if (verbose)
+                cat("OK\n")
+            ans_chunk
+        })
+    do.call(c, ans_chunks)
+}
+
+setMethod("gaps", "CompressedIRangesList", .gaps_CompressedIRangesList)
 
 ### 'start' and 'end' are ignored.
 setMethod("gaps", "MaskCollection",

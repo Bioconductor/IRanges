@@ -232,7 +232,7 @@ SEXP Ranges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
 SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 		SEXP min_gapwidth, SEXP with_revmap)
 {
-	SEXP ans, ans_names, ans_revmap, ans_partitioning_end;
+	SEXP ans, ans_names, ans_revmap, ans_breakpoints;
 	     //ans_unlistData, ans_partitioning;
 	CompressedIRangesList_holder x_holder;
 	IRanges_holder ir_holder;
@@ -252,16 +252,17 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 	order_buf = new_IntAE(in_len_max, 0, 0);
 	in_ranges = new_IntPairAE(0, 0);
 	out_ranges = new_IntPairAE(0, 0);
-	PROTECT(ans_partitioning_end = NEW_INTEGER(x_len));
+	PROTECT(ans_breakpoints = NEW_INTEGER(x_len));
 	for (i = 0; i < x_len; i++) {
-		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
+		ir_holder =
+		    _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
 		IntPairAE_set_nelt(in_ranges, 0);
 		append_IRanges_holder_to_IntPairAE(in_ranges, &ir_holder);
 		reduce_ranges(in_ranges->a->elts, in_ranges->b->elts,
 			IntPairAE_get_nelt(in_ranges),
 			LOGICAL(drop_empty_ranges)[0], INTEGER(min_gapwidth)[0],
 			order_buf->elts, out_ranges, revmap, NULL);
-		INTEGER(ans_partitioning_end)[i] = IntPairAE_get_nelt(out_ranges);
+		INTEGER(ans_breakpoints)[i] = IntPairAE_get_nelt(out_ranges);
 	}
 
 	/* Make 'ans' */
@@ -280,15 +281,14 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 		SET_VECTOR_ELT(ans, 2, ans_revmap);
 		UNPROTECT(1);
 	}
-	SET_VECTOR_ELT(ans, 3, ans_partitioning_end);
+	SET_VECTOR_ELT(ans, 3, ans_breakpoints);
 	UNPROTECT(2);
 /*
 	PROTECT(ans_unlistData = _new_IRanges_from_IntPairAE("IRanges",
 			out_ranges));
 	PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(
-			"PartitioningByEnd",
-			ans_partitioning_end, ans_names));
+			"PartitioningByEnd", ans_breakpoints, ans_names));
 	PROTECT(ans = _new_CompressedList(get_classname(x),
 			ans_unlistData, ans_partitioning));
 	UNPROTECT(5);
@@ -392,11 +392,10 @@ SEXP IRanges_gaps(SEXP x_start, SEXP x_width, SEXP start, SEXP end)
 /* --- .Call ENTRY POINT --- */
 SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 {
-	SEXP ans, ans_names, ans_unlistData,
-	     ans_partitioning, ans_partitioning_end;
+	SEXP ans, ans_names, ans_unlistData, ans_breakpoints, ans_partitioning;
 	CompressedIRangesList_holder x_holder;
 	IRanges_holder ir_holder;
-	int x_len, in_len_max, start_len, *start_elt, *end_elt, i;
+	int x_len, in_len_max, start_len, end_len, *start_elt, *end_elt, i;
 	IntAE *order_buf;
 	IntPairAE *in_ranges, *out_ranges;
 
@@ -407,32 +406,34 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 	in_ranges = new_IntPairAE(0, 0);
 	out_ranges = new_IntPairAE(0, 0);
 	start_len = LENGTH(start);
-	if ((start_len != 1 && start_len != x_len) || start_len != LENGTH(end))
-		error("'start' and 'end' should both be integer vectors "
-		      "of length 1 or length(x)");
-	PROTECT(ans_partitioning_end = NEW_INTEGER(x_len));
+	end_len = LENGTH(end);
+	if (start_len != 1 && start_len != x_len)
+		error("'start' must have length 1 or the length of 'x'");
+	if (end_len != 1 && end_len != x_len)
+		error("'end' must have length 1 or the length of 'x'");
+	PROTECT(ans_breakpoints = NEW_INTEGER(x_len));
 	start_elt = INTEGER(start);
 	end_elt = INTEGER(end);
 	for (i = 0; i < x_len; i++) {
-		ir_holder = _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
+		ir_holder =
+		    _get_elt_from_CompressedIRangesList_holder(&x_holder, i);
 		IntPairAE_set_nelt(in_ranges, 0);
 		append_IRanges_holder_to_IntPairAE(in_ranges, &ir_holder);
 		gaps_ranges(in_ranges->a->elts, in_ranges->b->elts,
 			IntPairAE_get_nelt(in_ranges),
 			*start_elt, *end_elt,
 			order_buf->elts, out_ranges);
-		INTEGER(ans_partitioning_end)[i] = IntPairAE_get_nelt(out_ranges);
-		if (start_len != 1) {
+		INTEGER(ans_breakpoints)[i] = IntPairAE_get_nelt(out_ranges);
+		if (start_len != 1)
 			start_elt++;
+		if (end_len != 1)
 			end_elt++;
-		}
 	}
 	PROTECT(ans_unlistData = _new_IRanges_from_IntPairAE("IRanges",
 			out_ranges));
 	PROTECT(ans_names = duplicate(_get_CompressedList_names(x)));
 	PROTECT(ans_partitioning = _new_PartitioningByEnd(
-			"PartitioningByEnd",
-			ans_partitioning_end, ans_names));
+			"PartitioningByEnd", ans_breakpoints, ans_names));
 	PROTECT(ans = _new_CompressedList(get_classname(x),
 			ans_unlistData, ans_partitioning));
 	UNPROTECT(5);
