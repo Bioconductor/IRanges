@@ -271,12 +271,18 @@ as.factor2 <- function(x) {
     g <- grouping(x)
     p <- PartitioningByEnd(relist(g))
     levs <- as.character(x[g[end(p)]])
-    o <- order(levs, method="radix")
-    v <- integer(length(levs)) # or rep(NA_integer_, length(levs)) for NAs
-    v[o] <- seq_along(o)
+    if (is.character(x)) {
+        o <- order(levs, method="radix")
+        map <- integer(length(levs)) # or rep(NA_integer_, length(levs)) for NAs
+        map[o] <- seq_along(o)
+        ref <- map[togroup(p)]
+        levs <- levs[o]
+    } else {
+        ref <- togroup(p)
+    }
     f <- integer(length(x))
-    f[g] <- v[togroup(p)]
-    structure(f, levels=levs[o], class="factor")
+    f[g] <- ref
+    structure(f, levels=levs, class="factor")
 }
 
 splitAsList_default <- function(x, f, drop=FALSE)
