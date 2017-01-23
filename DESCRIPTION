@@ -8,14 +8,14 @@ Description: Provides efficient low-level and highly reusable S4
              list-like classes for storing, transforming and aggregating
              large grouped data, i.e., collections of atomic vectors and
              DataFrames.
-Version: 2.9.14
+Version: 2.9.15
 Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
-Depends: R (>= 3.1.0), methods, utils, stats, BiocGenerics (>= 0.21.1),
-	S4Vectors (>= 0.11.19)
-Imports: stats4
+Depends: R (>= 3.1.0), methods, utils, stats,
+	BiocGenerics (>= 0.21.1), S4Vectors (>= 0.13.8)
+Imports: stats4, S4Vectors
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, GenomicFeatures, GenomicAlignments,
 	BSgenome.Celegans.UCSC.ce2, RUnit

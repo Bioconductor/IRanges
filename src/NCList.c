@@ -996,28 +996,6 @@ static void shift_y(Backpack *backpack, int shift)
 	return;
 }
 
-/* TODO: Maybe move this to S4Vectors/src/AEbufs.c */
-static void IntAE_delete_duplicates(IntAE *int_ae, int at1, int at2)
-{
-	int d, k0, k, val;
-
-	d = at2 - at1;
-	if (d <= 1)
-		return;
-	if (d >= 3)
-		sort_int_array(int_ae->elts + at1, d, 0);
-	k0 = at1;
-	for (k = k0 + 1; k < at2; k++) {
-		val = int_ae->elts[k];
-		if (val == int_ae->elts[k0])
-			continue;
-		k0++;
-		int_ae->elts[k0] = val;
-	}
-	IntAE_set_nelt(int_ae, k0 + 1);
-	return;
-}
-
 typedef void (*GetYOverlapsFunType)(const void *x_nclist,
 				    const Backpack *backpack);
 
@@ -1107,11 +1085,12 @@ static void pp_find_overlaps(
 		if (backpack_select_mode != ALL_HITS)
 			continue;
 		old_nhit = IntAE_get_nelt(yh_buf);
-		new_nhit = IntAE_get_nelt(xh_buf);
 		if (circle_len != NA_INTEGER) {
-			IntAE_delete_duplicates(xh_buf, old_nhit, new_nhit);
-			new_nhit = IntAE_get_nelt(xh_buf);
+			/* delete duplicates */
+			IntAE_qsort(xh_buf, old_nhit, 0);
+			IntAE_uniq(xh_buf, old_nhit);
 		}
+		new_nhit = IntAE_get_nelt(xh_buf);
 		if (select_mode != COUNT_HITS) {
 			j++;  /* 1-based */
 			for (k = old_nhit; k < new_nhit; k++)
