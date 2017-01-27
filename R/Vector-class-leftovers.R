@@ -72,10 +72,12 @@ setMethod("rep.int", "Vector",
     {
         x_len <- length(x)
         times_len <- length(times)
-        if (times_len == 1L) {
-            i <- IRanges(rep.int(1L, times), rep.int(x_len, times))
-        } else if (times_len == x_len) {
+        if (times_len == 1L && times == 1L)
+            return(x)
+        if (times_len == x_len) {
             i <- Rle(seq_len(x_len), times)
+        } else if (times_len == 1L) {
+            i <- IRanges(rep.int(1L, times), rep.int(x_len, times))
         } else {
             stop("invalid 'times' value")
         }

@@ -188,7 +188,7 @@ static SEXP int_coverage_sort(const int *x_start, const int *x_width,
 	if (SEids_len == 0) {
 		//return an Rle with one run of 0's
 		zero = 0;
-		return construct_integer_Rle(&zero, 1, &cvg_len, 0);
+		return construct_integer_Rle(1, &zero, &cvg_len, 0, 0);
 	}
 	sort_SEids(SEids, SEids_len, x_start, x_width);
 	buf_len = SEids_len + 1;
@@ -197,7 +197,7 @@ static SEXP int_coverage_sort(const int *x_start, const int *x_width,
 	compute_int_coverage_in_bufs(SEids, SEids_len,
 			x_start, x_width, weight, weight_len, cvg_len,
 			values_buf, lengths_buf);
-	return construct_integer_Rle(values_buf, buf_len, lengths_buf, 0);
+	return construct_integer_Rle(buf_len, values_buf, lengths_buf, 0, 0);
 }
 
 static SEXP double_coverage_sort(const int *x_start, const int *x_width,
@@ -213,7 +213,7 @@ static SEXP double_coverage_sort(const int *x_start, const int *x_width,
 	if (SEids_len == 0) {
 		//return an Rle with one run of 0's
 		zero = 0.0;
-		return construct_numeric_Rle(&zero, 1, &cvg_len, 0);
+		return construct_numeric_Rle(1, &zero, &cvg_len, 0, 0);
 	}
 	sort_SEids(SEids, SEids_len, x_start, x_width);
 	buf_len = SEids_len + 1;
@@ -222,7 +222,7 @@ static SEXP double_coverage_sort(const int *x_start, const int *x_width,
 	compute_double_coverage_in_bufs(SEids, SEids_len,
 			x_start, x_width, weight, weight_len, cvg_len,
 			values_buf, lengths_buf);
-	return construct_numeric_Rle(values_buf, buf_len, lengths_buf, 0);
+	return construct_numeric_Rle(buf_len, values_buf, lengths_buf, 0, 0);
 }
 
 static SEXP coverage_sort(const int *x_start, const int *x_width, int x_len,
@@ -273,7 +273,7 @@ static SEXP int_coverage_hash(
 	}
 	if (get_ovflow_flag())
 		warning("NAs produced by integer overflow");
-	return construct_integer_Rle(cvg_buf, cvg_len, NULL, 0);
+	return construct_integer_Rle(cvg_len, cvg_buf, NULL, 0, 0);
 }
 
 static SEXP double_coverage_hash(
@@ -304,7 +304,7 @@ static SEXP double_coverage_hash(
 		cumsum += *cvg_p;
 		*cvg_p = cumsum;
 	}
-	return construct_numeric_Rle(cvg_buf, cvg_len, NULL, 0);
+	return construct_numeric_Rle(cvg_len, cvg_buf, NULL, 0, 0);
 }
 
 static SEXP coverage_hash(const int *x_start, const int *x_width, int x_len,
@@ -578,10 +578,10 @@ static SEXP compute_coverage_from_IRanges_holder(
 			/* Short path for the tiling case. */
 			//Rprintf("taking short path\n");
 			return IS_INTEGER(weight) ?
-			       construct_integer_Rle(INTEGER(weight), x_len,
-						     x_width, 0) :
-			       construct_numeric_Rle(REAL(weight), x_len,
-						     x_width, 0);
+			       construct_integer_Rle(x_len, INTEGER(weight),
+						     x_width, 0, 0) :
+			       construct_numeric_Rle(x_len, REAL(weight),
+						     x_width, 0, 0);
 		}
 	}
 	//Rprintf("taking normal path\n");
