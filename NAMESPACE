@@ -125,7 +125,6 @@ exportMethods(
     lapply,
     pmax, pmin, pmax.int, pmin.int,
     paste,
-    rep.int,
     table,
     tapply,
     union, intersect, setdiff,
