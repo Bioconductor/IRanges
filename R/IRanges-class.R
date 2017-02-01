@@ -11,7 +11,7 @@ setClass("IRanges",
     representation(
         start="integer",
         width="integer",
-        NAMES="characterORNULL"  # R doesn't like @names !!
+        NAMES="character_OR_NULL"  # R doesn't like @names !!
     ),
     prototype(
         start=integer(),

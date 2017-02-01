@@ -11,7 +11,7 @@
 
 \alias{splitRanges}
 \alias{splitRanges,Rle-method}
-\alias{splitRanges,vectorORfactor-method}
+\alias{splitRanges,vector_OR_factor-method}
 
 
 \title{Rle objects (old man page)}

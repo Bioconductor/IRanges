@@ -74,7 +74,7 @@ setMethod("splitRanges", "Rle",
                     runValue(x))
           })
 
-setMethod("splitRanges", "vectorORfactor",
+setMethod("splitRanges", "vector_OR_factor",
           function(x) {
               callGeneric(Rle(x))
           })

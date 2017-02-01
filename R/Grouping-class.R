@@ -468,7 +468,7 @@ setClass("Partitioning",
     contains=c("GroupingRanges", "ManyToOneGrouping"),
     representation(
         "VIRTUAL",
-        NAMES="characterORNULL"  # R doesn't like @names !!
+        NAMES="character_OR_NULL"  # R doesn't like @names !!
     ),
     prototype(
         NAMES=NULL

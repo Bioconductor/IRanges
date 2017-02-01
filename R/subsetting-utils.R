@@ -63,12 +63,12 @@ setMethod("isStrictlySorted", "RangesNSBS", function(x) isNormal(x@subscript))
 ### "extractROWS" methods for subsetting *by* a Ranges object.
 ###
 
-setMethod("extractROWS", c("vectorORfactor", "RangesNSBS"),
+setMethod("extractROWS", c("vector_OR_factor", "RangesNSBS"),
     function(x, i)
     {
         start <- start(i@subscript)
         width <- width(i@subscript)
-        S4Vectors:::extract_ranges_from_vectorORfactor(x, start, width)
+        S4Vectors:::extract_ranges_from_vector_OR_factor(x, start, width)
     }
 )
 

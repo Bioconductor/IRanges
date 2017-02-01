@@ -50,7 +50,7 @@ setMethod("update", "Ranges",
     x_width <- width(x)
     validity_failures <- .Call2("valid_Ranges",
                                 x_start, x_end, x_width,
-                                PACKAGE="IRanges");
+                                PACKAGE="IRanges")
     if (!is.null(validity_failures))
         return(validity_failures)
     if (!(is.null(names(x_start)) &&

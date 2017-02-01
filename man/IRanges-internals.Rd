@@ -1,8 +1,5 @@
 \name{IRanges internals}
 
-\alias{class:functionORNULL}
-\alias{functionORNULL-class}
-\alias{functionORNULL}
 \alias{coerce,ANY,vector-method}
 
 
