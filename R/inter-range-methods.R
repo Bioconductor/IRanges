@@ -22,6 +22,14 @@ global2local_revmap <- function(unlisted_revmap, y, x)
     unlisted_revmap - offsets
 }
 
+### NOT exported but used in the GenomicFeatures package
+local2global_revmap <- function(unlisted_revmap, y, x)
+{
+    offsets <- rep.int(start(PartitioningByEnd(x)) - 1L, elementNROWS(y))
+    unlisted_revmap + offsets
+}
+
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### range()
 ###
