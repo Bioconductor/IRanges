@@ -218,6 +218,117 @@ setMethod("whichFirstNotNormal", "RangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion from list-like object to IRangesList object
+###
+
+### Try to turn an arbitrary list-like object into an ordinary list of
+### IRanges objects.
+.as_list_of_IRanges <- function(from)
+{
+    if (is(from, "Ranges")) {
+        if (!is(from, "IRanges"))
+            from <- as(from, "IRanges", strict=FALSE)
+        along_idx <- setNames(seq_along(from), names(from))
+        names(from) <- NULL
+        mcols(from) <- NULL
+        lapply(along_idx, function(i) from[i])
+    } else {
+        lapply(from, as, "IRanges", strict=FALSE)
+    }
+}
+
+### From ordinary list to IRangesList
+
+.from_list_to_CompressedIRangesList <- function(from)
+{
+    from <- .as_list_of_IRanges(from)
+    new_CompressedList_from_list("CompressedIRangesList", from)
+}
+
+.from_list_to_SimpleIRangesList <- function(from)
+{
+    from <- .as_list_of_IRanges(from)
+    S4Vectors:::new_SimpleList_from_list("SimpleIRangesList", from)
+}
+
+setAs("list", "CompressedIRangesList", .from_list_to_CompressedIRangesList)
+setAs("list", "SimpleIRangesList", .from_list_to_SimpleIRangesList)
+setAs("list", "IRangesList", .from_list_to_SimpleIRangesList)
+
+### From List to IRangesList
+
+.from_List_to_CompressedIRangesList <- function(from)
+{
+    new_CompressedList_from_list("CompressedIRangesList",
+                                 .as_list_of_IRanges(from),
+                                 metadata=metadata(from),
+                                 mcols=mcols(from))
+}
+
+### Ranges objects are List objects so this case is already covered by the
+### .from_List_to_CompressedIRangesList() helper above. However, we can
+### implement it much more efficiently.
+.from_Ranges_to_CompressedIRangesList <- function(from)
+{
+    if (!is(from, "IRanges"))
+        from <- as(from, "IRanges", strict=FALSE)
+    ans_partitioning <- PartitioningByEnd(seq_along(from), names=names(from))
+    names(from) <- NULL
+    ans_mcols <- mcols(from)
+    mcols(from) <- NULL
+    ans <- relist(from, ans_partitioning)
+    mcols(ans) <- ans_mcols
+    ans
+}
+
+.from_List_to_SimpleIRangesList <- function(from)
+{
+    S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
+                                 .as_list_of_IRanges(from),
+                                 metadata=metadata(from),
+                                 mcols=mcols(from))
+}
+
+setAs("List", "CompressedIRangesList", .from_List_to_CompressedIRangesList)
+setAs("Ranges", "CompressedIRangesList", .from_Ranges_to_CompressedIRangesList)
+setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
+
+### Automatic coercion method from RangesList to SimpleIRangesList silently
+### returns a broken object (unfortunately these dummy automatic coercion
+### methods don't bother to validate the object they return). So we overwrite
+### it.
+setAs("RangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
+setAs("SimpleRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
+
+setAs("List", "IRangesList",
+    function(from)
+    {
+        if (is(from, "CompressedList") || is(from, "Ranges"))
+            as(from, "CompressedIRangesList")
+        else
+            as(from, "SimpleIRangesList")
+    }
+)
+
+### This case is already covered by the List-to-CompressedIRangesList coercion
+### above. However, we can implement it much more efficiently.
+setAs("CompressedRleList", "CompressedIRangesList",
+      function(from)
+      {
+        if ((length(from) > 0) &&
+            (!is.logical(runValue(from[[1L]])) ||
+             S4Vectors:::anyMissing(runValue(from[[1L]]))))
+          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
+               "with NAs to a CompressedIRangesList object")
+        ranges <- as(unlist(from, use.names = FALSE), "IRanges")
+        to <- diceRangesByList(ranges, from)
+        metadata(to) <- metadata(from)
+        mcols(to) <- mcols(from)
+        to
+      })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
 ###
 
@@ -235,47 +346,44 @@ RangesList <- function(..., universe = NULL)
   ans
 }
 
-IRangesList <- function(..., universe = NULL, compress = TRUE)
+IRangesList <- function(..., universe=NULL, compress=TRUE)
 {
-  if (!isTRUEorFALSE(compress))
-    stop("'compress' must be TRUE or FALSE")
-  if (!is.null(universe) && !isSingleString(universe))
-    stop("'universe' must be a single string or NULL")
-  ranges <- list(...)
-  if (length(ranges) == 1 &&
-      (is(ranges[[1L]], "LogicalList") || is(ranges[[1L]], "RleList"))) {
-    if (compress)
-      ans <- as(ranges[[1L]], "CompressedIRangesList")
-    else
-      ans <- as(ranges[[1L]], "SimpleIRangesList")
-  } else if (length(ranges) == 2 &&
-             setequal(names(ranges), c("start", "end")) &&
-             !is(ranges[[1L]], "Ranges") && !is(ranges[[2L]], "Ranges")) {
-    if (!compress)
-      stop("'compress' must be TRUE when passing the 'start' and 'end' arguments")
-    ans_start <- IntegerList(ranges[["start"]], compress = TRUE)
-    ans_end <- IntegerList(ranges[["end"]], compress = TRUE)
-    if (!identical(ans_start@partitioning@end, ans_end@partitioning@end))
-      stop("'start' and 'end' are not compatible")
-    ans_partitioning <- ans_start@partitioning
-    ans_unlistData <- IRanges(start=ans_start@unlistData, end=ans_end@unlistData)
-    ans <- new2("CompressedIRangesList",
-                partitioning=ans_partitioning,
-                unlistData=ans_unlistData,
-                check=FALSE)
-  } else {
-    if (length(ranges) == 1 && is.list(ranges[[1L]]))
-      ranges <- ranges[[1L]]
-    if (!all(sapply(ranges, is, "IRanges")))
-      stop("all elements in '...' must be IRanges objects")
-    if (compress)
-      ans <- new_CompressedList_from_list("CompressedIRangesList", ranges)
-    else
-      ans <- S4Vectors:::new_SimpleList_from_list("SimpleIRangesList", ranges)
-  }
-  universe(ans) <- universe
-  ans
+    if (!isTRUEorFALSE(compress))
+        stop("'compress' must be TRUE or FALSE")
+    if (!is.null(universe) && !isSingleString(universe))
+        stop("'universe' must be a single string or NULL")
+    args <- list(...)
+    if (length(args) == 2L &&
+        setequal(names(args), c("start", "end")) &&
+        !is(args[[1L]], "Ranges") && !is(args[[2L]], "Ranges"))
+    {
+        if (!compress)
+            stop(wmsg("'compress' must be TRUE when passing the 'start' ",
+                      "and 'end' arguments"))
+        ans_start <- IntegerList(args[["start"]], compress=TRUE)
+        ans_end <- IntegerList(args[["end"]], compress=TRUE)
+        ans_partitioning <- PartitioningByEnd(ans_start)
+        if (!identical(ans_partitioning, PartitioningByEnd(ans_end)))
+            stop("'start' and 'end' are not compatible")
+        unlisted_start <- unlist(ans_start, use.names=FALSE)
+        unlisted_end <- unlist(ans_end, use.names=FALSE)
+        unlisted_ans <- IRanges(start=unlisted_start, end=unlisted_end)
+        ans <- relist(unlisted_ans, ans_partitioning)
+    } else {
+        if (length(args) == 1L) {
+            x1 <- args[[1L]]
+            if (is.list(x1) || (is(x1, "List") && !is(x1, "Ranges")))
+                args <- x1
+        }
+        if (compress)
+            ans <- as(args, "CompressedIRangesList")
+        else
+            ans <- as(args, "SimpleIRangesList")
+    }
+    universe(ans) <- universe
+    ans
 }
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
@@ -283,63 +391,6 @@ IRangesList <- function(..., universe = NULL, compress = TRUE)
 
 setMethod("getListElement", "CompressedNormalIRangesList",
     function(x, i, exact=TRUE) newNormalIRangesFromIRanges(callNextMethod())
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### merge()
-###
-
-### Merges various RangesList objects into a single RangesList object.
-### The merging is either by name (if all the RangesList objects have names),
-### or by position (if any RangesList object is missing names).
-### When merging by name, and in case of duplicated names within a given
-### RangesList, the elements corresponding to the duplicated names are ignored.
-### When merging by position, all the RangesList objects must have the same
-### length.
-### Note that the "range" method for RangesList objects expects "merge" to
-### behave like this.  
-.RangesList.merge <- function(...)
-{
-    args <- unname(list(...))
-    if (length(args) == 0L)
-        stop("nothing to merge")
-    x <- args[[1L]]
-    if (!all(sapply(sapply(args, universe), identical, universe(x))))
-        stop("all RangesList objects to merge must have the same universe")
-    spaceList <- lapply(args, names)
-    names <- spaces <- unique(do.call(c, spaceList))
-    if (any(sapply(spaceList, is.null))) {
-        ## Merging by position.
-        if (!all(unlist(lapply(args, length)) == length(x)))
-            stop("if any RangesList objects to merge are missing names, ",
-                 "all must have same length")
-        names <- NULL
-        spaces <- seq_len(length(x))
-    }
-    ranges <- lapply(spaces,
-                     function(space) {
-                       r <- lapply(args, `[[`, space)
-                       do.call(c, r[!sapply(r, is.null)])
-                     })
-    names(ranges) <- names
-    if (is(x, "CompressedList"))
-      ans <- new_CompressedList_from_list(class(x), ranges)
-    else
-      ans <- S4Vectors:::new_SimpleList_from_list(class(x), ranges)
-    ans
-}
-
-setMethod("merge", c("RangesList", "missing"),
-    function(x, y, ...) .RangesList.merge(x, ...)
-)
-
-setMethod("merge", c("missing", "RangesList"),
-    function(x, y, ...) .RangesList.merge(y, ...)
-)
-
-setMethod("merge", c("RangesList", "RangesList"),
-    function(x, y, ...) .RangesList.merge(x, y, ...)
 )
 
 
@@ -391,8 +442,9 @@ setMethod("showAsCell", "RangesList",
                           }), use.names = FALSE)
           })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
+### More coercions
 ###
 
 .as.list.CompressedNormalIRangesList <- function(x, use.names=TRUE)
@@ -414,35 +466,6 @@ setMethod("unlist", "SimpleNormalIRangesList",
                                                       lapply(x, as, "IRanges"))
             callGeneric()
           })
-
-setAs("RangesList", "IRangesList",
-      function(from)
-      {
-        if (is(from, "CompressedList"))
-          as(from, "CompressedIRangesList")
-        else
-          as(from, "SimpleIRangesList")
-      })
-
-setAs("RangesList", "CompressedIRangesList", function(from) {
-  if (is(from, "CompressedList"))
-    coerceToCompressedList(from, "IRanges")
-  ## this case handles RangesList of Partitioning objects (not combinable)
-  else new_CompressedList_from_list("CompressedIRangesList",
-                                    lapply(from, as, "IRanges"),
-                                    metadata = metadata(from),
-                                    mcols = mcols(from))
-})
-
-.RangesListToSimpleIRangesList <- function(from)
-  S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
-                                       lapply(from, as, "IRanges"),
-                                       metadata = metadata(from),
-                                       mcols = mcols(from))
-
-## otherwise, SimpleRangesList->SimpleIRangesList uses a methods package default
-setAs("SimpleRangesList", "SimpleIRangesList", .RangesListToSimpleIRangesList)
-setAs("RangesList", "SimpleIRangesList", .RangesListToSimpleIRangesList)
 
 setAs("RangesList", "SimpleRangesList",
       function(from)
@@ -506,31 +529,6 @@ setAs("RangesList", "NormalIRangesList",
     }
 )
 
-### Coercion from LogicalList to IRangesList.
-
-setAs("LogicalList", "IRangesList",
-      function(from)
-      {
-        if (is(from, "CompressedList"))
-          as(from, "CompressedIRangesList")
-        else
-          as(from, "SimpleIRangesList")
-      })
-
-setAs("LogicalList", "CompressedIRangesList",
-      function(from)
-      new_CompressedList_from_list("CompressedIRangesList",
-                                   lapply(from, as, "IRanges"),
-                                   metadata = metadata(from),
-                                   mcols = mcols(from)))
-
-setAs("LogicalList", "SimpleIRangesList",
-      function(from)
-      S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
-                                           lapply(from, as, "IRanges"),
-                                           metadata = metadata(from),
-                                           mcols = mcols(from)))
-
 ### Coercion from LogicalList to NormalIRangesList.
 
 setAs("LogicalList", "NormalIRangesList",
@@ -555,62 +553,6 @@ setAs("LogicalList", "SimpleNormalIRangesList",
                                            lapply(from, as, "NormalIRanges"),
                                            metadata = metadata(from),
                                            mcols = mcols(from)))
-
-### Coercion from RleList to IRangesList.
-
-setAs("RleList", "IRangesList",
-      function(from)
-      {
-        if (is(from, "CompressedList"))
-          as(from, "CompressedIRangesList")
-        else
-          as(from, "SimpleIRangesList")
-      })
-
-setAs("RleList", "CompressedIRangesList",
-      function(from)
-      {
-        if ((length(from) > 0) &&
-            (!is.logical(runValue(from[[1L]])) ||
-             S4Vectors:::anyMissing(runValue(from[[1L]]))))
-          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
-               "with NAs to a CompressedIRangesList object")
-        new_CompressedList_from_list("CompressedIRangesList",
-                                     lapply(from, as, "IRanges"),
-                                     metadata = metadata(from),
-                                     mcols = mcols(from))
-      })
-
-setAs("CompressedRleList", "CompressedIRangesList",
-      function(from)
-      {
-        if ((length(from) > 0) &&
-            (!is.logical(runValue(from[[1L]])) ||
-             S4Vectors:::anyMissing(runValue(from[[1L]]))))
-          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
-               "with NAs to a CompressedIRangesList object")
-        ranges <- as(unlist(from, use.names = FALSE), "IRanges")
-        to <- diceRangesByList(ranges, from)
-        metadata(to) <- metadata(from)
-        mcols(to) <- mcols(from)
-        to
-      })
-
-  
-setAs("RleList", "SimpleIRangesList",
-      function(from)
-      {
-        if ((length(from) > 0) &&
-            (!is.logical(runValue(from[[1L]])) ||
-             S4Vectors:::anyMissing(runValue(from[[1L]]))))
-          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
-               "with NAs to a SimpleIRangesList object")
-        S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
-                                             lapply(from, as, "IRanges"),
-                                             metadata = metadata(from),
-                                             mcols = mcols(from))
-      })
-
 
 ### Coercion from RleList to NormalIRangesList.
 
@@ -660,6 +602,63 @@ setAs("list", "RangesList", function(from) {
 setAs("Ranges", "RangesList", function(from) {
           relist(from, PartitioningByEnd(seq_along(from), names=names(from)))
       })
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### merge()
+###
+
+### Merges various RangesList objects into a single RangesList object.
+### The merging is either by name (if all the RangesList objects have names),
+### or by position (if any RangesList object is missing names).
+### When merging by name, and in case of duplicated names within a given
+### RangesList, the elements corresponding to the duplicated names are ignored.
+### When merging by position, all the RangesList objects must have the same
+### length.
+### Note that the "range" method for RangesList objects expects "merge" to
+### behave like this.  
+.RangesList.merge <- function(...)
+{
+    args <- unname(list(...))
+    if (length(args) == 0L)
+        stop("nothing to merge")
+    x <- args[[1L]]
+    if (!all(sapply(sapply(args, universe), identical, universe(x))))
+        stop("all RangesList objects to merge must have the same universe")
+    spaceList <- lapply(args, names)
+    names <- spaces <- unique(do.call(c, spaceList))
+    if (any(sapply(spaceList, is.null))) {
+        ## Merging by position.
+        if (!all(unlist(lapply(args, length)) == length(x)))
+            stop("if any RangesList objects to merge are missing names, ",
+                 "all must have same length")
+        names <- NULL
+        spaces <- seq_len(length(x))
+    }
+    ranges <- lapply(spaces,
+                     function(space) {
+                       r <- lapply(args, `[[`, space)
+                       do.call(c, r[!sapply(r, is.null)])
+                     })
+    names(ranges) <- names
+    if (is(x, "CompressedList"))
+      ans <- new_CompressedList_from_list(class(x), ranges)
+    else
+      ans <- S4Vectors:::new_SimpleList_from_list(class(x), ranges)
+    ans
+}
+
+setMethod("merge", c("RangesList", "missing"),
+    function(x, y, ...) .RangesList.merge(x, ...)
+)
+
+setMethod("merge", c("missing", "RangesList"),
+    function(x, y, ...) .RangesList.merge(y, ...)
+)
+
+setMethod("merge", c("RangesList", "RangesList"),
+    function(x, y, ...) .RangesList.merge(x, y, ...)
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

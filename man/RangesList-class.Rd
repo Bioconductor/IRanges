@@ -24,44 +24,17 @@
 \alias{isNormal,RangesList-method}
 \alias{whichFirstNotNormal,RangesList-method}
 
-% coercion
-\alias{coerce,RangesList,IRangesList-method}
-\alias{coerce,RangesList,CompressedIRangesList-method}
-\alias{coerce,RangesList,SimpleIRangesList-method}
-\alias{coerce,SimpleRangesList,SimpleIRangesList-method}
-\alias{coerce,RangesList,SimpleRangesList-method}
-
-\alias{coerce,RangesList,SimpleNormalIRangesList-method}
-\alias{coerce,SimpleIRangesList,SimpleNormalIRangesList-method}
-\alias{coerce,NormalIRangesList,CompressedNormalIRangesList-method}
-\alias{coerce,CompressedIRangesList,CompressedNormalIRangesList-method}
-\alias{coerce,RangesList,CompressedNormalIRangesList-method}
-\alias{coerce,RangesList,NormalIRangesList-method}
-
-\alias{coerce,LogicalList,IRangesList-method}
-\alias{coerce,LogicalList,CompressedIRangesList-method}
-\alias{coerce,LogicalList,SimpleIRangesList-method}
-\alias{coerce,LogicalList,NormalIRangesList-method}
-\alias{coerce,LogicalList,CompressedNormalIRangesList-method}
-\alias{coerce,LogicalList,SimpleNormalIRangesList-method}
-\alias{coerce,RleList,IRangesList-method}
-\alias{coerce,RleList,CompressedIRangesList-method}
-\alias{coerce,RleList,SimpleIRangesList-method}
-\alias{coerce,RleList,NormalIRangesList-method}
-\alias{coerce,RleList,CompressedNormalIRangesList-method}
-\alias{coerce,RleList,SimpleNormalIRangesList-method}
-
-\alias{coerce,Ranges,RangesList-method}
-
 \alias{coerce,list,RangesList-method}
-
-\alias{merge,RangesList,missing-method}
-\alias{merge,missing,RangesList-method}
-\alias{merge,RangesList,RangesList-method}
+\alias{coerce,Ranges,RangesList-method}
 
 % show
 \alias{show,RangesList-method}
 \alias{showAsCell,RangesList-method}
+
+% merge
+\alias{merge,RangesList,missing-method}
+\alias{merge,missing,RangesList-method}
+\alias{merge,RangesList,RangesList-method}
 
 \title{List of Ranges}
 \description{An extension of \linkS4class{List} that holds only
@@ -121,9 +94,7 @@
 }
 
 \section{Coercion}{
-  In the code snippets below, \code{x} and \code{from} are a
-  \code{RangesList} object.
-
+  In the code snippet below, \code{x} is a \code{RangesList} object.
   \describe{
     \item{}{
       \code{as.data.frame(x, row.names = NULL, optional = FALSE,
@@ -132,35 +103,10 @@
       Coerces \code{x} to a \code{data.frame}. See as.data.frame on the 
       \code{List} man page for details (?\code{List}). 
     }
-    \item{}{\code{as(from, "SimpleIRangesList")}: Coerces \code{from},
-      to a \code{\linkS4class{SimpleIRangesList}}, requiring
-      that all \code{Ranges} elements are coerced to internal
-      \code{IRanges} elements. This is a convenient way to ensure that all
-      \code{Ranges} have been imported into R (and that there is no
-      unwanted overhead when accessing them).
-    }
-    \item{}{\code{as(from, "CompressedIRangesList")}: Coerces \code{from},
-      to a \code{\linkS4class{CompressedIRangesList}}, requiring
-      that all \code{Ranges} elements are coerced to internal
-      \code{IRanges} elements. This is a convenient way to ensure that all
-      \code{Ranges} have been imported into R (and that there is no
-      unwanted overhead when accessing them).
-    }
-    \item{}{\code{as(from, "SimpleNormalIRangesList")}: Coerces \code{from},
-      to a \code{\linkS4class{SimpleNormalIRangesList}}, requiring
-      that all \code{Ranges} elements are coerced to internal
-      \code{NormalIRanges} elements.
-    }
-    \item{}{\code{as(from, "CompressedNormalIRangesList")}: Coerces
-      \code{from}, to a \code{\linkS4class{CompressedNormalIRangesList}},
-      requiring that all \code{Ranges} elements are coerced to internal
-      \code{NormalIRanges} elements.
-    }
   }
 
-  In the following code snippets, \code{from} is something other than a
+  In the following code snippet, \code{from} is something other than a
   \code{RangesList}:
-
   \describe{
     \item{}{
       \code{as(from, "RangesList")}: When \code{from} is a

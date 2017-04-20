@@ -18,14 +18,18 @@
 \alias{start,CompressedIRangesList-method}
 
 % coercion
-\alias{unlist,IRangesList-method}
+\alias{coerce,list,CompressedIRangesList-method}
+\alias{coerce,list,SimpleIRangesList-method}
+\alias{coerce,list,IRangesList-method}
 
-% general
-\alias{max,CompressedNormalIRangesList-method}
-\alias{max,SimpleNormalIRangesList-method}
-\alias{min,CompressedNormalIRangesList-method}
-\alias{min,SimpleNormalIRangesList-method}
-\alias{summary,CompressedIRangesList-method}
+\alias{coerce,List,CompressedIRangesList-method}
+\alias{coerce,Ranges,CompressedIRangesList-method}
+\alias{coerce,List,SimpleIRangesList-method}
+\alias{coerce,RangesList,SimpleIRangesList-method}
+\alias{coerce,SimpleRangesList,SimpleIRangesList-method}
+\alias{coerce,List,IRangesList-method}
+
+\alias{coerce,CompressedRleList,CompressedIRangesList-method}
 
 % NormalIRangesList objects:
 \alias{class:NormalIRangesList}
@@ -41,10 +45,30 @@
 \alias{isNormal,SimpleIRangesList-method}
 \alias{isNormal,CompressedIRangesList-method}
 
+% general
+\alias{max,CompressedNormalIRangesList-method}
+\alias{max,SimpleNormalIRangesList-method}
+\alias{min,CompressedNormalIRangesList-method}
+\alias{min,SimpleNormalIRangesList-method}
+\alias{summary,CompressedIRangesList-method}
+
+% more coercions
+\alias{as.list,CompressedNormalIRangesList-method}
 \alias{unlist,SimpleNormalIRangesList-method}
 
-% coercion
-\alias{as.list,CompressedNormalIRangesList-method}
+\alias{coerce,RangesList,SimpleNormalIRangesList-method}
+\alias{coerce,SimpleIRangesList,SimpleNormalIRangesList-method}
+\alias{coerce,NormalIRangesList,CompressedNormalIRangesList-method}
+\alias{coerce,CompressedIRangesList,CompressedNormalIRangesList-method}
+\alias{coerce,RangesList,CompressedNormalIRangesList-method}
+\alias{coerce,RangesList,NormalIRangesList-method}
+
+\alias{coerce,LogicalList,NormalIRangesList-method}
+\alias{coerce,LogicalList,CompressedNormalIRangesList-method}
+\alias{coerce,LogicalList,SimpleNormalIRangesList-method}
+\alias{coerce,RleList,NormalIRangesList-method}
+\alias{coerce,RleList,CompressedNormalIRangesList-method}
+\alias{coerce,RleList,SimpleNormalIRangesList-method}
 
 \title{List of IRanges and NormalIRanges}
 \description{\code{\linkS4class{IRangesList}} and
@@ -69,6 +93,35 @@
 }
 
 \section{Coercion}{
+  In the code snippets below, \code{from} is a \emph{list-like} object.
+  \describe{
+    \item{}{\code{as(from, "SimpleIRangesList")}: Coerces \code{from},
+      to a \code{\linkS4class{SimpleIRangesList}}, requiring
+      that all \code{Ranges} elements are coerced to internal
+      \code{IRanges} elements. This is a convenient way to ensure that all
+      \code{Ranges} have been imported into R (and that there is no
+      unwanted overhead when accessing them).
+    }
+    \item{}{\code{as(from, "CompressedIRangesList")}: Coerces \code{from},
+      to a \code{\linkS4class{CompressedIRangesList}}, requiring
+      that all \code{Ranges} elements are coerced to internal
+      \code{IRanges} elements. This is a convenient way to ensure that all
+      \code{Ranges} have been imported into R (and that there is no
+      unwanted overhead when accessing them).
+    }
+    \item{}{\code{as(from, "SimpleNormalIRangesList")}: Coerces \code{from},
+      to a \code{\linkS4class{SimpleNormalIRangesList}}, requiring
+      that all \code{Ranges} elements are coerced to internal
+      \code{NormalIRanges} elements.
+    }
+    \item{}{\code{as(from, "CompressedNormalIRangesList")}: Coerces
+      \code{from}, to a \code{\linkS4class{CompressedNormalIRangesList}},
+      requiring that all \code{Ranges} elements are coerced to internal
+      \code{NormalIRanges} elements.
+    }
+  }
+
+  In the code snippet below, \code{x} is an \code{IRangesList} object.
   \describe{
     \item{}{\code{unlist(x)}: Unlists \code{x}, an \code{IRangesList},
       by concatenating all of the ranges into a single \code{IRanges}
