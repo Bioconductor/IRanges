@@ -467,6 +467,12 @@ setMethod("unlist", "SimpleNormalIRangesList",
             callGeneric()
           })
 
+setAs("list", "RangesList", function(from) {
+  S4Vectors:::coerceToSimpleList(from, "Ranges")
+})
+
+setAs("Ranges", "RangesList", function(from) as(from, "IRangesList"))
+
 setAs("RangesList", "SimpleRangesList",
       function(from)
       S4Vectors:::new_SimpleList_from_list("SimpleRangesList",
@@ -591,16 +597,6 @@ setAs("RleList", "SimpleNormalIRangesList",
                                              lapply(from, as, "NormalIRanges"),
                                              metadata = metadata(from),
                                              mcols = mcols(from))
-      })
-
-### Other coercions.
-
-setAs("list", "RangesList", function(from) {
-  S4Vectors:::coerceToSimpleList(from, "Ranges")
-})
-
-setAs("Ranges", "RangesList", function(from) {
-          relist(from, PartitioningByEnd(seq_along(from), names=names(from)))
       })
 
 
