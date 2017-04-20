@@ -142,7 +142,6 @@
 \alias{coerce,AtomicList,RawList-method}
 \alias{coerce,AtomicList,RleList-method}
 \alias{RleList,AtomicList,RleList-method}
-\alias{coerce,CompressedRleList,CompressedIRangesList-method}
 \alias{coerce,AtomicList,RleViews}
 
 \alias{unlist,SimpleFactorList-method}
