@@ -209,6 +209,7 @@ setReplaceMethod("columnMetadata", "SimpleSplitDataFrameList",
 setReplaceMethod("columnMetadata", "CompressedSplitDataFrameList",
                  function(x, value) {
                    mcols(x@unlistData) <- value
+                   x
                  })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
