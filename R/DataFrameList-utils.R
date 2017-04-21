@@ -40,6 +40,13 @@ setReplaceMethod("[[", "SDFLWrapperForTransform", function(x, i, j, ..., value) 
   x
 })
 
+setMethod(S4Vectors:::`column<-`, "SDFLWrapperForTransform",
+          function(x, name, value)
+{
+    x[[name]] <- value
+    x
+})
+
 setMethod("as.env", "SDFLWrapperForTransform", function(x, ...) {
   env <- selectMethod(as.env, "DataTable")(x, ...)
   S4Vectors:::addSelfRef(x@delegate, env)
