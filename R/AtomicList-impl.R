@@ -274,6 +274,25 @@ setMethod("table", "AtomicList",
     }
 )
 
+setMethod("table", "SimpleAtomicList", function(...)
+{
+    args <- list(...)
+    if (length(args) != 1L)
+        stop("\"table\" method for SimpleAtomicList objects ",
+             "can only take one input object")
+    x <- args[[1L]]
+    levs <- sort(unique(unlist(lapply(x, function(xi) {
+        if (!is.null(levels(xi))) levels(xi) else unique(xi)
+    }), use.names=FALSE)))
+    as.table(do.call(rbind,
+                     lapply(x, function(xi) {
+                         if (is(xi, "Rle"))
+                             runValue(xi) <- factor(runValue(xi), levs)
+                         else xi <- factor(xi, levs)
+                         table(xi)
+                     })))
+})
+
 setCompressedNumericalListMethod <-
     function(fun, def, where=topenv(parent.frame()))
 {

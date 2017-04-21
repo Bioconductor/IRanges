@@ -150,6 +150,7 @@
 \alias{unique,RleList-method}
 \alias{unique,CompressedList-method}
 \alias{table,AtomicList-method}
+\alias{table,SimpleAtomicList-method}
 \alias{drop,AtomicList-method}
 \alias{duplicated,CompressedList-method}
 \alias{duplicated,CompressedAtomicList-method}
