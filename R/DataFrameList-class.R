@@ -396,7 +396,7 @@ setAs("SplitDataFrameList", "DataFrame",
     function(from) {
       cols <- sapply(commonColnames(from), function(j) from[,j],
                      simplify=FALSE)
-      DataFrame(cols)
+      DataFrame(cols, check.names=FALSE)
     }
 )
 
