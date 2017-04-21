@@ -400,6 +400,13 @@ setAs("SplitDataFrameList", "DataFrame",
     }
 )
 
+setMethod("as.data.frame", "DataFrameList",
+          function(x, row.names = NULL, optional = FALSE, ...)
+{
+    as.data.frame(as(x, "DataFrame"), row.names=row.names, optional=optional,
+                  ...)
+}
+
 setAs("ANY", "SplitDataFrameList",
       function(from) as(from, "CompressedSplitDataFrameList"))
 
