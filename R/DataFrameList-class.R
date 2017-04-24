@@ -390,7 +390,7 @@ setMethod("commonColnames", "CompressedSplitDataFrameList",
           function(x) colnames(unlist(x, use.names=FALSE)))
 
 setMethod("commonColnames", "SplitDataFrameList",
-          function(x) colnames(head(x, 1L)))
+          function(x) colnames(head(x, 1L))[[1L]])
 
 setAs("SplitDataFrameList", "DataFrame",
     function(from) {
@@ -399,13 +399,6 @@ setAs("SplitDataFrameList", "DataFrame",
       DataFrame(cols, check.names=FALSE)
     }
 )
-
-setMethod("as.data.frame", "DataFrameList",
-          function(x, row.names = NULL, optional = FALSE, ...)
-{
-    as.data.frame(as(x, "DataFrame"), row.names=row.names, optional=optional,
-                  ...)
-})
 
 setAs("ANY", "SplitDataFrameList",
       function(from) as(from, "CompressedSplitDataFrameList"))
