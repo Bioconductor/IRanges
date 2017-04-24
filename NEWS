@@ -1,3 +1,40 @@
+CHANGES IN VERSION 2.10.0
+-------------------------
+
+NEW FEATURES
+
+    o "range" methods now have a 'with.revmap' argument (like "reduce" and
+      "disjoin" methods).
+
+    o Add coercion from list-like objects to IRangesList objects.
+
+    o Add "table" method for SimpleAtomicList objects.
+
+    o The "gaps" method for CompressedIRangesList objects now uses a chunk
+      processing strategy if the input object has more than 10 million list
+      elements. The hope is to reduce memory usage on very big input objects.
+
+BUG FIXES
+
+    o Fix "setdiff" method for CompressedIRangesList for when all ranges are
+      empty.
+
+    o Fix long standing bug in coercion from Ranges to PartitioningByEnd when
+      the object to coerce has names.
+
+DEPRECATED AND DEFUNCT
+
+    o Remove the RangedDataList and RDApplyParams classes, rdapply(), and the
+      "split" and "reduce" methods for RangedData objects. All these things
+      were defunct in BioC 3.4.
+
+    o Remove 'ignoreSelf' and 'ignoreRedundant' arguments (replaced by
+      'drop.self' and 'drop.redundant') from findOverlaps,Vector,missing method
+      (were defunct in BioC 3.4).
+
+    o Remove GappedRanges class (was defunct in BioC 3.4).
+
+
 CHANGES IN VERSION 2.8.0
 ------------------------
 
