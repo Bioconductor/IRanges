@@ -106,7 +106,8 @@ mergeByOverlaps(query, subject, ...)
 findOverlapPairs(query, subject, ...)
 
 poverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
-          type = c("any", "start", "end", "within", "equal"))
+          type = c("any", "start", "end", "within", "equal"),
+          ...)
 
 \S4method{ranges}{Hits}(x, query, subject)
 \S4method{ranges}{HitsList}(x, query, subject)
