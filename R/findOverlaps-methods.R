@@ -572,7 +572,8 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
 
 setGeneric("poverlaps", signature=c("query", "subject"),
            function(query, subject, maxgap=0L, minoverlap=1L,
-                    type=c("any", "start", "end", "within", "equal"))
+                    type=c("any", "start", "end", "within", "equal"),
+                    ...)
                standardGeneric("poverlaps")
            )
 
