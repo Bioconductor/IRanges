@@ -449,9 +449,6 @@
   rd[["filter"]]
   rd <- RangedData(ranges, score + score)
   rd[["score...score"]] # names made valid
-  ## use a universe
-  rd <- RangedData(ranges, universe = "hg18")
-  universe(rd)
 
   ## split some data over chromosomes
 
@@ -461,7 +458,7 @@
   filter <- c(filter, c(0L, 1L, NA, 0L)) 
   chrom <- paste("chr", rep(c(1,2), c(length(ranges), length(range2))), sep="")
 
-  rd <- RangedData(both, score, filter, space = chrom, universe = "hg18")
+  rd <- RangedData(both, score, filter, space = chrom)
   rd[["score"]] # identical to score
   rd[1][["score"]] # identical to score[1:3]
   

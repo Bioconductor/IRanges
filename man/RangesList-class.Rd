@@ -41,9 +41,7 @@
 \description{An extension of \linkS4class{List} that holds only
   \linkS4class{Ranges} objects. Useful for storing ranges over a set
   of spaces (e.g. chromosomes), each of which requires a separate
-  \code{Ranges} object. As a \code{Vector}, \code{RangesList} may be
-  annotated with its universe identifier (e.g. a genome) in which all of its
-  spaces exist.
+  \code{Ranges} object.
 }
 
 \section{Accessors}{
@@ -69,27 +67,16 @@
       name is repeated according to the length of its element.
     }
   }
-
-  These accessors are for the \code{universe} identifier:
-  \describe{
-    \item{}{\code{universe(x)}: gets the name of the universe as a
-      single string, if one has been specified, \code{NULL} otherwise.
-    }
-    \item{}{\code{universe(x) <- value}: sets the name of the universe
-      to \code{value}, a single string or \code{NULL}.
-    }
-  }
 }
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{RangesList(..., universe = NULL)}:
+    \item{}{\code{RangesList(...)}:
       Each \code{Ranges} in \code{...}
       becomes an element in the new \code{RangesList}, in the same
       order. This is analogous to the \code{\link{list}} constructor,
       except every argument in \code{...} must be derived from
-      \code{Ranges}. The universe is specified by the \code{universe}
-      parameter, which should be a single string or NULL, to leave unspecified. 
+      \code{Ranges}.
     }
   }
 }
@@ -154,10 +141,7 @@ as.list(RangesList(range1, range2))
 # coerce to data.frame
 as.data.frame(named)
 
-# set the universe
-universe(named) <- "hg18"
-universe(named)
-RangesList(range1, range2, universe = "hg18")
+RangesList(range1, range2)
 
 ## zoom in 2X
 collection <- RangesList(one = range1, range2)

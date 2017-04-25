@@ -30,14 +30,12 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{RleViewsList(..., rleList, rangesList, universe = NULL)}:
+    \item{}{\code{RleViewsList(..., rleList, rangesList)}:
       Either \code{...} or the \code{rleList}/\code{rangesList} couplet
       provide the RleViews for the list. If \code{...} is provided, each
       of these arguments must be RleViews objects. Alternatively,
       \code{rleList} and \code{rangesList} accept Rle and Ranges objects
       respectively that are meshed together for form the RleViewsList.
-      The universe is specified by the \code{universe} parameter, which
-      should be a single string or NULL, to leave unspecified. 
     }
     \item{}{\code{Views(subject, start=NULL, end=NULL, width=NULL, names=NULL)}:
       Same as \code{RleViewsList(rleList = subject, rangesList = start)}.

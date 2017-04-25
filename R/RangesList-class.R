@@ -175,6 +175,7 @@ setGeneric("universe", function(x) standardGeneric("universe"))
 setMethod("universe", "RangesList",
           function(x)
           {
+            .Deprecated(msg="The universe() getter is deprecated.")
             metadata(x)$universe
           })
 
@@ -182,6 +183,7 @@ setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
 setReplaceMethod("universe", "RangesList",
                  function(x, value)
                  {
+                   .Deprecated(msg="The universe() setter is deprecated.")
                    if (!is.null(value) && !isSingleString(value))
                      stop("'value' must be a single string or NULL")
                    metadata(x)$universe <- value
@@ -334,15 +336,21 @@ setAs("CompressedRleList", "CompressedIRangesList",
 
 RangesList <- function(..., universe = NULL)
 {
-  if (!is.null(universe) && !isSingleString(universe))
-    stop("'universe' must be a single string or NULL")
+  if (!is.null(universe)) {
+     msg <- wmsg("The 'universe' argument of the RangesList() ",
+                 "constructor function is deprecated.")
+    .Deprecated(msg=msg)
+    if (!isSingleString(universe))
+       stop("'universe' must be a single string or NULL")
+  }
   ranges <- list(...)
   if (length(ranges) == 1 && is.list(ranges[[1L]]))
     ranges <- ranges[[1L]]
   if (!all(sapply(ranges, is, "Ranges")))
     stop("all elements in '...' must be Ranges objects")
   ans <- S4Vectors:::new_SimpleList_from_list("SimpleRangesList", ranges)
-  universe(ans) <- universe
+  if (!is.null(universe))
+    universe(ans) <- universe
   ans
 }
 
@@ -350,8 +358,13 @@ IRangesList <- function(..., universe=NULL, compress=TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!is.null(universe) && !isSingleString(universe))
-        stop("'universe' must be a single string or NULL")
+    if (!is.null(universe)) {
+        msg <- wmsg("The 'universe' argument of the IRangesList() ",
+                    "constructor function is deprecated.")
+        .Deprecated(msg=msg)
+        if (!isSingleString(universe))
+            stop("'universe' must be a single string or NULL")
+    }
     args <- list(...)
     if (length(args) == 2L &&
         setequal(names(args), c("start", "end")) &&
@@ -380,7 +393,8 @@ IRangesList <- function(..., universe=NULL, compress=TRUE)
         else
             ans <- as(args, "SimpleIRangesList")
     }
-    universe(ans) <- universe
+    if (!is.null(universe))
+        universe(ans) <- universe
     ans
 }
 
@@ -619,8 +633,6 @@ setAs("RleList", "SimpleNormalIRangesList",
     if (length(args) == 0L)
         stop("nothing to merge")
     x <- args[[1L]]
-    if (!all(sapply(sapply(args, universe), identical, universe(x))))
-        stop("all RangesList objects to merge must have the same universe")
     spaceList <- lapply(args, names)
     names <- spaces <- unique(do.call(c, spaceList))
     if (any(sapply(spaceList, is.null))) {

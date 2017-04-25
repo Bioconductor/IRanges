@@ -32,6 +32,7 @@ setMethod("width", "SimpleViewsList", function(x) width(ranges(x)))
 setMethod("universe", "ViewsList",
           function(x)
           {
+            .Deprecated(msg="The universe() getter is deprecated.")
             ### FIXME: for compatibility with older versions, eventually emit warning
             if (is.null(metadata(x)) || is.character(metadata(x)))
               metadata(x)
@@ -43,6 +44,7 @@ setMethod("universe", "ViewsList",
 setReplaceMethod("universe", "ViewsList",
                  function(x, value)
                  {
+                   .Deprecated(msg="The universe() setter is deprecated.")
                    if (!is.null(value) && !isSingleString(value))
                      stop("'value' must be a single string or NULL")
                    metadata(x)$universe <- value

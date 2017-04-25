@@ -29,8 +29,13 @@ setMethod("Views", "RleList",
 
 RleViewsList <- function(..., rleList, rangesList, universe = NULL)
 {
-    if (!is.null(universe) && !isSingleString(universe))
-        stop(wmsg("'universe' must be a single string or NULL"))
+    if (!is.null(universe)) {
+         msg <- wmsg("The 'universe' argument of the RleViewsList() ",
+                     "constructor function is deprecated.")
+        .Deprecated(msg=msg)
+        if (!isSingleString(universe))
+            stop(wmsg("'universe' must be a single string or NULL"))
+    }
     views <- list(...)
     if (!missing(rleList) && !missing(rangesList)) {
         if (length(views) > 0)
@@ -73,7 +78,8 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
             stop(wmsg("all elements in '...' must be RleViews objects"))
     }
     ans <- S4Vectors:::new_SimpleList_from_list("SimpleRleViewsList", views)
-    universe(ans) <- universe
+    if (!is.null(universe))
+        universe(ans) <- universe
     ans
 }
 

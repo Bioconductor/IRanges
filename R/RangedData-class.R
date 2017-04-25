@@ -235,10 +235,13 @@ setValidity2("RangedData", .valid.RangedData)
 RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
 {
   hasDots <- (((nargs() - !missing(space)) - !missing(universe)) > 1)
-
-  if (!is.null(universe) && !isSingleString(universe))
-    stop("'universe' must be a single string")
-
+  if (!is.null(universe)) {
+     msg <- wmsg("The 'universe' argument of the RangedData() ",
+                 "constructor function is deprecated.")
+    .Deprecated(msg=msg)
+    if (!isSingleString(universe))
+      stop("'universe' must be a single string")
+  }
   if (is(ranges, "RangesList")) {
     if (!is.null(space))
       warning("since 'class(ranges)' extends RangesList, 'space' argument is ignored")
@@ -285,7 +288,8 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
         ranges <- as(ranges, "IRanges")
     ranges <- split(ranges, space)
   }
-  universe(ranges) <- universe
+  if (!is.null(universe))
+    universe(ranges) <- universe
 
   if (hasDots) {
     args <- list(...)
@@ -540,8 +544,6 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
 setMethod("rbind", "RangedData", function(..., deparse.level=1) {
   args <- unname(list(...))
   rls <- lapply(args, ranges)
-  if (!all(sapply(sapply(rls, universe), identical, universe(rls[[1L]]))))
-    stop("All args in '...' must have the same universe")
   nms <- unique(unlist(lapply(args, names), use.names=FALSE))
   rls <- lapply(rls, function(x) {y <- as.list(x)[nms];names(y) <- nms;y})
   dfs <-

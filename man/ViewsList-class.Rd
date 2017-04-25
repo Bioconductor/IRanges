@@ -29,9 +29,6 @@
   for storing coverage vectors over a set of spaces (e.g. chromosomes),
   each of which requires a separate \linkS4class{RleViews} object.
 
-  As a \linkS4class{Vector} subclass, ViewsList may be annotated with its
-  universe identifier (e.g. a genome) in which all of its spaces exist.
-
   As a \linkS4class{List} subclass, ViewsList inherits all the methods
   available for \linkS4class{List} objects. It also presents an API that
   is very similar to that of \linkS4class{Views}, where operations are

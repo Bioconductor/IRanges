@@ -78,7 +78,7 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{IRangesList(..., universe = NULL, compress = TRUE)}:
+    \item{}{\code{IRangesList(..., compress=TRUE)}:
       The \code{...} argument accepts either a comma-separated list of
       \code{IRanges} objects, or a single \code{LogicalList} / logical
       \code{RleList} object, or 2 elements named \code{start} and \code{end}
