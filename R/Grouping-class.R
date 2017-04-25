@@ -941,11 +941,10 @@ setMethod("togroup", "ANY",
     function(x, j=NULL)
     {
         msg <- wmsg(
-            "Using togroup() on a ", class(x), " object is deprecated. ",
+            "Using togroup() on a ", class(x), " object is defunct. ",
             "Please use togroup(PartitioningByWidth(...)) instead."
         )
-        .Deprecated(msg=msg)
-        togroup(PartitioningByWidth(x), j=j)
+        .Defunct(msg=msg)
     }
 )
 
