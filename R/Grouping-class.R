@@ -949,5 +949,3 @@ setMethod("togroup", "ANY",
     }
 )
 
-grouplength <- function(...) .Defunct("grouplengths")
-

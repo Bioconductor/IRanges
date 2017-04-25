@@ -163,7 +163,6 @@ export(
     NCList, NCLists,
     H2LGrouping, Dups,
     PartitioningByEnd, PartitioningByWidth, PartitioningMap,
-    grouplength,
     RangedData,
     RangedSelection,
     RangesList,

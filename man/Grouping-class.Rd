@@ -147,7 +147,6 @@
 
 % old stuff (deprecated & defunct)
 \alias{togroup,ANY-method}
-\alias{grouplength}
 
 \title{Grouping objects}
 
