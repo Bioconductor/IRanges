@@ -427,7 +427,7 @@ setGeneric("restrict", signature="x",
 ###   - Type 3: The restriction interval is not empty and is adjacent to the
 ###             range in 'x' i.e. the range in 'x' ends at start - 1 or starts
 ###             at end - 1.
-
+###
 ### drop.ranges.mode:
 ###   0L: Ranges in 'x' that are empty after restriction are dropped.
 ###   1L: Ranges in 'x' that are not overlapping and not even adjacent
@@ -462,6 +462,7 @@ Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
     ans_start <- start(x)
     ans_end <- end(x)
     if (use.names) ans_names <- names(x) else ans_names <- NULL
+    ans_mcols <- mcols(x)
 
     ## Compare ranges in 'x' with 'start'.
     if (drop.ranges.mode == 0L)
@@ -473,13 +474,14 @@ Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
     } else {
         ## Drop the ranges that are far too left with respect to the
         ## region of restriction.
-        keep_it <- !far_too_left
-        ans_start <- ans_start[keep_it]
-        ans_end <- ans_end[keep_it]
+        keep_idx <- which(!far_too_left)
+        ans_start <- ans_start[keep_idx]
+        ans_end <- ans_end[keep_idx]
         if (!is.null(ans_names))
-            ans_names <- ans_names[keep_it]
-        start <- start[keep_it]
-        end <- end[keep_it]
+            ans_names <- ans_names[keep_idx]
+        ans_mcols <- extractROWS(ans_mcols, keep_idx)
+        start <- start[keep_idx]
+        end <- end[keep_idx]
     }
     ## Fix 'ans_start'.
     too_left <- !is.na(start) & (ans_start < start)
@@ -495,20 +497,25 @@ Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
     } else {
         ## Drop the ranges that are far too right with respect to the
         ## region of restriction.
-        keep_it <- !far_too_right
-        ans_start <- ans_start[keep_it]
-        ans_end <- ans_end[keep_it]
+        keep_idx <- which(!far_too_right)
+        ans_start <- ans_start[keep_idx]
+        ans_end <- ans_end[keep_idx]
         if (!is.null(ans_names))
-            ans_names <- ans_names[keep_it]
-        start <- start[keep_it]
-        end <- end[keep_it]
+            ans_names <- ans_names[keep_idx]
+        ans_mcols <- extractROWS(ans_mcols, keep_idx)
+        start <- start[keep_idx]
+        end <- end[keep_idx]
     }
     ## Fix 'ans_end'.
     too_right <- !is.na(end) & (ans_end > end)
     ans_end[too_right] <- end[too_right]
 
     ans_width <- ans_end - ans_start + 1L
-    unsafe.update(x, start=ans_start, width=ans_width, names=ans_names)
+    update(x, start=ans_start,
+              width=ans_width,
+              names=ans_names,
+              mcols=ans_mcols,
+              check=FALSE)
 }
 
 setMethod("restrict", "Ranges",
