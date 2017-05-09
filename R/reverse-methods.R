@@ -65,7 +65,10 @@ setMethod("reverse", "NormalIRanges",
         ## callNextMethod() temporarily breaks 'x' as a NormalIRanges object
         ## because the returned ranges are ordered from right to left.
         x <- callNextMethod()
-        unsafe.update(x, start=rev(start(x)), width=rev(width(x)), names=rev(names(x)))
+        update(x, start=rev(start(x)),
+                  width=rev(width(x)),
+                  names=rev(names(x)),
+                  mcols=S4Vectors:::revROWS(mcols(x)))
     }
 )
 

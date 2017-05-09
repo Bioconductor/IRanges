@@ -179,6 +179,7 @@ setAs("numeric", "NormalIRanges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Low-level setters for IRanges objects.
 ###
+### All these low-level setters preserve the length of the object.
 ### The choice was made to implement a "resizing" semantic:
 ###   (1) changing the start preserves the end (so it changes the width)
 ###   (2) changing the end preserves the start (so it changes the width)
@@ -256,9 +257,9 @@ setReplaceMethod("names", "IRanges", set_IRanges_names)
 ###       content)
 ###
 
-unsafe.update <- function(object, ...)
+.update_IRanges <- function(object, ...)
 {
-    valid_argnames <- c("start", "end", "width", "names")
+    valid_argnames <- c("start", "width", "end", "names", "mcols")
     args <- S4Vectors:::extraArgsAsList(valid_argnames, ...)
     argnames <- names(args)
     sew <- c("start", "end", "width")
@@ -267,9 +268,11 @@ unsafe.update <- function(object, ...)
         stop("at most 2 out of the ",
              paste("'", sew, "'", sep="", collapse=", "),
              " arguments can be supplied")
-    do_atomic_update <- narg_in_sew == 2L &&
-                        (is.null(names(object)) || ("names" %in% argnames))
-    if (do_atomic_update) {
+    if (narg_in_sew == 2L &&
+        ("names" %in% argnames || is.null(names(object))) &&
+        ("mcols" %in% argnames || is.null(mcols(object))))
+    {
+        ## The update can change the length of the object.
         if ("end" %in% argnames) {
             if ("width" %in% argnames) {
                 width <- args$width
@@ -282,11 +285,15 @@ unsafe.update <- function(object, ...)
             start <- args$start
             width <- args$width
         }
-        object@start <- S4Vectors:::numeric2integer(start)
-        object@width <- S4Vectors:::numeric2integer(width)
-        object@NAMES <- args$names
+        object <- BiocGenerics:::replaceSlots(object,
+                      start=S4Vectors:::numeric2integer(start),
+                      width=S4Vectors:::numeric2integer(width),
+                      NAMES=args$names,
+                      elementMetadata=args$mcols,
+                      check=FALSE)
         return(object)
     }
+    ## The update preserves the length of the object.
     if ("start" %in% argnames)
         object <- .set_IRanges_start(object, args$start, check=FALSE)
     if ("end" %in% argnames)
@@ -294,7 +301,9 @@ unsafe.update <- function(object, ...)
     if ("width" %in% argnames)
         object <- .set_IRanges_width(object, args$width, check=FALSE)
     if ("names" %in% argnames)
-        object <- set_IRanges_names(object, args$names)
+        names(object) <- args$names
+    if ("mcols" %in% argnames)
+        mcols(object) <- args$mcols
     object
 }
 
@@ -306,7 +315,7 @@ setMethod("update", "IRanges",
     {
         if (!isTRUEorFALSE(check))
             stop("'check' must be TRUE or FALSE")
-        object <- unsafe.update(object, ...)
+        object <- .update_IRanges(object, ...)
         if (check)
             validObject(object)
         object
@@ -338,11 +347,10 @@ setMethod("replaceROWS", "IRanges",
         ans_start <- replaceROWS(start(x), i, start(value))
         ans_width <- replaceROWS(width(x), i, width(value))
         ans_mcols <- replaceROWS(mcols(x), i, mcols(value))
-        BiocGenerics:::replaceSlots(x,
-            start=ans_start,
-            width=ans_width,
-            elementMetadata=ans_mcols,
-            check=FALSE)
+        update(x, start=ans_start,
+                  width=ans_width,
+                  mcols=ans_mcols,
+                  check=FALSE)
     }
 )
 
@@ -445,27 +453,26 @@ setMethod("c", "IRanges",
         if (!all(sapply(args, is, class(x))))
             stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
 
-        new_start <- unlist(lapply(args, start), use.names=FALSE)
-        new_width <- unlist(lapply(args, width), use.names=FALSE)
+        ans_start <- unlist(lapply(args, start), use.names=FALSE)
+        ans_width <- unlist(lapply(args, width), use.names=FALSE)
         names_list <- lapply(args, names)
         arg_has_no_names <- sapply(names_list, is.null)
         if (all(arg_has_no_names)) {
-            new_names <- NULL
+            ans_names <- NULL
         } else {
             names_list[arg_has_no_names] <- lapply(args[arg_has_no_names],
                                                    function(arg) character(length(arg)))
-            new_names <- unlist(names_list, use.names=FALSE)
+            ans_names <- unlist(names_list, use.names=FALSE)
         }
-        ans <- update(x, start=new_start, width=new_width, names=new_names, check=FALSE)
-        
         if (ignore.mcols) {
-          mcols(ans) <- NULL
+            ans_mcols <- NULL
         } else  {
-          mcols(ans) <- do.call(S4Vectors:::rbind_mcols, args)
+            ans_mcols <- do.call(S4Vectors:::rbind_mcols, args)
         }
-        
-        validObject(ans)
-        ans
+        update(x, start=ans_start,
+                  width=ans_width,
+                  names=ans_names,
+                  mcols=ans_mcols)
     }
 )
 

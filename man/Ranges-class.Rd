@@ -249,16 +249,17 @@
   set obtained by taking the union of all the values in all the ranges in
   \code{x}. This representation is clearly not unique: many different
   Ranges objects can be used to represent the same set of integers.
-  However one and only one of them is guaranteed to be "normal".
+  However one and only one of them is guaranteed to be \emph{normal}.
 
-  By definition a Ranges object is said to be "normal" when its ranges are:
+  By definition a Ranges object is said to be \emph{normal} when its ranges
+  are:
     (a) not empty (i.e. they have a non-null width);
     (b) not overlapping;
     (c) ordered from left to right;
     (d) not even adjacent (i.e. there must be a non empty gap between 2
         consecutive ranges).
 
-  Here is a simple algorithm to determine whether \code{x} is "normal":
+  Here is a simple algorithm to determine whether \code{x} is \emph{normal}:
     (1) if \code{length(x) == 0}, then \code{x} is normal;
     (2) if \code{length(x) == 1}, then \code{x} is normal iff
         \code{width(x) >= 1};
@@ -266,27 +267,27 @@
         \preformatted{  start(x)[i] <= end(x)[i] < start(x)[i+1] <= end(x)[i+1]}
         for every 1 <= \code{i} < \code{length(x)}.
 
-  The obvious advantage of using a "normal" Ranges object to represent
+  The obvious advantage of using a \emph{normal} Ranges object to represent
   a given finite set of integers is that it is the smallest in terms of
   number of ranges and therefore in terms of storage space.
   Also the fact that we impose its ranges to be ordered from left to
   right makes it unique for this representation.
 
   A special container (\link{NormalIRanges}) is provided for holding
-  a "normal" \link{IRanges} object: a \link{NormalIRanges} object is
-  just an \link{IRanges} object that is guaranteed to be "normal".
+  a \emph{normal} \link{IRanges} object: a \link{NormalIRanges} object is
+  just an \link{IRanges} object that is guaranteed to be \emph{normal}.
 
-  Here are some methods related to the notion of "normal" Ranges:
+  Here are some methods related to the notion of \emph{normal} Ranges:
 
   \describe{
     \item{}{
       \code{isNormal(x)}:
-      Return TRUE or FALSE indicating whether \code{x} is "normal" or not.
+      Return TRUE or FALSE indicating whether \code{x} is \emph{normal} or not.
     }
     \item{}{
       \code{whichFirstNotNormal(x)}:
-      Return \code{NA} if \code{x} is normal, or the smallest valid indice
-      \code{i} in \code{x} for which \code{x[1:i]} is not "normal".
+      Return \code{NA} if \code{x} is \emph{normal}, or the smallest valid
+      indice \code{i} in \code{x} for which \code{x[1:i]} is not \emph{normal}.
     }
   }
 }

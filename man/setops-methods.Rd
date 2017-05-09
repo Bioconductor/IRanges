@@ -129,6 +129,17 @@
   changed using the \code{resolve.empty} argument.
 }
 
+\value{
+  On \link{Ranges} objects, \code{union}, \code{intersect}, and \code{setdiff}
+  return an \link{IRanges} \emph{instance} that is guaranteed to be
+  \emph{normal} (see \code{\link{isNormal}}) but is NOT
+  promoted to \link{NormalIRanges}.
+
+  On \link{Ranges} objects, \code{punion}, \code{pintersect}, \code{psetdiff},
+  and \code{pgap} return an object of the same class and length as their first
+  argument.
+}
+
 \author{H. Pagès and M. Lawrence}
 
 \seealso{

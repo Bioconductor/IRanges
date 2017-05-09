@@ -2,25 +2,20 @@
 ### Set operations
 ### -------------------------------------------------------------------------
 ###
-### I. Vector-wise set operations: union, intersect, setdiff
+### 1) Vector-wise set operations: union, intersect, setdiff
 ###
-### All the functions in that group are implemented to behave like
-### endomorphisms with respect to their first argument 'x'.
+###    When the input are Ranges objects, the functions in that group interpret
+###    each supplied object ('x' or 'y') as a set of integer values. Therefore,
+###    if 2 IRanges objects 'x1' and 'x2' represent the same set of integers,
+###    then each of these functions will return the same result when 'x1' is
+###    replaced with 'x2' in the input. The returned IRanges object is
+###    guaranteed to be normal but is *not* promoted to NormalIRanges.
 ###
-### On IRanges objects, the functions in that group interpret each supplied
-### object ('x' or 'y') as a set of integer values. Therefore, if 2 IRanges
-### objects 'x1' and 'x2' represent the same set of integers, then each of
-### these functions will return the same result when 'x1' is replaced by 'x2'
-### in the input. The returned IRanges object is guaranteed to be normal
-### (note that if 'x' is an IRanges *instance* then the returned object is
-### still an IRanges *instance*, that is, it is *not* promoted to
-### NormalIRanges).
+### 2) Element-wise (aka "parallel") set operations: punion, pintersect,
+###    psetdiff, pgap
 ###
-### II. Element-wise (aka "parallel") set operations: punion, pintersect,
-###     psetdiff, pgap
-###
-### The functions in that group take 2 *objects* of the same length and
-### return an object of the same class and length as the first argument.
+###    The functions in that group take 2 *objects* of the same length and
+###    return an object of the same class and length as the first argument.
 ###
 
 
@@ -28,21 +23,16 @@
 ### union()
 ###
 
+### Always return an IRanges *instance* whatever Ranges derivatives are passed
+### to it (e.g. NCList or NormalIRanges), so does NOT act like an endomorphism
+### in general.
 setMethod("union", c("Ranges", "Ranges"),
     function(x, y)
     {
-        ## We need to downgrade 'x' to an IRanges instance 'x0' so 'c(x0, y)'
-        ## is guaranteed to work (even e.g. if 'x' is a NormalIRanges object).
-        x0 <- as(x, "IRanges")  # downgrade x to IRanges
-        x0 <- reduce(c(x0, y), drop.empty.ranges=TRUE)
-        ## Maybe the call to update() below could be replaced by
-        ## 'as(x, "IRanges") <- x0' but I was not lucky with my first
-        ## attempt to use this construct:
-        ##   > v <- Views(XInteger(18), 2:5, 13:10)
-        ##   > as(v, "IRanges") <- IRanges(3, 8)
-        ##   Error: evaluation nested too deeply: infinite recursion / options(expressions=)?
-        initialize(x, start=start(x0), width=width(x0), NAMES=names(x0),
-                   elementMetadata=NULL)
+        ## We downgrade 'x' to an IRanges instance so 'c(x, y)' is guaranteed
+        ## to work (even e.g. if 'x' is a NormalIRanges object).
+        x <- as(x, "IRanges", strict=TRUE)
+        reduce(c(x, y), drop.empty.ranges=TRUE)
     }
 )
 
@@ -68,10 +58,14 @@ setMethod("union", c("Pairs", "missing"), function(x, y, ...) {
     callGeneric(first(x), second(x), ...)
 })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### intersect()
 ###
 
+### Always return an IRanges *instance* whatever Ranges derivatives are passed
+### to it (e.g. NCList or NormalIRanges), so does NOT act like an endomorphism
+### in general.
 setMethod("intersect", c("Ranges", "Ranges"),
     function(x, y)
     {
@@ -119,6 +113,9 @@ setMethod("intersect", c("CompressedAtomicList", "CompressedAtomicList"),
 ### setdiff()
 ###
 
+### Always return an IRanges *instance* whatever Ranges derivatives are passed
+### to it (e.g. NCList or NormalIRanges), so does NOT act like an endomorphism
+### in general.
 setMethod("setdiff", c("Ranges", "Ranges"),
     function(x, y)
     {
@@ -147,6 +144,7 @@ setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),
 setMethod("setdiff", c("Pairs", "missing"), function(x, y, ...) {
     callGeneric(first(x), second(x), ...)
 })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### punion()
@@ -287,6 +285,7 @@ setMethod("psetdiff", c("Ranges", "Ranges"),
 setMethod("psetdiff", c("Pairs", "missing"), function(x, y, ...) {
               callGeneric(first(x), second(x), ...)
           })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### pgap()
