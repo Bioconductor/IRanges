@@ -8,7 +8,7 @@ Description: Provides efficient low-level and highly reusable S4
              list-like classes for storing, transforming and aggregating
              large grouped data, i.e., collections of atomic vectors and
              DataFrames.
-Version: 2.11.2
+Version: 2.11.3
 Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
