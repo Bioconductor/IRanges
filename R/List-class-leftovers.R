@@ -41,7 +41,7 @@ setMethod("stack", "List",
             index <- .stack.ind(x, index.var)
             unlistsToVector <- is(value, "Vector")
             if (unlistsToVector) {
-              df <- cbind(S4Vectors:::ensureMcols(unname(value)), index)
+              df <- cbind(index, S4Vectors:::ensureMcols(unname(value)))
             } else {
               df <- DataFrame(index, as(value, "DataFrame"))
               colnames(df)[2] <- value.var
