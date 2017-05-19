@@ -55,9 +55,7 @@ exportClasses(
 ### Export S3 methods
 ###
 
-S3method(diff, IntegerList)
-S3method(diff, NumericList)
-S3method(diff, RleList)
+S3method(diff, AtomicList)
 
 S3method(`window<-`, Vector)
 S3method(`window<-`, vector)
@@ -67,9 +65,7 @@ S3method(`window<-`, factor)
 ### called directly, (b) tab-completion on the name of the generic shows them,
 ### and (c) methods() doesn't asterisk them.
 export(
-    diff.IntegerList,
-    diff.NumericList,
-    diff.RleList,
+    diff.AtomicList,
 
     "window<-.Vector",
     "window<-.vector",

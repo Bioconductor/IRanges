@@ -664,13 +664,9 @@ setMethod("IQR", "AtomicList",
     function(x, na.rm=FALSE, type=7) sapply(x, IQR, na.rm=na.rm, type=type)
 )
 
-diff.IntegerList <- function(x, ...) diff(x, ...)
-diff.NumericList <- function(x, ...) diff(x, ...)
-diff.RleList <- function(x, ...) diff(x, ...)
+diff.AtomicList <- function(x, ...) diff(x, ...)
 
-setMethods("diff",
-           c("CompressedIntegerList", "CompressedNumericList",
-             "CompressedRleList"),
+setMethod("diff", "CompressedAtomicList",
            function(x, lag = 1L, differences = 1L) {
                stopifnot(isSingleNumber(lag))
                stopifnot(isSingleNumber(differences))
