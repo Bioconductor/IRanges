@@ -41,12 +41,8 @@
 \alias{any,CompressedAtomicList-method}
 \alias{anyNA,CompressedAtomicList-method}
 
-\alias{diff,IntegerList-method}
-\alias{diff,NumericList-method}
-\alias{diff,RleList-method}
-\alias{diff,CompressedIntegerList-method}
-\alias{diff,CompressedNumericList-method}
-\alias{diff,CompressedRleList-method}
+\alias{diff.AtomicList}
+\alias{diff,CompressedAtomicList-method}
 
 \alias{pmax,IntegerList-method}
 \alias{pmax,NumericList-method}
