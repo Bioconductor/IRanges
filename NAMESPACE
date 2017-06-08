@@ -89,6 +89,8 @@ exportMethods(
     "[", "[<-", "[[", "[[<-", "$<-",
     as.vector,
     as.integer,
+    as.character,
+    as.factor,
     as.matrix,
     as.data.frame,
     as.list,

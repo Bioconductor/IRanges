@@ -18,6 +18,8 @@
 \alias{start<-}
 \alias{width<-}
 \alias{end<-}
+\alias{as.character,Ranges-method}
+\alias{as.factor,Ranges-method}
 \alias{as.matrix,Ranges-method}
 \alias{as.data.frame,Ranges-method}
 \alias{as.integer,Ranges-method}

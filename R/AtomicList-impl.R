@@ -261,6 +261,12 @@ setMethod("table", "AtomicList",
             stop("\"table\" method for AtomicList objects ",
                  "can only take one input object")
         x <- args[[1L]]
+        if (!pcompareRecursively(x)) {
+            ## Not sure why callNextMethod() doesn't work. Is it because of
+            ## dispatch on the ellipsis?
+            #return(callNextMethod())
+            return(selectMethod("table", "Vector")(...))
+        }
         y1 <- togroup(PartitioningByWidth(x))
         attributes(y1) <- list(levels=as.character(seq_along(x)),
                                class="factor")

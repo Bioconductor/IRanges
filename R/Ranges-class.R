@@ -68,6 +68,29 @@ setValidity2("Ranges", .valid.Ranges)
 ### Coercion.
 ###
 
+### Propagate the names.
+setMethod("as.character", "Ranges",
+    function(x)
+    {
+        if (length(x) == 0L)
+            return(setNames(character(0), names(x)))
+        x_start <- start(x)
+        x_end <- end(x)
+        ans <- paste0(x_start, "-", x_end)
+        idx <- which(x_start == x_end)
+        ans[idx] <- as.character(x_start)[idx]
+        names(ans) <- names(x)
+        ans
+    }
+)
+
+### The as.factor() generic doesn't have the ... argument so this method
+### cannot support the 'ignore.strand' argument.
+setMethod("as.factor", "Ranges",
+    function(x)
+        factor(as.character(x), levels=as.character(sort(unique(x))))
+)
+
 setMethod("as.matrix", "Ranges",
     function(x, ...)
         matrix(data=c(start(x), width(x)), ncol=2,
