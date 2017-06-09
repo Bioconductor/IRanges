@@ -183,8 +183,10 @@ setAs("numeric", "NormalIRanges",
         stop(wmsg("converting a character vector to an IRanges object ",
                   "does not support NAs"))
     error_msg <- wmsg(
-        "The character vector to convert to an IRanges object must contain ",
-        "strings of the form \"2501-2900\" or \"2501..2900\"."
+        "The character vector to convert to an IRanges object must ",
+        "contain strings of the form \"start-end\" or \"start..end\", ",
+        "with end >= start - 1, or just \"pos\". For example: \"2501-2900\", ",
+        "\"2501..2900\", or \"740\"."
     )
     ## We want to split on the first occurence of  "-" that is preceeded by
     ## a digit (ignoring and removing the spaces in between if any).
