@@ -161,7 +161,7 @@ setAs("logical", "NormalIRanges",
     function(from) .Call2("NormalIRanges_from_logical", from, PACKAGE="IRanges")
 )
 
-### coersion from integer
+### coercion from integer
 setAs("integer", "IRanges",
     function(from) .Call2("IRanges_from_integer", from, PACKAGE="IRanges")
 )
@@ -174,6 +174,39 @@ setAs("numeric", "IRanges", function(from) as(as.integer(from), "IRanges"))
 
 setAs("numeric", "NormalIRanges", 
     function(from) newNormalIRangesFromIRanges(as(as.integer(from), "IRanges")))
+
+### coercion from character
+.from_character_to_IRanges <- function(from)
+{
+    stopifnot(is.character(from))
+    if (anyNA(from))
+        stop(wmsg("converting a character vector to an IRanges object ",
+                  "does not support NAs"))
+    error_msg <- wmsg(
+        "The character vector to convert to an IRanges object must contain ",
+        "strings of the form \"2501-2900\" or \"2501..2900\"."
+    )
+    ## We want to split on the first occurence of  "-" that is preceeded by
+    ## a digit (ignoring and removing the spaces in between if any).
+    from <- sub("([[:digit:]])[[:space:]]*-", "\\1..", from)
+    split2 <- CharacterList(strsplit(from, "..", fixed=TRUE))
+    split2_eltNROWS <- elementNROWS(split2)
+    if (!all(split2_eltNROWS <= 2L))
+        stop(error_msg)
+    ans_start <- suppressWarnings(as.integer(phead(split2, n=1L)))
+    ans_end <- suppressWarnings(as.integer(ptail(split2, n=1L)))
+    if (anyNA(ans_start) || anyNA(ans_end))
+        stop(error_msg)
+    IRanges(ans_start, ans_end, names=names(from))
+}
+setAs("character", "IRanges", .from_character_to_IRanges)
+
+.from_factor_to_IRanges <- function(from)
+{
+    from <- setNames(as.character(from), names(from))
+    .from_character_to_IRanges(from)
+}
+setAs("factor", "IRanges", .from_factor_to_IRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

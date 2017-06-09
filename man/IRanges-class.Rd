@@ -34,6 +34,8 @@
 \alias{coerce,integer,NormalIRanges-method}
 \alias{coerce,numeric,IRanges-method}
 \alias{coerce,numeric,NormalIRanges-method}
+\alias{coerce,character,IRanges-method}
+\alias{coerce,factor,IRanges-method}
 
 
 \title{IRanges and NormalIRanges objects}

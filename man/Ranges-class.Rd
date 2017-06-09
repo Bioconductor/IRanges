@@ -239,8 +239,10 @@
       lines. The number of lines can be altered by setting the global
       options \code{showHeadLines} and \code{showTailLines}. If the 
       object length is less than the sum of the options, the full object 
-      is displayed. These options affect GRanges, GAlignments, 
-      Ranges and XString objects.
+      is displayed. These options affect display of \link{IRanges},
+      \link[S4Vectors]{Hits}, \link[GenomicRanges]{GRanges},
+      \link[GenomicRanges]{GPos}, \link[GenomicAlignments]{GAlignments},
+      \link[Biostrings]{XStringSet} objects, and more...
     }
   }
 }
