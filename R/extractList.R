@@ -268,6 +268,8 @@ normSplitFactor <- function(f, x) {
 as.factor2 <- function(x) {
     if (is.factor(x))
         return(x)
+    if (is.null(x))
+        return(factor())
     g <- grouping(x)
     p <- PartitioningByEnd(relist(g))
     levs <- as.character(x[g[end(p)]])
