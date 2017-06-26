@@ -157,49 +157,15 @@ setValidity2("CompressedList", .valid.CompressedList)
 ### Coercion.
 ###
 
-setUnlistDataNames <- function(unlisted_x, grouping, use.names, x_class)
-{
-    ## If 'use.names' is FALSE or 'x' has no *outer* names, then we don't
-    ## do anything to 'ans' i.e. we just keep whatever names/rownames are
-    ## on it (which are the *inner* names/rownames of 'x'). Note that this
-    ## behavior is NOT consistent with unlist,List or base::unlist as
-    ## both of them will return a vector with no names/rownames when
-    ## 'use.names' is FALSE.
-    ## FIXME: Make unlist,CompressedList and unlist,List behave
-    ## consistently in *any* situation.
-    ## Otherwise (i.e. if 'use.names' is TRUE and 'x' has *outer* names),
-    ## we make up new names/rownames for 'ans' by prepending the *outer*
-    ## names of 'x' to its *inner* names/rownames. Note that this differs
-    ## from what base::unlist does but THIS IS A FEATURE and is consistent
-    ## with what unlist,List does.
-    if (use.names && !is.null(x_names <- names(grouping))) {
-        if (length(dim(unlisted_x)) < 2L) {
-            ans_ROWNAMES <- names(unlisted_x)
-        } else {
-            ans_ROWNAMES <- rownames(unlisted_x)
-        }
-        nms <- rep.int(x_names, elementNROWS(grouping))
-        ans_ROWNAMES <- S4Vectors:::make_unlist_result_names(nms, ans_ROWNAMES)
-        if (length(dim(unlisted_x)) < 2L) {
-            res <- try(names(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
-            what <- "names"
-        } else {
-            res <- try(rownames(unlisted_x) <- ans_ROWNAMES, silent=TRUE)
-            what <- "rownames"
-        }
-        if (is(res, "try-error"))
-            warning("failed to set ", what, " on the ",
-                    "unlisted ", x_class, " object")
-    }
-    unlisted_x
-}
-
 setMethod("unlist", "CompressedList",
     function(x, recursive=TRUE, use.names=TRUE)
     {
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
-        setUnlistDataNames(x@unlistData, x@partitioning, use.names, class(x))
+        unlisted_x <- x@unlistData
+        if (use.names)
+            unlisted_x <- S4Vectors:::set_unlisted_names(unlisted_x, x)
+        unlisted_x
     }
 )
 

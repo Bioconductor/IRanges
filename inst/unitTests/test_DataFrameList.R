@@ -102,16 +102,15 @@ test_SplitDataFrameList_subset <- function() {
     }
 }
 
-test_SplitDataFrameList_as_data.frame <- function() {
+test_SplitDataFrameList_as.data.frame <- function() {
     checkDFL2dfl <- function(DFL, dfl, compress) {
-        df <- 
+        target <- 
           data.frame(group = togroup(PartitioningByWidth(dfl)),
                      group_name = names(dfl)[togroup(PartitioningByWidth(dfl))],
                      do.call(rbind, dfl),
                      stringsAsFactors=FALSE, row.names=NULL)
-        if (compress)
-            rownames(df) <- unlist(lapply(dfl, row.names), use.names = FALSE)
-        checkIdentical(as.data.frame(DFL), df)
+        rownames(target) <- unlist(lapply(dfl, row.names), use.names = FALSE)
+        checkIdentical(target, as.data.frame(DFL))
     }
 
     data(swiss)
