@@ -126,6 +126,21 @@
 \alias{selfmatch,CompressedAtomicList-method}
 \alias{intersect,CompressedAtomicList,CompressedAtomicList-method}
 
+\alias{ifelse2}
+\alias{ifelse2,ANY,ANY,List-method}
+\alias{ifelse2,ANY,List,ANY-method}
+\alias{ifelse2,List,ANY,ANY-method}
+\alias{ifelse2,CompressedLogicalList,ANY,ANY-method}
+\alias{ifelse2,CompressedLogicalList,List,ANY-method}
+\alias{ifelse2,CompressedLogicalList,ANY,List-method}
+\alias{ifelse2,CompressedLogicalList,List,ANY-method}
+\alias{ifelse2,CompressedLogicalList,List,List-method}
+\alias{ifelse2,SimpleLogicalList,ANY,ANY-method}
+\alias{ifelse2,SimpleLogicalList,List,ANY-method}
+\alias{ifelse2,SimpleLogicalList,ANY,List-method}
+\alias{ifelse2,SimpleLogicalList,List,ANY-method}
+\alias{ifelse2,SimpleLogicalList,List,List-method}
+
 \title{Common operations on AtomicList objects}
 
 \description{
@@ -183,6 +198,10 @@
 
   The \code{rank} method only supports tie methods \dQuote{average},
   \dQuote{first}, \dQuote{min} and \dQuote{max}.
+
+  Since \code{\link{ifelse}} relies on non-standard evaluation for
+  arguments that need to be in the generic signature, we provide
+  \code{ifelse2}, which has eager but otherwise equivalent semantics.
 }
 
 \section{Specialized Methods}{

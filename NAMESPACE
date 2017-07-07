@@ -126,7 +126,6 @@ exportMethods(
     table,
     tapply,
     union, intersect, setdiff,
-    ifelse,
     values, "values<-",
     classNameForDisplay,
     from, to,
@@ -259,7 +258,10 @@ export(
     tile, slidingWindows,
 
     ## bind-arrays.R:
-    arbind, acbind
+    arbind, acbind,
+
+    ## AtomicList-utils.R:
+    ifelse2
 )
 
 ### Exactly the same list as above.

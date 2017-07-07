@@ -480,9 +480,11 @@ ifelseReturnValue <- function(yes, no, len) {
     if(compress) "CompressedList" else "SimpleList")
 }
 
-setMethods("ifelse", list(c("ANY", "ANY", "List"),
-                          c("ANY", "List", "List"),
-                          c("ANY", "List", "ANY")),      
+setGeneric("ifelse2", function(test, yes, no) standardGeneric("ifelse2"))
+
+setMethods("ifelse2", list(c("ANY", "ANY", "List"),
+                           c("ANY", "List", "List"),
+                           c("ANY", "List", "ANY")),      
            function(test, yes, no) {
              ans <- ifelseReturnValue(yes, no, length(test))
              ok <- !(nas <- is.na(test))
@@ -495,20 +497,20 @@ setMethods("ifelse", list(c("ANY", "ANY", "List"),
              ans
            })
 
-setMethods("ifelse", list(c("CompressedLogicalList", "ANY", "ANY"),
-                          c("CompressedLogicalList", "ANY", "List"),
-                          c("CompressedLogicalList", "List", "ANY"),
-                          c("CompressedLogicalList", "List", "List")),
+setMethods("ifelse2", list(c("CompressedLogicalList", "ANY", "ANY"),
+                           c("CompressedLogicalList", "ANY", "List"),
+                           c("CompressedLogicalList", "List", "ANY"),
+                           c("CompressedLogicalList", "List", "List")),
            function(test, yes, no) {
              doBinaryCompressedListOp(function(yes, no) {
                ifelse(unlist(test, use.names=FALSE), yes, no)
              }, as(yes, "List"), as(no, "List"), test)
            })
 
-setMethods("ifelse", list(c("SimpleLogicalList", "ANY", "ANY"),
-                          c("SimpleLogicalList", "ANY", "List"),
-                          c("SimpleLogicalList", "List", "ANY"),
-                          c("SimpleLogicalList", "List", "List")),
+setMethods("ifelse2", list(c("SimpleLogicalList", "ANY", "ANY"),
+                           c("SimpleLogicalList", "ANY", "List"),
+                           c("SimpleLogicalList", "List", "ANY"),
+                           c("SimpleLogicalList", "List", "List")),
            function(test, yes, no) {
              as(mapply(ifelse, test, yes, no, SIMPLIFY=FALSE), "List")
            })

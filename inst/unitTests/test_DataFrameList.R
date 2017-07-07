@@ -213,7 +213,7 @@ test_DataFrameList_transform <- function() {
   DF <- DataFrame(state.division, state.region, state.area)
   DFL <- split(DF, DF$state.division) # NICER: split(DF, ~ state.devision)
   DFL <- transform(DFL, total.area=sum(state.area[state.region!="South"]),
-                   fraction=ifelse(total.area == 0, 0, state.area/total.area))
+                   fraction=ifelse2(total.area == 0, 0, state.area/total.area))
 
   ANS <- DataFrame(lapply(unlist(DFL, use.names=FALSE), unname))
   
