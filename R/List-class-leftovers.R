@@ -43,7 +43,7 @@ setMethod("stack", "List",
             if (unlistsToVector) {
               df <- cbind(index, S4Vectors:::ensureMcols(unname(value)))
             } else {
-              df <- DataFrame(index, as(value, "DataFrame"))
+              df <- DataFrame(index, as(unname(value), "DataFrame"))
               colnames(df)[2] <- value.var
             }
             if (!is.null(name.var)) {
