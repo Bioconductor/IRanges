@@ -5,6 +5,7 @@
 \alias{class:IRanges}
 \alias{IRanges-class}
 
+% Accessors
 \alias{start,IRanges-method}
 \alias{width,IRanges-method}
 \alias{names,IRanges-method}
@@ -12,6 +13,8 @@
 \alias{width<-,IRanges-method}
 \alias{end<-,IRanges-method}
 \alias{names<-,IRanges-method}
+\alias{ranges,Ranges-method}
+
 \alias{isNormal,IRanges-method}
 \alias{update,IRanges-method}
 \alias{c,IRanges-method}
@@ -63,6 +66,11 @@
 
 \section{Coercion}{
   \describe{
+    \item{}{
+      \code{ranges(x, use.names=FALSE, use.mcols=FALSE)}: Squeeze the ranges
+      out of \link{Ranges} object \code{x} and return them in an IRanges
+      object \emph{parallel} to \code{x} (i.e. same length as \code{x}).
+    }
     \item{}{
       \code{as(from, "IRanges")}: Creates an IRanges instance from a Ranges
       object, logical vector, or integer vector. When \code{from} is a logical

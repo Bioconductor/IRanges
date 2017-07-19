@@ -6,13 +6,11 @@
 \alias{NCList-class}
 \alias{NCList}
 
-\alias{ranges,NCList-method}
 \alias{length,NCList-method}
 \alias{names,NCList-method}
 \alias{start,NCList-method}
 \alias{end,NCList-method}
 \alias{width,NCList-method}
-\alias{coerce,NCList,IRanges-method}
 \alias{coerce,Ranges,NCList-method}
 
 % NCLists objects:

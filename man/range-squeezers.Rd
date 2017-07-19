@@ -57,8 +57,8 @@ rglist(x, use.names=TRUE, use.mcols=FALSE, ...)
   define and document various range squeezing methods for various types
   of objects.
 
-  Note that these functions can be seen as a specific kind of \emph{object
-  getters} as well as functions performing coercion.
+  Note that these functions can be seen as \emph{object getters} or as
+  functions performing coercion.
 
   For some objects (e.g. \link[GenomicAlignments]{GAlignments} and
   \link[GenomicAlignments]{GAlignmentPairs} objects defined in the

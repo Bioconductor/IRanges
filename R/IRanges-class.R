@@ -46,7 +46,7 @@ setMethod("parallelSlotNames", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Accessor methods.
+### Getters
 ###
 
 setMethod("start", "IRanges", function(x, ...) x@start)
@@ -54,6 +54,25 @@ setMethod("start", "IRanges", function(x, ...) x@start)
 setMethod("width", "IRanges", function(x) x@width)
 
 setMethod("names", "IRanges", function(x) x@NAMES)
+
+setMethod("ranges", "Ranges",
+    function(x, use.names=TRUE, use.mcols=FALSE)
+    {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
+        ans_start <- start(x)
+        ans_width <- width(x)
+        ans_names <- if (use.names) names(x) else NULL
+        ans_mcols <- if (use.mcols) mcols(x) else NULL
+        new2("IRanges", start=ans_start,
+                        width=ans_width,
+                        NAMES=ans_names,
+                        elementMetadata=ans_mcols,
+                        check=FALSE)
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -129,11 +148,8 @@ setValidity2("NormalIRanges", .valid.NormalIRanges)
 ### Coercion.
 ###
 
-### Any Ranges object can be turned into an IRanges instance.
 setAs("Ranges", "IRanges",
-    function(from)
-        new2("IRanges", start=start(from), width=width(from),
-             NAMES=names(from), check=FALSE)
+    function(from) ranges(from, use.mcols=TRUE)
 )
 
 ### Helper function (not exported) used by the "coerce" methods defined in
