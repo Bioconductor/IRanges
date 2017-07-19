@@ -81,19 +81,19 @@
   can be subsetted by row and by column).
 
   The Ranges class itself is a virtual class. The following classes derive
-  directly from the Ranges class: \link{IRanges}, \link{NCList},
+  directly from the Ranges class: \link{IRanges}, \link{IPos}, \link{NCList},
   \link{PartitioningByEnd}.
 }
 
 \section{Methods}{
   In the code snippets below, \code{x}, \code{y} and \code{object} are
   Ranges objects. Not all the functions described below will necessarily
-  work with all kinds of Ranges objects but they should work at least
+  work with all kinds of Ranges derivatives but they should work at least
   for \link{IRanges} objects.
 
   Note that many more operations on Ranges objects are described in other
-  man pages of the IRanges package. See for example the man page for intra
-  range transformations (e.g. \code{shift()}, see
+  man pages of the \pkg{IRanges} package. See for example the man page for
+  \emph{intra range transformations} (e.g. \code{shift()}, see
   \code{?`\link{intra-range-methods}`}), or the man page for inter range
   transformations (e.g. \code{reduce()}, see
   \code{?`\link{inter-range-methods}`}), or the man page for
@@ -240,7 +240,7 @@
       options \code{showHeadLines} and \code{showTailLines}. If the 
       object length is less than the sum of the options, the full object 
       is displayed. These options affect display of \link{IRanges},
-      \link[S4Vectors]{Hits}, \link[GenomicRanges]{GRanges},
+      \link{IPos}, \link[S4Vectors]{Hits}, \link[GenomicRanges]{GRanges},
       \link[GenomicRanges]{GPos}, \link[GenomicAlignments]{GAlignments},
       \link[Biostrings]{XStringSet} objects, and more...
     }
@@ -305,11 +305,14 @@
 
     \item \link{Ranges-comparison} for comparing and ordering ranges.
 
+    \item The \link{IPos} container for representing a set of \emph{integer
+          positions}.
+
     \item \link{findOverlaps-methods} for finding/counting overlapping ranges.
 
     \item \link{intra-range-methods} and
           \link{inter-range-methods} for intra range and
-          inter range transformations of a Ranges object.
+          inter range transformations of a Ranges derivative.
 
     \item \link{coverage-methods} for computing the coverage
           of a set of ranges.
