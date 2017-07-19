@@ -54,17 +54,22 @@
 \alias{subsetByOverlaps,RangedData,RangesList-method}
 \alias{subsetByOverlaps,RangesList,RangedData-method}
 
-\alias{mergeByOverlaps}
-
-\alias{ranges,Hits-method}
-\alias{ranges,HitsList-method}
-
-\alias{findOverlapPairs}
+\alias{overlapsRanges}
+\alias{overlapsRanges,Ranges,Ranges-method}
+\alias{overlapsRanges,RangesList,RangesList-method}
 
 \alias{poverlaps}
 \alias{poverlaps,Ranges,Ranges-method}
 \alias{poverlaps,Ranges,integer-method}
 \alias{poverlaps,integer,Ranges-method}
+
+\alias{mergeByOverlaps}
+
+\alias{findOverlapPairs}
+
+% deprecated
+\alias{ranges,Hits-method}
+\alias{ranges,HitsList-method}
 
 \title{Finding overlapping ranges}
 
@@ -102,15 +107,16 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  invert=FALSE,
                  ...)
 
-mergeByOverlaps(query, subject, ...)
-findOverlapPairs(query, subject, ...)
+\S4method{overlapsRanges}{Ranges,Ranges}(query, subject, hits)
+\S4method{overlapsRanges}{RangesList,RangesList}(query, subject, hits)
 
 poverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
           type = c("any", "start", "end", "within", "equal"),
           ...)
 
-\S4method{ranges}{Hits}(x, query, subject)
-\S4method{ranges}{HitsList}(x, query, subject)
+mergeByOverlaps(query, subject, ...)
+
+findOverlapPairs(query, subject, ...)
 }
 
 \arguments{
@@ -186,6 +192,10 @@ poverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
     If \code{TRUE}, keep only the query ranges that do \emph{not}
     overlap the subject.
   }
+  \item{hits}{
+    \link[S4Vectors]{Hits} or \link[S4Vectors]{HitsList} object returned
+    by \code{findOverlaps}.
+  }
   \item{...}{
     Further arguments to be passed to or from other methods:
     \itemize{
@@ -199,10 +209,6 @@ poverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
             See \code{query} and \code{subject} arguments above for the
             details.
     }
-  }
-  \item{x}{
-    \link[S4Vectors]{Hits} or \link[S4Vectors]{HitsList} object returned
-    by \code{findOverlaps}.
   }
 }
 
@@ -241,6 +247,22 @@ poverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
   has an overlap hit with a range in \code{subject} using the specified
   \code{findOverlaps} parameters.
 
+  When \code{hits} is a \link[S4Vectors]{Hits} (or \link[S4Vectors]{HitsList})
+  object, \code{overlapsRanges(query, subject, hits)} returns a \link{Ranges}
+  (or \link{RangesList}) object of the \emph{same shape} as \code{hits}
+  holding the regions of intersection between the overlapping ranges
+  in objects \code{query} and \code{subject}, which should be the same
+  query and subject used in the call to \code{findOverlaps} that generated
+  \code{hits}.
+  \emph{Same shape} means same length when \code{hits} is a
+  \link[S4Vectors]{Hits} object, and same length and same elementNROWS
+  when \code{hits} is a \link[S4Vectors]{HitsList} object.
+
+  \code{poverlaps} compares \code{query} and \code{subject} in parallel
+  (like e.g., \code{pmin}) and returns a logical vector indicating
+  whether each pair of ranges overlaps. Integer vectors are treated as
+  width-one ranges.
+  
   \code{mergeByOverlaps} computes the overlap between query and subject
   according to the arguments in \code{\dots}. It then extracts the
   corresponding hits from each object and returns a \code{DataFrame}
@@ -253,22 +275,6 @@ poverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
   returns a formal \code{\link[S4Vectors:Pairs-class]{Pairs}} object
   that provides useful downstream conveniences, such as finding the
   intersection of the overlapping ranges with \code{\link{pintersect}}.
-
-  \code{poverlaps} compares \code{query} and \code{subject} in parallel
-  (like e.g., \code{pmin}) and returns a logical vector indicating
-  whether each pair of ranges overlaps. Integer vectors are treated as
-  width-one ranges.
-  
-  When \code{x} is a \link[S4Vectors]{Hits} (or \link[S4Vectors]{HitsList})
-  object, \code{ranges(x, query, subject)} returns a \link{Ranges}
-  (or \link{RangesList}) object of the \emph{same shape} as \code{x}
-  holding the regions of intersection between the overlapping ranges
-  in objects \code{query} and \code{subject}, which should be the same
-  query and subject used in the call to \code{findOverlaps} that generated
-  \code{x}.
-  \emph{Same shape} means same length when \code{x} is a
-  \link[S4Vectors]{Hits} object, and same length and same elementNROWS
-  when \code{x} is a \link[S4Vectors]{HitsList} object.
 }
 
 \references{
@@ -362,11 +368,11 @@ query \%within\% subject  # same as overlapsAny(query, subject,
                         #                     type="within")
 
 ## ---------------------------------------------------------------------
-## "ranges" METHODS FOR Hits OR HitsList OBJECTS
+## overlapsRanges()
 ## ---------------------------------------------------------------------
 
-## extract the regions of intersection between the overlapping ranges
-ranges(ov, query, subject)
+## Extract the regions of intersection between the overlapping ranges:
+overlapsRanges(query, subject, ov)
 
 ## ---------------------------------------------------------------------
 ## Using RangesList objects

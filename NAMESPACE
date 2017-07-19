@@ -165,7 +165,9 @@ export(
     RangesList,
     IRangesList,
     RleViewsList,
-    "%over%", "%within%", "%outside%", "%pover%", "%pwithin%", "%poutside%",
+    "%over%", "%within%", "%outside%",
+    "%pover%", "%pwithin%", "%poutside%",
+    mergeByOverlaps, findOverlapPairs,
     MaskCollection.show_frame,
     Mask,
     read.gapMask,
@@ -178,7 +180,7 @@ export(
     LogicalList, IntegerList, NumericList, ComplexList,
     CharacterList, RawList, RleList, FactorList, 
     DataFrameList, SplitDataFrameList,
-    ManyToOneGrouping, ManyToManyGrouping, findOverlapPairs, regroup,
+    ManyToOneGrouping, ManyToManyGrouping, regroup,
     selectNearest
 )
 
@@ -188,6 +190,9 @@ export(
 ###
 
 export(
+    ## range-squeezers.R:
+    ranges, rglist,
+
     ## Vector-class-leftovers.R:
     showAsCell,
     mstack,
@@ -198,7 +203,7 @@ export(
 
     ## Views-class.R:
     subject,
-    ranges, "ranges<-",
+    "ranges<-",
     Views,
     trim, subviews,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
@@ -230,7 +235,8 @@ export(
     score, "score<-",
 
     ## findOverlaps-methods.R:
-    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps, mergeByOverlaps,
+    findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
+    overlapsRanges,
     poverlaps,
 
     ## intra-range-methods.R:
@@ -266,13 +272,14 @@ export(
 
 ### Exactly the same list as above.
 exportMethods(
+    ranges, rglist,
     runsum, runmean, runwtsum, runq,
     showAsCell,
     mstack,
     mid,
     isNormal, whichFirstNotNormal,
     subject,
-    ranges, "ranges<-",
+    "ranges<-",
     Views,
     trim, subviews,
     viewApply, viewMins, viewMaxs, viewSums, viewMeans,
@@ -289,6 +296,7 @@ exportMethods(
     collapse,
     score, "score<-",
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
+    overlapsRanges,
     poverlaps,
     shift, narrow, resize, flank, reflect, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,

@@ -9,7 +9,9 @@ setClass("RangedSelection",
 ### Accessor methods.
 ###
 
-setMethod("ranges", "RangedSelection", function(x) x@ranges)
+setMethod("ranges", "RangedSelection",
+    function(x, use.names=TRUE, use.mcols=FALSE) x@ranges
+)
 setReplaceMethod("ranges", "RangedSelection",
                  function(x, value) {
                    x@ranges <- value

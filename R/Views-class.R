@@ -24,9 +24,9 @@ setGeneric("subject", function(x) standardGeneric("subject"))
 
 setMethod("subject", "Views", function(x) x@subject)
 
-setGeneric("ranges", function(x, ...) standardGeneric("ranges"))
-
-setMethod("ranges", "Views", function(x) x@ranges)
+setMethod("ranges", "Views",
+    function(x, use.names=TRUE, use.mcols=FALSE) x@ranges
+)
 
 setGeneric("ranges<-", function(x, ..., value) standardGeneric("ranges<-"))
 

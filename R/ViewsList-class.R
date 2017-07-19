@@ -20,8 +20,9 @@ setClass("SimpleViewsList",
 ###
 
 setMethod("ranges", "SimpleViewsList",
-    function(x, ...) S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
-                                                          lapply(x, ranges))
+    function(x, use.names=TRUE, use.mcols=FALSE)
+        S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
+            lapply(x, ranges, use.names=use.names, use.mcols=use.mcols))
 )
 
 setMethod("start", "SimpleViewsList", function(x, ...) start(ranges(x)))

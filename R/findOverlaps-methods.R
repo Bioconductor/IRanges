@@ -567,73 +567,6 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### poverlaps()
-###
-
-setGeneric("poverlaps", signature=c("query", "subject"),
-           function(query, subject, maxgap=0L, minoverlap=1L,
-                    type=c("any", "start", "end", "within", "equal"),
-                    ...)
-               standardGeneric("poverlaps")
-           )
-
-setMethod("poverlaps", c("Ranges", "Ranges"),
-          function(query, subject, maxgap=0L, minoverlap=1L,
-                   type=c("any", "start", "end", "within", "equal"))
-          {
-              stopifnot(isSingleNumber(maxgap))
-              stopifnot(isSingleNumber(minoverlap))
-              type <- match.arg(type)
-              if (type == "any") {
-                  query <- query + maxgap
-              } else if (type == "within") {
-                  if (maxgap > 0L) {
-                      warning("'maxgap' is ignored when type=='within'")
-                  }
-                  return(start(query) >= start(subject) &
-                             end(query) <= end(subject) &
-                                 width(query) >= minoverlap)
-              }
-              amount <- pmin(end(query), end(subject)) -
-                  pmax(start(query), start(subject)) + 1L
-              overlaps <- amount >= minoverlap
-              samePos <- function(x, y) {
-                  x <= (y + maxgap) & x >= (y - maxgap)
-              }
-              keep <- switch(type,
-                             any = TRUE,
-                             start = samePos(start(query), start(subject)),
-                             end = samePos(end(query), end(subject)),
-                             equal = samePos(start(query), start(subject)) &
-                                 samePos(end(query), end(subject)))
-             overlaps & keep
-          }
-          )
-
-setMethod("poverlaps", c("integer", "Ranges"),
-          function(query, subject, maxgap=0L, minoverlap=1L,
-                   type=c("any", "start", "end", "within", "equal"))
-          {
-              poverlaps(IRanges(query, width=1L), subject,
-                        maxgap=maxgap, minoverlap=minoverlap,
-                        type=match.arg(type))
-          })
-
-setMethod("poverlaps", c("Ranges", "integer"),
-          function(query, subject, maxgap=0L, minoverlap=1L,
-                   type=c("any", "start", "end", "within", "equal"))
-          {
-              poverlaps(query, IRanges(subject, width=1L),
-                        maxgap=maxgap, minoverlap=minoverlap,
-                        type=match.arg(type))
-          })
-
-### Convenience operators for poverlaps()
-`%pover%` <- function(query, subject) poverlaps(query, subject)
-`%pwithin%` <- function(query, subject) poverlaps(query, subject, type="within")
-`%poutside%` <- function(query, subject) !poverlaps(query, subject)
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### subsetByOverlaps()
 ###
 
@@ -700,6 +633,151 @@ setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### overlapsRanges()
+###
+### Extracts the actual regions of intersection between the overlapping ranges.
+###
+
+setGeneric("overlapsRanges", signature=c("query", "subject"),
+    function(query, subject, hits=NULL, ...) standardGeneric("overlapsRanges")
+)
+
+setMethod("overlapsRanges", c("Ranges", "Ranges"),
+    function(query, subject, hits=NULL, ...)
+    {
+        if (is.null(hits)) {
+            hits <- findOverlaps(query, subject, ...)
+        } else {
+            if (!is(hits, "Hits"))
+                stop("'hits' must be a Hits object")
+            if (queryLength(hits) != length(query) ||
+                subjectLength(hits) != length(subject))
+                stop("'hits' is not compatible with 'query' and 'subject'")
+        }
+        ### Could be replaced by 1-liner:
+        ###   pintersect(query[queryHits(hits)], subject[subjectHits(hits)])
+        ### but will fail if 'query' or 'subject' is a kind of Ranges object
+        ### that cannot be subsetted (e.g. Partitioning object).
+        m <- as.matrix(hits)
+        qstart <- start(query)[m[,1L]]
+        qend <- end(query)[m[,1L]]
+        sstart <- start(subject)[m[,2L]]
+        send <- end(subject)[m[,2L]]
+        IRanges(pmax.int(qstart, sstart), pmin.int(send, qend))
+    }
+)
+
+setMethod("overlapsRanges", c("RangesList", "RangesList"),
+    function(query, subject, hits=NULL, ...)
+    {
+        if (is.null(hits)) {
+            hits <- findOverlaps(query, subject, ...)
+        } else {
+            if (!is(hits, "HitsList"))
+                stop("'hits' must be a HitsList object")
+            if (length(hits) != length(query) ||
+                length(hits) != length(subject))
+                stop("'query', 'subject', and 'hits' must have the same length")
+        }
+        queries <- as.list(query, use.names = FALSE)
+        subjects <- as.list(subject, use.names = FALSE)
+        els <- as.list(hits, use.names = FALSE)
+        ans <- do.call(RangesList, lapply(seq_len(length(hits)), function(i) {
+          overlapsRanges(queries[[i]], subjects[[i]], els[[i]])
+        }))
+        names(ans) <- names(hits)
+        ans
+    }
+)
+
+setMethod("ranges", "Hits", function(x, use.names=TRUE, use.mcols=FALSE,
+                                        query, subject)
+{
+    msg <- c("\"ranges\" method for Hits objects is deprecated. ",
+             "Please use overlapsRanges() instead.")
+    .Deprecated(msg=wmsg(msg))
+    overlapsRanges(query, subject, x)
+})
+
+setMethod("ranges", "HitsList", function(x, use.names=TRUE, use.mcols=FALSE,
+                                            query, subject)
+{
+    msg <- c("\"ranges\" method for HitsList objects is deprecated. ",
+             "Please use overlapsRanges() instead.")
+    .Deprecated(msg=wmsg(msg))
+    overlapsRanges(query, subject, x)
+})
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### poverlaps()
+###
+
+setGeneric("poverlaps", signature=c("query", "subject"),
+           function(query, subject, maxgap=0L, minoverlap=1L,
+                    type=c("any", "start", "end", "within", "equal"),
+                    ...)
+               standardGeneric("poverlaps")
+           )
+
+setMethod("poverlaps", c("Ranges", "Ranges"),
+          function(query, subject, maxgap=0L, minoverlap=1L,
+                   type=c("any", "start", "end", "within", "equal"))
+          {
+              stopifnot(isSingleNumber(maxgap))
+              stopifnot(isSingleNumber(minoverlap))
+              type <- match.arg(type)
+              if (type == "any") {
+                  query <- query + maxgap
+              } else if (type == "within") {
+                  if (maxgap > 0L) {
+                      warning("'maxgap' is ignored when type=='within'")
+                  }
+                  return(start(query) >= start(subject) &
+                             end(query) <= end(subject) &
+                                 width(query) >= minoverlap)
+              }
+              amount <- pmin(end(query), end(subject)) -
+                  pmax(start(query), start(subject)) + 1L
+              overlaps <- amount >= minoverlap
+              samePos <- function(x, y) {
+                  x <= (y + maxgap) & x >= (y - maxgap)
+              }
+              keep <- switch(type,
+                             any = TRUE,
+                             start = samePos(start(query), start(subject)),
+                             end = samePos(end(query), end(subject)),
+                             equal = samePos(start(query), start(subject)) &
+                                 samePos(end(query), end(subject)))
+             overlaps & keep
+          }
+          )
+
+setMethod("poverlaps", c("integer", "Ranges"),
+          function(query, subject, maxgap=0L, minoverlap=1L,
+                   type=c("any", "start", "end", "within", "equal"))
+          {
+              poverlaps(IRanges(query, width=1L), subject,
+                        maxgap=maxgap, minoverlap=minoverlap,
+                        type=match.arg(type))
+          })
+
+setMethod("poverlaps", c("Ranges", "integer"),
+          function(query, subject, maxgap=0L, minoverlap=1L,
+                   type=c("any", "start", "end", "within", "equal"))
+          {
+              poverlaps(query, IRanges(subject, width=1L),
+                        maxgap=maxgap, minoverlap=minoverlap,
+                        type=match.arg(type))
+          })
+
+### Convenience operators for poverlaps()
+`%pover%` <- function(query, subject) poverlaps(query, subject)
+`%pwithin%` <- function(query, subject) poverlaps(query, subject, type="within")
+`%poutside%` <- function(query, subject) !poverlaps(query, subject)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Merge two sets of ranges by overlap into a DataFrame
 ###
 
@@ -712,40 +790,6 @@ mergeByOverlaps <- function(query, subject, ...) {
   cbind(query_df, subject_df)
 }
 
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### "ranges" methods for Hits and HitsList objects
-###
-
-### Extracts the actual regions of intersection between the overlapping ranges.
-### Not much value. Could be replaced by 1-liner:
-###   pintersect(query[queryHits(x)], subject[subjectHits(x)])
-setMethod("ranges", "Hits", function(x, query, subject) {
-  if (!is(query, "Ranges") || length(query) != queryLength(x))
-    stop("'query' must be a Ranges of length equal to number of queries")
-  if (!is(subject, "Ranges") || length(subject) != subjectLength(x))
-    stop("'subject' must be a Ranges of length equal to number of subjects")
-  m <- as.matrix(x)
-  qstart <- start(query)[m[,1L]]
-  qend <- end(query)[m[,1L]]
-  sstart <- start(subject)[m[,2L]]
-  send <- end(subject)[m[,2L]]
-  IRanges(pmax.int(qstart, sstart), pmin.int(send, qend))
-})
-
-setMethod("ranges", "HitsList", function(x, query, subject) {
-  if (!is(query, "RangesList") || length(query) != length(x))
-    stop("'query' must be a RangesList of length equal to that of 'x'")
-  if (!is(subject, "RangesList") || length(subject) != length(x))
-    stop("'subject' must be a RangesList of length equal to that of 'x'")
-  els <- as.list(x, use.names = FALSE)
-  queries <- as.list(query, use.names = FALSE)
-  subjects <- as.list(subject, use.names = FALSE)
-  ans <- do.call(RangesList, lapply(seq_len(length(x)), function(i) {
-    ranges(els[[i]], queries[[i]], subjects[[i]])
-  }))
-  names(ans) <- names(x)
-  ans
-})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Convenience for dereferencing overlap hits to a Pairs

@@ -12,7 +12,10 @@
 ### Accessor methods.
 ###
 
-setMethod("ranges", "Rle", function(x) IRanges(start(x), width = width(x)))
+setMethod("ranges", "Rle",
+    function(x, use.names=TRUE, use.mcols=FALSE)
+        IRanges(start(x), width=width(x))
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

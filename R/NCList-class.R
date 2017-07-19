@@ -17,22 +17,26 @@ setClass("NCList",
 )
 
 setMethod("ranges", "NCList",
-    function(x, use.mcols=FALSE)
+    function(x, use.names=TRUE, use.mcols=FALSE)
     {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         ans <- x@ranges
+        if (!use.names)
+            names(ans) <- NULL
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
     }
 )
 
-setMethod("length", "NCList", function(x) length(ranges(x)))
-setMethod("names", "NCList", function(x) names(ranges(x)))
-setMethod("start", "NCList", function(x, ...) start(ranges(x)))
-setMethod("end", "NCList", function(x, ...) end(ranges(x)))
-setMethod("width", "NCList", function(x) width(ranges(x)))
+setMethod("length", "NCList", function(x) length(x@ranges))
+setMethod("names", "NCList", function(x) names(x@ranges))
+setMethod("start", "NCList", function(x, ...) start(x@ranges))
+setMethod("end", "NCList", function(x, ...) end(x@ranges))
+setMethod("width", "NCList", function(x) width(x@ranges))
 
 setAs("NCList", "IRanges", function(from) ranges(from, use.mcols=TRUE))
 
@@ -227,27 +231,31 @@ setMethod("parallelSlotNames", "NCLists",
 )
 
 ### TODO: Move rglist() generic from GenomicRanges to IRanges
-#setMethod("rglist", "NCLists", function(x, ...) x@ranges)
+#setMethod("rglist", "NCLists", function(x, ...) x@rglist)
 
 setMethod("ranges", "NCLists",
-    function(x, use.mcols=FALSE)
+    function(x, use.names=TRUE, use.mcols=FALSE)
     {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         ans <- x@rglist
+        if (!use.names)
+            names(ans) <- NULL
         if (use.mcols)
             mcols(ans) <- mcols(x)
         ans
     }
 )
 
-setMethod("length", "NCLists", function(x) length(ranges(x)))
-setMethod("names", "NCLists", function(x) names(ranges(x)))
-setMethod("start", "NCLists", function(x, ...) start(ranges(x)))
-setMethod("end", "NCLists", function(x, ...) end(ranges(x)))
-setMethod("width", "NCLists", function(x) width(ranges(x)))
+setMethod("length", "NCLists", function(x) length(x@rglist))
+setMethod("names", "NCLists", function(x) names(x@rglist))
+setMethod("start", "NCLists", function(x, ...) start(x@rglist))
+setMethod("end", "NCLists", function(x, ...) end(x@rglist))
+setMethod("width", "NCLists", function(x) width(x@rglist))
 
-setMethod("elementNROWS", "NCLists", function(x) elementNROWS(ranges(x)))
+setMethod("elementNROWS", "NCLists", function(x) elementNROWS(x@rglist))
 setMethod("getListElement", "NCLists",
     function (x, i, exact=TRUE)
     {

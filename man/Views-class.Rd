@@ -5,7 +5,6 @@
 \alias{Views-class}
 \alias{subject}
 \alias{subject,Views-method}
-\alias{ranges}
 \alias{ranges,Views-method}
 \alias{ranges<-}
 \alias{ranges<-,Views-method}

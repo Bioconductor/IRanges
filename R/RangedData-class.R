@@ -52,7 +52,9 @@ setReplaceMethod("values", "RangedData",
                    x
                  })
 
-setMethod("ranges", "RangedData", function(x) x@ranges)
+setMethod("ranges", "RangedData",
+    function(x, use.names=TRUE, use.mcols=FALSE) x@ranges
+)
 
 setReplaceMethod("ranges", "RangedData",
                  function(x, value) {

@@ -391,8 +391,8 @@ setMethod("runLength", "CompressedRleList", function(x) {
   width(ranges(x))
 })
 
-setMethod("ranges", "RleList", function(x) {
-  as(lapply(x, ranges), "List")
+setMethod("ranges", "RleList", function(x, use.names=TRUE, use.mcols=FALSE) {
+  as(lapply(x, ranges, use.names=use.names, use.mcols=use.mcols), "List")
 })
 
 diceRangesByList <- function(x, list) {
@@ -403,16 +403,16 @@ diceRangesByList <- function(x, list) {
   ## bit faster.
   hits <- findOverlaps_Ranges_Partitioning(x, listPart,
                                            hit.empty.query.ranges=TRUE)
+  ov <- overlapsRanges(x, listPart, hits)
+  ans_unlistData <- shift(ov, 1L - start(listPart)[subjectHits(hits)])
   ans_partitioning <- PartitioningByEnd(subjectHits(hits), NG=length(list))
-  ans_unlistData <- shift(ranges(hits, x, listPart),
-                          1L - start(listPart)[subjectHits(hits)])
   ans <- relist(ans_unlistData, ans_partitioning)
   names(ans) <- names(list)
   ans
 }
 
 setMethod("ranges", "CompressedRleList",
-    function(x)
+    function(x, use.names=TRUE, use.mcols=FALSE)
     {
       rle <- unlist(x, use.names=FALSE)
       rlePart <- PartitioningByWidth(runLength(rle))
