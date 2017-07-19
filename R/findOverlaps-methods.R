@@ -650,6 +650,10 @@ setMethod("overlapsRanges", c("Ranges", "Ranges"),
         } else {
             if (!is(hits, "Hits"))
                 stop("'hits' must be a Hits object")
+            if (length(list(...)) != 0L)
+                stop(wmsg("extra arguments are only accepted when the 'hits' ",
+                          "argument is not supplied (in which case they are ",
+                          "passed to the internal call to findOverlaps())"))
             if (queryLength(hits) != length(query) ||
                 subjectLength(hits) != length(subject))
                 stop("'hits' is not compatible with 'query' and 'subject'")
@@ -675,6 +679,10 @@ setMethod("overlapsRanges", c("RangesList", "RangesList"),
         } else {
             if (!is(hits, "HitsList"))
                 stop("'hits' must be a HitsList object")
+            if (length(list(...)) != 0L)
+                stop(wmsg("extra arguments are only accepted when the 'hits' ",
+                          "argument is not supplied (in which case they are ",
+                          "passed to the internal call to findOverlaps())"))
             if (length(hits) != length(query) ||
                 length(hits) != length(subject))
                 stop("'query', 'subject', and 'hits' must have the same length")

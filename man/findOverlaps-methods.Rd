@@ -107,8 +107,7 @@ subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
                  invert=FALSE,
                  ...)
 
-\S4method{overlapsRanges}{Ranges,Ranges}(query, subject, hits)
-\S4method{overlapsRanges}{RangesList,RangesList}(query, subject, hits)
+overlapsRanges(query, subject, hits=NULL, ...)
 
 poverlaps(query, subject, maxgap = 0L, minoverlap = 1L,
           type = c("any", "start", "end", "within", "equal"),
@@ -193,8 +192,11 @@ findOverlapPairs(query, subject, ...)
     overlap the subject.
   }
   \item{hits}{
-    \link[S4Vectors]{Hits} or \link[S4Vectors]{HitsList} object returned
-    by \code{findOverlaps}.
+    The \link[S4Vectors]{Hits} or \link[S4Vectors]{HitsList} object returned
+    by \code{findOverlaps}, or \code{NULL}. If \code{NULL} then \code{hits}
+    is computed by calling \code{findOverlaps(query, subject, ...)} internally
+    (the extra arguments passed to \code{overlapsRanges} are passed to
+    \code{findOverlaps}).
   }
   \item{...}{
     Further arguments to be passed to or from other methods:
