@@ -30,6 +30,7 @@ Collate: range-squeezers.R
 	IRanges-class.R
 	IRanges-constructor.R
 	IRanges-utils.R
+	IPos-class.R
 	Grouping-class.R
 	CompressedList-class.R
 	CompressedList-comparison.R
