@@ -99,7 +99,7 @@ exportMethods(
     c,
     show,
     match, duplicated, unique, anyDuplicated, "%in%",
-    order, xtfrm,
+    is.unsorted, order,
     Ops, Math, Math2, Summary, Complex,
     summary,
     rev,

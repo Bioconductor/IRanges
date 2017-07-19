@@ -69,31 +69,77 @@ setMethod("selfmatch", "Ranges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Ordering ranges
+### order() and related methods.
 ###
-### order(), sort(), rank() on Ranges objects are consistent with the order
-### on ranges implied by pcompare().
+### is.unsorted(), order(), sort(), rank() on Ranges derivatives are
+### consistent with the order implied by pcompare().
+### is.unsorted() is a quick/cheap way of checking whether a Ranges
+### derivative is already sorted, e.g., called prior to a costly sort.
+### sort() and rank() will work out-of-the-box on a Ranges derivative thanks
+### to the method for List objects (which delegates to the method for Vector
+### objects).
 ###
+
+.Ranges_as_IntegerPairs <- function(x)
+{
+    a <- start(x)
+    b <- width(x)
+    list(a, b)
+}
+
+setMethod("is.unsorted", "Ranges",
+    function(x, na.rm=FALSE, strictly=FALSE)
+    {
+        if (!identical(na.rm, FALSE))
+            warning("\"is.unsorted\" method for Ranges objects ",
+                    "ignores the 'na.rm' argument")
+        if (!isTRUEorFALSE(strictly))
+            stop("'strictly' must be TRUE of FALSE")
+        ## It seems that creating the integer pairs below is faster when
+        ## 'x' is already sorted (TODO: Investigate why). Therefore, and
+        ## somewhat counterintuitively, is.unsorted() can be faster when 'x'
+        ## is already sorted (which, in theory, is the worst-case scenario
+        ## because S4Vectors:::sortedIntegerPairs() will then need to take a
+        ## full walk on 'x') than when it is unsorted (in which case
+        ## S4Vectors:::sortedIntegerPairs() might stop walking on 'x' after
+        ## checking its first 2 elements only -- the best-case scenario).
+        pairs <- .Ranges_as_IntegerPairs(x)
+        !S4Vectors:::sortedIntegerPairs(pairs[[1L]], pairs[[2L]],
+                                        strictly=strictly)
+    }
+)
+
+.order_Ranges <- function(x, decreasing=FALSE)
+{
+    if (!isTRUEorFALSE(decreasing))
+        stop("'decreasing' must be TRUE or FALSE")
+    pairs <- .Ranges_as_IntegerPairs(x)
+    orderIntegerPairs(pairs[[1L]], pairs[[2L]], decreasing=decreasing)
+}
 
 ### 'na.last' is pointless (Ranges objects don't contain NAs) so is ignored.
 ### 'method' is also ignored at the moment.
 setMethod("order", "Ranges",
     function(..., na.last=TRUE, decreasing=FALSE, method=c("shell", "radix"))
     {
+        ## Turn off this warning for now since it triggers spurious warnings
+        ## when calling sort() on a RangesList object. The root of the
+        ## problem is inconsistent defaults for 'na.last' between order() and
+        ## sort(), as reported here:
+        ##   https://stat.ethz.ch/pipermail/r-devel/2015-November/072012.html
+        #if (!identical(na.last, TRUE))
+        #    warning("\"order\" method for Ranges objects ",
+        #            "ignores the 'na.last' argument")
         if (!isTRUEorFALSE(decreasing))
             stop("'decreasing' must be TRUE or FALSE")
         ## All arguments in '...' are guaranteed to be Ranges objects.
         args <- list(...)
-        if (length(args) == 1L) {
-            x <- args[[1L]]
-            return(orderIntegerPairs(start(x), width(x),
-                                     decreasing=decreasing))
-        }
-        order_args <- vector("list", 2L * length(args))
-        idx <- 2L * seq_along(args)
-        order_args[idx - 1L] <- lapply(args, start)
-        order_args[idx] <- lapply(args, width)
-        do.call(order, c(order_args, list(decreasing=decreasing)))
+        if (length(args) == 1L)
+            return(.order_Ranges(args[[1L]], decreasing))
+        order_args <- c(unlist(lapply(args, .Ranges_as_IntegerPairs),
+                               recursive=FALSE, use.names=FALSE),
+                        list(na.last=na.last, decreasing=decreasing))
+        do.call(order, order_args)
     }
 )
 

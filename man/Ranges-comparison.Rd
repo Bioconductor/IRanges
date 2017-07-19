@@ -9,6 +9,7 @@
 \alias{match,Ranges,Ranges-method}
 \alias{selfmatch,Ranges-method}
 
+\alias{is.unsorted,Ranges-method}
 \alias{order,Ranges-method}
 
 
@@ -27,8 +28,10 @@
 
 \S4method{selfmatch}{Ranges}(x, method=c("auto", "quick", "hash"))
 
-## order()
-## -------
+## order() and related methods
+## ----------------------------
+
+\S4method{is.unsorted}{Ranges}(x, na.rm=FALSE, strictly=FALSE)
 
 \S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE, method=c("shell", "radix"))
 
@@ -62,6 +65,13 @@ rangeComparisonCodeToLetter(code)
 
     For \code{order}: The \code{method} argument is ignored.
   }
+  \item{na.rm}{
+    Ignored.
+  }
+  \item{strictly}{
+    Logical indicating if the check should be for \emph{strictly} increasing
+    values.
+  }
   \item{...}{
     One or more \link{Ranges} objects. The \link{Ranges} objects 
     after the first one are used to break ties.
@@ -78,7 +88,11 @@ rangeComparisonCodeToLetter(code)
 }
 
 \details{
-  Two ranges are considered equal iff they share the same start and width.
+  Two elements of a \link{Ranges} derivative (i.e. two integer ranges)
+  are considered equal iff they share the same start and width.
+  \code{duplicated()} and \code{unique()} on a \link{Ranges} derivative
+  are conforming to this.
+
   Note that with this definition, 2 empty ranges are generally
   not equal (they need to share the same start to be considered equal).
   This means that, when it comes to comparing ranges, an empty range is
@@ -86,10 +100,21 @@ rangeComparisonCodeToLetter(code)
   typical usecase is comparison of insertion points defined along a string
   (like a DNA sequence) and represented as empty ranges.
 
-  Ranges are ordered by starting position first, and then by width.
-  This way, the space of ranges is totally ordered.
-  On a \link{Ranges} object, \code{order}, \code{sort}, and \code{rank}
-  are consistent with this order.
+  The "natural order" for the elements of a \link{Ranges} derivative
+  is to order them (a) first by start and (b) then by width.
+  This way, the space of integer ranges is totally ordered.
+
+  \code{pcompare()}, \code{==}, \code{!=}, \code{<=}, \code{>=}, \code{<}
+  and \code{>} on \link{Ranges} derivatives behave accordingly to this
+  "natural order".
+
+  \code{is.unsorted()}, \code{order()}, \code{sort()}, \code{rank()} on
+  \link{Ranges} derivatives also behave accordingly to this
+  "natural order".
+
+  Finally, note that some \emph{inter range transformations} like
+  \code{\link{reduce}} or \code{\link{disjoin}} also use this "natural order"
+  implicitly when operating on \link{Ranges} derivatives.
 
   \describe{
     \item{}{
@@ -300,6 +325,7 @@ countMatches(x2_levels, x2)
 ## ---------------------------------------------------------------------
 ## D. order() AND RELATED METHODS
 ## ---------------------------------------------------------------------
+is.unsorted(x2)
 order(x2)
 sort(x2)
 rank(x2, ties.method="first")

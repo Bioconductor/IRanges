@@ -226,6 +226,8 @@ setAs("character", "IRanges", .from_character_to_IRanges)
 }
 setAs("factor", "IRanges", .from_factor_to_IRanges)
 
+setAs("ANY", "Ranges", function(from) as(from, "IRanges"))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Low-level setters for IRanges objects.
