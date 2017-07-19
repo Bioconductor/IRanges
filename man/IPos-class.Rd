@@ -20,12 +20,12 @@
 \alias{show,IPos-method}
 \alias{c,IPos-method}
 
-\title{IPos objects}
+\title{Memory-efficient representation of integer positions}
 
 \description{
   The IPos class is a container for storing a set of \emph{integer positions}
   where most of the positions are typically (but not necessarily) adjacent.
-  Because integer positions can be seen as ranges of width 1, the IPos
+  Because integer positions can be seen as integer ranges of width 1, the IPos
   class extends the \link{Ranges} virtual class. Note that even though an
   \link{IRanges} object can be used for storing integer positions, using an
   IPos object will be much more memory-efficient, especially when the object

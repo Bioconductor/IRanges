@@ -303,10 +303,11 @@
     \item \link{IRanges} objects (\link{NormalIRanges} objects are documented
           in the same man page).
 
-    \item \link{Ranges-comparison} for comparing and ordering ranges.
+    \item The \link{IPos} class, a memory-efficient \link{Ranges} derivative
+          for representing \emph{integer positions} (i.e. integer ranges
+          of width 1).
 
-    \item The \link{IPos} container for representing a set of \emph{integer
-          positions}.
+    \item \link{Ranges-comparison} for comparing and ordering ranges.
 
     \item \link{findOverlaps-methods} for finding/counting overlapping ranges.
 

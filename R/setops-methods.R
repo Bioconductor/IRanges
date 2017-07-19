@@ -24,8 +24,8 @@
 ###
 
 ### Always return an IRanges *instance* whatever Ranges derivatives are passed
-### to it (e.g. NCList or NormalIRanges), so does NOT act like an endomorphism
-### in general.
+### to it (e.g. IPos, NCList or NormalIRanges), so does NOT act like an
+### endomorphism in general.
 setMethod("union", c("Ranges", "Ranges"),
     function(x, y)
     {
@@ -64,8 +64,8 @@ setMethod("union", c("Pairs", "missing"), function(x, y, ...) {
 ###
 
 ### Always return an IRanges *instance* whatever Ranges derivatives are passed
-### to it (e.g. NCList or NormalIRanges), so does NOT act like an endomorphism
-### in general.
+### to it (e.g. IPos, NCList or NormalIRanges), so does NOT act like an
+### endomorphism in general.
 setMethod("intersect", c("Ranges", "Ranges"),
     function(x, y)
     {
@@ -114,8 +114,8 @@ setMethod("intersect", c("CompressedAtomicList", "CompressedAtomicList"),
 ###
 
 ### Always return an IRanges *instance* whatever Ranges derivatives are passed
-### to it (e.g. NCList or NormalIRanges), so does NOT act like an endomorphism
-### in general.
+### to it (e.g. IPos, NCList or NormalIRanges), so does NOT act like an
+### endomorphism in general.
 setMethod("setdiff", c("Ranges", "Ranges"),
     function(x, y)
     {

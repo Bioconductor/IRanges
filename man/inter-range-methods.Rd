@@ -4,6 +4,7 @@
 
 \alias{range}
 \alias{range,Ranges-method}
+\alias{range,IPos-method}
 \alias{range,RangesList-method}
 \alias{range,CompressedIRangesList-method}
 \alias{range,RangedData-method}
@@ -29,6 +30,7 @@
 
 \alias{isDisjoint}
 \alias{isDisjoint,Ranges-method}
+\alias{isDisjoint,IPos-method}
 \alias{isDisjoint,NormalIRanges-method}
 \alias{isDisjoint,RangesList-method}
 

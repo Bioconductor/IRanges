@@ -64,6 +64,16 @@ setMethod("shift", "Ranges",
     }
 )
 
+### Overwrite above method with optimized method for IPos objects.
+### An IPos object cannot hold names so the 'use.names' arg has no effect.
+setMethod("shift", "IPos",
+    function(x, shift=0L, use.names=TRUE)
+    {
+        x@pos_runs <- callGeneric(x@pos_runs, shift=shift)
+        x
+    }
+)
+
 setMethod("shift", "Views",
     function(x, shift=0L, use.names=TRUE)
     {

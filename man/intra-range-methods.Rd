@@ -4,6 +4,7 @@
 
 \alias{shift}
 \alias{shift,Ranges-method}
+\alias{shift,IPos-method}
 \alias{shift,Views-method}
 \alias{shift,RangesList-method}
 \alias{shift,CompressedIRangesList-method}
