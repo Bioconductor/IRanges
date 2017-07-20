@@ -55,8 +55,8 @@ IPos(pos_runs)  # constructor function
     IPos objects support the same set of getters as other \link{Ranges}
     derivatives (i.e. \code{start()}, \code{end()}, \code{mcols()}, etc...),
     plus the \code{pos()} getter which is equivalent to \code{start()}
-    or \code{end()}. See \code{?Ranges} for the list of getters supported
-    by \link{Ranges} derivatives.
+    or \code{end()}. See \code{?\link{Ranges}} for the list of getters
+    supported by \link{Ranges} derivatives.
 
     IMPORTANT NOTE: An IPos object cannot hold names i.e. \code{names()}
     always returns \code{NULL} on it.
