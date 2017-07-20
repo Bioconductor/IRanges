@@ -69,25 +69,26 @@ setMethod("width", "IPos", function(x) rep.int(1L, length(x)))
 ### idempotent inter range transformation could have a "state checker" so
 ### maybe add isReduced() too (range() probably doesn't need one).
 
-stitch_Ranges <- function(x, drop.empty.ranges=FALSE)
+stitch_Ranges <- function(x)
 {
     if (length(x) == 0L)
         return(IRanges())
     x_start <- start(x)
     x_end <- end(x)
+
+    ## Find runs of stitchable elements along 'x'.
+    ## Each run is described by the indices of its first ('run_from') and
+    ## last ('run_to') elements in 'x'.
+    ## The runs form a partitioning of 'x'.
     new_run_idx <- which(x_start[-1L] != x_end[-length(x)] + 1L)
-    start_idx <- c(1L, new_run_idx + 1L)
-    end_idx <- c(new_run_idx, length(x))
-    ans_start <- x_start[start_idx]
-    ans_end <- x_end[end_idx]
-    ans_width <- ans_end - ans_start + 1L
-    if (drop.empty.ranges) {
-        keep_idx <- which(ans_width != 0L)
-        ans_start <- ans_start[keep_idx]
-        ans_width <- ans_width[keep_idx]
-    }
-    new2("IRanges", start=ans_start, width=ans_width, check=FALSE)
+    run_from <- c(1L, new_run_idx + 1L)
+    run_to <- c(new_run_idx, length(x))
+
+    IRanges(x_start[run_from], x_end[run_to])
 }
+
+### The runs of positions in an IPos object are guaranteed to be stitched.
+stitch_IPos <- function(x) x@pos_runs
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -110,8 +111,9 @@ IPos <- function(pos_runs=IRanges())
     suppressWarnings(ans_len <- sum(width(pos_runs)))
     if (is.na(ans_len))
         stop("too many positions in 'pos_runs'")
-    ans_pos_runs <- stitch_Ranges(pos_runs, drop.empty.ranges=TRUE)
-    new2("IPos", pos_runs=ans_pos_runs, check=FALSE)
+    pos_runs <- stitch_Ranges(pos_runs)
+    pos_runs <- pos_runs[width(pos_runs) != 0L]
+    new2("IPos", pos_runs=pos_runs, check=FALSE)
 }
 
 
