@@ -53,7 +53,7 @@ setMethod("width", "IPos", function(x) rep.int(1L, length(x)))
 ### Note that x[1] and x[3] are not stitchable because they are not
 ### consecutive vector elements (but they would if we removed x[2]).
 
-### .stitch_Ranges() below takes any Ranges derivative and returns an IRanges
+### stitch_Ranges() below takes any Ranges derivative and returns an IRanges
 ### object (so is NOT an endomorphism). Note that this transformation
 ### preserves 'sum(width(x))'.
 ### Also note that this is an "inter range transformation". However unlike
@@ -69,14 +69,13 @@ setMethod("width", "IPos", function(x) rep.int(1L, length(x)))
 ### idempotent inter range transformation could have a "state checker" so
 ### maybe add isReduced() too (range() probably doesn't need one).
 
-.stitch_Ranges <- function(x, drop.empty.ranges=FALSE)
+stitch_Ranges <- function(x, drop.empty.ranges=FALSE)
 {
     if (length(x) == 0L)
         return(IRanges())
     x_start <- start(x)
     x_end <- end(x)
-    new_run <- Rle(x_start[-1L] != x_end[-length(x)] + 1L)
-    new_run_idx <- which(new_run)
+    new_run_idx <- which(x_start[-1L] != x_end[-length(x)] + 1L)
     start_idx <- c(1L, new_run_idx + 1L)
     end_idx <- c(new_run_idx, length(x))
     ans_start <- x_start[start_idx]
@@ -111,7 +110,7 @@ IPos <- function(pos_runs=IRanges())
     suppressWarnings(ans_len <- sum(width(pos_runs)))
     if (is.na(ans_len))
         stop("too many positions in 'pos_runs'")
-    ans_pos_runs <- .stitch_Ranges(pos_runs, drop.empty.ranges=TRUE)
+    ans_pos_runs <- stitch_Ranges(pos_runs, drop.empty.ranges=TRUE)
     new2("IPos", pos_runs=ans_pos_runs, check=FALSE)
 }
 
@@ -157,6 +156,39 @@ setMethod("as.data.frame", "IPos",
 ### Subsetting
 ###
 
+### NOT exported but used in the GenomicRanges package.
+### 'pos_runs' must be an IRanges or GRanges object or any range-based
+### object as long as it supports start(), end(), width(), and is subsettable.
+### 'i' must be a Ranges object with no zero-width ranges.
+extract_pos_runs_by_ranges <- function(pos_runs, i)
+{
+    map <- S4Vectors:::map_ranges_to_runs(width(pos_runs),
+                                          start(i), width(i))
+    ## Because 'i' has no zero-width ranges, 'mapped_range_span' cannot
+    ## contain zeroes and so 'mapped_range_Ltrim' and 'mapped_range_Rtrim'
+    ## cannot contain garbbage.
+    mapped_range_offset <- map[[1L]]
+    mapped_range_span <- map[[2L]]
+    mapped_range_Ltrim <- map[[3L]]
+    mapped_range_Rtrim <- map[[4L]]
+    run_idx <- S4Vectors:::fancy_mseq(mapped_range_span,
+                                      mapped_range_offset)
+    pos_runs <- pos_runs[run_idx]
+    if (length(run_idx) != 0L) {
+        Rtrim_idx <- cumsum(mapped_range_span)
+        Ltrim_idx <- c(1L, Rtrim_idx[-length(Rtrim_idx)] + 1L)
+        trimmed_start <- start(pos_runs)[Ltrim_idx] +
+                         mapped_range_Ltrim
+        trimmed_end <- end(pos_runs)[Rtrim_idx] - mapped_range_Rtrim
+        start(pos_runs)[Ltrim_idx] <- trimmed_start
+        end(pos_runs)[Rtrim_idx] <- trimmed_end
+        suppressWarnings(new_len <- sum(width(pos_runs)))
+        if (is.na(new_len))
+            stop("subscript is too big")
+    }
+    pos_runs
+}
+
 setMethod("extractROWS", "IPos",
     function(x, i)
     {
@@ -168,31 +200,8 @@ setMethod("extractROWS", "IPos",
         } else {
             ir <- as(as.integer(i), "IRanges")
         }
-        map <- S4Vectors:::map_ranges_to_runs(width(x@pos_runs),
-                                              start(ir), width(ir))
-        ## Because 'ir' has no zero-width ranges, 'mapped_range_span' cannot
-        ## contain zeroes and so 'mapped_range_Ltrim' and 'mapped_range_Rtrim'
-        ## cannot contain garbbage.
-        mapped_range_offset <- map[[1L]]
-        mapped_range_span <- map[[2L]]
-        mapped_range_Ltrim <- map[[3L]]
-        mapped_range_Rtrim <- map[[4L]]
-        run_idx <- S4Vectors:::fancy_mseq(mapped_range_span,
-                                          mapped_range_offset)
-        new_pos_runs <- x@pos_runs[run_idx]
-        if (length(run_idx) != 0L) {
-            Rtrim_idx <- cumsum(mapped_range_span)
-            Ltrim_idx <- c(1L, Rtrim_idx[-length(Rtrim_idx)] + 1L)
-            trimmed_start <- start(new_pos_runs)[Ltrim_idx] +
-                             mapped_range_Ltrim
-            trimmed_end <- end(new_pos_runs)[Rtrim_idx] - mapped_range_Rtrim
-            start(new_pos_runs)[Ltrim_idx] <- trimmed_start
-            end(new_pos_runs)[Rtrim_idx] <- trimmed_end
-            suppressWarnings(new_len <- sum(width(new_pos_runs)))
-            if (is.na(new_len))
-                stop("subscript is too big")
-        }
-        x@pos_runs <- .stitch_Ranges(new_pos_runs)
+        new_pos_runs <- extract_pos_runs_by_ranges(x@pos_runs, ir)
+        x@pos_runs <- stitch_Ranges(new_pos_runs)
         mcols(x) <- extractROWS(mcols(x), i)
         x
     }
@@ -304,7 +313,7 @@ combine_IPos_objects <- function(Class, objects,
     ## Combine "pos_runs" slots.
     pos_runs_slots <- lapply(objects, function(x) x@pos_runs)
     ## TODO: Use combine_IRanges_objects() here when it's available.
-    ans_pos_runs <- .stitch_Ranges(do.call(c, pos_runs_slots))
+    ans_pos_runs <- stitch_Ranges(do.call(c, pos_runs_slots))
 
     suppressWarnings(ans_len <- sum(width(ans_pos_runs)))
     if (is.na(ans_len))
