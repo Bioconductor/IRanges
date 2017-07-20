@@ -50,6 +50,7 @@ IPos(pos_runs)  # constructor function
 }
 
 \section{Accessors}{
+
   \subsection{Getters}{
     IPos objects support the same set of getters as other \link{Ranges}
     derivatives (i.e. \code{start()}, \code{end()}, \code{mcols()}, etc...),
@@ -57,9 +58,10 @@ IPos(pos_runs)  # constructor function
     or \code{end()}. See \code{?Ranges} for the list of getters supported
     by \link{Ranges} derivatives.
 
-    Note that an IPos object cannot hold names i.e. \code{names()}
+    IMPORTANT NOTE: An IPos object cannot hold names i.e. \code{names()}
     always returns \code{NULL} on it.
   }
+
   \subsection{Setters}{
     IPos objects support the \code{mcols()} and \code{metadata()} setters
     only.
@@ -82,7 +84,7 @@ IPos(pos_runs)  # constructor function
   From IPos to ordinary R objects:
   Like with any other \link{Ranges} derivative, \code{as.character()},
   \code{as.factor()}, and \code{as.data.frame()} work on an IPos object
-  \code{x}. Note howver that \code{as.data.frame(x)} returns a data frame
+  \code{x}. Note however that \code{as.data.frame(x)} returns a data frame
   with a \code{pos} column (containing \code{pos(x)}) instead of the
   \code{start}, \code{end}, and \code{width} columns that one gets with other
   \link{Ranges} derivatives.
@@ -99,7 +101,7 @@ IPos(pos_runs)  # constructor function
 
 \section{Splitting and Relisting}{
   Like with an \link{IRanges} object, \code{split()} and \code{relist()} work
-  with an IPos object \code{x}.
+  on an IPos object.
 }
 
 \note{
@@ -117,10 +119,11 @@ IPos(pos_runs)  # constructor function
 
 \seealso{
   \itemize{
-    \item The \link[GenomicRanges]{GPos} container in the \pkg{GenomicRanges}
-          package for representing a set of \emph{genomic positions}.
+    \item The \link[GenomicRanges]{GPos} class in the \pkg{GenomicRanges}
+          package for a memory-efficient representation of \emph{genomic
+          positions} (i.e. genomic ranges of width 1).
 
-    \item The \link{Ranges} class.
+    \item \link{Ranges} and \link{IRanges} objects.
 
     \item \link{Ranges-comparison} for comparing and ordering integer ranges
           and/or positions.

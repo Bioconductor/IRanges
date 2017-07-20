@@ -2,14 +2,7 @@
 ### IPos objects
 ### -------------------------------------------------------------------------
 ###
-### The IPos class is a container for storing a set of integer *positions*
-### where most of the positions are typically (but not necessarily) adjacent.
-### Because integer positions can be seen as ranges of width 1, the IPos
-### class extends the Ranges virtual class. Note that even though an IRanges
-### object can be used for storing integer positions, using an IPos object
-### will be much more memory-efficient, especially when the object contains
-### long runs of adjacent positions in ascending order.
-###
+
 
 setClass("IPos",
     contains="Ranges",
@@ -44,7 +37,7 @@ setMethod("width", "IPos", function(x) rep.int(1L, length(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Collapse runs of "stitchable ranges"
+### Collapse runs of "stitchable integer ranges"
 ###
 ### In a Ranges object 'x', 2 ranges x[i] and x[i+1] are "stitchable" if
 ### start(x[i+1]) == end(x[i])+1. For example, in the following object:
@@ -119,9 +112,7 @@ IPos <- function(pos_runs=IRanges())
     if (is.na(ans_len))
         stop("too many positions in 'pos_runs'")
     ans_pos_runs <- .stitch_Ranges(pos_runs, drop.empty.ranges=TRUE)
-    new2("IPos", pos_runs=ans_pos_runs,
-                 metadata=pos_runs@metadata,
-                 check=FALSE)
+    new2("IPos", pos_runs=ans_pos_runs, check=FALSE)
 }
 
 
