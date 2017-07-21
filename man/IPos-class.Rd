@@ -15,6 +15,7 @@
 \alias{width,IPos-method}
 
 \alias{coerce,Ranges,IPos-method}
+\alias{coerce,ANY,IPos-method}
 \alias{as.data.frame,IPos-method}
 \alias{extractROWS,IPos-method}
 \alias{show,IPos-method}

@@ -136,6 +136,8 @@ IPos <- function(pos_runs=IRanges())
 }
 setAs("Ranges", "IPos", .from_Ranges_to_IPos)
 
+setAs("ANY", "IPos", function(from) .from_Ranges_to_IPos(as(from, "Ranges")))
+
 ### The "as.data.frame" method for Ranges objects works on an IPos object
 ### but returns a data.frame with identical "start" and "end" columns, and
 ### a "width" column filled with 1. We overwrite it to return a data.frame
