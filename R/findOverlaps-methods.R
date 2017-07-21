@@ -706,6 +706,12 @@ setMethod("ranges", "Hits", function(x, use.names=TRUE, use.mcols=FALSE,
     msg <- c("\"ranges\" method for Hits objects is deprecated. ",
              "Please use overlapsRanges() instead.")
     .Deprecated(msg=wmsg(msg))
+    query_is_missing <- missing(query)
+    subject_is_missing <- missing(subject)
+    if (query_is_missing || subject_is_missing) {
+        query <- if (subject_is_missing) use.names else use.mcols
+        subject <- if (query_is_missing) use.mcols else use.names
+    }
     overlapsRanges(query, subject, x)
 })
 
@@ -715,6 +721,12 @@ setMethod("ranges", "HitsList", function(x, use.names=TRUE, use.mcols=FALSE,
     msg <- c("\"ranges\" method for HitsList objects is deprecated. ",
              "Please use overlapsRanges() instead.")
     .Deprecated(msg=wmsg(msg))
+    query_is_missing <- missing(query)
+    subject_is_missing <- missing(subject)
+    if (query_is_missing || subject_is_missing) {
+        query <- if (subject_is_missing) use.names else use.mcols
+        subject <- if (query_is_missing) use.mcols else use.names
+    }
     overlapsRanges(query, subject, x)
 })
 
