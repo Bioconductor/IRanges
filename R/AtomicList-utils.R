@@ -818,7 +818,7 @@ setMethod("rank", "CompressedAtomicList",
 
 setMethod("order", "CompressedAtomicList",
           function (..., na.last = TRUE, decreasing = FALSE,
-                    method = c("shell", "radix"))
+                    method = c("auto", "shell", "radix"))
 {
     args <- list(...)
     if (length(args) != 1L) 
