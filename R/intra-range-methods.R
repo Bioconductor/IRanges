@@ -66,6 +66,7 @@ setMethod("shift", "Ranges",
 
 ### Overwrite above method with optimized method for IPos objects.
 ### An IPos object cannot hold names so the 'use.names' arg has no effect.
+### NOTE: We only support shifting by a single value at the moment!
 setMethod("shift", "IPos",
     function(x, shift=0L, use.names=TRUE)
     {
