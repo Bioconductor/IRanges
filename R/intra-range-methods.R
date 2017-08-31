@@ -69,6 +69,21 @@ setMethod("shift", "Ranges",
 setMethod("shift", "IPos",
     function(x, shift=0L, use.names=TRUE)
     {
+        if (!is.numeric(shift))
+            stop("'shift' must be a numeric vector")
+        if (!is.integer(shift))
+            shift <- as.integer(shift)
+        if (length(shift) != 1L) {
+            if (length(shift) != length(x))
+                stop("'shift' must be a single number or have the ",
+                     "length of 'x' when shifting an IPos object")
+            if (length(shift) != 0L) {
+                if (!isConstant(shift))
+                    stop("'shift' must be constant when shifting ",
+                         "an IPos object")
+                shift <- shift[[1L]]
+            }
+        }
         x@pos_runs <- callGeneric(x@pos_runs, shift=shift)
         x
     }
