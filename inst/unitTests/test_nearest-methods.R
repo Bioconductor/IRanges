@@ -120,22 +120,28 @@ test_Ranges_distance <- function()
 test_Ranges_distanceToNearest <- function() 
 {
   target <- Hits(sort.by.query=TRUE)
-  current <- quiet(distanceToNearest(IRanges(), IRanges())) 
+  current <- distanceToNearest(IRanges(), IRanges())
   checkIdentical(queryHits(current), queryHits(target))
   checkIdentical(subjectHits(current), subjectHits(target))
   checkIdentical(queryLength(current), queryLength(target))
 
-  query <- IRanges(5, 10)
+  x <- IRanges(5, 10)
   subject <- IRanges(c(1, 1, 1), c(4, 5, 6))
-  current <- quiet(distanceToNearest(query, subject, select="all"))
-  checkIdentical(subjectHits(current), c(2L, 3L))
+  current <- distanceToNearest(x, subject, select="all")
+  checkIdentical(subjectHits(current), 1:3)
 
-  current <- quiet(distanceToNearest(query, rev(subject), select="all"))
-  checkIdentical(subjectHits(current), c(1L, 2L))
+  current <- distanceToNearest(x, rev(subject), select="all")
+  checkIdentical(subjectHits(current), 1:3)
 
-  current <- distanceToNearest(query, IRanges())
+  current <- distanceToNearest(x, IRanges())
   checkIdentical(length(current), 0L)
   checkIdentical(queryLength(current), 1L)
   checkIdentical(subjectLength(current), 0L)
+
+  x <- IRanges(c(2, 4, 12, 15), c(2, 3, 13, 14))
+  subject <- IRanges(1, 10)
+  current <- distanceToNearest(x, subject)
+  checkIdentical(queryHits(current), 1:4)
+  checkIdentical(mcols(current)$distance, c(0L, 0L, 1L, 4L))
 }
 
