@@ -94,10 +94,11 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
           {
             select <- match.arg(select)
             if (!missing(subject)) {
-              ol <- findOverlaps(x, subject, select = select)
+              ol <- findOverlaps(x, subject, minoverlap = 0L, select = select)
             } else {
               subject <- x
-              ol <- findOverlaps(x, select = select, drop.self = TRUE)
+              ol <- findOverlaps(x, minoverlap = 0L, select = select,
+                                 drop.self = TRUE)
             }
             if (select == "all") {
               olv <- selectHits(ol, select="first")
