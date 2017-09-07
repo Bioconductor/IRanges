@@ -53,10 +53,20 @@ test_IRanges_combine <- function() {
   checkIdentical(mcols(c(ir1, ir2, ignore.mcols=TRUE)), NULL)
 }
 
-test_IRanges_subset <- function() { # by range
-  query <- IRanges(c(1, 4, 9), c(5, 7, 10))
-  subject <- IRanges(c(6, 8, 10), c(7, 12, 14))
-  checkIdentical(subsetByOverlaps(query, subject), query[2:3])
+test_IRanges_subsetByOverlaps <- function() {
+  x <- IRanges(9:12, 15)
+  ranges <- IRanges(1, 10)
+  checkIdentical(x[1:3], subsetByOverlaps(x, ranges))
+  checkIdentical(x[4], subsetByOverlaps(x, ranges, invert=TRUE))
+  checkIdentical(x[1:2], subsetByOverlaps(x, ranges, minoverlap=1))
+  checkIdentical(x[3:4], subsetByOverlaps(x, ranges, minoverlap=1, invert=TRUE))
+
+  x <- IRanges(c(1, 4, 9), c(5, 7, 10))
+  ranges <- IRanges(c(6, 8, 10), c(7, 12, 14))
+  checkIdentical(x, subsetByOverlaps(x, ranges))
+  checkIdentical(x[0], subsetByOverlaps(x, ranges, invert=TRUE))
+  checkIdentical(x[2:3], subsetByOverlaps(x, ranges, minoverlap=1))
+  checkIdentical(x[1], subsetByOverlaps(x, ranges, minoverlap=1, invert=TRUE))
 }
 
 test_IRanges_annotation <- function() {

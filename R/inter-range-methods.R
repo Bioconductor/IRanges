@@ -384,6 +384,10 @@ setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
 
 ### Always return an IRanges *instance* whatever Ranges derivative the input
 ### is, so does NOT act like an endomorphism in general.
+### FIXME: Does not properly handle zero-width ranges at the moment e.g.
+### disjoin(IRanges(c(1, 11, 13), width=c(2, 5, 0)) returns
+### IRanges(c(1, 11, 13), width=c(2, 2, 3)) when it should return
+### IRanges(c(1, 11, 13, 13), width=c(2, 2, 0, 3)).
 setMethod("disjoin", "Ranges",
     function(x, with.revmap=FALSE)
     {
@@ -399,7 +403,7 @@ setMethod("disjoin", "Ranges",
         adj <- new2("IRanges", start=adj_start,
                                width=adj_width,
                                check=FALSE)
-        adj <- subsetByOverlaps(adj, x)
+        adj <- subsetByOverlaps(adj, x, minoverlap=1L)
         if (with.revmap)
              mcols(adj)$revmap <- as(sort(findOverlaps(adj, x)),"List")
         adj

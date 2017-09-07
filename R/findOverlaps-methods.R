@@ -330,12 +330,12 @@ setGeneric("countOverlaps", signature = c("query", "subject"),
     type <- match.arg(type)
     if (missing(subject)) {
         hits <- findOverlaps(query,
-                             maxgap=maxgap, minoverlap=minoverlap, 
+                             maxgap=maxgap, minoverlap=minoverlap,
                              type=type,
                              ...)
     } else {
         hits <- findOverlaps(query, subject,
-                             maxgap=maxgap, minoverlap=minoverlap, 
+                             maxgap=maxgap, minoverlap=minoverlap,
                              type=type,
                              ...)
     }
@@ -429,7 +429,7 @@ setMethod("countOverlaps", c("RangesList", "RangedData"),
 ### overlapsAny()
 ###
 
-### Same args and signature as countOverlaps() and subsetByOverlaps().
+### Same args and signature as countOverlaps().
 setGeneric("overlapsAny", signature=c("query", "subject"),
     function(query, subject, maxgap=0L, minoverlap=1L,
              type=c("any", "start", "end", "within", "equal"),
@@ -570,65 +570,78 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
 ### subsetByOverlaps()
 ###
 
-setGeneric("subsetByOverlaps", signature=c("query", "subject"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
+### First 2 arguments are 'x' and 'ranges' like for the
+### transcriptsByOverlaps(), exonsByOverlaps(), and cdsByOverlaps() functions
+### from the GenomicFeatures package and the snpsByOverlaps() function from
+### the BSgenome package.
+setGeneric("subsetByOverlaps", signature=c("x", "ranges"),
+    function(x, ranges, maxgap=0L, minoverlap=0L,
              type=c("any", "start", "end", "within", "equal"),
              invert=FALSE, ...)
         standardGeneric("subsetByOverlaps")
 )
 
 setMethod("subsetByOverlaps", c("Vector", "Vector"),
-    function(query, subject, maxgap=0L, minoverlap=1L,
+    function(x, ranges, maxgap=0L, minoverlap=0L,
              type=c("any", "start", "end", "within", "equal"), invert=FALSE,
              ...)
     {
-        o <- overlapsAny(query, subject,
-                         maxgap=maxgap, minoverlap=minoverlap,
-                         type=match.arg(type),
-                         ...)
-        if (invert) query[!o] else query[o]
+        ov_any <- overlapsAny(x, ranges,
+                              maxgap=maxgap, minoverlap=minoverlap,
+                              type=match.arg(type),
+                              ...)
+        if (invert)
+            ov_any <- !ov_any
+        x[ov_any]
     }
 )
 
 setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
-          function(query, subject, maxgap = 0L, minoverlap = 1L,
+          function(x, ranges, maxgap = 0L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"),
                    invert = FALSE)
           {
-              o <- unlist(!is.na(findOverlaps(ranges(query), ranges(subject),
-                                              maxgap = maxgap,
-                                              minoverlap = minoverlap,
-                                              type = match.arg(type),
-                                              select = "arbitrary")),
-                          use.names=FALSE)
-              if (invert) query[!o,] else query[o,]
-          })
+              ov_any <- unlist(!is.na(findOverlaps(ranges(x), ranges(ranges),
+                                                   maxgap = maxgap,
+                                                   minoverlap = minoverlap,
+                                                   type = match.arg(type),
+                                                   select = "arbitrary")),
+                               use.names=FALSE)
+              if (invert)
+                  ov_any <- !ov_any
+              x[ov_any]
+          }
+)
 
 setMethod("subsetByOverlaps", c("RangedData", "RangesList"),
-          function(query, subject, maxgap = 0L, minoverlap = 1L,
+          function(x, ranges, maxgap = 0L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"),
                    invert = FALSE)
           {
-              o <- unlist(!is.na(findOverlaps(ranges(query), subject,
-                                              maxgap = maxgap,
-                                              minoverlap = minoverlap,
-                                              type = match.arg(type),
-                                              select = "arbitrary")),
-                          use.names=FALSE)
-              if (invert) query[!o,] else query[o,]
+              ov_any <- unlist(!is.na(findOverlaps(ranges(x), ranges,
+                                                   maxgap = maxgap,
+                                                   minoverlap = minoverlap,
+                                                   type = match.arg(type),
+                                                   select = "arbitrary")),
+                               use.names=FALSE)
+              if (invert)
+                  ov_any <- !ov_any
+              x[ov_any]
           })
 
 setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
-          function(query, subject, maxgap = 0L, minoverlap = 1L,
+          function(x, ranges, maxgap = 0L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"),
                    invert = FALSE)
           {
-              o <- !is.na(findOverlaps(query, ranges(subject),
-                                       maxgap = maxgap,
-                                       minoverlap = minoverlap,
-                                       type = match.arg(type),
-                                       select = "arbitrary"))
-              if (invert) query[!o] else query[o]
+              ov_any <- !is.na(findOverlaps(x, ranges(ranges),
+                                            maxgap = maxgap,
+                                            minoverlap = minoverlap,
+                                            type = match.arg(type),
+                                            select = "arbitrary"))
+              if (invert)
+                  ov_any <- !ov_any
+              x[ov_any]
           })
 
 

@@ -102,7 +102,7 @@ query \%over\% subject
 query \%within\% subject
 query \%outside\% subject
 
-subsetByOverlaps(query, subject, maxgap=0L, minoverlap=1L,
+subsetByOverlaps(x, ranges, maxgap=0L, minoverlap=0L,
                  type=c("any", "start", "end", "within", "equal"),
                  invert=FALSE,
                  ...)
@@ -119,18 +119,22 @@ findOverlapPairs(query, subject, ...)
 }
 
 \arguments{
-  \item{query, subject}{
+  \item{query, subject, x, ranges}{
     Each of them can be a \link{Ranges}, \link{Views}, \link{RangesList},
     \link{ViewsList}, or \link{RangedData} object.
-    In addition, if \code{subject} is a \link{Ranges} object, \code{query}
-    can be an  integer vector to be converted to length-one ranges.
+    In addition, if \code{subject} or \code{ranges} is a \link{Ranges} object,
+    \code{query} or \code{x} can be an integer vector to be converted to
+    length-one ranges.
 
-    If \code{query} is a \link{RangesList} or \link{RangedData},
-    \code{subject} must be a \link{RangesList} or \link{RangedData}.
-    If both lists have names, each element from the subject is paired
-    with the element from the query with the matching name, if any.
-    Otherwise, elements are paired by position. The overlap is then
-    computed between the pairs as described below.
+    If \code{query} or \code{x} is a \link{RangesList} or
+    \link{RangedData}, \code{subject} or \code{ranges} must be a
+    \link{RangesList} or \link{RangedData}.
+
+    If both arguments are list-like objects with names, each list element
+    from the 2nd argument is paired with the list element from the 1st
+    argument with the matching name, if any. Otherwise, list elements are
+    paired by position. The overlap is then computed between the pairs as
+    described below.
 
     If \code{subject} is omitted, \code{query} is queried against
     itself. In this case, and only this case, the \code{drop.self}
@@ -172,10 +176,10 @@ findOverlapPairs(query, subject, ...)
     If \code{query} is a \link{Ranges} or \link{Views} object:
     When \code{select} is \code{"all"} (the default), the results are
     returned as a \link[S4Vectors]{Hits} object.
-    Otherwise the returned value is an integer vector parallel to \code{query}
-    (i.e. same length) containing the first, last, or arbitrary overlapping
-    interval in \code{subject}, with \code{NA} indicating intervals that did
-    not overlap any intervals in \code{subject}.
+    Otherwise the returned value is an integer vector \emph{parallel} to
+    \code{query} (i.e. same length) containing the first, last,
+    or arbitrary overlapping interval in \code{subject}, with \code{NA}
+    indicating intervals that did not overlap any intervals in \code{subject}.
 
     If \code{query} is a \link{RangesList}, \link{ViewsList}, or
     \link{RangedData} object:
@@ -188,8 +192,8 @@ findOverlapPairs(query, subject, ...)
     containing indices that are offset to align with the unlisted \code{query}.
   }
   \item{invert}{
-    If \code{TRUE}, keep only the query ranges that do \emph{not}
-    overlap the subject.
+    If \code{TRUE}, keep only the ranges in \code{x} that do \emph{not}
+    overlap \code{ranges}.
   }
   \item{hits}{
     The \link[S4Vectors]{Hits} or \link[S4Vectors]{HitsList} object returned
@@ -245,8 +249,8 @@ findOverlapPairs(query, subject, ...)
                         overlapsAny(query, subject,
   type="within")}. \code{\%outside\%} is simply the inverse of \code{\%over\%}.
 
-  \code{subsetByOverlaps} returns the subset of \code{query} that
-  has an overlap hit with a range in \code{subject} using the specified
+  \code{subsetByOverlaps} returns the subset of \code{x} that
+  has an overlap hit with a range in \code{ranges} using the specified
   \code{findOverlaps} parameters.
 
   When \code{hits} is a \link[S4Vectors]{Hits} (or \link[S4Vectors]{HitsList})
