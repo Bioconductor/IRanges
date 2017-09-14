@@ -37,15 +37,43 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
     selectHits(x, select)
 }
 
-### Used in the unit tests for GNCList located in GenomicRanges.
-.min_overlap_score <- function(maxgap=0L, minoverlap=1L)
+### Vectorized. Return -1 if the query and subject overlap (i.e. if
+### end(query) < start(subject) and end(subject) < start(query) are both
+### false). Otherwise (i.e. if they are disjoint), return the width of the
+### gap between them. Note that a gap width of 0 means that they are adjacent.
+### TODO: Rename this pgapWidth(), make it a generic with various methods
+### (at least one for Ranges and one for GenomicRanges objects), and export it.
+.gapwidth <- function(query, subject)
 {
-    if (maxgap != 0L && minoverlap > 1L)
-        stop("'minoverlap' must be <= 1 when 'maxgap' is not 0")
-    minoverlap - maxgap
+    ifelse(end(query) < start(subject),
+           start(subject) - end(query),
+           ifelse(end(subject) < start(query),
+                  start(query) - end(subject),
+                  0L)) - 1L
+}
+
+### Vectorized.
+### TODO: Rename this poverlapWidth(), make it a generic with various methods
+### (at least one for Ranges and one for GenomicRanges objects), and export it.
+.overlapwidth <- function(query, subject)
+{
+    overlap_score <- pmin(end(query), end(subject)) -
+                     pmax(start(query), start(subject)) + 1L
+    pmax(overlap_score, 0L)
 }
 
 ### Used in the unit tests for GNCList located in GenomicRanges.
+### TODO: Get rid of this.
+.min_overlap_score <- function(maxgap=-1L, minoverlap=0L)
+{
+    if (maxgap != -1L && minoverlap != 0L)
+        stop("either 'maxgap' must be set to -1 (the default) ",
+             "or 'minoverlap' must be set to 0 (the default)")
+    minoverlap - maxgap - 1L
+}
+
+### Used in the unit tests for GNCList located in GenomicRanges.
+### TODO: Get rid of this (use .overlapwidth() instead).
 .overlap_score <- function(query, subject, type="any")
 {
     overlap_score <- pmin(end(query), end(subject)) -
@@ -56,12 +84,54 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 }
 
 ### Used in the unit tests for GNCList located in GenomicRanges.
+### TODO: Replace this with .get_query_overlaps2().
 .get_query_overlaps <- function(query, subject,
                                 maxgap, min_overlap_score, type)
 {
-    ok <- .overlap_score(query, subject, type) >= min_overlap_score
+    overlap_score <- .overlap_score(query, subject, type)
+    ok <- overlap_score >= min_overlap_score
     if (type == "any")
         return(ok)
+    if (type != "end")
+        d1 <- abs(start(subject) - start(query))
+    if (type != "start")
+        d2 <- abs(end(subject) - end(query))
+    if (type == "start")
+        return(ok & d1 <= maxgap)
+    if (type == "end")
+        return(ok & d2 <= maxgap)
+    if (type == "equal")
+        return(ok & d1 <= maxgap & d2 <= maxgap)
+    if (type == "within") {
+        ok2 <- start(query) >= start(subject) & end(query) <= end(subject)
+    } else {  # type == "extend"
+        ok2 <- start(query) <= start(subject) & end(query) >= end(subject)
+    }
+    ok <- ok & ok2
+    if (maxgap > 0L)
+        ok <- ok & (d1 + d2) <= maxgap
+    ok
+}
+
+### TODO: Get rid of .get_query_overlaps() (and .overlap_score() and
+### .min_overlap_score()) and replace it with .get_query_overlaps2().
+.get_query_overlaps2 <- function(query, subject,
+            maxgap=-1L, minoverlap=0L,
+            type=c("any", "start", "end", "within", "extend", "equal"))
+{
+    type <- match.arg(type)
+    if (type == "any" && maxgap != -1L && minoverlap != 0L)
+        stop("when 'type' is \"any\", at least one of 'maxgap' ",
+             "and 'minoverlap' must be set to its default value")
+    overlap_score <- .overlapwidth(query, subject)
+    ok <- overlap_score >= minoverlap
+    if (type == "any") {
+        gapwidth <- .gapwidth(query, subject)
+        ok <- ok & gapwidth <= maxgap
+        return(ok)
+    }
+    if (maxgap == -1L)
+        maxgap <- 0L
     if (type != "end") 
         d1 <- abs(start(subject) - start(query))
     if (type != "start")
@@ -84,23 +154,19 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 }
 
 .findOverlaps_naive <- function(query, subject,
-                                maxgap=0L, minoverlap=1L,
+                                maxgap=-1L, minoverlap=0L,
                                 type=c("any", "start", "end",
                                        "within", "extend", "equal"),
                                 select=c("all", "first", "last", "arbitrary",
                                          "count"))
 {
     type <- match.arg(type)
-    if (type == "any") {
-        min_overlap_score <- .min_overlap_score(maxgap, minoverlap)
-    } else {
-        min_overlap_score <- minoverlap
-    }
     select <- match.arg(select)
     hits_per_query <- lapply(seq_along(query),
         function(i)
-            which(.get_query_overlaps(query[i], subject,
-                                      maxgap, min_overlap_score, type)))
+            which(.get_query_overlaps2(query[i], subject,
+                                       maxgap=maxgap, minoverlap=minoverlap,
+                                       type=type)))
     hits <- .make_Hits_from_q2s(hits_per_query, length(subject))
     selectHits(hits, select=select)
 }
@@ -124,6 +190,9 @@ test_NCList <- function()
     checkIdentical(x[-6], as(nclist[-6], "IRanges"))
 }
 
+### Test findOverlaps_NCList() *default* behavior, that is, with all optional
+### arguments (i.e. 'maxgap', 'minoverlap', 'type', 'select', and
+### 'circle.length') set to their default value.
 test_findOverlaps_NCList <- function()
 {
     query <- IRanges(-3:7, width=3)
@@ -180,11 +249,11 @@ test_findOverlaps_NCList_with_filtering <- function()
     pp_query <- NCList(query)
     pp_subject <- NCList(subject)
     for (type in c("any", "start", "end", "within", "extend", "equal")) {
-      for (maxgap in 0:3) {
-        if (type != "any" || maxgap == 0L)
+      for (maxgap in -1:3) {
+        if (type != "any" || maxgap == -1L)
             max_minoverlap <- 4L
         else
-            max_minoverlap <- 1L
+            max_minoverlap <- 0L
         for (minoverlap in 0:max_minoverlap) {
           for (select in c("all", "first", "last", "count")) {
             ## query - subject
@@ -284,7 +353,7 @@ test_findOverlaps_NCList_special_types <- function()
         checkEquals(nhit, length(hits))
     }
     ## no hits
-    for (maxgap in 0:2) {
+    for (maxgap in -1:2) {
         test_maxgap_and_type(maxgap, minoverlap=1L, 0L)
         test_maxgap_and_type(maxgap, minoverlap=0L, 0L)
     }
@@ -301,11 +370,11 @@ test_findOverlaps_NCList_special_types <- function()
     pp_query <- NCList(query)
     pp_subject <- NCList(subject)
     for (type in c("any", "start", "end", "within", "extend", "equal")) {
-      for (maxgap in 0:3) {
-        if (type != "any" || maxgap == 0L)
+      for (maxgap in -1:3) {
+        if (type != "any" || maxgap == -1L)
             max_minoverlap <- 4L
         else
-            max_minoverlap <- 1L
+            max_minoverlap <- 0L
         for (minoverlap in 0:max_minoverlap) {
           target <- as(.findOverlaps_naive(query, subject,
                                            maxgap=maxgap, minoverlap=minoverlap,

@@ -27,8 +27,8 @@ test_findOverlaps_Ranges <- function()
   checkOverlap(result, c(1, 1, 3), c(1, 2, 3), 3, 3)
 
   ## with 'maxgap'
-  result <- findOverlaps(query, subject, 1)
-  checkOverlap(result, c(1, 1, 2, 3), c(1, 2, 2, 3), 3, 3)
+  result <- findOverlaps(query, subject, maxgap = 0L)
+  checkOverlap(result, c(1, 1, 2, 3), c(2, 1, 2, 3), 3, 3)
 
   ## with 'minoverlap'
   result <- findOverlaps(query, subject, minoverlap = 3L)
@@ -44,17 +44,21 @@ test_findOverlaps_Ranges <- function()
 
   ## zero-width ranges
   query <- IRanges(9:14, 8:13)
-  result <- findOverlaps(query, subject)
+  result <- findOverlaps(query, subject, minoverlap = 1L)
   checkOverlap(result, integer(0), integer(0), 6, 3)
-  result <- findOverlaps(query, subject, minoverlap = 0L)
+  result <- findOverlaps(query, subject)
+  checkOverlap(result, c(3, 4), c(3, 3), 6, 3)
+  result <- findOverlaps(query, subject, maxgap = 0L)
   checkOverlap(result, 2:5, c(3, 3, 3, 3), 6, 3)
-  result <- findOverlaps(query, subject, maxgap=1L, minoverlap = 0L)
+  result <- findOverlaps(query, subject, maxgap = 1L)
   checkOverlap(result, 1:6, c(3, 3, 3, 3, 3, 3), 6, 3)
-  result <- findOverlaps(subject, query)
+  result <- findOverlaps(subject, query, minoverlap = 1L)
   checkOverlap(result, integer(0), integer(0), 3, 6)
-  result <- findOverlaps(subject, query, minoverlap = 0L)
+  result <- findOverlaps(subject, query)
+  checkOverlap(result, c(3, 3), c(3, 4), 3, 6)
+  result <- findOverlaps(subject, query, maxgap = 0L)
   checkOverlap(result, c(3, 3, 3, 3), 2:5, 3, 6)
-  result <- findOverlaps(subject, query, maxgap=1L, minoverlap = 0L)
+  result <- findOverlaps(subject, query, maxgap = 1L)
   checkOverlap(result, c(3, 3, 3, 3, 3, 3), 1:6, 3, 6)
 
   ## .....
@@ -142,5 +146,21 @@ test_findOverlaps_Ranges <- function()
 
   checkException(findOverlaps(query, NULL), silent = TRUE)
   checkException(findOverlaps(NULL, query), silent = TRUE)
+}
+
+test_subsetByOverlaps_Ranges <- function() {
+  x <- IRanges(9:12, 15)
+  ranges <- IRanges(1, 10)
+  checkIdentical(x[1:2], subsetByOverlaps(x, ranges))
+  checkIdentical(x[3:4], subsetByOverlaps(x, ranges, invert=TRUE))
+  checkIdentical(x[1:3], subsetByOverlaps(x, ranges, maxgap=0))
+  checkIdentical(x[4], subsetByOverlaps(x, ranges, maxgap=0, invert=TRUE))
+
+  x <- IRanges(c(1, 4, 9), c(5, 7, 10))
+  ranges <- IRanges(c(6, 8, 10), c(7, 12, 14))
+  checkIdentical(x[2:3], subsetByOverlaps(x, ranges))
+  checkIdentical(x[1], subsetByOverlaps(x, ranges, invert=TRUE))
+  checkIdentical(x, subsetByOverlaps(x, ranges, maxgap=0))
+  checkIdentical(x[0], subsetByOverlaps(x, ranges, maxgap=0, invert=TRUE))
 }
 

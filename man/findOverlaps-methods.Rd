@@ -86,23 +86,23 @@
 }
 
 \usage{
-findOverlaps(query, subject, maxgap=0L, minoverlap=1L,
+findOverlaps(query, subject, maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"),
              ...)
 
-countOverlaps(query, subject, maxgap=0L, minoverlap=1L,
+countOverlaps(query, subject, maxgap=-1L, minoverlap=0L,
               type=c("any", "start", "end", "within", "equal"),
               ...)
 
-overlapsAny(query, subject, maxgap=0L, minoverlap=1L,
+overlapsAny(query, subject, maxgap=-1L, minoverlap=0L,
             type=c("any", "start", "end", "within", "equal"),
             ...)
 query \%over\% subject
 query \%within\% subject
 query \%outside\% subject
 
-subsetByOverlaps(x, ranges, maxgap=0L, minoverlap=0L,
+subsetByOverlaps(x, ranges, maxgap=-1L, minoverlap=0L,
                  type=c("any", "start", "end", "within", "equal"),
                  invert=FALSE,
                  ...)
@@ -145,12 +145,29 @@ findOverlapPairs(query, subject, ...)
     \code{drop.redundant} is \code{TRUE}, only one of A->B and B->A
     is returned.
   }
-  \item{maxgap, minoverlap}{
-    Intervals with a separation of \code{maxgap} or less and a minimum
-    of \code{minoverlap} overlapping positions, allowing for
-    \code{maxgap}, are considered to be overlapping.  \code{maxgap}
-    should be a scalar, non-negative, integer. \code{minoverlap}
-    should be a scalar, positive integer.
+  \item{maxgap}{
+    A single integer >= -1.
+
+    If \code{type} is set to \code{"any"}, \code{maxgap} is interpreted as
+    the maximum \emph{gap} that is allowed between 2 ranges for the ranges
+    to be considered as overlapping. The \emph{gap} between 2 ranges
+    is the number of positions that separate them. The \emph{gap} between
+    2 adjacent ranges is 0. By convention when one range has its start or
+    end strictly inside the other (i.e. non-disjoint ranges), the \emph{gap}
+    is considered to be -1.
+
+    If \code{type} is set to anything else, \code{maxgap} has a special
+    meaning that depends on the particular \code{type}. See \code{type}
+    below for more information.
+  }
+  \item{minoverlap}{
+    A single non-negative integer.
+
+    Only ranges with a minimum of \code{minoverlap} overlapping positions
+    are considered to be overlapping.
+
+    When \code{type} is \code{"any"}, at least one of \code{maxgap} and
+    \code{minoverlap} must be set to its default value.
   }
   \item{type}{
     By default, any overlap is accepted. By specifying the \code{type}
@@ -158,9 +175,7 @@ findOverlapPairs(query, subject, ...)
     correspond to operations in Allen's Interval Algebra (see
     references). If \code{type} is \code{start} or \code{end}, the
     intervals are required to have matching starts or ends,
-    respectively. While this operation seems trivial, the naive
-    implementation using \code{outer} would be much less
-    efficient. Specifying \code{equal} as the type returns the
+    respectively. Specifying \code{equal} as the type returns the
     intersection of the \code{start} and \code{end} matches. If
     \code{type} is \code{within}, the query interval must be wholly
     contained within the subject interval. Note that all matches must
@@ -170,7 +185,8 @@ findOverlapPairs(query, subject, ...)
     overlap types. For \code{start}, \code{end}, and \code{equal},
     it specifies the maximum difference in the starts, ends or both,
     respectively. For \code{within}, it is the maximum amount by which
-    the subject may be wider than the query.
+    the subject may be wider than the query. If \code{maxgap} is set to -1
+    (the default), it's replaced internally by 0.
   }
   \item{select}{
     If \code{query} is a \link{Ranges} or \link{Views} object:
@@ -312,39 +328,34 @@ findOverlapPairs(query, subject, ...)
 }
 
 \examples{
-query <- IRanges(c(1, 4, 9), c(5, 7, 10))
-subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
-
 ## ---------------------------------------------------------------------
 ## findOverlaps()
 ## ---------------------------------------------------------------------
+
+query <- IRanges(c(1, 4, 9), c(5, 7, 10))
+subject <- IRanges(c(2, 2, 10), c(2, 3, 12))
+
+findOverlaps(query, subject)
 
 ## at most one hit per query
 findOverlaps(query, subject, select="first")
 findOverlaps(query, subject, select="last")
 findOverlaps(query, subject, select="arbitrary")
 
-## overlap even if adjacent only
-## (FIXME: the gap between 2 adjacent ranges should be still considered
-## 0. So either we have an argument naming problem, or we should modify
-## the handling of the 'maxgap' argument so that the user would need to
-## specify maxgap=0L to obtain the result below.)
-findOverlaps(query, subject, maxgap=1L)
-
-## shortcut
-findOverlaps(query, subject)
+## including adjacent ranges in the result
+findOverlaps(query, subject, maxgap=0L)
 
 query <- IRanges(c(1, 4, 9), c(5, 7, 10))
 subject <- IRanges(c(2, 2), c(5, 4))
 
-## one Ranges with itself
+## one IRanges object with itself
 findOverlaps(query)
 
 ## single points as query
 subject <- IRanges(c(1, 6, 13), c(4, 9, 14))
 findOverlaps(c(3L, 7L, 10L), subject, select="first")
 
-## alternative overlap types
+## special overlap types
 query <- IRanges(c(1, 5, 3, 4), width=c(2, 2, 4, 6))
 subject <- IRanges(c(1, 3, 5, 6), width=c(4, 4, 5, 4))
 
@@ -371,7 +382,7 @@ overlapsAny(query, subject, type="start")
 overlapsAny(query, subject, type="end")
 query \%over\% subject    # same as overlapsAny(query, subject)
 query \%within\% subject  # same as overlapsAny(query, subject,
-                        #                     type="within")
+                          #                     type="within")
 
 ## ---------------------------------------------------------------------
 ## overlapsRanges()
@@ -383,6 +394,7 @@ overlapsRanges(query, subject, ov)
 ## ---------------------------------------------------------------------
 ## Using RangesList objects
 ## ---------------------------------------------------------------------
+
 query <- IRanges(c(1, 4, 9), c(5, 7, 10))
 qpartition <- factor(c("a","a","b"))
 qlist <- split(query, qpartition)

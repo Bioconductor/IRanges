@@ -147,7 +147,7 @@ print_NCList <- function(x)
 
 ### NOT exported.
 findOverlaps_NCList <- function(query, subject,
-             maxgap=0L, minoverlap=1L,
+             maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "extend", "equal"),
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length=NA_integer_)
@@ -306,7 +306,7 @@ NCList_find_overlaps_in_groups <- function(
              q, q_space, q_groups,
              s, s_space, s_groups,
              nclists, nclist_is_q,
-             maxgap=0L, minoverlap=1L,
+             maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "extend", "equal"),
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length)
@@ -390,7 +390,7 @@ NCList_find_overlaps_in_groups <- function(
 ###   (b) integer vectors if 'select' is not "all". In that case the list is
 ###       parallel to and has the same shape as 'query'.
 findOverlaps_NCLists <- function(query, subject,
-             maxgap=0L, minoverlap=1L,
+             maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "extend", "equal"),
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length=NA_integer_)
