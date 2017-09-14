@@ -518,11 +518,20 @@ setMethod("overlapsAny", c("Vector", "ViewsList"),
     }
 )
 
+.overlapsAny_RangedData_deprecation_msg <- c(
+    "The \"overlapsAny\" methods for RangedData objects are deprecated ",
+    "and won't be replaced. Please migrate your code to use GRanges or ",
+    "GRangesList objects instead. RangedData objects will be deprecated ",
+    "soon (their use has been discouraged since BioC 2.12, that is, since ",
+    "2014). See IMPORTANT NOTE in ?RangedData"
+)
+
 setMethod("overlapsAny", c("RangedData", "RangedData"),
     function(query, subject, maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "equal"),
              ...)
     {
+        .Deprecated(msg=wmsg(.overlapsAny_RangedData_deprecation_msg))
         overlapsAny(ranges(query), ranges(subject),
                     maxgap=maxgap, minoverlap=minoverlap,
                     type=match.arg(type),
@@ -535,6 +544,7 @@ setMethod("overlapsAny", c("RangedData", "RangesList"),
              type=c("any", "start", "end", "within", "equal"),
              ...)
     {
+        .Deprecated(msg=wmsg(.overlapsAny_RangedData_deprecation_msg))
         overlapsAny(ranges(query), subject,
                     maxgap=maxgap, minoverlap=minoverlap,
                     type=match.arg(type),
@@ -547,6 +557,7 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
              type=c("any", "start", "end", "within", "equal"),
              ...)
     {
+        .Deprecated(msg=.wmsg(overlapsAny_RangedData_deprecation_msg))
         overlapsAny(query, ranges(subject),
                     maxgap=maxgap, minoverlap=minoverlap,
                     type=match.arg(type),
@@ -591,37 +602,46 @@ setMethod("subsetByOverlaps", c("Vector", "Vector"),
     }
 )
 
+.subsetByOverlaps_RangedData_deprecation_msg <- c(
+    "The \"subsetByOverlaps\" methods for RangedData objects are deprecated ",
+    "and won't be replaced. Please migrate your code to use GRanges or ",
+    "GRangesList objects instead. RangedData objects will be deprecated ",
+    "soon (their use has been discouraged since BioC 2.12, that is, since ",
+    "2014). See IMPORTANT NOTE in ?RangedData"
+)
+
 setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
           function(x, ranges, maxgap = -1L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"),
                    invert = FALSE)
           {
-              ov_any <- unlist(!is.na(findOverlaps(ranges(x), ranges(ranges),
-                                                   maxgap = maxgap,
-                                                   minoverlap = minoverlap,
-                                                   type = match.arg(type),
-                                                   select = "arbitrary")),
-                               use.names=FALSE)
-              if (invert)
-                  ov_any <- !ov_any
-              x[ov_any]
-          }
-)
+            .Deprecated(msg=wmsg(.subsetByOverlaps_RangedData_deprecation_msg))
+            ov_any <- unlist(!is.na(findOverlaps(ranges(x), ranges(ranges),
+                                                 maxgap = maxgap,
+                                                 minoverlap = minoverlap,
+                                                 type = match.arg(type),
+                                                 select = "arbitrary")),
+                             use.names=FALSE)
+            if (invert)
+                ov_any <- !ov_any
+            x[ov_any]
+          })
 
 setMethod("subsetByOverlaps", c("RangedData", "RangesList"),
           function(x, ranges, maxgap = -1L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"),
                    invert = FALSE)
           {
-              ov_any <- unlist(!is.na(findOverlaps(ranges(x), ranges,
-                                                   maxgap = maxgap,
-                                                   minoverlap = minoverlap,
-                                                   type = match.arg(type),
-                                                   select = "arbitrary")),
-                               use.names=FALSE)
-              if (invert)
-                  ov_any <- !ov_any
-              x[ov_any]
+            .Deprecated(msg=wmsg(.subsetByOverlaps_RangedData_deprecation_msg))
+            ov_any <- unlist(!is.na(findOverlaps(ranges(x), ranges,
+                                                 maxgap = maxgap,
+                                                 minoverlap = minoverlap,
+                                                 type = match.arg(type),
+                                                 select = "arbitrary")),
+                             use.names=FALSE)
+            if (invert)
+                ov_any <- !ov_any
+            x[ov_any]
           })
 
 setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
@@ -629,14 +649,15 @@ setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
                    type = c("any", "start", "end", "within", "equal"),
                    invert = FALSE)
           {
-              ov_any <- !is.na(findOverlaps(x, ranges(ranges),
-                                            maxgap = maxgap,
-                                            minoverlap = minoverlap,
-                                            type = match.arg(type),
-                                            select = "arbitrary"))
-              if (invert)
-                  ov_any <- !ov_any
-              x[ov_any]
+            .Deprecated(msg=wmsg(.subsetByOverlaps_RangedData_deprecation_msg))
+            ov_any <- !is.na(findOverlaps(x, ranges(ranges),
+                                          maxgap = maxgap,
+                                          minoverlap = minoverlap,
+                                          type = match.arg(type),
+                                          select = "arbitrary"))
+            if (invert)
+                ov_any <- !ov_any
+            x[ov_any]
           })
 
 

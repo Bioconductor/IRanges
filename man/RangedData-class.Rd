@@ -73,12 +73,19 @@
 
 \title{Data on ranges}
 \description{
-  IMPORTANT NOTE: \code{RangedData} objects will be deprecated in BioC 3.6!
-
+  IMPORTANT NOTE: \code{RangedData} objects will be deprecated in BioC 3.7!
   The use of \code{RangedData} objects has been discouraged in favor
-  of \link[GenomicRanges]{GRanges} objects since BioC 2.12. The
-  \link[GenomicRanges]{GRanges} class is defined in the \pkg{GenomicRanges}
-  package.
+  of \link[GenomicRanges]{GRanges} or \link[GenomicRanges]{GRangesList}
+  objects since BioC 2.12, that is, since 2014.
+  The \link[GenomicRanges]{GRanges} and \link[GenomicRanges]{GRangesList}
+  classes are defined in the \pkg{GenomicRanges} package.
+  See \code{?GRanges} and \code{?GenomicRanges} (after loading the
+  \pkg{GenomicRanges} package) for more information about these classes.
+  PLEASE MIGRATE YOUR CODE TO USE \link[GenomicRanges]{GRanges} OR
+  \link[GenomicRanges]{GRangesList} OBJECTS INSTEAD OF \code{RangedData}
+  OBJECTS AS SOON AS POSSIBLE. Don't hesitate to ask on the bioc-devel
+  mailing list (\url{https://bioconductor.org/help/support/#bioc-devel})
+  if you need help with this.
 
   \code{RangedData} supports storing data, i.e. a set of variables, on a
   set of ranges spanning multiple spaces (e.g. chromosomes). Although

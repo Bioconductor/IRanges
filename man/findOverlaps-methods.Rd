@@ -121,14 +121,13 @@ findOverlapPairs(query, subject, ...)
 \arguments{
   \item{query, subject, x, ranges}{
     Each of them can be a \link{Ranges}, \link{Views}, \link{RangesList},
-    \link{ViewsList}, or \link{RangedData} object.
+    or \link{ViewsList} object.
     In addition, if \code{subject} or \code{ranges} is a \link{Ranges} object,
     \code{query} or \code{x} can be an integer vector to be converted to
     length-one ranges.
 
-    If \code{query} or \code{x} is a \link{RangesList} or
-    \link{RangedData}, \code{subject} or \code{ranges} must be a
-    \link{RangesList} or \link{RangedData}.
+    If \code{query} (or \code{x}) is a \link{RangesList} object, then
+    \code{subject} (or \code{ranges}) must also be a \link{RangesList} object.
 
     If both arguments are list-like objects with names, each list element
     from the 2nd argument is paired with the list element from the 1st
@@ -197,8 +196,7 @@ findOverlapPairs(query, subject, ...)
     or arbitrary overlapping interval in \code{subject}, with \code{NA}
     indicating intervals that did not overlap any intervals in \code{subject}.
 
-    If \code{query} is a \link{RangesList}, \link{ViewsList}, or
-    \link{RangedData} object:
+    If \code{query} is a \link{RangesList} or \link{ViewsList} object:
     When \code{select} is \code{"all"} (the default), the results are
     returned as a \link[S4Vectors]{HitsList} object.
     Otherwise the returned value depends on the \code{drop} argument.
@@ -222,7 +220,7 @@ findOverlapPairs(query, subject, ...)
     Further arguments to be passed to or from other methods:
     \itemize{
       \item \code{drop}: Supported only when \code{query} is a
-            \link{RangesList}, \link{ViewsList}, or \link{RangedData} object.
+            \link{RangesList} or \link{ViewsList} object.
             \code{FALSE} by default. See \code{select} argument above for the
             details.
       \item \code{drop.self}, \code{drop.redundant}: When \code{subject}
@@ -253,9 +251,9 @@ findOverlapPairs(query, subject, ...)
   \code{overlapsAny} finds the ranges in \code{query} that overlap any
   of the ranges in \code{subject}. For \link{Ranges} or \link{Views}
   objects, it returns a logical vector of length equal to the number of
-  ranges in \code{query}. For \link{RangesList}, \link{RangedData}, or
-  \link{ViewsList} objects, it returns a \link{LogicalList} object,
-  where each element of the result corresponds to a space in \code{query}.
+  ranges in \code{query}. For \link{RangesList} or \link{ViewsList} objects,
+  it returns a \link{LogicalList} object where each element of the result
+  corresponds to a space in \code{query}.
 
   \code{\%over\%} and \code{\%within\%} are convenience wrappers for the
   2 most common use cases. Currently defined as
