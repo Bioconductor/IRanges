@@ -41,7 +41,7 @@
 
 
 \title{Inter range transformations of a Ranges, Views, RangesList,
-       MaskCollection, or RangedData object}
+       or MaskCollection object}
 
 \description{
   Range-based transformations are grouped in 2 categories:
@@ -164,10 +164,6 @@ disjointBins(x, ...)
     they are first merged into a single \link{RangesList} object: by name
     if all objects have names, otherwise, if they are all of the same
     length, by position. Else, an exception is thrown.
-
-    If \code{x} is a \link{RangedData} object, then \code{range} returns
-    a \link{RangesList} object resulting from calling \code{range(ranges(x))},
-    i.e. the bounds of the ranges in each space.
 
   }\subsection{gaps}{
 

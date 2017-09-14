@@ -34,9 +34,7 @@
 
 \author{ Michael Lawrence }
 \seealso{
-  \code{\linkS4class{DataTable}},
-  \code{\linkS4class{Vector}}, and
-  \code{\linkS4class{RangedData}}, which makes heavy use of this class.
+  \code{\linkS4class{DataTable}} and \code{\linkS4class{Vector}}
 }
 \examples{
 ## split

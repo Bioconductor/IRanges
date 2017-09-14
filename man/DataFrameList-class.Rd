@@ -192,8 +192,7 @@
 
 \author{ Michael Lawrence }
 \seealso{
-  \code{\linkS4class{DataFrame}}, \code{\linkS4class{RangedData}},
-  which uses a \code{DataFrameList} to split the data by the spaces.
+  \code{\linkS4class{DataFrame}}
 }
 \keyword{methods}
 \keyword{classes}
