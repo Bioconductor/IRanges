@@ -268,9 +268,6 @@ export(
     ## tile-methods.R:
     tile, slidingWindows,
 
-    ## bind-arrays.R:
-    arbind, acbind,
-
     ## AtomicList-utils.R:
     ifelse2
 )
@@ -311,6 +308,7 @@ exportMethods(
     slice,
     punion, pintersect, psetdiff, pgap,
     precede, follow, nearest, distance, distanceToNearest,
-    tile,
-    arbind, acbind
+    tile, slidingWindows,
+    ifelse2
 )
+
