@@ -120,7 +120,8 @@ setMethod("is.unsorted", "Ranges",
 ### 'na.last' is pointless (Ranges objects don't contain NAs) so is ignored.
 ### 'method' is also ignored at the moment.
 setMethod("order", "Ranges",
-    function(..., na.last=TRUE, decreasing=FALSE, method=c("shell", "radix"))
+    function(..., na.last=TRUE, decreasing=FALSE,
+                  method=c("auto", "shell", "radix"))
     {
         ## Turn off this warning for now since it triggers spurious warnings
         ## when calling sort() on a RangesList object. The root of the
