@@ -83,6 +83,7 @@ setMethod("subset", "Vector",
 
 setGeneric("mstack", function(..., .index.var = "name")
            standardGeneric("mstack"), signature = "...")
+BiocGenerics:::apply_hotfix73465(getGeneric("mstack"))
 
 setMethod("mstack", "Vector", function(..., .index.var = "name") {
   if (!isSingleString(.index.var))
