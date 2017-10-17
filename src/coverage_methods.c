@@ -343,7 +343,7 @@ static void check_arg_is_numeric(SEXP arg, const char *arg_label)
 
 static void check_arg_is_list(SEXP arg, const char *arg_label)
 {
-	if (!IS_LIST(arg))
+	if (!isVectorList(arg))
 		error("'%s' must be a list", arg_label);
 	return;
 }
