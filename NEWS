@@ -1,3 +1,96 @@
+CHANGES IN VERSION 2.12.0
+-------------------------
+
+NEW FEATURES
+
+    o Add IPos objects for storing a set of integer positions where most of
+      the positions are typically (but not necessarily) adjacent.
+
+    o Add coercion of a character vector or factor representing ranges (e.g.
+      "22-155") to an IRanges object, as well as "as.character" and "as.factor"
+      methods for Ranges objects.
+
+    o Introduce overlapsRanges() as a replacement for "ranges" methods for
+      Hits and HitsList objects, and deprecate the latter.
+
+    o Add "is.unsorted" method for Ranges objects.
+
+    o Add "ranges" method for Ranges objects (downgrade the object to an
+      IRanges instance and drop its metadata columns).
+
+    o Add 'use.names' and 'use.mcols' args to ranges() generic.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Change 'maxgap' and 'minoverlap' defaults for findOverlaps() and family
+      (i.e. countOverlaps(), overlapsAny(), and subsetByOverlaps()). This
+      change addresses 2 long-standing issues:
+        (1) by default zero-width ranges are not excluded anymore, and
+        (2) control of zero-width ranges and adjacent ranges is finally
+            decoupled (only partially though).
+      New default for 'minoverlap' is 0 instead of 1. New default for 'maxgap'
+      is -1 instead of 0. See ?findOverlaps for more information about 'maxgap'
+      and the meaning of -1. For example, if 'type' is "any", you need to set
+      'maxgap' to 0 if you want adjacent ranges to be considered as overlapping.
+
+      Note that poverlaps() still uses the old 'maxgap' and 'minoverlap'
+      defaults.
+
+    o subsetByOverlaps() first 2 arguments are now named 'x' and 'ranges'
+      (instead of 'query' and 'subject') for consistency with the
+      transcriptsByOverlaps(), exonsByOverlaps(), and cdsByOverlaps()
+      functions from the GenomicFeatures package and with the snpsByOverlaps()
+      function from the BSgenome package.
+
+    o Replace ifelse() generic and methods with ifelse2() (eager semantics).
+
+    o Coercion from Ranges to IRanges now propagates the metadata columns.
+
+    o Move rglist() generic from GenomicRanges to IRanges package.
+
+    o The "union", "intersect", and "setdiff" methods for Ranges objects
+      don't act like endomorphisms anymore: now they always return an
+      IRanges *instance* whatever Ranges derivatives are passed to them
+      (e.g. NCList or NormalIRanges).
+
+BUG FIXES
+
+    o nearest() and distanceToNearest() now call findOverlaps() internally
+      with maxgap=0 and minoverlap=0. This fixes incorrect results obtained
+      in some situations e.g. in the situation reported here:
+
+          https://support.bioconductor.org/p/99369/ (zero-width ranges)
+
+      but also in this situation:
+
+          nearest(IRanges(5, 10), IRanges(1, 4:5), select="all")
+
+      where the 2 ranges in the subject are *both* nearest to the 5-10 range.
+
+    o Fix restrict() and reverse() on IRanges objects with metadata columns.
+
+    o Fix table() on Ranges objects.
+
+    o Various other minor fixes.
+
+DEPRECATED AND DEFUNCT
+
+    o Deprecate "ranges" methods for Hits and HitsList objects (replaced with
+      overlapsRanges()).
+
+    o Deprecate the "overlapsAny", "subsetByOverlaps", "coverage" and "range"
+      methods for RangedData objects.
+
+    o Deprecate the universe() getter and setter as well as the 'universe'
+      argument of the RangesList(), IRangesList(), RleViewsList(), and
+      RangedData() constructor functions.
+
+    o Default "togroup" method is now defunct (was deprecated in BioC 3.3).
+
+    o Remove grouplength() (was deprecated in BioC 3.3 and replaced with
+      grouplengths, then defunct in BioC 3.4).
+
+
 CHANGES IN VERSION 2.10.0
 -------------------------
 
