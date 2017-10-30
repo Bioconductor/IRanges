@@ -53,6 +53,23 @@ SIGNIFICANT USER-VISIBLE CHANGES
       IRanges *instance* whatever Ranges derivatives are passed to them
       (e.g. NCList or NormalIRanges).
 
+DEPRECATED AND DEFUNCT
+
+    o Deprecate "ranges" methods for Hits and HitsList objects (replaced with
+      overlapsRanges()).
+
+    o Deprecate the "overlapsAny", "subsetByOverlaps", "coverage" and "range"
+      methods for RangedData objects.
+
+    o Deprecate the universe() getter and setter as well as the 'universe'
+      argument of the RangesList(), IRangesList(), RleViewsList(), and
+      RangedData() constructor functions.
+
+    o Default "togroup" method is now defunct (was deprecated in BioC 3.3).
+
+    o Remove grouplength() (was deprecated in BioC 3.3 and replaced with
+      grouplengths, then defunct in BioC 3.4).
+
 BUG FIXES
 
     o nearest() and distanceToNearest() now call findOverlaps() internally
@@ -73,23 +90,6 @@ BUG FIXES
 
     o Various other minor fixes.
 
-DEPRECATED AND DEFUNCT
-
-    o Deprecate "ranges" methods for Hits and HitsList objects (replaced with
-      overlapsRanges()).
-
-    o Deprecate the "overlapsAny", "subsetByOverlaps", "coverage" and "range"
-      methods for RangedData objects.
-
-    o Deprecate the universe() getter and setter as well as the 'universe'
-      argument of the RangesList(), IRangesList(), RleViewsList(), and
-      RangedData() constructor functions.
-
-    o Default "togroup" method is now defunct (was deprecated in BioC 3.3).
-
-    o Remove grouplength() (was deprecated in BioC 3.3 and replaced with
-      grouplengths, then defunct in BioC 3.4).
-
 
 CHANGES IN VERSION 2.10.0
 -------------------------
@@ -107,14 +107,6 @@ NEW FEATURES
       processing strategy if the input object has more than 10 million list
       elements. The hope is to reduce memory usage on very big input objects.
 
-BUG FIXES
-
-    o Fix "setdiff" method for CompressedIRangesList for when all ranges are
-      empty.
-
-    o Fix long standing bug in coercion from Ranges to PartitioningByEnd when
-      the object to coerce has names.
-
 DEPRECATED AND DEFUNCT
 
     o Remove the RangedDataList and RDApplyParams classes, rdapply(), and the
@@ -126,6 +118,14 @@ DEPRECATED AND DEFUNCT
       (were defunct in BioC 3.4).
 
     o Remove GappedRanges class (was defunct in BioC 3.4).
+
+BUG FIXES
+
+    o Fix "setdiff" method for CompressedIRangesList for when all ranges are
+      empty.
+
+    o Fix long standing bug in coercion from Ranges to PartitioningByEnd when
+      the object to coerce has names.
 
 
 CHANGES IN VERSION 2.8.0
