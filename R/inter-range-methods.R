@@ -121,8 +121,8 @@ setMethod("range", "CompressedIRangesList",
     }
 )
 
-.range_RangedData_deprecation_msg <- c(
-    "The \"range\" method for RangedData objects is deprecated ",
+.range_RangedData_defunct_msg <- c(
+    "The \"range\" method for RangedData objects is defunct ",
     "and won't be replaced. Please migrate your code to use GRanges or ",
     "GRangesList objects instead. RangedData objects will be deprecated ",
     "soon (their use has been discouraged since BioC 2.12, that is, since ",
@@ -130,7 +130,7 @@ setMethod("range", "CompressedIRangesList",
 )
 
 setMethod("range", "RangedData", function(x, ..., na.rm) {
-  .Deprecated(msg=wmsg(.range_RangedData_deprecation_msg))
+  .Defunct(msg=wmsg(.range_RangedData_defunct_msg))
   args <- list(x, ...)
   rangeLists <- lapply(args, ranges)
   do.call(range, rangeLists)

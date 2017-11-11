@@ -239,10 +239,8 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
   hasDots <- (((nargs() - !missing(space)) - !missing(universe)) > 1)
   if (!is.null(universe)) {
      msg <- wmsg("The 'universe' argument of the RangedData() ",
-                 "constructor function is deprecated.")
-    .Deprecated(msg=msg)
-    if (!isSingleString(universe))
-      stop("'universe' must be a single string")
+                 "constructor function is defunct.")
+    .Defunct(msg=msg)
   }
   if (is(ranges, "RangesList")) {
     if (!is.null(space))

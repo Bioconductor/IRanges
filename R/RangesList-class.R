@@ -175,19 +175,14 @@ setGeneric("universe", function(x) standardGeneric("universe"))
 setMethod("universe", "RangesList",
           function(x)
           {
-            .Deprecated(msg="The universe() getter is deprecated.")
-            metadata(x)$universe
+            .Defunct(msg="The universe() getter is defunct.")
           })
 
 setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
 setReplaceMethod("universe", "RangesList",
                  function(x, value)
                  {
-                   .Deprecated(msg="The universe() setter is deprecated.")
-                   if (!is.null(value) && !isSingleString(value))
-                     stop("'value' must be a single string or NULL")
-                   metadata(x)$universe <- value
-                   x
+                   .Defunct(msg="The universe() setter is defunct.")
                  })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -338,10 +333,8 @@ RangesList <- function(..., universe = NULL)
 {
   if (!is.null(universe)) {
      msg <- wmsg("The 'universe' argument of the RangesList() ",
-                 "constructor function is deprecated.")
-    .Deprecated(msg=msg)
-    if (!isSingleString(universe))
-       stop("'universe' must be a single string or NULL")
+                 "constructor function is defunct.")
+    .Defunct(msg=msg)
   }
   ranges <- list(...)
   if (length(ranges) == 1 && is.list(ranges[[1L]]))
@@ -360,10 +353,8 @@ IRangesList <- function(..., universe=NULL, compress=TRUE)
         stop("'compress' must be TRUE or FALSE")
     if (!is.null(universe)) {
         msg <- wmsg("The 'universe' argument of the IRangesList() ",
-                    "constructor function is deprecated.")
-        .Deprecated(msg=msg)
-        if (!isSingleString(universe))
-            stop("'universe' must be a single string or NULL")
+                    "constructor function is defunct.")
+        .Defunct(msg=msg)
     }
     args <- list(...)
     if (length(args) == 2L &&

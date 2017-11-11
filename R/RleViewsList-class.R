@@ -31,8 +31,8 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
 {
     if (!is.null(universe)) {
          msg <- wmsg("The 'universe' argument of the RleViewsList() ",
-                     "constructor function is deprecated.")
-        .Deprecated(msg=msg)
+                     "constructor function is defunct.")
+        .Defunct(msg=msg)
         if (!isSingleString(universe))
             stop(wmsg("'universe' must be a single string or NULL"))
     }

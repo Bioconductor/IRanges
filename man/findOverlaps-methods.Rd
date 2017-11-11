@@ -67,7 +67,7 @@
 
 \alias{findOverlapPairs}
 
-% deprecated
+% defunct
 \alias{ranges,Hits-method}
 \alias{ranges,HitsList-method}
 

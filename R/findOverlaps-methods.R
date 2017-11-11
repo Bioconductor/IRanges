@@ -518,8 +518,8 @@ setMethod("overlapsAny", c("Vector", "ViewsList"),
     }
 )
 
-.overlapsAny_RangedData_deprecation_msg <- c(
-    "The \"overlapsAny\" methods for RangedData objects are deprecated ",
+.overlapsAny_RangedData_defunct_msg <- c(
+    "The \"overlapsAny\" methods for RangedData objects are defunct ",
     "and won't be replaced. Please migrate your code to use GRanges or ",
     "GRangesList objects instead. RangedData objects will be deprecated ",
     "soon (their use has been discouraged since BioC 2.12, that is, since ",
@@ -531,11 +531,7 @@ setMethod("overlapsAny", c("RangedData", "RangedData"),
              type=c("any", "start", "end", "within", "equal"),
              ...)
     {
-        .Deprecated(msg=wmsg(.overlapsAny_RangedData_deprecation_msg))
-        overlapsAny(ranges(query), ranges(subject),
-                    maxgap=maxgap, minoverlap=minoverlap,
-                    type=match.arg(type),
-                    ...)
+        .Defunct(msg=wmsg(.overlapsAny_RangedData_defunct_msg))
     }
 )
 
@@ -544,11 +540,7 @@ setMethod("overlapsAny", c("RangedData", "RangesList"),
              type=c("any", "start", "end", "within", "equal"),
              ...)
     {
-        .Deprecated(msg=wmsg(.overlapsAny_RangedData_deprecation_msg))
-        overlapsAny(ranges(query), subject,
-                    maxgap=maxgap, minoverlap=minoverlap,
-                    type=match.arg(type),
-                    ...)
+        .Defunct(msg=wmsg(.overlapsAny_RangedData_defunct_msg))
     }
 )
 
@@ -557,11 +549,7 @@ setMethod("overlapsAny", c("RangesList", "RangedData"),
              type=c("any", "start", "end", "within", "equal"),
              ...)
     {
-        .Deprecated(msg=.wmsg(overlapsAny_RangedData_deprecation_msg))
-        overlapsAny(query, ranges(subject),
-                    maxgap=maxgap, minoverlap=minoverlap,
-                    type=match.arg(type),
-                    ...)
+        .Defunct(msg=wmsg(.overlapsAny_RangedData_defunct_msg))
     }
 )
 
@@ -602,8 +590,8 @@ setMethod("subsetByOverlaps", c("Vector", "Vector"),
     }
 )
 
-.subsetByOverlaps_RangedData_deprecation_msg <- c(
-    "The \"subsetByOverlaps\" methods for RangedData objects are deprecated ",
+.subsetByOverlaps_RangedData_defunct_msg <- c(
+    "The \"subsetByOverlaps\" methods for RangedData objects are defunct ",
     "and won't be replaced. Please migrate your code to use GRanges or ",
     "GRangesList objects instead. RangedData objects will be deprecated ",
     "soon (their use has been discouraged since BioC 2.12, that is, since ",
@@ -615,16 +603,7 @@ setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
                    type = c("any", "start", "end", "within", "equal"),
                    invert = FALSE)
           {
-            .Deprecated(msg=wmsg(.subsetByOverlaps_RangedData_deprecation_msg))
-            ov_any <- unlist(!is.na(findOverlaps(ranges(x), ranges(ranges),
-                                                 maxgap = maxgap,
-                                                 minoverlap = minoverlap,
-                                                 type = match.arg(type),
-                                                 select = "arbitrary")),
-                             use.names=FALSE)
-            if (invert)
-                ov_any <- !ov_any
-            x[ov_any]
+            .Defunct(msg=wmsg(.subsetByOverlaps_RangedData_defunct_msg))
           })
 
 setMethod("subsetByOverlaps", c("RangedData", "RangesList"),
@@ -632,16 +611,7 @@ setMethod("subsetByOverlaps", c("RangedData", "RangesList"),
                    type = c("any", "start", "end", "within", "equal"),
                    invert = FALSE)
           {
-            .Deprecated(msg=wmsg(.subsetByOverlaps_RangedData_deprecation_msg))
-            ov_any <- unlist(!is.na(findOverlaps(ranges(x), ranges,
-                                                 maxgap = maxgap,
-                                                 minoverlap = minoverlap,
-                                                 type = match.arg(type),
-                                                 select = "arbitrary")),
-                             use.names=FALSE)
-            if (invert)
-                ov_any <- !ov_any
-            x[ov_any]
+            .Defunct(msg=wmsg(.subsetByOverlaps_RangedData_defunct_msg))
           })
 
 setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
@@ -649,15 +619,7 @@ setMethod("subsetByOverlaps", c("RangesList", "RangedData"),
                    type = c("any", "start", "end", "within", "equal"),
                    invert = FALSE)
           {
-            .Deprecated(msg=wmsg(.subsetByOverlaps_RangedData_deprecation_msg))
-            ov_any <- !is.na(findOverlaps(x, ranges(ranges),
-                                          maxgap = maxgap,
-                                          minoverlap = minoverlap,
-                                          type = match.arg(type),
-                                          select = "arbitrary"))
-            if (invert)
-                ov_any <- !ov_any
-            x[ov_any]
+            .Defunct(msg=wmsg(.subsetByOverlaps_RangedData_defunct_msg))
           })
 
 
@@ -732,31 +694,17 @@ setMethod("overlapsRanges", c("RangesList", "RangesList"),
 setMethod("ranges", "Hits", function(x, use.names=TRUE, use.mcols=FALSE,
                                         query, subject)
 {
-    msg <- c("\"ranges\" method for Hits objects is deprecated. ",
+    msg <- c("\"ranges\" method for Hits objects is defunct. ",
              "Please use overlapsRanges() instead.")
-    .Deprecated(msg=wmsg(msg))
-    query_is_missing <- missing(query)
-    subject_is_missing <- missing(subject)
-    if (query_is_missing || subject_is_missing) {
-        query <- if (subject_is_missing) use.names else use.mcols
-        subject <- if (query_is_missing) use.mcols else use.names
-    }
-    overlapsRanges(query, subject, x)
+    .Defunct(msg=wmsg(msg))
 })
 
 setMethod("ranges", "HitsList", function(x, use.names=TRUE, use.mcols=FALSE,
                                             query, subject)
 {
-    msg <- c("\"ranges\" method for HitsList objects is deprecated. ",
+    msg <- c("\"ranges\" method for HitsList objects is defunct. ",
              "Please use overlapsRanges() instead.")
-    .Deprecated(msg=wmsg(msg))
-    query_is_missing <- missing(query)
-    subject_is_missing <- missing(subject)
-    if (query_is_missing || subject_is_missing) {
-        query <- if (subject_is_missing) use.names else use.mcols
-        subject <- if (query_is_missing) use.mcols else use.names
-    }
-    overlapsRanges(query, subject, x)
+    .Defunct(msg=wmsg(msg))
 })
 
 

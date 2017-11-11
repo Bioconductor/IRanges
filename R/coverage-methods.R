@@ -278,8 +278,8 @@ setMethod("coverage", "RangesList",
     }
 )
 
-.coverage_RangedData_deprecation_msg <- c(
-    "The \"coverage\" method for RangedData objects is deprecated ",
+.coverage_RangedData_defunct_msg <- c(
+    "The \"coverage\" method for RangedData objects is defunct ",
     "and won't be replaced. Please migrate your code to use GRanges or ",
     "GRangesList objects instead. RangedData objects will be deprecated ",
     "soon (their use has been discouraged since BioC 2.12, that is, since ",
@@ -290,20 +290,7 @@ setMethod("coverage", "RangedData",
     function(x, shift=0L, width=NULL, weight=1L,
                 method=c("auto", "sort", "hash"))
     {
-        .Deprecated(msg=wmsg(.coverage_RangedData_deprecation_msg))
-        x_ranges <- ranges(x)
-        if (length(metadata(x)) > 0)
-            metadata(x_ranges) <- metadata(x)
-        varnames <- colnames(x)
-
-        if (isSingleString(shift) && (shift %in% varnames))
-            shift <- values(x)[, shift]
-
-        if (isSingleString(weight) && (weight %in% varnames))
-            weight <- values(x)[, weight]
-
-        coverage(x_ranges, shift=shift, width=width, weight=weight,
-                           method=method)
+        .Defunct(msg=wmsg(.coverage_RangedData_defunct_msg))
     }
 )
 
