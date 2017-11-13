@@ -244,9 +244,12 @@ setMethod("getListElement", "CompressedList",
 
 setMethod("setListElement", "CompressedList",
           function(x, i, value) {
+              if (is.null(value)) {
+                  return(removeListElement(x, i))
+              }
               nameValue <- if (is.character(i)) i else ""
               i <- S4Vectors:::normargSubset2_iOnly(x, i,
-                              .conditionPrefix="[[<-,CompressedList-method: ")
+                                .conditionPrefix="[[<-,CompressedList-method: ")
               value <- try(as(value, elementType(x)), silent = TRUE)
               if (inherits(value, "try-error"))
                   stop("cannot coerce 'value' to a ", elementType(x),
