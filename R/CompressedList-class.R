@@ -243,8 +243,10 @@ setMethod("getListElement", "CompressedList",
 )
 
 setMethod("setListElement", "CompressedList",
-          function(x, i, value)
-          {
+          function(x, i, value) {
+              nameValue <- if (is.character(i)) i else ""
+              i <- S4Vectors:::normargSubset2_iOnly(x, i,
+                              .conditionPrefix="[[<-,CompressedList-method: ")
               value <- try(as(value, elementType(x)), silent = TRUE)
               if (inherits(value, "try-error"))
                   stop("cannot coerce 'value' to a ", elementType(x),
@@ -254,11 +256,20 @@ setMethod("setListElement", "CompressedList",
               widths <- elementNROWS(x)
               names(widths) <- NULL
               widths[i] <- NROW(value)
+              if ((i == length(x) + 1L) &&
+                  (!is.null(names(x)) || nchar(nameValue) > 0)) {
+                  NAMES <- names(x)
+                  if (is.null(NAMES))
+                      NAMES <- rep.int("", length(x))
+                  NAMES[i] <- nameValue
+              } else {
+                  NAMES <- names(x)
+              }
               slot(x, "unlistData", check=FALSE) <-
                   compress_listData(listData, elementType(x))
               slot(x, "partitioning", check=FALSE) <-
                   new2("PartitioningByEnd", end = cumsum(widths),
-                       NAMES = names(x), check=FALSE)
+                       NAMES = NAMES, check=FALSE)
               x
           })
 
