@@ -242,44 +242,25 @@ setMethod("getListElement", "CompressedList",
     }
 )
 
-setReplaceMethod("[[", "CompressedList",
-                 function(x, i, j,..., value)
-                 {
-                     nameValue <- if (is.character(i)) i else ""
-                     i <- S4Vectors:::normargSubset2_iOnly(x, i, j, ...,
-                              .conditionPrefix="[[<-,CompressedList-method: ")
-                     if (is.null(value)) {
-                         if (i <= length(x)) # if name did not exist, could be +1
-                             x <- x[-i]
-                     } else {
-                         value <- try(as(value, elementType(x)), silent = TRUE)
-                         if (inherits(value, "try-error"))
-                             stop("cannot coerce 'value' to a ", elementType(x),
-                                  " instance")
-                         listData <- as.list(x, use.names = FALSE)
-                         listData[[i]] <- value
-                         widths <- elementNROWS(x)
-                         names(widths) <- NULL
-                         widths[i] <- NROW(value)
-                         if ((i == length(x) + 1L) &&
-                             (!is.null(names(x)) || nchar(nameValue) > 0)) {
-                             NAMES <- names(x)
-                             if (is.null(NAMES))
-                                 NAMES <- rep.int("", length(x))
-                             NAMES[i] <- nameValue
-                         } else {
-                             NAMES <- names(x)
-                         }
-                         slot(x, "unlistData", check=FALSE) <-
-                           compress_listData(listData, elementType(x))
-                         slot(x, "partitioning", check=FALSE) <-
-                           new2("PartitioningByEnd", end = cumsum(widths),
-                                NAMES = NAMES, check=FALSE)
-                         if (i > length(x))
-                           x <- S4Vectors:::rbindRowOfNAsToMetadatacols(x)
-                         x
-                     }
-                 })
+setMethod("setListElement", "CompressedList",
+          function(x, i, value)
+          {
+              value <- try(as(value, elementType(x)), silent = TRUE)
+              if (inherits(value, "try-error"))
+                  stop("cannot coerce 'value' to a ", elementType(x),
+                       " instance")
+              listData <- as.list(x, use.names = FALSE)
+              listData[[i]] <- value
+              widths <- elementNROWS(x)
+              names(widths) <- NULL
+              widths[i] <- NROW(value)
+              slot(x, "unlistData", check=FALSE) <-
+                  compress_listData(listData, elementType(x))
+              slot(x, "partitioning", check=FALSE) <-
+                  new2("PartitioningByEnd", end = cumsum(widths),
+                       NAMES = names(x), check=FALSE)
+              x
+          })
 
 setReplaceMethod("$", "CompressedList",
                  function(x, name, value) {
