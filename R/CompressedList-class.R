@@ -228,14 +228,15 @@ setMethod("extractROWS", "CompressedList",
 setMethod("getListElement", "CompressedList",
     function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
-                                             error.if.nomatch=FALSE)
-        if (is.na(i))
+        i2 <- normalizeDoubleBracketSubscript(i, x, exact=exact,
+                                              allow.NA=TRUE,
+                                              allow.nomatch=TRUE)
+        if (is.na(i2))
             return(NULL)
         unlisted_x <- unlist(x, use.names=FALSE)
         x_partitioning <- PartitioningByEnd(x)
-        window_start <- start(x_partitioning)[i]
-        window_end <- end(x_partitioning)[i]
+        window_start <- start(x_partitioning)[i2]
+        window_end <- end(x_partitioning)[i2]
         S4Vectors:::Vector_window(unlisted_x,
                                   start=window_start,
                                   end=window_end)

@@ -198,8 +198,7 @@ setMethod("nobj", "H2LGrouping", function(x) length(x@high2low))
 setMethod("getListElement", "H2LGrouping",
     function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
-                                             error.if.nomatch=TRUE)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact)
         if (is.na(x@high2low[i]))
             c(i, x@low2high[[i]])
         else
@@ -481,8 +480,7 @@ setClass("Partitioning",
 setMethod("getListElement", "Partitioning",
     function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
-                                             error.if.nomatch=TRUE)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact)
         ## The purpose of the code below is to extract 'start(x)[i] - 1'
         ## (stored in 'ans_shift') and 'width(x)[i]' (stored in 'ans_len')
         ## in the fastest possible way. Looks like a convoluted way to

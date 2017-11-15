@@ -238,8 +238,7 @@ setMethod("maskedratio", "MaskCollection", function(x) maskedwidth(x) / width(x)
 setMethod("getListElement", "MaskCollection",
     function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
-                                             error.if.nomatch=TRUE)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact)
         nir_list(x)[[i]]
     }
 )

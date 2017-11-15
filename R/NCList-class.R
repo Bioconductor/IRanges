@@ -241,8 +241,7 @@ setMethod("elementNROWS", "NCLists", function(x) elementNROWS(x@rglist))
 setMethod("getListElement", "NCLists",
     function (x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
-                                             error.if.nomatch=TRUE)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact)
         new2("NCList", nclist=x@nclists[[i]], ranges=x@rglist[[i]],
                        check=FALSE)
     }

@@ -199,8 +199,7 @@ setMethod("as.matrix", "Views", function(x, rev = FALSE, max.width = NA) {
 setMethod("getListElement", "Views",
     function(x, i, exact=TRUE)
     {
-        i <- normalizeDoubleBracketSubscript(i, x, exact=exact,
-                                             error.if.nomatch=TRUE)
+        i <- normalizeDoubleBracketSubscript(i, x, exact=exact)
         start <- start(x)[i]
         end <- end(x)[i]
         if (start < 1L || end > length(subject(x)))
