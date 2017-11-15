@@ -243,39 +243,12 @@ setMethod("getListElement", "CompressedList",
     }
 )
 
+### TODO: Provide a fast implementation that avoids coercing to SimpleList
+### (which is very inefficient).
 setMethod("setListElement", "CompressedList",
-          function(x, i, value) {
-              if (is.null(value)) {
-                  return(removeListElement(x, i))
-              }
-              nameValue <- if (is.character(i)) i else ""
-              i <- S4Vectors:::normargSubset2_iOnly(x, i,
-                                .conditionPrefix="[[<-,CompressedList-method: ")
-              value <- try(as(value, elementType(x)), silent = TRUE)
-              if (inherits(value, "try-error"))
-                  stop("cannot coerce 'value' to a ", elementType(x),
-                       " instance")
-              listData <- as.list(x, use.names = FALSE)
-              listData[[i]] <- value
-              widths <- elementNROWS(x)
-              names(widths) <- NULL
-              widths[i] <- NROW(value)
-              if ((i == length(x) + 1L) &&
-                  (!is.null(names(x)) || nchar(nameValue) > 0)) {
-                  NAMES <- names(x)
-                  if (is.null(NAMES))
-                      NAMES <- rep.int("", length(x))
-                  NAMES[i] <- nameValue
-              } else {
-                  NAMES <- names(x)
-              }
-              slot(x, "unlistData", check=FALSE) <-
-                  compress_listData(listData, elementType(x))
-              slot(x, "partitioning", check=FALSE) <-
-                  new2("PartitioningByEnd", end = cumsum(widths),
-                       NAMES = NAMES, check=FALSE)
-              x
-          })
+    function(x, i, value)
+        as(setListElement(as(x, "SimpleList"), i, value), "CompressedList")
+)
 
 setReplaceMethod("$", "CompressedList",
                  function(x, name, value) {
