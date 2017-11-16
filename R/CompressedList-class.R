@@ -410,19 +410,6 @@ setMethod("lapply", "CompressedList",
                     check=FALSE))
 }
 
-setMethod("endoapply", "CompressedList",
-          function(X, FUN, ...) {
-              .updateCompressedList(X, lapply_CompressedList(X, FUN, ...))
-          })
-
-setMethod("mendoapply", "CompressedList",
-          function(FUN, ..., MoreArgs = NULL) {
-              .updateCompressedList(list(...)[[1L]],
-                                    mapply(FUN = match.fun(FUN), ...,
-                                           MoreArgs = MoreArgs,
-                                           SIMPLIFY = FALSE))
-          })
-
 setMethod("revElements", "CompressedList",
     function(x, i)
     {

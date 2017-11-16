@@ -21,8 +21,6 @@
 
 % looping
 \alias{lapply,CompressedList-method}
-\alias{endoapply,CompressedList-method}
-\alias{mendoapply,CompressedList-method}
 \alias{revElements,CompressedList-method}
 
 % displaying

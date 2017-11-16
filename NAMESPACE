@@ -137,7 +137,6 @@ exportMethods(
     runsum, runmean, runwtsum, runq,
     elementNROWS, isEmpty,
     relistToClass,
-    endoapply, mendoapply,
     revElements,
     as.env,
     active, "active<-"

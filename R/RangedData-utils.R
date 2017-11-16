@@ -14,15 +14,6 @@ setMethod("lapply", "RangedData",
             lapply(inds, function(i) FUN(X[i], ...))
           })
 
-setMethod("endoapply", "RangedData",
-          function(X, FUN, ...) {
-            FUN <- match.fun(FUN)
-            ans <- try(do.call(c, unname(lapply(X, FUN, ...))), silent = TRUE)
-            if (inherits(ans, "try-error") || (class(ans) != class(X)))
-              stop("'FUN' did not produce an endomorphism")
-            ans
-          })
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### within()
 ###

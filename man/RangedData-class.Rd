@@ -64,7 +64,6 @@
 \alias{within,RangedData-method}
 
 % Applying:
-\alias{endoapply,RangedData-method}
 \alias{lapply,RangedData-method}
 
 % Show:
