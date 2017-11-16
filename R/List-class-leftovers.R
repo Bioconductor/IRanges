@@ -7,19 +7,6 @@
 ### or in IRanges).
 ###
 
-## NOTE: while the 'c' function does not have an 'x', the generic does
-## c() is a primitive, so 'x' can be missing; dispatch is by position,
-## although sometimes this does not work so well, so it's best to keep
-## names off the parameters whenever feasible.
-setMethod("c", "SimpleList",
-          function(x, ..., recursive = FALSE) {
-              slot(x, "listData") <-
-                do.call(c, lapply(unname(list(x, ...)), as.list))
-              if (!is.null(mcols(x)))
-                mcols(x) <- S4Vectors:::rbind_mcols(x, ...)
-              x
-          })
-
 .stack.ind <- function(x, index.var = "name") {
   if (length(names(x)) > 0) {
     spaceLabels <- names(x)

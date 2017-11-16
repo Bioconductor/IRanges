@@ -24,9 +24,11 @@
 \alias{isNormal,RangesList-method}
 \alias{whichFirstNotNormal,RangesList-method}
 
+% coercion
+\alias{coerce,list,SimpleRangesList-method}
 \alias{coerce,list,RangesList-method}
-\alias{coerce,Ranges,RangesList-method}
-\alias{coerce,RangesList,SimpleRangesList-method}
+\alias{coerce,List,SimpleRangesList-method}
+\alias{coerce,List,RangesList-method}
 
 % show
 \alias{show,RangesList-method}

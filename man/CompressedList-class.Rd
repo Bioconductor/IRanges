@@ -10,8 +10,6 @@
 \alias{names,CompressedList-method}
 \alias{names<-,CompressedList-method}
 \alias{elementNROWS,CompressedList-method}
-\alias{$<-,CompressedList-method}
-\alias{[[<-,CompressedList-method}
 \alias{is.na,CompressedList-method}
 
 % coercion

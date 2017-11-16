@@ -326,6 +326,43 @@ setAs("CompressedRleList", "CompressedIRangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion from list-like object to RangesList object
+###
+
+### From ordinary list to RangesList
+
+.from_list_to_SimpleRangesList <- function(from)
+{
+    from <- .as_list_of_IRanges(from)
+    S4Vectors:::new_SimpleList_from_list("SimpleRangesList", from)
+}
+
+setAs("list", "SimpleRangesList", .from_list_to_SimpleRangesList)
+setAs("list", "RangesList", .from_list_to_SimpleRangesList)
+
+### From List to RangesList
+
+.from_List_to_SimpleRangesList <- function(from)
+{
+    S4Vectors:::new_SimpleList_from_list("SimpleRangesList",
+                                 .as_list_of_IRanges(from),
+                                 metadata=metadata(from),
+                                 mcols=mcols(from))
+}
+
+setAs("List", "SimpleRangesList", .from_List_to_SimpleRangesList)
+setAs("List", "RangesList",
+    function(from)
+    {
+        if (!is(from, "IRangesList") && is(from, "SimpleList"))
+            as(from, "SimpleRangesList")
+        else
+            as(from, "IRangesList")
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor.
 ###
 
@@ -471,19 +508,6 @@ setMethod("unlist", "SimpleNormalIRangesList",
                                                       lapply(x, as, "IRanges"))
             callGeneric()
           })
-
-setAs("list", "RangesList", function(from) {
-  S4Vectors:::coerceToSimpleList(from, "Ranges")
-})
-
-setAs("Ranges", "RangesList", function(from) as(from, "IRangesList"))
-
-setAs("RangesList", "SimpleRangesList",
-      function(from)
-      S4Vectors:::new_SimpleList_from_list("SimpleRangesList",
-                                           lapply(from, as, "Ranges"),
-                                           metadata = metadata(from),
-                                           mcols = mcols(from)))
 
 ### Coercion from RangesList to NormalIRangesList.
 

@@ -243,19 +243,6 @@ setMethod("getListElement", "CompressedList",
     }
 )
 
-### TODO: Provide a fast implementation that avoids coercing to SimpleList
-### (which is very inefficient).
-setMethod("setListElement", "CompressedList",
-    function(x, i, value)
-        as(setListElement(as(x, "SimpleList"), i, value), "CompressedList")
-)
-
-setReplaceMethod("$", "CompressedList",
-                 function(x, name, value) {
-                     x[[name]] <- value
-                     x
-                 })
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Combining.
