@@ -389,11 +389,6 @@ setReplaceMethod("[[", "RangedData",
                    x
                  })
 
-setReplaceMethod("$", "RangedData", function(x, name, value) {
-  x[[name]] <- value
-  x
-})
-
 ### Supported index types: numeric, logical, character, NULL and missing.
 ## Two index modes:
 ## - list style ([i]):  subsets by range space (e.g. chromosome)

@@ -87,7 +87,7 @@ exportMethods(
     rownames, "rownames<-",
     colnames, "colnames<-",
     dimnames, "dimnames<-",
-    "[", "[<-", "[[", "[[<-", "$<-",
+    "[", "[<-", "[[", "[[<-",
     as.vector,
     as.integer,
     as.character,
