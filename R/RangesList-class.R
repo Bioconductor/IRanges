@@ -290,10 +290,11 @@ setAs("List", "CompressedIRangesList", .from_List_to_CompressedIRangesList)
 setAs("Ranges", "CompressedIRangesList", .from_Ranges_to_CompressedIRangesList)
 setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 
-### Automatic coercion method from RangesList to SimpleIRangesList silently
-### returns a broken object (unfortunately these dummy automatic coercion
-### methods don't bother to validate the object they return). So we overwrite
-### it.
+### Automatic coercion methods from SimpleList/RangesList/SimpleRangesList to
+### SimpleIRangesList silently return a broken object (unfortunately these
+### dummy automatic coercion methods don't bother to validate the object they
+### return). So we overwrite them.
+setAs("SimpleList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 setAs("RangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 setAs("SimpleRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 
@@ -351,6 +352,13 @@ setAs("list", "RangesList", .from_list_to_SimpleRangesList)
 }
 
 setAs("List", "SimpleRangesList", .from_List_to_SimpleRangesList)
+
+### You'd think that defining the above method would take care of the
+### SimpleList-to-SimpleRangesList coercion but no such luck. Another dummy
+### automatic coercion method is in the way, again. And it silently returns
+### a broken object, again. So we overwrite it (again).
+setAs("SimpleList", "SimpleRangesList", .from_List_to_SimpleRangesList)
+
 setAs("List", "RangesList",
     function(from)
     {

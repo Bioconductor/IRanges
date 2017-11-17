@@ -28,6 +28,7 @@
 \alias{coerce,list,SimpleRangesList-method}
 \alias{coerce,list,RangesList-method}
 \alias{coerce,List,SimpleRangesList-method}
+\alias{coerce,SimpleList,RangesList-method}
 \alias{coerce,List,RangesList-method}
 
 % show
