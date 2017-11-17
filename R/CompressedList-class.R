@@ -393,23 +393,6 @@ setMethod("lapply", "CompressedList",
     }
 )
 
-.updateCompressedList <- function(X, listData) {
-    elementTypeX <- elementType(X)
-    if (!all(sapply(listData,
-                    function(Xi) extends(class(Xi), elementTypeX))))
-        stop("'FUN' must return elements of class ", elementTypeX)
-    if (length(listData) == 0) {
-        end <- integer(0)
-    } else {
-        end <- cumsum(unlist(lapply(listData, NROW), use.names = FALSE))
-    }
-    initialize(X,
-               unlistData = compress_listData(listData, elementTypeX),
-               partitioning = 
-               new2("PartitioningByEnd", end = end, NAMES = names(X),
-                    check=FALSE))
-}
-
 setMethod("revElements", "CompressedList",
     function(x, i)
     {
