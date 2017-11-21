@@ -44,6 +44,7 @@
 \alias{coerce,RleViewsList,RangedData-method}
 \alias{coerce,Ranges,RangedData-method}
 \alias{coerce,RangesList,RangedData-method}
+\alias{coerce,list,RangedData-method}
 \alias{coerce,RangedData,CompressedIRangesList-method}
 \alias{coerce,RangedData,IRangesList-method}
 \alias{coerce,RangedData,RangesList-method}

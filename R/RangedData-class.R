@@ -718,6 +718,8 @@ setAs("RangesList", "RangedData",
     }
 )
 
+setAs("list", "RangedData", function(from) do.call(c, unname(from)))
+
 .fromRangedDataToCompressedIRangesList <- function(from)
 {
     ans <- ranges(from)
