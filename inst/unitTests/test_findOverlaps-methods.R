@@ -18,8 +18,10 @@ test_findOverlaps_Ranges <- function()
   result <- findOverlaps(query, subject, select = "arbitrary")
   checkIdentical(result, c(2L, NA, 3L))
 
-  checkOverlap <- function(a, q, s, r, c) {
+  checkOverlap <- function(a, q, s, r, c, self=FALSE) {
     target <- Hits(q, s, r, c, sort.by.query=TRUE)
+    if (self)
+        target <- as(target, "SortedByQuerySelfHits")
     checkIdentical(t(a), t(target))
   }
 
@@ -78,7 +80,7 @@ test_findOverlaps_Ranges <- function()
   query <- IRanges(c(1, 4, 9, 11), c(5, 7, 10, 11))
 
   result <- findOverlaps(query)
-  checkOverlap(result, c(1, 1, 2, 2, 3, 4), c(1, 2, 1, 2, 3, 4), 4, 4)
+  checkOverlap(result, c(1, 1, 2, 2, 3, 4), c(1, 2, 1, 2, 3, 4), 4, 4, TRUE)
 
   ## check case of identical subjects
   ## .....
