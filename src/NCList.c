@@ -1496,7 +1496,8 @@ SEXP NCList_find_overlaps(
 		UNPROTECT(1);
 		return ans;
 	}
-	return new_Hits(qh_buf->elts, sh_buf->elts, IntAE_get_nelt(qh_buf),
+	return new_Hits("SortedByQueryHits",
+			qh_buf->elts, sh_buf->elts, IntAE_get_nelt(qh_buf),
 			q_len, s_len, !pp_is_q);
 }
 
@@ -1606,7 +1607,8 @@ SEXP NCList_find_overlaps_in_groups(
 		UNPROTECT(1);
 		return ans;
 	}
-	return new_Hits(qh_buf->elts, sh_buf->elts, IntAE_get_nelt(qh_buf),
+	return new_Hits("SortedByQueryHits",
+			qh_buf->elts, sh_buf->elts, IntAE_get_nelt(qh_buf),
 			q_len, s_len, 0);
 }
 
