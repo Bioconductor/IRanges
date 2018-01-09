@@ -95,20 +95,6 @@ setMethod("elementNROWS", "Views", function(x) width(x))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Validity.
-###
-
-.valid.Views.width <- function(x)
-{
-    if (length(width(x)) != 0L && min(width(x)) <= 0L)
-        return("null widths are not allowed")
-    NULL
-}
-
-setValidity2("Views", .valid.Views.width)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
 ###
 
@@ -222,6 +208,7 @@ setMethod("getListElement", "Views",
     ok <- vapply(
         objects,
         function(object) isTRUE(all.equal(subject(object), subject(.Object))),
+        logical(1),
         USE.NAMES=FALSE
     )
     if (!all(ok))
