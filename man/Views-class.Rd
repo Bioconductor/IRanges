@@ -3,6 +3,9 @@
 
 \alias{class:Views}
 \alias{Views-class}
+
+\alias{parallelSlotNames,Views-method}
+
 \alias{subject}
 \alias{subject,Views-method}
 \alias{ranges,Views-method}
@@ -24,7 +27,9 @@
 \alias{coerce,Views,IRanges-method}
 \alias{coerce,Views,NormalIRanges-method}
 \alias{as.matrix,Views-method}
-\alias{c,Views-method}
+
+\alias{concatenateObjects,Views-method}
+
 \alias{trim}
 \alias{trim,Views-method}
 \alias{subviews}
@@ -113,10 +118,10 @@
   }
 }
 
-\section{Combining}{
+\section{Concatenation}{
   \describe{
     \item{}{
-      \code{c(x, ..., ignore.mcols=FALSE)}: Combine \code{Views} objects.
+      \code{c(x, ..., ignore.mcols=FALSE)}: Concatenate \code{Views} objects.
       They must have the same subject.
     }
   }

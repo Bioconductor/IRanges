@@ -245,7 +245,7 @@ setMethod("getListElement", "CompressedList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining.
+### Concatenation
 ###
 
 .bindROWS <- function(...)
@@ -253,87 +253,61 @@ setMethod("getListElement", "CompressedList",
     args <- list(...)
     if (length(dim(args[[1L]])) >= 2L)
         return(rbind(...))
-    if (!is.factor(args[[1L]]))
-        return(c(...))
-    ans_levels <- unique(unlist(lapply(args, levels)))
-    x <- unlist(lapply(args, as.character))
-    factor(x, levels=ans_levels)
+    concatenateObjects(args[[1L]], args)
 }
 
-### Not exported.
-combine_CompressedList_objects <- function(Class, objects,
-                                           use.names=TRUE, ignore.mcols=FALSE)
+.concatenate_CompressedList_objects <-
+    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE)
 {
-    if (!isSingleString(Class))
-        stop("'Class' must be a single character string")
-    if (!extends(Class, "CompressedList"))
-        stop("'Class' must be the name of a class that extends CompressedList")
     if (!is.list(objects))
         stop("'objects' must be a list")
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
-    ### TODO: Support 'use.names=TRUE'.
-    if (use.names)
-        stop("'use.names=TRUE' is not supported yet")
     if (!isTRUEorFALSE(ignore.mcols))
         stop("'ignore.mcols' must be TRUE or FALSE")
 
-    if (length(objects) != 0L) {
-        ## TODO: Implement (in C) fast 'elementIsNull(objects)' in S4Vectors
-        ## that does 'sapply(objects, is.null, USE.NAMES=FALSE)', and use it
-        ## here.
-        null_idx <- which(sapply(objects, is.null, USE.NAMES=FALSE))
-        if (length(null_idx) != 0L)
-            objects <- objects[-null_idx]
+    NULL_idx <- which(S4Vectors:::sapply_isNULL(objects))
+    if (length(NULL_idx) != 0L)
+        objects <- objects[-NULL_idx]
+    if (length(objects) == 0L) {
+        if (length(.Object) != 0L)
+            .Object <- .Object[integer(0)]
+        return(.Object)
     }
-    if (length(objects) == 0L)
-        return(new(Class))
 
-    ## TODO: Implement (in C) fast 'elementIs(objects, class)' in S4Vectors
-    ## that does 'sapply(objects, is, class, USE.NAMES=FALSE)', and use it
-    ## here. 'elementIs(objects, "NULL")' should work and be equivalent to
-    ## 'elementIsNull(objects)'.
-    if (!all(sapply(objects, is, "CompressedList", USE.NAMES=FALSE)))
-        stop("the objects to combine must be CompressedList objects (or NULLs)")
-    objects_names <- names(objects)
+    ## TODO: Implement (in C) fast 'elementIs(objects, class)' that does
+    ##
+    ##     sapply(objects, is, class, USE.NAMES=FALSE)
+    ##
+    ## and use it here. 'elementIs(objects, "NULL")' should work and be
+    ## equivalent to 'sapply_isNULL(objects)'.
+    if (!all(vapply(objects, is, logical(1), "CompressedList",
+                    USE.NAMES=FALSE)))
+        stop(wmsg("the objects to concatenate must be CompressedList ",
+                  "objects (or NULLs)"))
+
     names(objects) <- NULL  # so lapply(objects, ...) below returns an
                             # unnamed list
 
-    ## Combine "unlistData" slots.
-    unlistData_slots <- lapply(objects, function(x) x@unlistData)
-    ans_unlistData <- do.call(.bindROWS, unlistData_slots)
+    ## Concatenate "unlistData" slots.
+    unlistData_list <- lapply(objects, slot, "unlistData")
+    ans_unlistData <- do.call(.bindROWS, unlistData_list)
 
-    ## Combine "partitioning" slots.
+    ## Concatenate "partitioning" slots.
     ans_breakpoints <- cumsum(unlist(lapply(objects, elementNROWS)))
     ans_partitioning <- PartitioningByEnd(ans_breakpoints)
 
-    ans <- newCompressedList0(Class, ans_unlistData, ans_partitioning)
+    .Object <- newCompressedList0(class(.Object),
+                                  ans_unlistData, ans_partitioning)
 
-    ## Combine "mcols" slots.
-    if (!ignore.mcols) {
-        ans_mcols <- do.call(S4Vectors:::rbind_mcols, objects)
-        rownames(ans_mcols) <- NULL
-        mcols(ans) <- ans_mcols
-    }
-    ans
+    ## Call method for Vector objects to concatenate all the parallel
+    ## slots (only "elementMetadata" in the case of CompressedList) and
+    ## stick them into '.Object'.
+    callNextMethod()
 }
 
-setMethod("c", "CompressedList",
-    function (x, ..., ignore.mcols=FALSE, recursive=FALSE)
-    {
-        if (!identical(recursive, FALSE))
-            stop("\"c\" method for CompressedList objects ",
-                 "does not support the 'recursive' argument")
-        if (missing(x)) {
-            objects <- list(...)
-            x <- objects[[1L]]
-        } else {
-            objects <- list(x, ...)
-        }
-        combine_CompressedList_objects(class(x), objects,
-                                       use.names=FALSE,
-                                       ignore.mcols=ignore.mcols)
-    }
+setMethod("concatenateObjects", "CompressedList",
+    .concatenate_CompressedList_objects
 )
 
 

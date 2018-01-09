@@ -16,8 +16,8 @@
 \alias{unlist,CompressedList-method}
 \alias{coerce,ANY,CompressedList-method}
 
-% combining
-\alias{c,CompressedList-method}
+% concatenation
+\alias{concatenateObjects,CompressedList-method}
 
 % looping
 \alias{lapply,CompressedList-method}

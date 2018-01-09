@@ -5,6 +5,8 @@
 \alias{class:IRanges}
 \alias{IRanges-class}
 
+\alias{parallelSlotNames,IRanges-method}
+
 % Accessors
 \alias{start,IRanges-method}
 \alias{width,IRanges-method}
@@ -17,7 +19,6 @@
 
 \alias{isNormal,IRanges-method}
 \alias{update,IRanges-method}
-\alias{c,IRanges-method}
 
 % NormalIRanges objects:
 \alias{class:NormalIRanges}
@@ -87,22 +88,14 @@
   }
 }
 
-\section{Combining}{
+\section{Concatenation}{
   \describe{
     \item{}{
-      \code{c(x, ..., ignore.mcols=FALSE)} Combining \code{IRanges}
-      objects is straightforward when they do not have any metadata columns.
-      If only one of the \code{IRanges} object has metadata columns, then
-      the corresponding metadata columns are attached to the other
-      \code{IRanges} object and set to \code{NA}.
-      When multiple \code{IRanges} object have their own
-      \code{metadata columns}, the user must ensure that each such
-      \code{linkS4class{DataFrame}} have identical layouts to each other
-      (same columns defined), in order for the combination to be successful,
-      otherwise an error will be thrown. The user can call
-      \code{c(x, ..., ignore.mcols=TRUE)} in order to combine
-      \code{IRanges} objects with differing sets of metadata columns,
-      which will result in the combined object having NO metadata columns.
+      \code{c(x, ..., ignore.mcols=FALSE)}:
+      Concatenate IRanges object \code{x} and the IRanges objects in
+      \code{...} together.
+      See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package for
+      more information about concatenating Vector derivatives.
     }
   }
 }
@@ -146,7 +139,7 @@ showClass("IRanges")  # shows (some of) the known subclasses
 ## Also see ?`IRanges-utils` and ?`setops-methods` for additional
 ## operations on IRanges objects.
   
-## Combining IRanges objects
+## Concatenating IRanges objects
 ir1 <- IRanges(c(1, 10, 20), width=5)
 mcols(ir1) <- DataFrame(score=runif(3))
 ir2 <- IRanges(c(101, 110, 120), width=10)

@@ -19,7 +19,7 @@
 \alias{as.data.frame,IPos-method}
 \alias{extractROWS,IPos-method}
 \alias{show,IPos-method}
-\alias{c,IPos-method}
+\alias{concatenateObjects,IPos-method}
 
 \title{Memory-efficient representation of integer positions}
 
@@ -95,9 +95,10 @@ IPos(pos_runs)  # constructor function
   An IPos object can be subsetted exactly like an \link{IRanges} object.
 }
 
-\section{Combining}{
-  IPos objects can be combined (a.k.a. appended) with \code{c()} or
-  \code{append()}.
+\section{Concatenation}{
+  IPos objects can be concatenated with \code{c()} or \code{append()}.
+  See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package for
+  more information about concatenating Vector derivatives.
 }
 
 \section{Splitting and Relisting}{

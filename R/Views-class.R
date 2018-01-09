@@ -17,6 +17,17 @@ setClass("Views",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### parallelSlotNames()
+###
+
+### Combine the new parallel slots with those of the parent class. Make sure
+### to put the new parallel slots *first*.
+setMethod("parallelSlotNames", "Views",
+    function(x) c("ranges", callNextMethod())
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
 
@@ -76,16 +87,6 @@ setReplaceMethod("names", "Views",
     function(x, value)
     {
         names(x@ranges) <- value
-        x
-    }
-)
-
-setMethod("extractROWS", "Views",
-    function(x, i)
-    {
-        i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        x@ranges <- extractROWS(ranges(x), i)
-        mcols(x) <- extractROWS(mcols(x), i)
         x
     }
 )
@@ -192,6 +193,7 @@ setMethod("as.matrix", "Views", function(x, rev = FALSE, max.width = NA) {
          dimnames = list(names(x), NULL))
 })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Extracting a view.
 ###
@@ -210,44 +212,32 @@ setMethod("getListElement", "Views",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining Views objects.
+### Concatenation
 ###
 
-setMethod("c", "Views",
-    function(x, ..., ignore.mcols=FALSE, recursive=FALSE)
-    {
-        if (!identical(recursive, FALSE))
-            stop("\"c\" method for Views objects ",
-                 "does not support the 'recursive' argument")
-        if (!isTRUEorFALSE(ignore.mcols))
-            stop("'ignore.mcols' must be TRUE or FALSE")
-        if (missing(x)) {
-            args <- unname(list(...))
-            x <- args[[1L]]
-        } else {
-            args <- unname(list(x, ...))
-        }
-        if (length(args) == 1L)
-            return(x)
-        arg_is_null <- sapply(args, is.null)
-        if (any(arg_is_null))
-            args[arg_is_null] <- NULL  # remove NULL elements by setting them to NULL!
-        if (!all(sapply(args, is, class(x))))
-            stop("all arguments in '...' must be ", class(x), " objects (or NULLs)")
-        ok <- sapply(args, function(arg)
-                     isTRUE(all.equal(subject(arg), subject(x))))
-        if (!all(ok))
-            stop("all Views objects to combine must have the same subject")
-        x@ranges <- do.call(c, lapply(args, ranges))
-        if (ignore.mcols) {
-            mcols(x) <- NULL
-        } else  {
-            mcols(x) <- do.call(S4Vectors:::rbind_mcols, args)
-        }
-        validObject(x)
-        x
-    }
-)
+### '.Object' is assumed to contain the expected common subject in its
+### "subject" slot.
+.check_that_Views_objects_are_concatenable <- function(.Object, objects)
+{
+    ok <- vapply(
+        objects,
+        function(object) isTRUE(all.equal(subject(object), subject(.Object))),
+        USE.NAMES=FALSE
+    )
+    if (!all(ok))
+        stop(wmsg("the Views objects to concatenate ",
+                  "must have the same subject"))
+}
+
+.concatenate_Views_objects <- function(.Object, objects,
+                                       use.names=TRUE, ignore.mcols=FALSE)
+{
+    ans <- callNextMethod()
+    .check_that_Views_objects_are_concatenable(.Object, objects)
+    ans
+}
+
+setMethod("concatenateObjects", "Views", .concatenate_Views_objects)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -299,6 +289,7 @@ successiveViews <- function(subject, width, gapwidth=0, from=1)
     ranges <- successiveIRanges(width, gapwidth=gapwidth, from=from)
     Views(subject, ranges)
 }
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "slidingViews" function.
@@ -380,6 +371,7 @@ setMethod("which.max", "Views", function(x) {
 setMethod("which.min", "Views", function(x) {
   viewWhichMins(x, na.rm = TRUE)
 })
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show

@@ -268,87 +268,58 @@ setMethod("show", "IPos",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining
-###
-### Note that supporting "[" and "c" makes "[<-" work out-of-the-box!
+### Concatenation
 ###
 
-### 'Class' must be "IPos" or the name of a concrete IPos subclass.
-### 'objects' must be a list of IPos objects.
-### Returns an instance of class 'Class'.
-combine_IPos_objects <- function(Class, objects,
-                                 use.names=TRUE, ignore.mcols=FALSE)
+.concatenate_IPos_objects <- function(.Object, objects,
+                                      use.names=TRUE, ignore.mcols=FALSE)
 {
-    if (!isSingleString(Class))
-        stop("'Class' must be a single character string")
-    if (!extends(Class, "IPos"))
-        stop("'Class' must be the name of a class that extends IPos")
     if (!is.list(objects))
         stop("'objects' must be a list")
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
-    ### TODO: Support 'use.names=TRUE'.
-    if (use.names)
-        stop("'use.names=TRUE' is not supported yet")
     if (!isTRUEorFALSE(ignore.mcols))
         stop("'ignore.mcols' must be TRUE or FALSE")
 
-    if (length(objects) != 0L) {
-        ## TODO: Implement (in C) fast 'elementIsNull(objects)' in S4Vectors
-        ## that does 'sapply(objects, is.null, USE.NAMES=FALSE)', and use it
-        ## here.
-        null_idx <- which(sapply(objects, is.null, USE.NAMES=FALSE))
-        if (length(null_idx) != 0L)
-            objects <- objects[-null_idx]
+    NULL_idx <- which(S4Vectors:::sapply_isNULL(objects))
+    if (length(NULL_idx) != 0L)
+        objects <- objects[-NULL_idx]
+    if (length(objects) == 0L) {
+        if (length(.Object) != 0L)
+            .Object <- .Object[integer(0)]
+        return(.Object)
     }
-    if (length(objects) == 0L)
-        return(new(Class))
 
-    ## TODO: Implement (in C) fast 'elementIs(objects, class)' in S4Vectors
-    ## that does 'sapply(objects, is, class, USE.NAMES=FALSE)', and use it
-    ## here. 'elementIs(objects, "NULL")' should work and be equivalent to
-    ## 'elementIsNull(objects)'.
-    if (!all(sapply(objects, is, Class, USE.NAMES=FALSE)))
-        stop("the objects to combine must be ", Class, " objects (or NULLs)")
-    objects_names <- names(objects)
+    ## TODO: Implement (in C) fast 'elementIs(objects, class)' that does
+    ##
+    ##     sapply(objects, is, class, USE.NAMES=FALSE)
+    ##
+    ## and use it here. 'elementIs(objects, "NULL")' should work and be
+    ## equivalent to 'sapply_isNULL(objects)'.
+    if (!all(vapply(objects, is, logical(1), class(.Object),
+                    USE.NAMES=FALSE)))
+        stop(wmsg("the objects to concatenate must be ", class(.Object),
+                  " objects (or NULLs)"))
+
     names(objects) <- NULL  # so lapply(objects, ...) below returns an
                             # unnamed list
 
-    ## Combine "pos_runs" slots.
-    pos_runs_slots <- lapply(objects, function(x) x@pos_runs)
-    ## TODO: Use combine_IRanges_objects() here when it's available.
-    ans_pos_runs <- stitch_Ranges(do.call(c, pos_runs_slots))
-
+    ## Concatenate "pos_runs" slots.
+    pos_runs_list <- lapply(objects, slot, "pos_runs")
+    ans_pos_runs <- stitch_Ranges(
+        concatenateObjects(slot(.Object, "pos_runs"), pos_runs_list)
+    )
     suppressWarnings(ans_len <- sum(width(ans_pos_runs)))
     if (is.na(ans_len))
         stop("too many genomic positions to combine")
 
-    ## Combine "mcols" slots.
-    if (ignore.mcols) {
-        ans_mcols <- NULL
-    } else  {
-        ans_mcols <- do.call(S4Vectors:::rbind_mcols, objects)
-    }
+    .Object <- new2(class(.Object), pos_runs=ans_pos_runs, check=FALSE)
 
-    ## Make 'ans' and return it.
-    new2(Class, pos_runs=ans_pos_runs, elementMetadata=ans_mcols, check=FALSE)
+    ## Call method for Vector objects to concatenate all the parallel
+    ## slots (only "elementMetadata" in the case of IPos) and stick them
+    ## into '.Object'.
+    callNextMethod()
 }
 
-setMethod("c", "IPos",
-    function (x, ..., ignore.mcols=FALSE, recursive=FALSE)
-    {
-        if (!identical(recursive, FALSE))
-            stop("\"c\" method for IPos objects ",
-                 "does not support the 'recursive' argument")
-        if (missing(x)) {
-            objects <- list(...)
-            x <- objects[[1L]]
-        } else {
-            objects <- list(x, ...)
-        }
-        combine_IPos_objects(class(x), objects,
-                             use.names=FALSE,
-                             ignore.mcols=ignore.mcols)
-    }
-)
+setMethod("concatenateObjects", "IPos", .concatenate_IPos_objects)
 

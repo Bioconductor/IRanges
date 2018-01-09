@@ -18,6 +18,8 @@
 \alias{NCLists-class}
 \alias{NCLists}
 
+\alias{parallelSlotNames,NCLists-method}
+
 \alias{ranges,NCLists-method}
 \alias{length,NCLists-method}
 \alias{names,NCLists-method}
