@@ -216,12 +216,13 @@ setMethod("getListElement", "Views",
                   "must have the same subject"))
 }
 
-.concatenate_Views_objects <- function(.Object, objects,
-                                       use.names=TRUE, ignore.mcols=FALSE)
+.concatenate_Views_objects <-
+    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    ans <- callNextMethod()
+    objects <- unname(S4Vectors:::delete_NULLs(objects))
+    S4Vectors:::check_class_of_objects_to_concatenate(.Object, objects)
     .check_that_Views_objects_are_concatenable(.Object, objects)
-    ans
+    callNextMethod()
 }
 
 setMethod("concatenateObjects", "Views", .concatenate_Views_objects)

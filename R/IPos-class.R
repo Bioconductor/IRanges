@@ -271,47 +271,26 @@ setMethod("show", "IPos",
 ### Concatenation
 ###
 
-.concatenate_IPos_objects <- function(.Object, objects,
-                                      use.names=TRUE, ignore.mcols=FALSE)
+.concatenate_IPos_objects <-
+    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    if (!is.list(objects))
-        stop("'objects' must be a list")
-    if (!isTRUEorFALSE(use.names))
-        stop("'use.names' must be TRUE or FALSE")
-    if (!isTRUEorFALSE(ignore.mcols))
-        stop("'ignore.mcols' must be TRUE or FALSE")
+    objects <- unname(S4Vectors:::delete_NULLs(objects))
+    S4Vectors:::check_class_of_objects_to_concatenate(.Object, objects)
 
-    NULL_idx <- which(S4Vectors:::sapply_isNULL(objects))
-    if (length(NULL_idx) != 0L)
-        objects <- objects[-NULL_idx]
     if (length(objects) == 0L) {
         if (length(.Object) != 0L)
             .Object <- .Object[integer(0)]
         return(.Object)
     }
 
-    ## TODO: Implement (in C) fast 'elementIs(objects, class)' that does
-    ##
-    ##     sapply(objects, is, class, USE.NAMES=FALSE)
-    ##
-    ## and use it here. 'elementIs(objects, "NULL")' should work and be
-    ## equivalent to 'sapply_isNULL(objects)'.
-    if (!all(vapply(objects, is, logical(1), class(.Object),
-                    USE.NAMES=FALSE)))
-        stop(wmsg("the objects to concatenate must be ", class(.Object),
-                  " objects (or NULLs)"))
-
-    names(objects) <- NULL  # so lapply(objects, ...) below returns an
-                            # unnamed list
-
     ## Concatenate "pos_runs" slots.
     pos_runs_list <- lapply(objects, slot, "pos_runs")
     ans_pos_runs <- stitch_Ranges(
         concatenateObjects(slot(.Object, "pos_runs"), pos_runs_list)
     )
-    suppressWarnings(ans_len <- sum(width(ans_pos_runs)))
+    ans_len <- suppressWarnings(sum(width(ans_pos_runs)))
     if (is.na(ans_len))
-        stop("too many genomic positions to combine")
+        stop("too many integer positions to concatenate")
 
     .Object <- new2(class(.Object), pos_runs=ans_pos_runs, check=FALSE)
 
