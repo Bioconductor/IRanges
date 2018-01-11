@@ -474,6 +474,10 @@ setClass("Partitioning",
     )
 )
 
+setMethod("parallelSlotNames", "Partitioning",
+    function(x) c("NAMES", callNextMethod())
+)
+
 ### The default methods below assume that the "length + start/end/width" API
 ### is already implemented.
 
@@ -511,19 +515,6 @@ setMethod("names", "Partitioning", function(x) x@NAMES)
 
 setReplaceMethod("names", "Partitioning", set_IRanges_names)
 
-.valid.Partitioning <- function(x)
-{
-    if (is.null(names(x)))
-        return(NULL)
-    if (!is.character(names(x)))
-        return("the names must be a character vector or NULL")
-    if (length(names(x)) != length(x))
-        return("number of names and number of elements differ")
-    NULL
-}
-
-setValidity2("Partitioning", .valid.Partitioning)
-
 setMethod("NSBS", "Partitioning",
           function(i, x, exact=TRUE, strict.upper.bound=TRUE, allow.NAs=FALSE)
           {
@@ -545,6 +536,10 @@ setClass("PartitioningByEnd",
     prototype(
         end=integer()
     )
+)
+
+setMethod("parallelSlotNames", "PartitioningByEnd",
+    function(x) c("end", callNextMethod())
 )
 
 setMethod("end", "PartitioningByEnd", function(x) x@end)
@@ -704,6 +699,10 @@ setClass("PartitioningByWidth",
     prototype(
         width=integer()
     )
+)
+
+setMethod("parallelSlotNames", "PartitioningByWidth",
+    function(x) c("width", callNextMethod())
 )
 
 setMethod("width", "PartitioningByWidth", function(x) x@width)

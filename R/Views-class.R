@@ -52,8 +52,6 @@ setReplaceMethod("ranges", "Views",
 ### Methods derived from the IRanges interface.
 ###
 
-setMethod("length", "Views", function(x) length(ranges(x)))
-
 setMethod("start", "Views", function(x, ...) start(ranges(x)))
 setMethod("end", "Views", function(x, ...) end(ranges(x)))
 setMethod("width", "Views", function(x) width(ranges(x)))

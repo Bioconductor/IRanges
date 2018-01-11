@@ -93,6 +93,8 @@
 \alias{Partitioning-class}
 \alias{Partitioning}
 
+\alias{parallelSlotNames,Partitioning-method}
+
 \alias{togroup,Partitioning-method}
 \alias{names,Partitioning-method}
 \alias{names<-,Partitioning-method}
@@ -100,6 +102,8 @@
 \alias{class:PartitioningByEnd}
 \alias{PartitioningByEnd-class}
 \alias{PartitioningByEnd}
+
+\alias{parallelSlotNames,PartitioningByEnd-method}
 
 \alias{end,PartitioningByEnd-method}
 \alias{length,PartitioningByEnd-method}
@@ -111,6 +115,8 @@
 \alias{class:PartitioningByWidth}
 \alias{PartitioningByWidth-class}
 \alias{PartitioningByWidth}
+
+\alias{parallelSlotNames,PartitioningByWidth-method}
 
 \alias{width,PartitioningByWidth-method}
 \alias{end,PartitioningByWidth-method}

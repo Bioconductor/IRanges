@@ -283,14 +283,15 @@ setMethod("show", "IPos",
         return(.Object)
     }
 
+    ans_len <- suppressWarnings(sum(lengths(objects)))
+    if (is.na(ans_len))
+        stop("too many integer positions to concatenate")
+
     ## Concatenate "pos_runs" slots.
     pos_runs_list <- lapply(objects, slot, "pos_runs")
     ans_pos_runs <- stitch_Ranges(
         concatenateObjects(slot(.Object, "pos_runs"), pos_runs_list)
     )
-    ans_len <- suppressWarnings(sum(width(ans_pos_runs)))
-    if (is.na(ans_len))
-        stop("too many integer positions to concatenate")
 
     .Object <- new2(class(.Object), pos_runs=ans_pos_runs, check=FALSE)
 
