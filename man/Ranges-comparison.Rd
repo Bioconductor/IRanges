@@ -33,7 +33,8 @@
 
 \S4method{is.unsorted}{Ranges}(x, na.rm=FALSE, strictly=FALSE)
 
-\S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE, method=c("auto", "shell", "radix"))
+\S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE,
+           method=c("auto", "shell", "radix"))
 
 ## Generalized parallel comparison of 2 Ranges objects
 ## ---------------------------------------------------
