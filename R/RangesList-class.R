@@ -658,7 +658,7 @@ setAs("RleList", "SimpleNormalIRangesList",
     x <- args[[1L]]
     spaceList <- lapply(args, names)
     names <- spaces <- unique(do.call(c, spaceList))
-    if (any(sapply(spaceList, is.null))) {
+    if (any(S4Vectors:::sapply_isNULL(spaceList))) {
         ## Merging by position.
         if (!all(unlist(lapply(args, length)) == length(x)))
             stop("if any RangesList objects to merge are missing names, ",
@@ -669,7 +669,7 @@ setAs("RleList", "SimpleNormalIRangesList",
     ranges <- lapply(spaces,
                      function(space) {
                        r <- lapply(args, `[[`, space)
-                       do.call(c, r[!sapply(r, is.null)])
+                       do.call(c, S4Vectors:::delete_NULLs(r))
                      })
     names(ranges) <- names
     if (is(x, "CompressedList"))
