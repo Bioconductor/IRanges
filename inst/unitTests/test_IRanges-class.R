@@ -32,7 +32,7 @@ test_Ranges_isDisjoint <- function() {
   checkIdentical(target, current)
 }
 
-test_IRanges_combine <- function() {
+test_IRanges_concatenate <- function() {
   range <- IRanges(start=c(1,2,3,1), end=c(5,2,8,3))
   srange <- split(range, start(range) == 1)
   checkIdentical(srange,
@@ -47,7 +47,7 @@ test_IRanges_combine <- function() {
   checkIdentical(mcols(c(ir1, ir2)),
                  DataFrame(score = c(NA, 1L, 2L)))
   
-  ## Combining multiple IRanges object with varying mcols
+  ## Concatenating multiple IRanges object with varying mcols
   mcols(ir1) <- DataFrame(gc=0.78)
   checkException(c(ir1, ir2), silent=TRUE)
   checkIdentical(mcols(c(ir1, ir2, ignore.mcols=TRUE)), NULL)
