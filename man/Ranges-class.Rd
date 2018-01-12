@@ -211,12 +211,11 @@
       }
     }
     \item{}{
-      \code{c(x, ...)}:
-      Combine \code{x} and the Ranges objects in \code{...} together.
-      Any object in \code{...} must belong to the same class as \code{x},
-      or to one of its subclasses, or must be \code{NULL}.
-      The result is an object of the same class as \code{x}.
-      NOTE: Only works for \link{IRanges} (and derived) objects for now.
+      \code{c(x, ..., ignore.mcols=FALSE)}:
+      Concatenate Ranges object \code{x} and the Ranges objects in
+      \code{...} together.
+      See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package
+      for more information about concatenating Vector derivatives.
     }
     \item{}{
       \code{x * y}:

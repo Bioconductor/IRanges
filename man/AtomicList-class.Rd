@@ -342,7 +342,7 @@ collection$one
 collection$one <- int2
 collection[[2]] <- int1
 
-## combining
+## concatenating
 col1 <- IntegerList(one = int1, int2)
 col2 <- IntegerList(two = int2, one = int1)
 col3 <- IntegerList(int2)

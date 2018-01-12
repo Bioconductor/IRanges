@@ -45,7 +45,7 @@ setClass("NormalIRangesList", representation("VIRTUAL"),
          contains = "IRangesList")
 
 ### CompressedNormalIRangesList cannot hold NormalIRanges as its elements,
-### due to the compression combining everything into a single
+### due to the compression concatenating everything into a single
 ### NormalIRanges (which could easily become non-normal). So just have it
 ### hold IRanges, instead.
 setClass("CompressedNormalIRangesList",

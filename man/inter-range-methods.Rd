@@ -152,11 +152,12 @@ disjointBins(x, ...)
 
   }\subsection{range}{
 
-    \code{range} first combines \code{x} and the arguments in \code{...}.
-    If the combined \link{IRanges} object contains at least 1 range,
-    then \code{range} returns an \link{IRanges} instance with a single
-    range, from the minimum start to the maximum end of the combined object.
-    Otherwise (i.e. if the combined object contains no range),
+    \code{range} first concatenates \code{x} and the objects in \code{...}
+    together. If the \link{IRanges} object resulting from this concatenation
+    contains at least 1 range, then \code{range} returns an \link{IRanges}
+    instance with a single range, from the minimum start to the maximum end
+    of the concatenated object.
+    Otherwise (i.e. if the concatenated object contains no range),
     \code{IRanges()} is returned (i.e. an \link{IRanges} instance of
     length 0).
 

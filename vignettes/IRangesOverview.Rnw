@@ -87,7 +87,7 @@ yVector <- Rle(rpois(1e7, lambda[c(251:length(lambda), 1:250)]))
 All atomic sequences in \R{} have three main properties: (1) a
 notion of length or number of elements, (2) the ability to extract
 elements to create new atomic sequences, and (3) the ability to be
-combined with one or more atomic sequences to form larger
+concatenated with one or more atomic sequences to form larger
 atomic sequences. The main functions for these three operations are
 \Rfunction{length}, \Rfunction{[}, and \Rfunction{c}.
 <<basic-ops>>=
@@ -138,14 +138,14 @@ rep(xSnippet, 2)
 subset(xSnippet, xSnippet >= 5L)
 @
 
-\subsubsection{Combining Vectors}
+\subsubsection{Concatenating Vectors}
 
-The \IRanges{} package uses two generic functions, \Rfunction{c} and
-\Rfunction{append}, for combining two \Rclass{Vector} objects. The methods
-for \Rclass{Vector} objects follow the definition that these two functions
-are given the the \Rpackage{base} package.
+The \Rpackage{S4Vectors} and \IRanges{} packages use two generic functions,
+\Rfunction{c} and \Rfunction{append}, for concatenating two \Rclass{Vector}
+objects. The methods for \Rclass{Vector} objects follow the definition that
+these two functions are given the \Rpackage{base} package.
 
-<<seq-combine>>=
+<<seq-concatenate>>=
 c(xSnippet, rev(xSnippet))
 append(xSnippet, xSnippet, after = 3)
 @
@@ -356,10 +356,10 @@ Rle(elementNROWS(cIntList2))
 
 Just as with ordinary \R{} \Rclass{list} objects, \Rclass{List}-derived
 object support the \Rfunction{[[} for element extraction, \Rfunction{c}
-for combining, and \Rfunction{lapply}/\Rfunction{sapply} for looping. When
-looping over sparse lists, the ``compressed list" classes can be much faster
-during computations since only the non-empty elements are looped over during
-the \Rfunction{lapply}/\Rfunction{sapply} computation and all the empty
+for concatenating, and \Rfunction{lapply}/\Rfunction{sapply} for looping.
+When looping over sparse lists, the ``compressed list" classes can be much
+faster during computations since only the non-empty elements are looped over
+during the \Rfunction{lapply}/\Rfunction{sapply} computation and all the empty
 elements are assigned the appropriate value based on their status.
 
 <<list-lapply>>=
