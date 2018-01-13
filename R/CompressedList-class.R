@@ -253,35 +253,40 @@ setMethod("getListElement", "CompressedList",
     args <- list(...)
     if (length(dim(args[[1L]])) >= 2L)
         return(rbind(...))
-    concatenateObjects(args[[1L]], args)
+    concatenateObjects(args[[1L]], args[-1L])
 }
 
 .concatenate_CompressedList_objects <-
-    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    objects <- S4Vectors:::prepare_objects_to_concatenate(.Object, objects)
+    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    all_objects <- c(list(x), objects)
 
-    if (length(objects) == 0L) {
-        if (length(.Object) != 0L)
-            .Object <- .Object[integer(0)]
-        return(.Object)
-    }
+    ## 1. Take care of the parallel slots
 
-    ## Concatenate "unlistData" slots.
-    unlistData_list <- lapply(objects, slot, "unlistData")
+    ## Call method for Vector objects to concatenate all the parallel slots
+    ## (only "elementMetadata" in the case of CompressedList) and stick them
+    ## into 'ans'. Note that the resulting 'ans' can be an invalid object
+    ## because its "elementMetadata" slot can be longer (i.e. have more rows)
+    ## than 'ans' itself so we use 'check=FALSE' to skip validation.
+    ans <- callNextMethod(x, objects, use.names=use.names,
+                                      ignore.mcols=ignore.mcols,
+                                      check=FALSE)
+
+    ## 2. Take care of the non-parallel slots
+
+    ## Concatenate the "unlistData" slots.
+    unlistData_list <- lapply(all_objects, slot, "unlistData")
     ans_unlistData <- do.call(.bindROWS, unlistData_list)
 
-    ## Concatenate "partitioning" slots.
-    ans_breakpoints <- cumsum(unlist(lapply(objects, elementNROWS)))
+    ## Concatenate the "partitioning" slots.
+    ans_breakpoints <- cumsum(unlist(lapply(all_objects, elementNROWS),
+                                     use.names=use.names))
     ans_partitioning <- PartitioningByEnd(ans_breakpoints)
 
-    .Object <- newCompressedList0(class(.Object),
-                                  ans_unlistData, ans_partitioning)
-
-    ## Call method for Vector objects to concatenate all the parallel
-    ## slots (only "elementMetadata" in the case of CompressedList) and
-    ## stick them into '.Object'.
-    callNextMethod()
+    BiocGenerics:::replaceSlots(ans, unlistData=ans_unlistData,
+                                     partitioning=ans_partitioning,
+                                     check=check)
 }
 
 setMethod("concatenateObjects", "CompressedList",

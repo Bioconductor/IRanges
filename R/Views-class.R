@@ -199,13 +199,11 @@ setMethod("getListElement", "Views",
 ### Concatenation
 ###
 
-### '.Object' is assumed to contain the expected common subject in its
-### "subject" slot.
-.check_that_Views_objects_are_concatenable <- function(.Object, objects)
+.check_that_Views_objects_are_concatenable <- function(x, objects)
 {
     ok <- vapply(
         objects,
-        function(object) isTRUE(all.equal(subject(object), subject(.Object))),
+        function(object) isTRUE(all.equal(subject(object), subject(x))),
         logical(1),
         USE.NAMES=FALSE
     )
@@ -215,10 +213,10 @@ setMethod("getListElement", "Views",
 }
 
 .concatenate_Views_objects <-
-    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    objects <- S4Vectors:::prepare_objects_to_concatenate(.Object, objects)
-    .check_that_Views_objects_are_concatenable(.Object, objects)
+    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    .check_that_Views_objects_are_concatenable(x, objects)
     callNextMethod()
 }
 

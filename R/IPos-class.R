@@ -272,32 +272,36 @@ setMethod("show", "IPos",
 ###
 
 .concatenate_IPos_objects <-
-    function(.Object, objects, use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    objects <- S4Vectors:::prepare_objects_to_concatenate(.Object, objects)
+    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    all_objects <- c(list(x), objects)
 
-    if (length(objects) == 0L) {
-        if (length(.Object) != 0L)
-            .Object <- .Object[integer(0)]
-        return(.Object)
-    }
-
-    ans_len <- suppressWarnings(sum(lengths(objects)))
+    ans_len <- suppressWarnings(sum(lengths(all_objects)))
     if (is.na(ans_len))
         stop("too many integer positions to concatenate")
 
-    ## Concatenate "pos_runs" slots.
-    pos_runs_list <- lapply(objects, slot, "pos_runs")
-    ans_pos_runs <- stitch_Ranges(
-        concatenateObjects(slot(.Object, "pos_runs"), pos_runs_list)
-    )
-
-    .Object <- new2(class(.Object), pos_runs=ans_pos_runs, check=FALSE)
+    ## 1. Take care of the parallel slots
 
     ## Call method for Vector objects to concatenate all the parallel
     ## slots (only "elementMetadata" in the case of IPos) and stick them
-    ## into '.Object'.
-    callNextMethod()
+    ## into 'ans'. Note that the resulting 'ans' can be an invalid object
+    ## because its "elementMetadata" slot can be longer (i.e. have more rows)
+    ## than 'ans' itself so we use 'check=FALSE' to skip validation.
+    ans <- callNextMethod(x, objects, use.names=use.names,
+                                      ignore.mcols=ignore.mcols,
+                                      check=FALSE)
+
+    ## 2. Take care of the non-parallel slots
+
+    ## Concatenate the "pos_runs" slots.
+    pos_runs_list <- lapply(all_objects, slot, "pos_runs")
+    ans_pos_runs <- stitch_Ranges(
+        concatenateObjects(pos_runs_list[[1L]], pos_runs_list[-1L])
+    )
+
+    BiocGenerics:::replaceSlots(ans, pos_runs=ans_pos_runs,
+                                     check=check)
 }
 
 setMethod("concatenateObjects", "IPos", .concatenate_IPos_objects)
