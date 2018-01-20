@@ -29,7 +29,7 @@ rglist(x, use.names=TRUE, use.mcols=FALSE, ...)
 \arguments{
   \item{x}{
     An object containing ranges e.g. a
-    \link{Ranges}, \link[GenomicRanges]{GenomicRanges},
+    \link{IntegerRanges}, \link[GenomicRanges]{GenomicRanges},
     \link[SummarizedExperiment]{RangedSummarizedExperiment},
     \link[GenomicAlignments]{GAlignments},
     \link[GenomicAlignments]{GAlignmentPairs}, or

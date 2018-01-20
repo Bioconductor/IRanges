@@ -4,7 +4,7 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### .IRanges.coverage() and .CompressedIRangesList.coverage()
+### .coverage_IRanges() and coverage_CompressedIRangesList()
 ###
 ### These 2 internal helpers are the workhorses behind most "coverage"
 ### methods. All the hard work is almost entirely performed at the C level.
@@ -21,7 +21,7 @@
 }
 
 ### Returns an Rle object.
-.IRanges.coverage <- function(x,
+.coverage_IRanges <- function(x,
                               shift=0L, width=NULL,
                               weight=1L, circle.length=NA,
                               method=c("auto", "sort", "hash"))
@@ -120,12 +120,13 @@
     setNames(unlist(width, use.names=FALSE), x_names)
 }
 
-### Returns a SimpleRleList object of the length of 'x'.
-.CompressedIRangesList.coverage <- function(x,
-                                            shift=0L, width=NULL,
-                                            weight=1L, circle.length=NA,
-                                            method=c("auto", "sort", "hash"),
-                                            x_names.label="'x' names")
+### NOT exported but used in the GenomicRanges package.
+### Return a SimpleRleList object of the length of 'x'.
+coverage_CompressedIRangesList <- function(x,
+                                           shift=0L, width=NULL,
+                                           weight=1L, circle.length=NA,
+                                           method=c("auto", "sort", "hash"),
+                                           x_names.label="'x' names")
 {
     ## Check 'x'.
     if (!is(x, "CompressedIRangesList"))
@@ -215,7 +216,7 @@ setGeneric("coverage", signature="x",
         standardGeneric("coverage")
 )
 
-setMethod("coverage", "Ranges",
+setMethod("coverage", "IntegerRanges",
     function(x, shift=0L, width=NULL, weight=1L,
                 method=c("auto", "sort", "hash"))
     {
@@ -227,7 +228,7 @@ setMethod("coverage", "Ranges",
                      weight, "\" columns")
             weight <- x_mcols[[weight]]
         }
-        .IRanges.coverage(as(x, "IRanges"),
+        .coverage_IRanges(as(x, "IRanges"),
                           shift=shift, width=width, weight=weight,
                           method=method)
     }
@@ -271,10 +272,10 @@ setMethod("coverage", "RangesList",
                      "is not a valid metadata column name of 'x'")
             weight <- x_mcols[[weight]]
         }
-        .CompressedIRangesList.coverage(as(x, "CompressedIRangesList"),
-                                        shift=shift, width=width,
-                                        weight=weight,
-                                        method=method)
+        coverage_CompressedIRangesList(as(x, "CompressedIRangesList"),
+                                       shift=shift, width=width,
+                                       weight=weight,
+                                       method=method)
     }
 )
 

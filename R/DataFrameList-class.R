@@ -338,7 +338,7 @@ setReplaceMethod("[", "SplitDataFrameList",
             y <- value
         } else {
             y <- x[, j, drop=FALSE]
-            if (is.list(i) || (is(i, "List") && !is(i, "Ranges"))) {
+            if (is.list(i) || (is(i, "List") && !is(i, "IntegerRanges"))) {
                 y <- S4Vectors:::lsubset_List_by_List(y, i, value)
             } else {
                 y[i] <- value

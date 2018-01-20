@@ -9,7 +9,7 @@
 
 \alias{coerce,SortedByQueryHits,PartitioningByEnd-method}
 \alias{coerce,SortedByQueryHits,Partitioning-method}
-\alias{coerce,SortedByQueryHits,Ranges-method}
+\alias{coerce,SortedByQueryHits,IntegerRanges-method}
 \alias{coerce,SortedByQueryHits,IRanges-method}
 
 \alias{coerce,SortedByQueryHits,CompressedIntegerList-method}

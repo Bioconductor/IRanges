@@ -4,7 +4,7 @@
 ###
 
 
-setMethod("pcompareRecursively", "Ranges", function(x) FALSE)
+setMethod("pcompareRecursively", "IntegerRanges", function(x) FALSE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -17,10 +17,10 @@ setMethod("pcompareRecursively", "Ranges", function(x) FALSE)
 ### order.
 ###
 
-setMethod("pcompare", c("Ranges", "Ranges"),
+setMethod("pcompare", c("IntegerRanges", "IntegerRanges"),
     function(x, y)
     {
-        .Call2("Ranges_pcompare",
+        .Call2("IntegerRanges_pcompare",
                start(x), width(x), start(y), width(y),
                PACKAGE="IRanges")
     }
@@ -41,12 +41,12 @@ rangeComparisonCodeToLetter <- function(code)
 ### match()
 ###
 
-setMethod("match", c("Ranges", "Ranges"),
+setMethod("match", c("IntegerRanges", "IntegerRanges"),
     function(x, table, nomatch=NA_integer_, incomparables=NULL,
                        method=c("auto", "quick", "hash"))
     {
         if (!is.null(incomparables))
-            stop("\"match\" method for Ranges objects ",
+            stop("\"match\" method for IntegerRanges objects ",
                  "only accepts 'incomparables=NULL'")
         ## Equivalent to (but faster than):
         ##     findOverlaps(x, table, type="equal", select="first")
@@ -62,7 +62,7 @@ setMethod("match", c("Ranges", "Ranges"),
 ### selfmatch()
 ###
 
-setMethod("selfmatch", "Ranges",
+setMethod("selfmatch", "IntegerRanges",
     function(x, method=c("auto", "quick", "hash"))
         selfmatchIntegerPairs(start(x), width(x), method=method)
 )
@@ -71,27 +71,27 @@ setMethod("selfmatch", "Ranges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### order() and related methods.
 ###
-### is.unsorted(), order(), sort(), rank() on Ranges derivatives are
+### is.unsorted(), order(), sort(), rank() on IntegerRanges derivatives are
 ### consistent with the order implied by pcompare().
-### is.unsorted() is a quick/cheap way of checking whether a Ranges
+### is.unsorted() is a quick/cheap way of checking whether an IntegerRanges
 ### derivative is already sorted, e.g., called prior to a costly sort.
-### sort() and rank() will work out-of-the-box on a Ranges derivative thanks
-### to the method for List objects (which delegates to the method for Vector
-### objects).
+### sort() and rank() will work out-of-the-box on an IntegerRanges derivative
+### thanks to the method for List objects (which delegates to the method for
+### Vector objects).
 ###
 
-.Ranges_as_IntegerPairs <- function(x)
+.IntegerRanges_as_integer_pairs <- function(x)
 {
     a <- start(x)
     b <- width(x)
     list(a, b)
 }
 
-setMethod("is.unsorted", "Ranges",
+setMethod("is.unsorted", "IntegerRanges",
     function(x, na.rm=FALSE, strictly=FALSE)
     {
         if (!identical(na.rm, FALSE))
-            warning("\"is.unsorted\" method for Ranges objects ",
+            warning("\"is.unsorted\" method for IntegerRanges objects ",
                     "ignores the 'na.rm' argument")
         if (!isTRUEorFALSE(strictly))
             stop("'strictly' must be TRUE of FALSE")
@@ -103,23 +103,24 @@ setMethod("is.unsorted", "Ranges",
         ## full walk on 'x') than when it is unsorted (in which case
         ## S4Vectors:::sortedIntegerPairs() might stop walking on 'x' after
         ## checking its first 2 elements only -- the best-case scenario).
-        pairs <- .Ranges_as_IntegerPairs(x)
+        pairs <- .IntegerRanges_as_integer_pairs(x)
         !S4Vectors:::sortedIntegerPairs(pairs[[1L]], pairs[[2L]],
                                         strictly=strictly)
     }
 )
 
-.order_Ranges <- function(x, decreasing=FALSE)
+.order_IntegerRanges <- function(x, decreasing=FALSE)
 {
     if (!isTRUEorFALSE(decreasing))
         stop("'decreasing' must be TRUE or FALSE")
-    pairs <- .Ranges_as_IntegerPairs(x)
+    pairs <- .IntegerRanges_as_integer_pairs(x)
     orderIntegerPairs(pairs[[1L]], pairs[[2L]], decreasing=decreasing)
 }
 
-### 'na.last' is pointless (Ranges objects don't contain NAs) so is ignored.
+### 'na.last' is pointless (IntegerRanges objects don't contain NAs) so is
+### ignored.
 ### 'method' is also ignored at the moment.
-setMethod("order", "Ranges",
+setMethod("order", "IntegerRanges",
     function(..., na.last=TRUE, decreasing=FALSE,
                   method=c("auto", "shell", "radix"))
     {
@@ -129,15 +130,15 @@ setMethod("order", "Ranges",
         ## sort(), as reported here:
         ##   https://stat.ethz.ch/pipermail/r-devel/2015-November/072012.html
         #if (!identical(na.last, TRUE))
-        #    warning("\"order\" method for Ranges objects ",
+        #    warning("\"order\" method for IntegerRanges objects ",
         #            "ignores the 'na.last' argument")
         if (!isTRUEorFALSE(decreasing))
             stop("'decreasing' must be TRUE or FALSE")
-        ## All arguments in '...' are guaranteed to be Ranges objects.
+        ## All arguments in '...' are guaranteed to be IntegerRanges objects.
         args <- list(...)
         if (length(args) == 1L)
-            return(.order_Ranges(args[[1L]], decreasing))
-        order_args <- c(unlist(lapply(args, .Ranges_as_IntegerPairs),
+            return(.order_IntegerRanges(args[[1L]], decreasing))
+        order_args <- c(unlist(lapply(args, .IntegerRanges_as_integer_pairs),
                                recursive=FALSE, use.names=FALSE),
                         list(na.last=na.last, decreasing=decreasing))
         do.call(order, order_args)

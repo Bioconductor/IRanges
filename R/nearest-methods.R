@@ -4,7 +4,7 @@
 ###
 
 
-setClassUnion("RangesORmissing", c("Ranges", "missing"))
+setClassUnion("IntegerRanges_OR_missing", c("IntegerRanges", "missing"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -13,7 +13,7 @@ setClassUnion("RangesORmissing", c("Ranges", "missing"))
 
 setGeneric("precede", function(x, subject = x, ...) standardGeneric("precede"))
 
-setMethod("precede", c("Ranges", "RangesORmissing"),
+setMethod("precede", c("IntegerRanges", "IntegerRanges_OR_missing"),
     function(x, subject, select = c("first", "all"))
     {
       select <- match.arg(select)
@@ -41,7 +41,7 @@ setMethod("precede", c("Ranges", "RangesORmissing"),
 
 setGeneric("follow", function(x, subject = x, ...) standardGeneric("follow"))
 
-setMethod("follow", c("Ranges", "RangesORmissing"),
+setMethod("follow", c("IntegerRanges", "IntegerRanges_OR_missing"),
     function(x, subject, select = c("last", "all"))
     {
       select <- match.arg(select)
@@ -89,7 +89,7 @@ vectorToHits <- function(i, srle, ord) {
 
 setGeneric("nearest", function(x, subject, ...) standardGeneric("nearest"))
 
-setMethod("nearest", c("Ranges", "RangesORmissing"),
+setMethod("nearest", c("IntegerRanges", "IntegerRanges_OR_missing"),
           function(x, subject, select = c("arbitrary", "all"))
           {
             select <- match.arg(select)
@@ -149,7 +149,7 @@ setMethod("nearest", c("Ranges", "RangesORmissing"),
 setGeneric("distance",
            function(x, y, ...) standardGeneric("distance"))
 
-setMethod("distance", c("Ranges", "Ranges"), 
+setMethod("distance", c("IntegerRanges", "IntegerRanges"), 
     function(x, y) 
     {
         max_start <- pmax.int(start(x), start(y))
@@ -170,7 +170,7 @@ setMethod("distance", c("Pairs", "missing"),
 setGeneric("distanceToNearest",
            function(x, subject = x, ...) standardGeneric("distanceToNearest"))
 
-setMethod("distanceToNearest", c("Ranges", "RangesORmissing"),
+setMethod("distanceToNearest", c("IntegerRanges", "IntegerRanges_OR_missing"),
     function(x, subject, select = c("arbitrary", "all"))
     {
         select <- match.arg(select)

@@ -1,37 +1,41 @@
 ### =========================================================================
-### Ranges objects
+### IntegerRanges objects
 ### -------------------------------------------------------------------------
 ###
-### Ranges is a virtual class that serves as the base for all range containers
-### Conceptually Ranges are closed, one-dimensional intervals with integer end
-### points and on the domain of integers.
+### IntegerRanges is a virtual class that serves as the base for all integer
+### range containers. Conceptually integer ranges are closed, one-dimensional
+### intervals with integer end points and on the domain of integers.
 ###
 
-setClass("Ranges", contains="IntegerList", representation("VIRTUAL"))
+setClass("IntegerRanges", contains="IntegerList", representation("VIRTUAL"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters/setters.
 ###
 
-setMethod("length", "Ranges", function(x) length(width(x)))
+setMethod("length", "IntegerRanges", function(x) length(width(x)))
 
 ### Without this definition, we inherit the method for Vector objects
-### which is very inefficient on Ranges objects!
-setMethod("elementNROWS", "Ranges", function(x) setNames(width(x), names(x)))
+### which is very inefficient on IntegerRanges objects!
+setMethod("elementNROWS", "IntegerRanges",
+    function(x) setNames(width(x), names(x))
+)
 
 ### The 3 default methods below provide a formalization of the relationship
-### between the starts/widths/ends of a Ranges object. Of course Ranges
+### between the starts/widths/ends of an IntegerRanges object. IntegerRanges
 ### subclasses need to implement at least 2 of them!
 ### Note that when width(x)[i] is 0, then end(x)[i] is start(x)[i] - 1
-setMethod("start", "Ranges", function(x, ...) {1L - width(x) + end(x)})
-setMethod("width", "Ranges", function(x) {end(x) - start(x) + 1L})
-setMethod("end", "Ranges", function(x, ...) {width(x) - 1L + start(x)})
+setMethod("start", "IntegerRanges", function(x, ...) {1L - width(x) + end(x)})
+setMethod("width", "IntegerRanges", function(x) {end(x) - start(x) + 1L})
+setMethod("end", "IntegerRanges", function(x, ...) {width(x) - 1L + start(x)})
 
 setGeneric("mid", function(x, ...) standardGeneric("mid"))
-setMethod("mid", "Ranges", function(x) start(x) + as.integer((width(x)-1) / 2))
+setMethod("mid", "IntegerRanges",
+    function(x) start(x) + as.integer((width(x)-1) / 2)
+)
 
-setMethod("update", "Ranges",
+setMethod("update", "IntegerRanges",
     function(object, ...)
         as(update(as(object, "IRanges"), ...), class(object))
 )
@@ -43,12 +47,12 @@ setMethod("update", "Ranges",
 
 ### The checking of the names(x) is taken care of by the validity method for
 ### Vector objects.
-.valid.Ranges <- function(x)
+.valid.IntegerRanges <- function(x)
 {
     x_start <- start(x)
     x_end <- end(x)
     x_width <- width(x)
-    validity_failures <- .Call2("valid_Ranges",
+    validity_failures <- .Call2("valid_IntegerRanges",
                                 x_start, x_end, x_width,
                                 PACKAGE="IRanges")
     if (!is.null(validity_failures))
@@ -61,7 +65,7 @@ setMethod("update", "Ranges",
     NULL
 }
 
-setValidity2("Ranges", .valid.Ranges)
+setValidity2("IntegerRanges", .valid.IntegerRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -69,7 +73,7 @@ setValidity2("Ranges", .valid.Ranges)
 ###
 
 ### Propagate the names.
-setMethod("as.character", "Ranges",
+setMethod("as.character", "IntegerRanges",
     function(x)
     {
         if (length(x) == 0L)
@@ -86,18 +90,18 @@ setMethod("as.character", "Ranges",
 
 ### The as.factor() generic doesn't have the ... argument so this method
 ### cannot support the 'ignore.strand' argument.
-setMethod("as.factor", "Ranges",
+setMethod("as.factor", "IntegerRanges",
     function(x)
         factor(as.character(x), levels=as.character(sort(unique(x))))
 )
 
-setMethod("as.matrix", "Ranges",
+setMethod("as.matrix", "IntegerRanges",
     function(x, ...)
         matrix(data=c(start(x), width(x)), ncol=2,
                dimnames=list(names(x), NULL))
 )
 
-.as.data.frame.Ranges <- function(x, row.names=NULL, optional=FALSE, ...)
+.as.data.frame.IntegerRanges <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names' must be NULL or a character vector")
@@ -111,9 +115,9 @@ setMethod("as.matrix", "Ranges",
     ans$names <- names(x)
     ans
 }
-setMethod("as.data.frame", "Ranges", .as.data.frame.Ranges)
+setMethod("as.data.frame", "IntegerRanges", .as.data.frame.IntegerRanges)
 
-setMethod("as.integer", "Ranges",
+setMethod("as.integer", "IntegerRanges",
     function(x, ...) S4Vectors:::fancy_mseq(width(x), offset=start(x)-1L)
 )
 
@@ -124,11 +128,11 @@ setMethod("as.integer", "Ranges",
 ### TODO: Reorganize this
 ###
 
-setMethod("unlist", "Ranges",
+setMethod("unlist", "IntegerRanges",
     function(x, recursive=TRUE, use.names=TRUE)
     {
         if (!identical(recursive, TRUE))
-            stop("\"unlist\" method for Ranges objects ",
+            stop("\"unlist\" method for IntegerRanges objects ",
                  "does not support the 'recursive' argument")
         if (!isTRUEorFALSE(use.names))
             stop("'use.names' must be TRUE or FALSE")
@@ -140,7 +144,7 @@ setMethod("unlist", "Ranges",
     }
 )
 
-setMethod("getListElement", "Ranges",
+setMethod("getListElement", "IntegerRanges",
     function(x, i, exact=TRUE)
     {
         i <- normalizeDoubleBracketSubscript(i, x, exact=exact)
@@ -150,7 +154,7 @@ setMethod("getListElement", "Ranges",
     }
 )
 
-.make_naked_matrix_from_Ranges <- function(x)
+.make_naked_matrix_from_IntegerRanges <- function(x)
 {
     x_len <- length(x)
     x_mcols <- mcols(x)
@@ -166,7 +170,7 @@ setMethod("getListElement", "Ranges",
     ans
 }
 
-showRanges <- function(x, margin="", print.classinfo=FALSE)
+show_IntegerRanges <- function(x, margin="", print.classinfo=FALSE)
 {
     x_class <- class(x)
     x_len <- length(x)
@@ -178,14 +182,14 @@ showRanges <- function(x, margin="", print.classinfo=FALSE)
         x_nmc, " metadata ", ifelse(x_nmc == 1L, "column", "columns"),
         ":\n", sep="")
     ## S4Vectors:::makePrettyMatrixForCompactPrinting() assumes that 'x' is
-    ## subsettable but not all Ranges objects are (and if they are,
+    ## subsettable but not all IntegerRanges objects are (and if they are,
     ## subsetting them could be costly). However IRanges objects are assumed
     ## to be subsettable so if 'x' is not one then we turn it into one (this
-    ## coercion is expected to work on any Ranges object).
+    ## coercion is expected to work on any IntegerRanges object).
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges", strict=FALSE)
     out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
-               .make_naked_matrix_from_Ranges)
+               .make_naked_matrix_from_IntegerRanges)
     if (print.classinfo) {
         .COL2CLASS <- c(
             start="integer",
@@ -206,12 +210,12 @@ showRanges <- function(x, margin="", print.classinfo=FALSE)
     print(out, quote=FALSE, right=TRUE, max=length(out))
 }
 
-setMethod("show", "Ranges",
+setMethod("show", "IntegerRanges",
     function(object)
-        showRanges(object, margin="  ", print.classinfo=TRUE)
+        show_IntegerRanges(object, margin="  ", print.classinfo=TRUE)
 )
 
-setMethod("showAsCell", "Ranges",
+setMethod("showAsCell", "IntegerRanges",
     function(object)
     {
         if (length(object) == 0L)
@@ -225,16 +229,16 @@ setMethod("showAsCell", "Ranges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### isEmpty() and isNormal()
 ###
-### All of them test a Ranges object as a whole and return a single TRUE or
-### FALSE.
+### All of them test an IntegerRanges object as a whole and return a single
+### TRUE or FALSE.
 ###
 
-### A Ranges object is considered empty iff all its ranges are empty.
-setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0L))
+### An IntegerRanges object is considered empty iff all its ranges are empty.
+setMethod("isEmpty", "IntegerRanges", function(x) all(width(x) == 0L))
 
 setGeneric("isNormal", function(x, ...) standardGeneric("isNormal"))
 
-setMethod("isNormal", "Ranges",
+setMethod("isNormal", "IntegerRanges",
     function(x)
     {
         all_ok <- all(width(x) >= 1L)
@@ -248,7 +252,7 @@ setGeneric("whichFirstNotNormal",
     function(x) standardGeneric("whichFirstNotNormal")
 )
 
-setMethod("whichFirstNotNormal", "Ranges",
+setMethod("whichFirstNotNormal", "IntegerRanges",
     function(x)
     {
         is_ok <- width(x) >= 1L
@@ -262,13 +266,13 @@ setMethod("whichFirstNotNormal", "Ranges",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting
 ###
-### TODO: "extractROWS" and most of the Ranges endomorphisms are only
+### TODO: "extractROWS" and most of the IntegerRanges endomorphisms are only
 ### defined for IRanges objects. Need to fix up the update mechanism, so that
-### they can be defined on Ranges. "extractROWS" and other endomorphisms
+### they can be defined on IntegerRanges. "extractROWS" and other endomorphisms
 ### are currently implemented as wrappers that coerce to IRanges, which is not
 ### efficient so not a general, long-term solution.
 
-setMethod("extractROWS", "Ranges",
+setMethod("extractROWS", "IntegerRanges",
     function(x, i)
         as(callNextMethod(as(x, "IRanges", strict=FALSE), i), class(x))
 )

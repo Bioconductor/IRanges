@@ -1,6 +1,6 @@
 ###
 
-test_findOverlaps_Ranges <- function()
+test_findOverlaps_IntegerRanges <- function()
 {
   ## .....
   ##    ....
@@ -150,7 +150,7 @@ test_findOverlaps_Ranges <- function()
   checkException(findOverlaps(NULL, query), silent = TRUE)
 }
 
-test_subsetByOverlaps_Ranges <- function() {
+test_subsetByOverlaps_IntegerRanges <- function() {
   x <- IRanges(9:12, 15)
   ranges <- IRanges(1, 10)
   checkIdentical(x[1:2], subsetByOverlaps(x, ranges))

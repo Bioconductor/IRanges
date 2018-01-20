@@ -351,9 +351,10 @@ setMethod("runValue", "CompressedRleList",
         ## 'rlePart' cannot contain empty ranges so using
         ## Using 'hit.empty.query.ranges=TRUE' won't affect the result
         ## (because 'rlePart' cannot contain empty ranges) but it makes
-        ## findOverlaps_Ranges_Partitioning() just a little bit faster.
-        hits <- findOverlaps_Ranges_Partitioning(rlePart, listPart,
-                                                 hit.empty.query.ranges=TRUE)
+        ## findOverlaps_IntegerRanges_Partitioning() just a little bit faster.
+        hits <- findOverlaps_IntegerRanges_Partitioning(
+                    rlePart, listPart,
+                    hit.empty.query.ranges=TRUE)
         ans_partitioning <- PartitioningByEnd(subjectHits(hits), NG=length(x))
         ans_unlistData <- runValue(rle)[queryHits(hits)]
         ans <- relist(ans_unlistData, ans_partitioning)
@@ -399,10 +400,11 @@ diceRangesByList <- function(x, list) {
   listPart <- PartitioningByEnd(list)
   ## 'x' cannot contain empty ranges so using
   ## 'hit.empty.query.ranges=TRUE' won't affect the result but
-  ## it makes findOverlaps_Ranges_Partitioning() just a little
+  ## it makes findOverlaps_IntegerRanges_Partitioning() just a little
   ## bit faster.
-  hits <- findOverlaps_Ranges_Partitioning(x, listPart,
-                                           hit.empty.query.ranges=TRUE)
+  hits <- findOverlaps_IntegerRanges_Partitioning(
+              x, listPart,
+              hit.empty.query.ranges=TRUE)
   ov <- overlapsRanges(x, listPart, hits)
   ans_unlistData <- shift(ov, 1L - start(listPart)[subjectHits(hits)])
   ans_partitioning <- PartitioningByEnd(subjectHits(hits), NG=length(list))

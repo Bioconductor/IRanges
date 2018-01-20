@@ -7,11 +7,11 @@
 
 static const R_CallMethodDef callMethods[] = {
 
-/* Ranges_class.c */
-	CALLMETHOD_DEF(valid_Ranges, 3),
+/* IntegerRanges_class.c */
+	CALLMETHOD_DEF(valid_IntegerRanges, 3),
 
-/* Ranges_comparison.c */
-	CALLMETHOD_DEF(Ranges_pcompare, 4),
+/* IntegerRanges_comparison.c */
+	CALLMETHOD_DEF(IntegerRanges_pcompare, 4),
 
 /* IRanges_class.c */
 	CALLMETHOD_DEF(IRanges_isNormal, 1),
@@ -47,11 +47,11 @@ static const R_CallMethodDef callMethods[] = {
 
 /* inter_range_methods.c */
 	CALLMETHOD_DEF(IRanges_range, 1),
-	CALLMETHOD_DEF(Ranges_reduce, 6),
+	CALLMETHOD_DEF(IntegerRanges_reduce, 6),
 	CALLMETHOD_DEF(CompressedIRangesList_reduce, 4),
 	CALLMETHOD_DEF(IRanges_gaps, 4),
 	CALLMETHOD_DEF(CompressedIRangesList_gaps, 3),
-	CALLMETHOD_DEF(Ranges_disjointBins, 2),
+	CALLMETHOD_DEF(IntegerRanges_disjointBins, 2),
 
 /* coverage_methods.c */
 	CALLMETHOD_DEF(IRanges_coverage, 6),
@@ -97,7 +97,7 @@ void R_init_IRanges(DllInfo *info)
 {
 	R_registerRoutines(info, NULL, callMethods, NULL, NULL);
 
-/* Ranges_comparison.c */
+/* IntegerRanges_comparison.c */
 	REGISTER_CCALLABLE(_overlap_code);
 	REGISTER_CCALLABLE(_invert_overlap_code);
 

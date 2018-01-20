@@ -3,9 +3,9 @@
 \alias{findOverlaps-methods}
 
 \alias{findOverlaps}
-\alias{findOverlaps,Ranges,Ranges-method}
+\alias{findOverlaps,IntegerRanges,IntegerRanges-method}
 \alias{findOverlaps,Vector,missing-method}
-\alias{findOverlaps,integer,Ranges-method}
+\alias{findOverlaps,integer,IntegerRanges-method}
 \alias{findOverlaps,Views,Views-method}
 \alias{findOverlaps,Views,Vector-method}
 \alias{findOverlaps,Vector,Views-method}
@@ -24,7 +24,7 @@
 \alias{countOverlaps}
 \alias{countOverlaps,Vector,Vector-method}
 \alias{countOverlaps,Vector,missing-method}
-\alias{countOverlaps,Ranges,Ranges-method}
+\alias{countOverlaps,IntegerRanges,IntegerRanges-method}
 \alias{countOverlaps,RangesList,RangesList-method}
 \alias{countOverlaps,ViewsList,ViewsList-method}
 \alias{countOverlaps,ViewsList,Vector-method}
@@ -55,13 +55,13 @@
 \alias{subsetByOverlaps,RangesList,RangedData-method}
 
 \alias{overlapsRanges}
-\alias{overlapsRanges,Ranges,Ranges-method}
+\alias{overlapsRanges,IntegerRanges,IntegerRanges-method}
 \alias{overlapsRanges,RangesList,RangesList-method}
 
 \alias{poverlaps}
-\alias{poverlaps,Ranges,Ranges-method}
-\alias{poverlaps,Ranges,integer-method}
-\alias{poverlaps,integer,Ranges-method}
+\alias{poverlaps,IntegerRanges,IntegerRanges-method}
+\alias{poverlaps,IntegerRanges,integer-method}
+\alias{poverlaps,integer,IntegerRanges-method}
 
 \alias{mergeByOverlaps}
 
@@ -77,8 +77,9 @@
   Various methods for finding/counting interval overlaps between two
   "range-based" objects: a query and a subject.
 
-  NOTE: This man page describes the methods that operate on \link{Ranges},
-  \link{Views}, \link{RangesList}, or \link{ViewsList} objects. See
+  NOTE: This man page describes the methods that operate on
+  \link{IntegerRanges}, \link{Views}, \link{RangesList}, or
+  \link{ViewsList} objects. See
   \code{?`\link[GenomicRanges]{findOverlaps,GenomicRanges,GenomicRanges-method}`}
   in the \pkg{GenomicRanges} package for methods that operate on
   \link[GenomicRanges]{GenomicRanges} or \link[GenomicRanges]{GRangesList}
@@ -120,11 +121,11 @@ findOverlapPairs(query, subject, ...)
 
 \arguments{
   \item{query, subject, x, ranges}{
-    Each of them can be a \link{Ranges}, \link{Views}, \link{RangesList},
+    Each of them can be a \link{IntegerRanges}, \link{Views}, \link{RangesList},
     or \link{ViewsList} object.
-    In addition, if \code{subject} or \code{ranges} is a \link{Ranges} object,
-    \code{query} or \code{x} can be an integer vector to be converted to
-    length-one ranges.
+    In addition, if \code{subject} or \code{ranges} is a \link{IntegerRanges}
+    object, \code{query} or \code{x} can be an integer vector to be converted
+    to length-one ranges.
 
     If \code{query} (or \code{x}) is a \link{RangesList} object, then
     \code{subject} (or \code{ranges}) must also be a \link{RangesList} object.
@@ -188,7 +189,7 @@ findOverlapPairs(query, subject, ...)
     (the default), it's replaced internally by 0.
   }
   \item{select}{
-    If \code{query} is a \link{Ranges} or \link{Views} object:
+    If \code{query} is a \link{IntegerRanges} or \link{Views} object:
     When \code{select} is \code{"all"} (the default), the results are
     returned as a \link[S4Vectors]{Hits} object.
     Otherwise the returned value is an integer vector \emph{parallel} to
@@ -237,7 +238,7 @@ findOverlapPairs(query, subject, ...)
   finding which intervals in one set overlap those in another.
 
   The simplest approach is to call the \code{findOverlaps} function
-  on a \link{Ranges} or other object with range information (aka
+  on a \link{IntegerRanges} or other object with range information (aka
   "range-based object").
 }
 
@@ -249,7 +250,7 @@ findOverlapPairs(query, subject, ...)
   For \link{RangesList} objects, it returns an \link{IntegerList} object.
 
   \code{overlapsAny} finds the ranges in \code{query} that overlap any
-  of the ranges in \code{subject}. For \link{Ranges} or \link{Views}
+  of the ranges in \code{subject}. For \link{IntegerRanges} or \link{Views}
   objects, it returns a logical vector of length equal to the number of
   ranges in \code{query}. For \link{RangesList} or \link{ViewsList} objects,
   it returns a \link{LogicalList} object where each element of the result
@@ -268,10 +269,10 @@ findOverlapPairs(query, subject, ...)
   \code{findOverlaps} parameters.
 
   When \code{hits} is a \link[S4Vectors]{Hits} (or \link[S4Vectors]{HitsList})
-  object, \code{overlapsRanges(query, subject, hits)} returns a \link{Ranges}
-  (or \link{RangesList}) object of the \emph{same shape} as \code{hits}
-  holding the regions of intersection between the overlapping ranges
-  in objects \code{query} and \code{subject}, which should be the same
+  object, \code{overlapsRanges(query, subject, hits)} returns a
+  \link{IntegerRanges} (or \link{RangesList}) object of the \emph{same shape}
+  as \code{hits} holding the regions of intersection between the overlapping
+  ranges in objects \code{query} and \code{subject}, which should be the same
   query and subject used in the call to \code{findOverlaps} that generated
   \code{hits}.
   \emph{Same shape} means same length when \code{hits} is a
@@ -318,7 +319,7 @@ findOverlapPairs(query, subject, ...)
 
     \item The \link{NCList} class and constructor.
 
-    \item The \link{Ranges}, \link{Views}, \link{RangesList}, and
+    \item The \link{IntegerRanges}, \link{Views}, \link{RangesList}, and
           \link{ViewsList} classes.
 
     \item The \link{IntegerList} and \link{LogicalList} classes.

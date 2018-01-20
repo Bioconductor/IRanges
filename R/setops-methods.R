@@ -4,12 +4,13 @@
 ###
 ### 1) Vector-wise set operations: union, intersect, setdiff
 ###
-###    When the input are Ranges objects, the functions in that group interpret
-###    each supplied object ('x' or 'y') as a set of integer values. Therefore,
-###    if 2 IRanges objects 'x1' and 'x2' represent the same set of integers,
-###    then each of these functions will return the same result when 'x1' is
-###    replaced with 'x2' in the input. The returned IRanges object is
-###    guaranteed to be normal but is *not* promoted to NormalIRanges.
+###    When the input are IntegerRanges objects, the functions in that group
+###    interpret each supplied object ('x' or 'y') as a set of integer values.
+###    Therefore, if 2 IRanges objects 'x1' and 'x2' represent the same set
+###    of integers, then each of these functions will return the same result
+###    when 'x1' is replaced with 'x2' in the input. The returned IRanges
+###    object is guaranteed to be normal but is *not* promoted to
+###    NormalIRanges.
 ###
 ### 2) Element-wise (aka "parallel") set operations: punion, pintersect,
 ###    psetdiff, pgap
@@ -23,10 +24,10 @@
 ### union()
 ###
 
-### Always return an IRanges *instance* whatever Ranges derivatives are passed
-### to it (e.g. IPos, NCList or NormalIRanges), so does NOT act like an
-### endomorphism in general.
-setMethod("union", c("Ranges", "Ranges"),
+### Always return an IRanges *instance* whatever IntegerRanges derivatives
+### are passed to it (e.g. IPos, NCList or NormalIRanges), so does NOT act
+### like an endomorphism in general.
+setMethod("union", c("IntegerRanges", "IntegerRanges"),
     function(x, y)
     {
         ## We downgrade 'x' to an IRanges instance so 'c(x, y)' is guaranteed
@@ -63,10 +64,10 @@ setMethod("union", c("Pairs", "missing"), function(x, y, ...) {
 ### intersect()
 ###
 
-### Always return an IRanges *instance* whatever Ranges derivatives are passed
-### to it (e.g. IPos, NCList or NormalIRanges), so does NOT act like an
-### endomorphism in general.
-setMethod("intersect", c("Ranges", "Ranges"),
+### Always return an IRanges *instance* whatever IntegerRanges derivatives
+### are passed to it (e.g. IPos, NCList or NormalIRanges), so does NOT act
+### like an endomorphism in general.
+setMethod("intersect", c("IntegerRanges", "IntegerRanges"),
     function(x, y)
     {
         if (length(x) == 0L)
@@ -113,10 +114,10 @@ setMethod("intersect", c("CompressedAtomicList", "CompressedAtomicList"),
 ### setdiff()
 ###
 
-### Always return an IRanges *instance* whatever Ranges derivatives are passed
-### to it (e.g. IPos, NCList or NormalIRanges), so does NOT act like an
-### endomorphism in general.
-setMethod("setdiff", c("Ranges", "Ranges"),
+### Always return an IRanges *instance* whatever IntegerRanges derivatives
+### are passed to it (e.g. IPos, NCList or NormalIRanges), so does NOT act
+### like an endomorphism in general.
+setMethod("setdiff", c("IntegerRanges", "IntegerRanges"),
     function(x, y)
     {
         if (length(x) == 0L)
@@ -154,7 +155,7 @@ setGeneric("punion", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("punion")
 )
 
-setMethod("punion", c("Ranges", "Ranges"),
+setMethod("punion", c("IntegerRanges", "IntegerRanges"),
     function(x, y, fill.gap=FALSE)
     {
         if (length(x) != length(y))
@@ -192,7 +193,7 @@ setGeneric("pintersect", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("pintersect")
 )
 
-setMethod("pintersect", c("Ranges", "Ranges"),
+setMethod("pintersect", c("IntegerRanges", "IntegerRanges"),
     function(x, y, resolve.empty=c("none", "max.start", "start.x"))
     {
         if (length(x) != length(y))
@@ -256,7 +257,7 @@ setGeneric("psetdiff", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("psetdiff")
 )
 
-setMethod("psetdiff", c("Ranges", "Ranges"),
+setMethod("psetdiff", c("IntegerRanges", "IntegerRanges"),
     function(x, y)
     {
         if (length(x) != length(y))
@@ -295,7 +296,7 @@ setGeneric("pgap", signature=c("x", "y"),
     function(x, y, ...) standardGeneric("pgap")
 )
 
-setMethod("pgap", c("Ranges", "Ranges"),
+setMethod("pgap", c("IntegerRanges", "IntegerRanges"),
     function(x, y)
     {
         if (length(x) != length(y))

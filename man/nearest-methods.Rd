@@ -2,9 +2,9 @@
 
 \alias{nearest-methods}
 
-\alias{class:RangesORmissing}
-\alias{RangesORmissing-class}
-\alias{RangesORmissing}
+\alias{class:IntegerRanges_OR_missing}
+\alias{IntegerRanges_OR_missing-class}
+\alias{IntegerRanges_OR_missing}
 
 \alias{nearest}
 \alias{precede}
@@ -12,40 +12,40 @@
 \alias{distance}
 \alias{distanceToNearest}
 \alias{selectNearest}
-\alias{nearest,Ranges,RangesORmissing-method}
-\alias{precede,Ranges,RangesORmissing-method}
-\alias{follow,Ranges,RangesORmissing-method}
-\alias{distance,Ranges,Ranges-method}
+\alias{nearest,IntegerRanges,IntegerRanges_OR_missing-method}
+\alias{precede,IntegerRanges,IntegerRanges_OR_missing-method}
+\alias{follow,IntegerRanges,IntegerRanges_OR_missing-method}
+\alias{distance,IntegerRanges,IntegerRanges-method}
 \alias{distance,Pairs,missing-method}
-\alias{distanceToNearest,Ranges,RangesORmissing-method}
+\alias{distanceToNearest,IntegerRanges,IntegerRanges_OR_missing-method}
 
 \title{Finding the nearest range neighbor}
 
 \description{
   The \code{nearest}, \code{precede}, \code{follow}, \code{distance}
-  and \code{distanceToNearest} methods for \code{\linkS4class{Ranges}} 
+  and \code{distanceToNearest} methods for \code{\linkS4class{IntegerRanges}} 
   objects and subclasses.
 }
 
 \usage{
-\S4method{nearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"))
+\S4method{nearest}{IntegerRanges,IntegerRanges_OR_missing}(x, subject, select = c("arbitrary", "all"))
 
-\S4method{precede}{Ranges,RangesORmissing}(x, subject, select = c("first", "all"))
+\S4method{precede}{IntegerRanges,IntegerRanges_OR_missing}(x, subject, select = c("first", "all"))
 
-\S4method{follow}{Ranges,RangesORmissing}(x, subject, select = c("last", "all"))
+\S4method{follow}{IntegerRanges,IntegerRanges_OR_missing}(x, subject, select = c("last", "all"))
 
-\S4method{distanceToNearest}{Ranges,RangesORmissing}(x, subject, select = c("arbitrary", "all"))
+\S4method{distanceToNearest}{IntegerRanges,IntegerRanges_OR_missing}(x, subject, select = c("arbitrary", "all"))
 
-\S4method{distance}{Ranges,Ranges}(x, y)
+\S4method{distance}{IntegerRanges,IntegerRanges}(x, y)
 \S4method{distance}{Pairs,missing}(x, y)
 }
 
 \arguments{
-  \item{x}{The query \code{\linkS4class{Ranges}} instance, or (for
+  \item{x}{The query \code{\linkS4class{IntegerRanges}} object, or (for
     \code{distance()}) a \code{\linkS4class{Pairs}} containing both the
     query (first) and subject (second).
   }
-  \item{subject}{The subject \code{Ranges} instance, within which the
+  \item{subject}{The subject \code{IntegerRanges} object, within which the
     nearest neighbors are found. Can be missing, in which case
     \code{x} is also the subject.
   }
@@ -55,7 +55,7 @@
     \code{follow}). To get all matchings, as a \code{Hits} object, 
     use \dQuote{all}.
   }
-  \item{y}{For the \code{distance} method, a \code{Ranges} instance.
+  \item{y}{For the \code{distance} method, a \code{IntegerRanges} object.
     Cannot be missing. If \code{x} and \code{y} are not the same
     length, the shortest will be recycled to match the length of the 
     longest.
@@ -67,7 +67,7 @@
 \details{
   \itemize{
     \item{nearest: }{
-      The conventional nearest neighbor finder. Returns a integer vector 
+      The conventional nearest neighbor finder. Returns an integer vector 
       containing the index of the nearest neighbor range in \code{subject} 
       for each range in \code{x}. If there is no nearest neighbor 
       (if \code{subject} is empty), NA's are returned.
@@ -117,7 +117,8 @@
       zero-width ranges in a consistent and intuitive manner. The new distance
       can be explained by a \emph{block} model where a range is represented by
       a series of blocks of size 1. Blocks are adjacent to each other and there
-      is no gap between them. A visual representation of IRanges(4,7) would be
+      is no gap between them. A visual representation of \code{IRanges(4,7)}
+      would be
  
       \preformatted{
         +-----+-----+-----+-----+
@@ -169,7 +170,7 @@
 
 \seealso{
   \itemize{
-    \item The \link{Ranges} and \link{Hits} classes.
+    \item The \link{IntegerRanges} and \link{Hits} classes.
     \item The \link[GenomicRanges]{GenomicRanges} and 
           \link[GenomicRanges]{GRanges} classes in the GenomicRanges package.
     \item \code{\link{findOverlaps}} for finding just the overlapping ranges.

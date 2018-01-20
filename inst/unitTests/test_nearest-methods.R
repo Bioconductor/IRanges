@@ -5,7 +5,7 @@ checkMatching <- function(a, q, s, r, c)
   checkIdentical(c(queryLength(a), subjectLength(a)), as.integer(c(r, c)))
 }
 
-test_Ranges_adjacency <- function() 
+test_precede_follow_IntegerRanges <- function() 
 {
   query <- IRanges(c(1, 3, 9), c(3, 7, 10))
   subject <- IRanges(c(3, 10, 2), c(3, 12, 5))
@@ -58,7 +58,7 @@ test_Ranges_adjacency <- function()
                 c(3, 3, 4, 5), c(1, 2, 3, 3), 5, 5)
 }
 
-test_Ranges_nearest <- function() 
+test_nearest_IntegerRanges <- function() 
 {
   query <- IRanges(c(1, 3, 9), c(2, 7, 10))
   subject <- IRanges(c(3, 5, 12), c(3, 6, 12))
@@ -98,7 +98,7 @@ test_Ranges_nearest <- function()
 }
 
 quiet <- suppressWarnings
-test_Ranges_distance <- function() 
+test_distance_IntegerRanges <- function() 
 {
   checkIdentical(quiet(distance(IRanges(), IRanges())), integer())
 
@@ -117,7 +117,7 @@ test_Ranges_distance <- function()
   checkIdentical(quiet(distance(IRanges(4,3), IRanges(3,4))), 0L)
 }
 
-test_Ranges_distanceToNearest <- function() 
+test_distanceToNearest_IntegerRanges <- function() 
 {
   target <- Hits(sort.by.query=TRUE)
   current <- distanceToNearest(IRanges(), IRanges())

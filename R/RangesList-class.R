@@ -6,15 +6,14 @@
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### RangesList
 ###
-### Accepts any type of Ranges object as an element.
+### Accepts any type of IntegerRanges object as an element.
 ###
 
 setClass("RangesList", representation("VIRTUAL"),
-         prototype = prototype(elementType = "Ranges"),
+         prototype = prototype(elementType = "IntegerRanges"),
          contains = "List")
 
 setClass("SimpleRangesList",
-         prototype = prototype(elementType = "Ranges"),
          contains = c("RangesList", "SimpleList"))
 
 
@@ -27,12 +26,10 @@ setClass("IRangesList", representation("VIRTUAL"),
          contains = "RangesList")
 
 setClass("CompressedIRangesList",
-         prototype = prototype(elementType = "IRanges",
-                               unlistData = new("IRanges")),
+         prototype = prototype(unlistData = new("IRanges")),
          contains = c("IRangesList", "CompressedList"))
 
 setClass("SimpleIRangesList",
-         prototype = prototype(elementType = "IRanges"),
          contains = c("IRangesList", "SimpleRangesList"))
 
 
@@ -54,7 +51,6 @@ setClass("CompressedNormalIRangesList",
          contains = c("NormalIRangesList", "CompressedIRangesList"))
 
 setClass("SimpleNormalIRangesList",
-         prototype = prototype(elementType = "NormalIRanges"),
          contains = c("NormalIRangesList", "SimpleIRangesList"))
 
 
@@ -222,7 +218,7 @@ setMethod("whichFirstNotNormal", "RangesList",
 ### IRanges objects.
 .as_list_of_IRanges <- function(from)
 {
-    if (is(from, "Ranges")) {
+    if (is(from, "IntegerRanges")) {
         if (!is(from, "IRanges"))
             from <- as(from, "IRanges", strict=FALSE)
         along_idx <- setNames(seq_along(from), names(from))
@@ -262,10 +258,10 @@ setAs("list", "IRangesList", .from_list_to_SimpleIRangesList)
                                  mcols=mcols(from))
 }
 
-### Ranges objects are List objects so this case is already covered by the
-### .from_List_to_CompressedIRangesList() helper above. However, we can
-### implement it much more efficiently.
-.from_Ranges_to_CompressedIRangesList <- function(from)
+### IntegerRanges objects are List objects so this case is already covered
+### by the .from_List_to_CompressedIRangesList() helper above. However, we
+### can implement it much more efficiently.
+.from_IntegerRanges_to_CompressedIRangesList <- function(from)
 {
     if (!is(from, "IRanges"))
         from <- as(from, "IRanges", strict=FALSE)
@@ -287,7 +283,9 @@ setAs("list", "IRangesList", .from_list_to_SimpleIRangesList)
 }
 
 setAs("List", "CompressedIRangesList", .from_List_to_CompressedIRangesList)
-setAs("Ranges", "CompressedIRangesList", .from_Ranges_to_CompressedIRangesList)
+setAs("IntegerRanges", "CompressedIRangesList",
+    .from_IntegerRanges_to_CompressedIRangesList
+)
 setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 
 ### Automatic coercion methods from SimpleList/RangesList/SimpleRangesList to
@@ -301,7 +299,7 @@ setAs("SimpleRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 setAs("List", "IRangesList",
     function(from)
     {
-        if (is(from, "CompressedList") || is(from, "Ranges"))
+        if (is(from, "CompressedList") || is(from, "IntegerRanges"))
             as(from, "CompressedIRangesList")
         else
             as(from, "SimpleIRangesList")
@@ -384,8 +382,8 @@ RangesList <- function(..., universe = NULL)
   ranges <- list(...)
   if (length(ranges) == 1 && is.list(ranges[[1L]]))
     ranges <- ranges[[1L]]
-  if (!all(sapply(ranges, is, "Ranges")))
-    stop("all elements in '...' must be Ranges objects")
+  if (!all(sapply(ranges, is, "IntegerRanges")))
+    stop("all elements in '...' must be IntegerRanges objects")
   ans <- S4Vectors:::new_SimpleList_from_list("SimpleRangesList", ranges)
   if (!is.null(universe))
     universe(ans) <- universe
@@ -404,7 +402,7 @@ IRangesList <- function(..., universe=NULL, compress=TRUE)
     args <- list(...)
     if (length(args) == 2L &&
         setequal(names(args), c("start", "end")) &&
-        !is(args[[1L]], "Ranges") && !is(args[[2L]], "Ranges"))
+        !is(args[[1L]], "IntegerRanges") && !is(args[[2L]], "IntegerRanges"))
     {
         if (!compress)
             stop(wmsg("'compress' must be TRUE when passing the 'start' ",
@@ -421,7 +419,7 @@ IRangesList <- function(..., universe=NULL, compress=TRUE)
     } else {
         if (length(args) == 1L) {
             x1 <- args[[1L]]
-            if (is.list(x1) || (is(x1, "List") && !is(x1, "Ranges")))
+            if (is.list(x1) || (is(x1, "List") && !is(x1, "IntegerRanges")))
                 args <- x1
         }
         if (compress)

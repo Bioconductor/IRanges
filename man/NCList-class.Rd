@@ -11,7 +11,7 @@
 \alias{start,NCList-method}
 \alias{end,NCList-method}
 \alias{width,NCList-method}
-\alias{coerce,Ranges,NCList-method}
+\alias{coerce,IntegerRanges,NCList-method}
 
 % NCLists objects:
 \alias{class:NCLists}
@@ -35,10 +35,10 @@
 \title{Nested Containment List objects}
 
 \description{
-  The NCList class is a container for storing the Nested Containment List
-  representation of a \link{Ranges} object. Preprocessing a \link{Ranges}
-  object as a Nested Containment List allows efficient overlap-based
-  operations like \code{\link{findOverlaps}}.
+  The NCList class is a container for storing the Nested Containment
+  List representation of a \link{IntegerRanges} object. Preprocessing a
+  \link{IntegerRanges} object as a Nested Containment List allows
+  efficient overlap-based operations like \code{\link{findOverlaps}}.
 
   The NCLists class is a container for storing a collection of NCList objects.
   An NCLists object is typically the result of preprocessing each list
@@ -46,8 +46,8 @@
   Like with NCList, the NCLists object can then be used for efficient
   overlap-based operations.
 
-  To preprocess a \link{Ranges} or \link{RangesList} object, simply call
-  the \code{NCList} or \code{NCLists} constructor function on it.
+  To preprocess a \link{IntegerRanges} or \link{RangesList} object, simply
+  call the \code{NCList} or \code{NCLists} constructor function on it.
 }
 
 \usage{
@@ -57,7 +57,7 @@ NCLists(x, circle.length=NA_integer_)
 
 \arguments{
   \item{x}{
-    The \link{Ranges} or \link{RangesList} object to preprocess.
+    The \link{IntegerRanges} or \link{RangesList} object to preprocess.
   }
   \item{circle.length}{
     Use only if the space (or spaces if \code{x} is a \link{RangesList}
@@ -92,8 +92,8 @@ NCLists(x, circle.length=NA_integer_)
           implementations produce the same output. However, the new
           implementation is faster and more memory efficient.
     \item With the new implementation, either the query or the subject can
-          be preprocessed with \code{NCList} for a \link{Ranges} object
-          (replacement for \code{IntervalTree}), \code{NCLists}
+          be preprocessed with \code{NCList} for a \link{IntegerRanges}
+          object (replacement for \code{IntervalTree}), \code{NCLists}
           for a \link{RangesList} object (replacement for
           \code{IntervalForest}), and
           \code{\link[GenomicRanges]{GNCList}} for a
@@ -105,11 +105,12 @@ NCLists(x, circle.length=NA_integer_)
           job at it (by preprocessing only what's needed when it's needed,
           and releasing memory as they go).
     \item With the new implementation, \code{\link{countOverlaps}} on
-          \link{Ranges} or \link[GenomicRanges]{GenomicRanges} objects doesn't
-          call \code{\link{findOverlaps}} in order to collect all the hits in
-          a growing \link{Hits} object and count them only at the end. Instead,
-          the counting happens at the C level and the hits are not kept. This
-          reduces memory usage considerably when there is a lot of hits.
+          \link{IntegerRanges} or \link[GenomicRanges]{GenomicRanges}
+          objects doesn't call \code{\link{findOverlaps}} in order to
+          collect all the hits in a growing \link{Hits} object and count
+          them only at the end. Instead, the counting happens at the C level
+          and the hits are not kept. This reduces memory usage considerably
+          when there is a lot of hits.
     \item When \code{minoverlap=0}, zero-width ranges are now interpreted
           as insertion points and considered to overlap with ranges that
           contain them. With the old alogrithm, zero-width ranges were always
@@ -155,7 +156,7 @@ NCLists(x, circle.length=NA_integer_)
     \item \code{\link{findOverlaps}} for finding/counting interval overlaps
           between two \emph{range-based} objects.
 
-    \item \link{Ranges} and \link{RangesList} objects.
+    \item \link{IntegerRanges} and \link{RangesList} objects.
   }
 }
 

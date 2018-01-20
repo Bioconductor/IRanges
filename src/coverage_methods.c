@@ -392,7 +392,7 @@ static int double2int(double x)
 
 /*
  * Args:
- *   x_holder:   A IRanges_holder struct holding the input ranges, those
+ *   x_holder:   An IRanges_holder struct holding the input ranges, those
  *               ranges being those of a fictive IRanges object 'x'.
  *   shift:      A numeric (integer or double) vector parallel to 'x' (will
  *               get recycled if necessary) with no NAs.
@@ -507,7 +507,7 @@ static int shift_and_clip_ranges(const IRanges_holder *x_holder,
 
 /*
  * Args:
- *   x_holder:   A IRanges_holder struct holding the input ranges, those
+ *   x_holder:   An IRanges_holder struct holding the input ranges, those
  *               ranges being those of a fictive IRanges object 'x'.
  *   shift:      A numeric (integer or double) vector parallel to 'x' (will
  *               get recycled if necessary) with no NAs.

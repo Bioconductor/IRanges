@@ -103,10 +103,10 @@ setMethod("elementNROWS", "Views", function(x) width(x))
 new_Views <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL,
                       Class=NULL)
 {
-    if (is(start, "Ranges")) {
+    if (is(start, "IntegerRanges")) {
         if (!is.null(end) || !is.null(width))
             stop(wmsg("'end' and 'width' must be NULLs when ",
-                      "'start' is a Ranges object"))
+                      "'start' is an IntegerRanges object"))
         ans_ranges <- start
         if (class(ans_ranges) != "IRanges")
             ans_ranges <- as(ans_ranges, "IRanges")
@@ -145,7 +145,7 @@ setAs("Vector", "Views",
     function(from) Views(from, start=1L, width=length(from))
 )
 
-setAs("Views", "Ranges", function(from) ranges(from))
+setAs("Views", "IntegerRanges", function(from) ranges(from))
 setAs("Views", "IRanges", function(from) ranges(from))
 
 ### Unfortunately, even if we've already defined the IRanges->NormalIRanges

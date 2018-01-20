@@ -42,9 +42,9 @@
 
 \title{List of Ranges}
 \description{An extension of \linkS4class{List} that holds only
-  \linkS4class{Ranges} objects. Useful for storing ranges over a set
+  \linkS4class{IntegerRanges} objects. Useful for storing ranges over a set
   of spaces (e.g. chromosomes), each of which requires a separate
-  \code{Ranges} object.
+  \code{IntegerRanges} object.
 }
 
 \section{Accessors}{
@@ -75,11 +75,11 @@
 \section{Constructor}{
   \describe{
     \item{}{\code{RangesList(...)}:
-      Each \code{Ranges} in \code{...}
+      Each \code{IntegerRanges} in \code{...}
       becomes an element in the new \code{RangesList}, in the same
       order. This is analogous to the \code{\link{list}} constructor,
       except every argument in \code{...} must be derived from
-      \code{Ranges}.
+      \code{IntegerRanges}.
     }
   }
 }
@@ -101,7 +101,7 @@
   \describe{
     \item{}{
       \code{as(from, "RangesList")}: When \code{from} is a
-      \code{Ranges}, analogous to \code{as.list} on a vector.
+      \code{IntegerRanges}, analogous to \code{as.list} on a vector.
     }
   }
 }
@@ -109,7 +109,7 @@
 \section{Arithmetic Operations}{
   Any arithmetic operation, such as \code{x + y}, \code{x * y}, etc,
   where \code{x} is a \code{RangesList}, is performed identically on each
-  element. Currently, \code{Ranges} supports only the \code{*} operator,
+  element. Currently, \code{IntegerRanges} supports only the \code{*} operator,
   which zooms the ranges by a numeric factor.
 }
 

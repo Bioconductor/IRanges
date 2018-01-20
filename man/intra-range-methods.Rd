@@ -3,54 +3,54 @@
 \alias{intra-range-methods}
 
 \alias{shift}
-\alias{shift,Ranges-method}
+\alias{shift,IntegerRanges-method}
 \alias{shift,IPos-method}
 \alias{shift,Views-method}
 \alias{shift,RangesList-method}
 \alias{shift,CompressedIRangesList-method}
 
 \alias{narrow}
-\alias{narrow,Ranges-method}
+\alias{narrow,IntegerRanges-method}
 \alias{narrow,Views-method}
 \alias{narrow,RangesList-method}
 \alias{narrow,CompressedIRangesList-method}
 \alias{narrow,MaskCollection-method}
 
 \alias{resize}
-\alias{resize,Ranges-method}
+\alias{resize,IntegerRanges-method}
 \alias{resize,RangesList-method}
 \alias{resize,IntervalList-method}
 \alias{resize,CompressedIRangesList-method}
 
 \alias{flank}
-\alias{flank,Ranges-method}
+\alias{flank,IntegerRanges-method}
 \alias{flank,RangesList-method}
 \alias{flank,CompressedIRangesList-method}
 
 \alias{promoters}
-\alias{promoters,Ranges-method}
+\alias{promoters,IntegerRanges-method}
 \alias{promoters,Views-method}
 \alias{promoters,RangesList-method}
 \alias{promoters,CompressedIRangesList-method}
 
 \alias{reflect}
-\alias{reflect,Ranges-method}
+\alias{reflect,IntegerRanges-method}
 
 \alias{restrict}
-\alias{restrict,Ranges-method}
+\alias{restrict,IntegerRanges-method}
 \alias{restrict,RangesList-method}
 \alias{restrict,CompressedIRangesList-method}
 
 \alias{threebands}
 \alias{threebands,IRanges-method}
 
-\alias{Ops,Ranges,numeric-method}
-\alias{Ops,Ranges,ANY-method}
+\alias{Ops,IntegerRanges,numeric-method}
+\alias{Ops,IntegerRanges,ANY-method}
 \alias{Ops,CompressedIRangesList,numeric-method}
 \alias{Ops,RangesList,numeric-method}
 
 
-\title{Intra range transformations of a Ranges, Views, RangesList,
+\title{Intra range transformations of an IntegerRanges, Views, RangesList,
        or MaskCollection object}
 
 \description{
@@ -105,8 +105,8 @@ threebands(x, start=NA, end=NA, width=NA)
 
 \arguments{
   \item{x}{
-    A \link{Ranges}, \link{Views}, \link{RangesList}, or \link{MaskCollection}
-    object.
+    An \link{IntegerRanges}, \link{Views}, \link{RangesList}, or
+    \link{MaskCollection} object.
   }
   \item{shift}{
     An integer vector containing the shift information. Recycled as 
@@ -119,7 +119,7 @@ threebands(x, start=NA, end=NA, width=NA)
   }
   \item{start, end}{
     \itemize{
-      \item If \code{x} is a \link{Ranges} or \link{Views} object:
+      \item If \code{x} is an \link{IntegerRanges} or \link{Views} object:
             A vector of integers for all functions except for \code{flank}.
             For \code{restrict}, the supplied \code{start} and \code{end}
             arguments must be vectors of integers, eventually with NAs, that
@@ -147,7 +147,7 @@ threebands(x, start=NA, end=NA, width=NA)
   }
   \item{width}{
     \itemize{
-      \item If \code{x} is a \link{Ranges} or \link{Views} object:
+      \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
             For \code{narrow} and \code{threebands}, a vector of integers,
             eventually with NAs. See the SEW (Start/End/Width) interface for
             the details (\code{?solveUserSEW}).
@@ -168,7 +168,7 @@ threebands(x, start=NA, end=NA, width=NA)
   }
   \item{fix}{
     \itemize{
-      \item If \code{x} is a \link{Ranges} or \link{Views} object:
+      \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
             A character vector or character-Rle of length 1 or \code{length(x)}
             containing the values \code{"start"}, \code{"end"}, and
             \code{"center"} denoting what to use as an anchor for each
@@ -227,7 +227,7 @@ threebands(x, start=NA, end=NA, width=NA)
   }\subsection{narrow}{
 
     \code{narrow} narrows the ranges in \code{x} i.e. each range in the
-    returned \link{Ranges} object is a subrange of the corresponding
+    returned \link{IntegerRanges} object is a subrange of the corresponding
     range in \code{x}.
     The supplied start/end/width values are solved by a call to
     \code{solveUserSEW(width(x), start=start, end=end, width=width)}
@@ -324,7 +324,7 @@ threebands(x, start=NA, end=NA, width=NA)
   \itemize{
     \item \link{inter-range-methods} for inter range transformations.
 
-    \item The \link{Ranges}, \link{Views}, \link{RangesList},
+    \item The \link{IntegerRanges}, \link{Views}, \link{RangesList},
           and \link{MaskCollection} classes.
 
     \item The \link[GenomicRanges]{intra-range-methods} man page in the
@@ -343,7 +343,7 @@ threebands(x, start=NA, end=NA, width=NA)
 ## shift()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object:
+## On an IntegerRanges object:
 ir1 <- successiveIRanges(c(19, 5, 0, 8, 5))
 ir1
 shift(ir1, shift=-3)
@@ -364,7 +364,7 @@ stopifnot(identical(res1, res2))
 ## narrow()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object:
+## On an IntegerRanges object:
 ir2 <- ir1[width(ir1) != 0]
 narrow(ir2, start=4, end=-2)
 narrow(ir2, start=-4, end=-2)
@@ -387,7 +387,7 @@ narrow(mymasks, start=8)
 ## resize()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object:
+## On an IntegerRanges object:
 resize(ir2, 200)
 resize(ir2, 2, fix="end")
 
@@ -398,7 +398,7 @@ resize(collection, width=200)
 ## flank()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object:
+## On an IntegerRanges object:
 ir3 <- IRanges(c(2,5,1), c(3,7,3))
 flank(ir3, 2)
 flank(ir3, 2, start=FALSE)
@@ -415,7 +415,7 @@ flank(collection, width=10)
 ## promoters()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object:
+## On an IntegerRanges object:
 ir4 <- IRanges(20:23, width=3)
 promoters(ir4, upstream=0, downstream=0) ## no change
 promoters(ir4, upstream=0, downstream=1) ## start value only
@@ -428,7 +428,7 @@ promoters(collection, upstream=5, downstream=2)
 ## reflect()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object:
+## On an IntegerRanges object:
 bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
 reflect(ir3, bounds)
 
@@ -438,7 +438,7 @@ reflect(ir3, bounds)
 ## restrict()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object:
+## On an IntegerRanges object:
 restrict(ir1, start=12, end=34)
 restrict(ir1, start=20)
 restrict(ir1, start=21)
@@ -451,7 +451,7 @@ restrict(collection, start=2, end=8)
 ## threebands()
 ## ---------------------------------------------------------------------
 
-## On a Ranges object:
+## On an IntegerRanges object:
 z <- threebands(ir2, start=4, end=-2)
 ir2b <- punion(z$left, z$right, fill.gap=TRUE)
 stopifnot(identical(ir2, ir2b))

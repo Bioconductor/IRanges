@@ -338,7 +338,7 @@ setGeneric("extractList", function(x, i) standardGeneric("extractList"))
 setMethod("extractList", c("ANY", "ANY"),
     function(x, i)
     {
-        if (is(i, "Ranges"))
+        if (is(i, "IntegerRanges"))
             return(relist(extractROWS(x, i), i))
         if (is.list(i)) {
             unlisted_i <- unlist(i, recursive=FALSE, use.names=FALSE)

@@ -1,4 +1,4 @@
-test_range_Ranges <- function() {
+test_range_IntegerRanges <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   ir2 <- IRanges(c(5,2,0), c(6,3,1))
   checkIdentical(range(ir1), IRanges(1, 7))
@@ -52,7 +52,7 @@ test_range_RangesList <- function() {
   checkIdentical(mcols(rng[[2]])$revmap, IntegerList())
 }
 
-test_reduce_Ranges <- function() {
+test_reduce_IntegerRanges <- function() {
   x <- IRanges()
   current <- reduce(x)
   checkIdentical(x, current)
@@ -173,7 +173,7 @@ test_reduce_RangesList <- function() {
   }
 }
 
-test_gaps_Ranges <- function() {
+test_gaps_IntegerRanges <- function() {
   checkIdentical(gaps(IRanges()), IRanges())
   checkIdentical(gaps(IRanges(), start=1, end=4),
                  IRanges(start=1, end=4))
@@ -200,7 +200,7 @@ test_gaps_RangesList <- function() {
   }
 }
 
-test_disjoin_Ranges <- function()
+test_disjoin_IntegerRanges <- function()
 {
   checkIdentical(disjoin(IRanges()), IRanges())
   ir <- IRanges(c(1, 21, 10, 1, 15, 5, 20, 20), c(6, 20, 9, 3, 14, 11, 20, 19))
@@ -304,7 +304,7 @@ test_disjoin_RangesList <- function()
     }
 }
 
-test_disjointBins_Ranges <- function()
+test_disjointBins_IntegerRanges <- function()
 {
   checkIdentical(disjointBins(IRanges()), integer())
   checkIdentical(disjointBins(IRanges(1, 5)), 1L)

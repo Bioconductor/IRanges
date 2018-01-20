@@ -34,20 +34,21 @@ local2global_revmap <- function(unlisted_revmap, y, x)
 ### range()
 ###
 
-### Always return an IRanges (or NormalIRanges) *instance* whatever Ranges
-### derivative the input is, so does NOT act like an endomorphism in general. 
-setMethod("range", "Ranges",
+### Always return an IRanges (or NormalIRanges) *instance* whatever
+### IntegerRanges derivative the input is, so does NOT act like an
+### endomorphism in general. 
+setMethod("range", "IntegerRanges",
     function(x, ..., with.revmap=FALSE, na.rm=FALSE)
     {
         if (!isTRUEorFALSE(with.revmap))
             stop("'with.revmap' must be TRUE or FALSE")
         if (!identical(na.rm, FALSE))
-            warning("\"range\" method for Ranges objects ",
+            warning("\"range\" method for IntegerRanges objects ",
                     "ignores the 'na.rm' argument")
         args <- unname(list(x, ...))
         ## TODO: Replace line below with
         ##     args <- lapply(args, ranges)
-        ## when ranges() works on Ranges objects.
+        ## when ranges() works on IntegerRanges objects.
         args <- lapply(args,
                        function(arg) IRanges(start(arg), width=width(arg)))
         ir <- do.call(c, args)
@@ -145,9 +146,10 @@ setGeneric("reduce", signature="x",
     function(x, drop.empty.ranges=FALSE, ...) standardGeneric("reduce")
 )
 
-### Always return an IRanges (or NormalIRanges) *instance* whatever Ranges
-### derivative the input is, so does NOT act like an endomorphism in general. 
-setMethod("reduce", "Ranges",
+### Always return an IRanges (or NormalIRanges) *instance* whatever
+### IntegerRanges derivative the input is, so does NOT act like an
+### endomorphism in general. 
+setMethod("reduce", "IntegerRanges",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
                 with.revmap=FALSE,
                 with.inframe.attrib=FALSE)
@@ -164,7 +166,7 @@ setMethod("reduce", "Ranges",
             stop("'with.revmap' must be TRUE or FALSE")
         if (!isTRUEorFALSE(with.inframe.attrib))
             stop("'with.inframe.attrib' must be TRUE or FALSE")
-        C_ans <- .Call2("Ranges_reduce",
+        C_ans <- .Call2("IntegerRanges_reduce",
                         start(x), width(x),
                         drop.empty.ranges, min.gapwidth,
                         with.revmap,
@@ -258,9 +260,10 @@ setGeneric("gaps", signature="x",
     function(x, start=NA, end=NA) standardGeneric("gaps")
 )
 
-### Always return an IRanges (or NormalIRanges) *instance* whatever Ranges
-### derivative the input is, so does NOT act like an endomorphism in general. 
-setMethod("gaps", "Ranges",
+### Always return an IRanges (or NormalIRanges) *instance* whatever
+### IntegerRanges derivative the input is, so does NOT act like an
+### endomorphism in general. 
+setMethod("gaps", "IntegerRanges",
     function(x, start=NA, end=NA)
     {
         start <- S4Vectors:::normargSingleStartOrNA(start)
@@ -391,13 +394,13 @@ setMethod("gaps", "MaskCollection",
 
 setGeneric("disjoin", function(x, ...) standardGeneric("disjoin"))
 
-### Always return an IRanges *instance* whatever Ranges derivative the input
-### is, so does NOT act like an endomorphism in general.
+### Always return an IRanges *instance* whatever IntegerRanges derivative
+### the input is, so does NOT act like an endomorphism in general.
 ### FIXME: Does not properly handle zero-width ranges at the moment e.g.
 ### disjoin(IRanges(c(1, 11, 13), width=c(2, 5, 0)) returns
 ### IRanges(c(1, 11, 13), width=c(2, 2, 3)) when it should return
 ### IRanges(c(1, 11, 13, 13), width=c(2, 2, 0, 3)).
-setMethod("disjoin", "Ranges",
+setMethod("disjoin", "IntegerRanges",
     function(x, with.revmap=FALSE)
     {
         if (!isTRUEorFALSE(with.revmap))
@@ -482,7 +485,7 @@ setMethod("disjoin", "CompressedIRangesList",
 
 setGeneric("isDisjoint", function(x, ...) standardGeneric("isDisjoint"))
 
-setMethod("isDisjoint", "Ranges",
+setMethod("isDisjoint", "IntegerRanges",
     function(x)
     {
         x_len <- length(x)
@@ -511,10 +514,10 @@ setMethod("isDisjoint", "RangesList",
 ### disjointBins()
 ###
 
-## make intervals disjoint by segregating them into separate Ranges
+## make intervals disjoint by segregating them into separate IntegerRanges
 setGeneric("disjointBins", function(x, ...) standardGeneric("disjointBins"))
 
-setMethod("disjointBins", "Ranges",
+setMethod("disjointBins", "IntegerRanges",
     function(x)
     {
         x_ord <- NULL
@@ -522,7 +525,7 @@ setMethod("disjointBins", "Ranges",
             x_ord <- order(x)
             x <- x[x_ord]
         }
-        bins <- .Call2("Ranges_disjointBins", start(x), width(x),
+        bins <- .Call2("IntegerRanges_disjointBins", start(x), width(x),
                        PACKAGE="IRanges")
         if (!is.null(x_ord)) {
             rev_ord <- integer(length(x_ord))

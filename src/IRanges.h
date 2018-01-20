@@ -8,16 +8,16 @@
 }
 
 
-/* Ranges_class.c */
+/* IntegerRanges_class.c */
 
-SEXP valid_Ranges(
+SEXP valid_IntegerRanges(
 	SEXP x_start,
 	SEXP x_end,
 	SEXP x_width
 );
 
 
-/* Ranges_comparison.c */
+/* IntegerRanges_comparison.c */
 
 int _overlap_code(
 	int x_start,
@@ -30,7 +30,7 @@ int _invert_overlap_code(
 	int code
 );
 
-SEXP Ranges_pcompare(
+SEXP IntegerRanges_pcompare(
 	SEXP x_start,
 	SEXP x_width,
 	SEXP y_start,
@@ -278,7 +278,7 @@ SEXP CompressedNormalIRangesList_max(
 
 SEXP IRanges_range(SEXP x);
 
-SEXP Ranges_reduce(
+SEXP IntegerRanges_reduce(
 	SEXP x_start,
 	SEXP x_width,
 	SEXP drop_empty_ranges,
@@ -307,7 +307,7 @@ SEXP CompressedIRangesList_gaps(
 	SEXP end
 );
 
-SEXP Ranges_disjointBins(
+SEXP IntegerRanges_disjointBins(
 	SEXP x_start,
 	SEXP x_width
 );

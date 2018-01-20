@@ -35,7 +35,7 @@ setAs("SortedByQueryHits", "PartitioningByEnd",
 setAs("SortedByQueryHits", "Partitioning",
     .from_SortedByQueryHits_to_PartitioningByEnd
 )
-setAs("SortedByQueryHits", "Ranges",
+setAs("SortedByQueryHits", "IntegerRanges",
     .from_SortedByQueryHits_to_PartitioningByEnd
 )
 setAs("SortedByQueryHits", "IRanges",

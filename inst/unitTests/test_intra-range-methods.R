@@ -1,4 +1,4 @@
-test_shift_Ranges <- function() {
+test_shift_IntegerRanges <- function() {
   ir0 <- IRanges(0, 0)
 
   ir1 <- shift(ir0, .Machine$integer.max)
@@ -31,7 +31,7 @@ test_shift_Ranges <- function() {
   checkException(suppressWarnings(shift(ir4, 1:20 * 99000000L)), silent=TRUE)
 }
 
-test_narrow_Ranges <- function() {
+test_narrow_IntegerRanges <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   checkIdentical(narrow(ir1, start=1, end=2),
                  IRanges(c(2, 5, 1), c(3, 6, 2)))
@@ -50,7 +50,7 @@ test_narrow_RangesList <- function() {
   }
 }
 
-test_resize_Ranges <- function() {
+test_resize_IntegerRanges <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   checkIdentical(resize(ir1, width=10),
                  IRanges(c(2, 5, 1), width=10))
@@ -85,7 +85,7 @@ test_resize_RangesList <- function() {
   }
 }
 
-test_flank_Ranges <- function() {
+test_flank_IntegerRanges <- function() {
   checkIdentical(flank(IRanges(), 2), IRanges())
 
   ir1 <- IRanges(c(2, 5, 1), c(3, 7, 3))
@@ -170,7 +170,7 @@ test_promoters <- function() {
   checkIdentical(unique(unlist(width(current))), 2L)
 }
 
-test_reflect_Ranges <- function() {
+test_reflect_IntegerRanges <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
   checkIdentical(reflect(ir1, bounds),
@@ -178,7 +178,7 @@ test_reflect_Ranges <- function() {
   checkException(reflect(ir1, IRanges()), silent = TRUE)
 }
 
-test_restrict_Ranges <- function() {
+test_restrict_IntegerRanges <- function() {
   ir1 <- IRanges(c(2,5,1), c(3,7,3))
   checkIdentical(restrict(ir1, start=2, end=5),
                  IRanges(c(2, 5, 2), c(3, 5, 3)))
@@ -205,7 +205,7 @@ test_restrict_RangesList <- function() {
   }
 }
 
-test_zoom_Ranges <- function() {
+test_zoom_IntegerRanges <- function() {
   ir <- IRanges(c(1,5), c(3,10))
   checkIdentical(ir*1, ir)
   checkIdentical(ir*c(1,2), IRanges(c(1,6), c(3, 8)))

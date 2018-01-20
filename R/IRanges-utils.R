@@ -167,8 +167,8 @@ whichAsIRanges <- function(x)
 
 asNormalIRanges <- function(x, force=TRUE)
 {
-    if (!is(x, "Ranges"))
-        stop("'x' must be an Ranges object")
+    if (!is(x, "IntegerRanges"))
+        stop("'x' must be an IntegerRanges object")
     else if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
     if (!isTRUEorFALSE(force))

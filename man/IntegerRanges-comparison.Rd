@@ -1,52 +1,52 @@
-\name{Ranges-comparison}
+\name{IntegerRanges-comparison}
 
-\alias{Ranges-comparison}
+\alias{IntegerRanges-comparison}
 
 \alias{pcompare}
-\alias{pcompare,Ranges,Ranges-method}
+\alias{pcompare,IntegerRanges,IntegerRanges-method}
 \alias{rangeComparisonCodeToLetter}
 
-\alias{match,Ranges,Ranges-method}
-\alias{selfmatch,Ranges-method}
+\alias{match,IntegerRanges,IntegerRanges-method}
+\alias{selfmatch,IntegerRanges-method}
 
-\alias{is.unsorted,Ranges-method}
-\alias{order,Ranges-method}
+\alias{is.unsorted,IntegerRanges-method}
+\alias{order,IntegerRanges-method}
 
 
 \title{Comparing and ordering ranges}
 
 \description{
-  Methods for comparing and/or ordering \link{Ranges} objects.
+  Methods for comparing and/or ordering \link{IntegerRanges} objects.
 }
 
 \usage{
 ## match() & selfmatch()
 ## ---------------------
 
-\S4method{match}{Ranges,Ranges}(x, table, nomatch=NA_integer_, incomparables=NULL,
+\S4method{match}{IntegerRanges,IntegerRanges}(x, table, nomatch=NA_integer_, incomparables=NULL,
       method=c("auto", "quick", "hash"))
 
-\S4method{selfmatch}{Ranges}(x, method=c("auto", "quick", "hash"))
+\S4method{selfmatch}{IntegerRanges}(x, method=c("auto", "quick", "hash"))
 
 ## order() and related methods
 ## ----------------------------
 
-\S4method{is.unsorted}{Ranges}(x, na.rm=FALSE, strictly=FALSE)
+\S4method{is.unsorted}{IntegerRanges}(x, na.rm=FALSE, strictly=FALSE)
 
-\S4method{order}{Ranges}(..., na.last=TRUE, decreasing=FALSE,
+\S4method{order}{IntegerRanges}(..., na.last=TRUE, decreasing=FALSE,
            method=c("auto", "shell", "radix"))
 
-## Generalized parallel comparison of 2 Ranges objects
+## Generalized parallel comparison of 2 IntegerRanges objects
 ## ---------------------------------------------------
 
-\S4method{pcompare}{Ranges,Ranges}(x, y)
+\S4method{pcompare}{IntegerRanges,IntegerRanges}(x, y)
 
 rangeComparisonCodeToLetter(code)
 }
 
 \arguments{
   \item{x, table, y}{
-    \link{Ranges} objects.
+    \link{IntegerRanges} objects.
   }
   \item{nomatch}{
     The value to be returned in the case when no match is found.
@@ -74,7 +74,7 @@ rangeComparisonCodeToLetter(code)
     values.
   }
   \item{...}{
-    One or more \link{Ranges} objects. The \link{Ranges} objects 
+    One or more \link{IntegerRanges} objects. The \link{IntegerRanges} objects 
     after the first one are used to break ties.
   }
   \item{na.last}{
@@ -89,10 +89,10 @@ rangeComparisonCodeToLetter(code)
 }
 
 \details{
-  Two elements of a \link{Ranges} derivative (i.e. two integer ranges)
-  are considered equal iff they share the same start and width.
-  \code{duplicated()} and \code{unique()} on a \link{Ranges} derivative
-  are conforming to this.
+  Two elements of an \link{IntegerRanges} derivative (i.e. two integer
+  ranges) are considered equal iff they share the same start and width.
+  \code{duplicated()} and \code{unique()} on an \link{IntegerRanges}
+  derivative are conforming to this.
 
   Note that with this definition, 2 empty ranges are generally
   not equal (they need to share the same start to be considered equal).
@@ -101,29 +101,29 @@ rangeComparisonCodeToLetter(code)
   typical usecase is comparison of insertion points defined along a string
   (like a DNA sequence) and represented as empty ranges.
 
-  The "natural order" for the elements of a \link{Ranges} derivative
-  is to order them (a) first by start and (b) then by width.
+  The "natural order" for the elements of an \link{IntegerRanges}
+  derivative is to order them (a) first by start and (b) then by width.
   This way, the space of integer ranges is totally ordered.
 
   \code{pcompare()}, \code{==}, \code{!=}, \code{<=}, \code{>=}, \code{<}
-  and \code{>} on \link{Ranges} derivatives behave accordingly to this
-  "natural order".
+  and \code{>} on \link{IntegerRanges} derivatives behave accordingly to
+  this "natural order".
 
   \code{is.unsorted()}, \code{order()}, \code{sort()}, \code{rank()} on
-  \link{Ranges} derivatives also behave accordingly to this
+  \link{IntegerRanges} derivatives also behave accordingly to this
   "natural order".
 
   Finally, note that some \emph{inter range transformations} like
   \code{\link{reduce}} or \code{\link{disjoin}} also use this "natural order"
-  implicitly when operating on \link{Ranges} derivatives.
+  implicitly when operating on \link{IntegerRanges} derivatives.
 
   \describe{
     \item{}{
       \code{pcompare(x, y)}:
-      Performs element-wise (aka "parallel") comparison of 2 \link{Ranges}
-      objects of \code{x} and \code{y}, that is, returns an integer vector
-      where the i-th element is a code describing how \code{x[i]} is
-      qualitatively positioned with respect to \code{y[i]}.
+      Performs element-wise (aka "parallel") comparison of 2
+      \link{IntegerRanges} objects of \code{x} and \code{y}, that is,
+      returns an integer vector where the i-th element is a code describing
+      how \code{x[i]} is qualitatively positioned with respect to \code{y[i]}.
 
       Here is a summary of the 13 predefined codes (and their letter
       equivalents) and their meanings:
@@ -157,12 +157,12 @@ rangeComparisonCodeToLetter(code)
       \code{x[i] < y[i]}, \code{x[i] == y[i]}, or \code{x[i] > y[i]},
       respectively.
 
-      The \code{pcompare} method for \link{Ranges} objects is guaranteed
-      to return predefined codes only but methods for other objects (e.g.
-      for \link[GenomicRanges]{GenomicRanges} objects) can return
-      non-predefined codes. Like for the predefined codes, the sign of any
-      non-predefined code must tell whether \code{x[i]} is less than, or
-      greater than \code{y[i]}.
+      The \code{pcompare} method for \link{IntegerRanges} objects is
+      guaranteed to return predefined codes only but methods for other
+      objects (e.g. for \link[GenomicRanges]{GenomicRanges} objects) can
+      return non-predefined codes. Like for the predefined codes, the sign
+      of any non-predefined code must tell whether \code{x[i]} is less than,
+      or greater than \code{y[i]}.
     }
     \item{}{
       \code{rangeComparisonCodeToLetter(x)}:
@@ -191,7 +191,7 @@ rangeComparisonCodeToLetter(code)
       with smaller subscripts, and returns a logical vector indicating
       which elements are duplicates. \code{duplicated(x)} is equivalent to,
       but more efficient than, \code{duplicated(as.data.frame(x))} on a
-      \link{Ranges} object.
+      \link{IntegerRanges} object.
       See \code{\link[base]{duplicated}} in the \pkg{base} package for more
       details.
     }
@@ -199,7 +199,7 @@ rangeComparisonCodeToLetter(code)
       \code{unique(x, fromLast=FALSE, method=c("auto", "quick", "hash"))}:
       Removes duplicate ranges from \code{x}. \code{unique(x)} is equivalent
       to, but more efficient than, \code{unique(as.data.frame(x))} on a
-      \link{Ranges} object.
+      \link{IntegerRanges} object.
       See \code{\link[base]{unique}} in the \pkg{base} package for more
       details.
     }
@@ -222,8 +222,8 @@ rangeComparisonCodeToLetter(code)
     \item{}{
       \code{order(...)}:
       Returns a permutation which rearranges its first argument (a
-      \link{Ranges} object) into ascending order, breaking ties by further
-      arguments (also \link{Ranges} objects).
+      \link{IntegerRanges} object) into ascending order, breaking ties
+      by further arguments (also \link{IntegerRanges} objects).
     }
     \item{}{
       \code{sort(x)}:
@@ -242,7 +242,7 @@ rangeComparisonCodeToLetter(code)
 
 \seealso{
   \itemize{
-    \item The \link{Ranges} class.
+    \item The \link{IntegerRanges} class.
 
     \item \link[S4Vectors]{Vector-comparison} in the \pkg{S4Vectors}
           package for general information about comparing, ordering, and
@@ -264,7 +264,8 @@ rangeComparisonCodeToLetter(code)
 
 \examples{
 ## ---------------------------------------------------------------------
-## A. ELEMENT-WISE (AKA "PARALLEL") COMPARISON OF 2 Ranges OBJECTS
+## A. ELEMENT-WISE (AKA "PARALLEL") COMPARISON OF 2 IntegerRanges
+##    OBJECTS
 ## ---------------------------------------------------------------------
 x0 <- IRanges(1:11, width=4)
 x0

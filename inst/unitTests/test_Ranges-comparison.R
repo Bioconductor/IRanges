@@ -1,4 +1,4 @@
-test_Ranges_pcompare <- function()
+test_pcompare_IntegerRanges <- function()
 {
     x1 <- IRanges(6:16, width=4)
     y <- IRanges(11, 14)
@@ -38,7 +38,7 @@ test_Ranges_pcompare <- function()
     checkIdentical(-target, pcompare(y0, x0))
 }
 
-test_Ranges_order <- function()
+test_order_IntegerRanges <- function()
 {
     ir1 <- IRanges(c(2,5,1,5), c(3,7,3,6))
     ir1.sort <- IRanges(c(1,2,5,5), c(3,3,6,7))

@@ -23,7 +23,7 @@
 \alias{coerce,list,IRangesList-method}
 
 \alias{coerce,List,CompressedIRangesList-method}
-\alias{coerce,Ranges,CompressedIRangesList-method}
+\alias{coerce,IntegerRanges,CompressedIRangesList-method}
 \alias{coerce,List,SimpleIRangesList-method}
 \alias{coerce,SimpleList,SimpleIRangesList-method}
 \alias{coerce,RangesList,SimpleIRangesList-method}
@@ -98,26 +98,26 @@
   \describe{
     \item{}{\code{as(from, "SimpleIRangesList")}: Coerces \code{from},
       to a \code{\linkS4class{SimpleIRangesList}}, requiring
-      that all \code{Ranges} elements are coerced to internal
+      that all \code{IntegerRanges} elements are coerced to internal
       \code{IRanges} elements. This is a convenient way to ensure that all
-      \code{Ranges} have been imported into R (and that there is no
+      \code{IntegerRanges} have been imported into R (and that there is no
       unwanted overhead when accessing them).
     }
     \item{}{\code{as(from, "CompressedIRangesList")}: Coerces \code{from},
       to a \code{\linkS4class{CompressedIRangesList}}, requiring
-      that all \code{Ranges} elements are coerced to internal
+      that all \code{IntegerRanges} elements are coerced to internal
       \code{IRanges} elements. This is a convenient way to ensure that all
-      \code{Ranges} have been imported into R (and that there is no
+      \code{IntegerRanges} have been imported into R (and that there is no
       unwanted overhead when accessing them).
     }
     \item{}{\code{as(from, "SimpleNormalIRangesList")}: Coerces \code{from},
       to a \code{\linkS4class{SimpleNormalIRangesList}}, requiring
-      that all \code{Ranges} elements are coerced to internal
+      that all \code{IntegerRanges} elements are coerced to internal
       \code{NormalIRanges} elements.
     }
     \item{}{\code{as(from, "CompressedNormalIRangesList")}: Coerces
       \code{from}, to a \code{\linkS4class{CompressedNormalIRangesList}},
-      requiring that all \code{Ranges} elements are coerced to internal
+      requiring that all \code{IntegerRanges} elements are coerced to internal
       \code{NormalIRanges} elements.
     }
   }
@@ -158,18 +158,18 @@
   \link{setops-methods} for set operations on IRangesList objects.
 }
 \examples{
-  range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
-  range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
-  named <- IRangesList(one = range1, two = range2)
-  length(named) # 2
-  names(named) # "one" and "two"
-  named[[1]] # range1
-  unnamed <- IRangesList(range1, range2)
-  names(unnamed) # NULL
+range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
+range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
+named <- IRangesList(one = range1, two = range2)
+length(named) # 2
+names(named) # "one" and "two"
+named[[1]] # range1
+unnamed <- IRangesList(range1, range2)
+names(unnamed) # NULL
 
-  x <- IRangesList(start=list(c(1,2,3), c(15,45,20,1)),
-                   end=list(c(5,2,8), c(15,100,80,5)))
-  as.list(x)
+x <- IRangesList(start=list(c(1,2,3), c(15,45,20,1)),
+                 end=list(c(5,2,8), c(15,100,80,5)))
+as.list(x)
 }
 \keyword{classes}
 \keyword{methods}

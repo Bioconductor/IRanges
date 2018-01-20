@@ -15,7 +15,7 @@
 \alias{width<-,IRanges-method}
 \alias{end<-,IRanges-method}
 \alias{names<-,IRanges-method}
-\alias{ranges,Ranges-method}
+\alias{ranges,IntegerRanges-method}
 
 \alias{isNormal,IRanges-method}
 \alias{update,IRanges-method}
@@ -31,7 +31,7 @@
 \alias{min,NormalIRanges-method}
 
 % Coercion:
-\alias{coerce,Ranges,IRanges-method}
+\alias{coerce,IntegerRanges,IRanges-method}
 \alias{coerce,logical,IRanges-method}
 \alias{coerce,logical,NormalIRanges-method}
 \alias{coerce,integer,IRanges-method}
@@ -40,17 +40,17 @@
 \alias{coerce,numeric,NormalIRanges-method}
 \alias{coerce,character,IRanges-method}
 \alias{coerce,factor,IRanges-method}
-\alias{coerce,ANY,Ranges-method}
+\alias{coerce,ANY,IntegerRanges-method}
 
 
 \title{IRanges and NormalIRanges objects}
 
 \description{
-  The IRanges class is a simple implementation of the \link{Ranges}
+  The IRanges class is a simple implementation of the \link{IntegerRanges}
   container where 2 integer vectors of the same length are used to
   store the start and width values.
-  See the \link{Ranges} virtual class for a formal definition of
-  \link{Ranges} objects and for their methods (all of them should
+  See the \link{IntegerRanges} virtual class for a formal definition of
+  \link{IntegerRanges} objects and for their methods (all of them should
   work for IRanges objects).
 
   Some subclasses of the IRanges class are: NormalIRanges,
@@ -58,8 +58,8 @@
 
   A NormalIRanges object is just an IRanges object that is guaranteed
   to be "normal". See the Normality section in the man page for
-  \link{Ranges} objects for the definition and properties
-  of "normal" \link{Ranges} objects.
+  \link{IntegerRanges} objects for the definition and properties
+  of "normal" \link{IntegerRanges} objects.
 }
 
 \section{Constructor}{
@@ -70,15 +70,16 @@
   \describe{
     \item{}{
       \code{ranges(x, use.names=FALSE, use.mcols=FALSE)}: Squeeze the ranges
-      out of \link{Ranges} object \code{x} and return them in an IRanges
+      out of \link{IntegerRanges} object \code{x} and return them in an IRanges
       object \emph{parallel} to \code{x} (i.e. same length as \code{x}).
     }
     \item{}{
-      \code{as(from, "IRanges")}: Creates an IRanges instance from a Ranges
-      object, logical vector, or integer vector. When \code{from} is a logical
-      vector, the resulting IRanges object contains the indices for the runs
-      of \code{TRUE} values. When \code{from} is an integer vector, the
-      elements are either singletons or "increase by 1" sequences.
+      \code{as(from, "IRanges")}: Creates an IRanges instance from an
+      \link{IntegerRanges} derivative, or from a logical or integer vector.
+      When \code{from} is a logical vector, the resulting IRanges object
+      contains the indices for the runs of \code{TRUE} values.
+      When \code{from} is an integer vector, the elements are either
+      singletons or "increase by 1" sequences.
     }
     \item{}{
       \code{as(from, "NormalIRanges")}: Creates a NormalIRanges instance
@@ -116,7 +117,7 @@
 \author{Hervé Pagès}
 
 \seealso{
-  \link{Ranges-class},
+  \link{IntegerRanges-class},
 
   \link{IRanges-constructor},
   \link{IRanges-utils},
@@ -134,8 +135,9 @@ showClass("IRanges")  # shows (some of) the known subclasses
 ## ---------------------------------------------------------------------
 ## A. MANIPULATING IRanges OBJECTS
 ## ---------------------------------------------------------------------
-## All the methods defined for Ranges objects work on IRanges objects.
-## See ?Ranges for some examples.
+## All the methods defined for IntegerRanges objects work on IRanges
+## objects.
+## See ?IntegerRanges for some examples.
 ## Also see ?`IRanges-utils` and ?`setops-methods` for additional
 ## operations on IRanges objects.
   

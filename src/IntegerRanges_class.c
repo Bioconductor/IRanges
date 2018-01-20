@@ -1,5 +1,5 @@
 /****************************************************************************
- *                 Low-level manipulation of Ranges objects                 *
+ *             Low-level manipulation of IntegerRanges objects              *
  *                            Author: H. Pag\`es                            *
  ****************************************************************************/
 #include "IRanges.h"
@@ -11,7 +11,7 @@
  * Doesn't raise an error but returns NULL or a single string describing the
  * first encountered validity failure.
  */
-SEXP valid_Ranges(SEXP x_start, SEXP x_end, SEXP x_width)
+SEXP valid_IntegerRanges(SEXP x_start, SEXP x_end, SEXP x_width)
 {
 	static char validity_failures[200];
 

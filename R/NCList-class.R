@@ -9,7 +9,7 @@
 
 ### We deliberately do NOT extend IRanges.
 setClass("NCList",
-    contains="Ranges",
+    contains="IntegerRanges",
     representation(
         nclist="integer",
         ranges="IRanges"
@@ -113,8 +113,8 @@ setMethod("width", "NCList", function(x) width(x@ranges))
 
 NCList <- function(x, circle.length=NA_integer_)
 {
-    if (!is(x, "Ranges"))
-        stop("'x' must be a Ranges object")
+    if (!is(x, "IntegerRanges"))
+        stop("'x' must be an IntegerRanges object")
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
     ans_mcols <- mcols(x)
@@ -128,7 +128,7 @@ NCList <- function(x, circle.length=NA_integer_)
                    check=FALSE)
 }
 
-setAs("Ranges", "NCList", function(from) NCList(from))
+setAs("IntegerRanges", "NCList", function(from) NCList(from))
 
 ### NOT exported.
 print_NCList <- function(x)
@@ -152,8 +152,8 @@ findOverlaps_NCList <- function(query, subject,
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length=NA_integer_)
 {
-    if (!(is(query, "Ranges") && is(subject, "Ranges")))
-        stop("'query' and 'subject' must be Ranges objects")
+    if (!(is(query, "IntegerRanges") && is(subject, "IntegerRanges")))
+        stop("'query' and 'subject' must be IntegerRanges objects")
 
     if (!isSingleNumber(maxgap))
         stop("'maxgap' must be a single integer")
@@ -310,8 +310,8 @@ NCList_find_overlaps_in_groups <- function(
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length)
 {
-    if (!(is(q, "Ranges") && is(s, "Ranges")))
-        stop("'q' and 's' must be Ranges object")
+    if (!(is(q, "IntegerRanges") && is(s, "IntegerRanges")))
+        stop("'q' and 's' must be IntegerRanges object")
     if (!is(q_groups, "CompressedIntegerList"))
         stop("'q_groups' must be a CompressedIntegerList object")
     if (!is(s_groups, "CompressedIntegerList"))

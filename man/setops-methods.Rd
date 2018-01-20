@@ -3,70 +3,70 @@
 \alias{setops-methods}
 
 \alias{union}
-\alias{union,Ranges,Ranges-method}
+\alias{union,IntegerRanges,IntegerRanges-method}
 \alias{union,RangesList,RangesList-method}
 \alias{union,CompressedIRangesList,CompressedIRangesList-method}
 \alias{union,Pairs,missing-method}
 
 \alias{intersect}
-\alias{intersect,Ranges,Ranges-method}
+\alias{intersect,IntegerRanges,IntegerRanges-method}
 \alias{intersect,RangesList,RangesList-method}
 \alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
 \alias{intersect,Pairs,missing-method}
 
 \alias{setdiff}
-\alias{setdiff,Ranges,Ranges-method}
+\alias{setdiff,IntegerRanges,IntegerRanges-method}
 \alias{setdiff,RangesList,RangesList-method}
 \alias{setdiff,CompressedIRangesList,CompressedIRangesList-method}
 \alias{setdiff,Pairs,missing-method}
 
 \alias{punion}
-\alias{punion,Ranges,Ranges-method}
+\alias{punion,IntegerRanges,IntegerRanges-method}
 \alias{punion,Pairs,missing-method}
 
 \alias{pintersect}
-\alias{pintersect,Ranges,Ranges-method}
+\alias{pintersect,IntegerRanges,IntegerRanges-method}
 \alias{pintersect,Pairs,missing-method}
 
 \alias{psetdiff}
-\alias{psetdiff,Ranges,Ranges-method}
+\alias{psetdiff,IntegerRanges,IntegerRanges-method}
 \alias{psetdiff,Pairs,missing-method}
 
 \alias{pgap}
-\alias{pgap,Ranges,Ranges-method}
+\alias{pgap,IntegerRanges,IntegerRanges-method}
 
-\title{Set operations on Ranges and RangesList objects}
+\title{Set operations on IntegerRanges and RangesList objects}
 
 \description{
-  Performs set operations on \link{Ranges} and \link{RangesList} objects.
+  Performs set operations on \link{IntegerRanges} and \link{RangesList} objects.
 }
 
 \usage{
 ## Vector-wise set operations
 ## --------------------------
 
-\S4method{union}{Ranges,Ranges}(x, y)
+\S4method{union}{IntegerRanges,IntegerRanges}(x, y)
 \S4method{union}{Pairs,missing}(x, y, ...)
 
-\S4method{intersect}{Ranges,Ranges}(x, y)
+\S4method{intersect}{IntegerRanges,IntegerRanges}(x, y)
 \S4method{intersect}{Pairs,missing}(x, y, ...)
 
-\S4method{setdiff}{Ranges,Ranges}(x, y)
+\S4method{setdiff}{IntegerRanges,IntegerRanges}(x, y)
 \S4method{setdiff}{Pairs,missing}(x, y, ...)
 
 ## Element-wise (aka "parallel") set operations
 ## --------------------------------------------
 
-\S4method{punion}{Ranges,Ranges}(x, y, fill.gap=FALSE)
+\S4method{punion}{IntegerRanges,IntegerRanges}(x, y, fill.gap=FALSE)
 \S4method{punion}{Pairs,missing}(x, y, ...)
 
-\S4method{pintersect}{Ranges,Ranges}(x, y, resolve.empty=c("none", "max.start", "start.x"))
+\S4method{pintersect}{IntegerRanges,IntegerRanges}(x, y, resolve.empty=c("none", "max.start", "start.x"))
 \S4method{pintersect}{Pairs,missing}(x, y, ...)
 
-\S4method{psetdiff}{Ranges,Ranges}(x, y)
+\S4method{psetdiff}{IntegerRanges,IntegerRanges}(x, y)
 \S4method{psetdiff}{Pairs,missing}(x, y, ...)
 
-\S4method{pgap}{Ranges,Ranges}(x, y)
+\S4method{pgap}{IntegerRanges,IntegerRanges}(x, y)
 }
 
 \arguments{
@@ -95,7 +95,7 @@
 
 \details{
   The \code{union}, \code{intersect} and \code{setdiff} methods
-  for \link{Ranges} objects return a "normal" \link{Ranges}
+  for \link{IntegerRanges} objects return a "normal" \link{IntegerRanges}
   object representing the union, intersection and (asymmetric!)
   difference of the sets of integers represented by \code{x} and
   \code{y}.
@@ -104,9 +104,9 @@
   are generic functions that compute the element-wise (aka "parallel")
   union, intersection, (asymmetric!) difference and gap between
   each element in \code{x} and its corresponding element in \code{y}.
-  Methods for \link{Ranges} objects are defined. For these methods,
+  Methods for \link{IntegerRanges} objects are defined. For these methods,
   \code{x} and \code{y} must have the same length (i.e. same number
-  of ranges). They return a \link{Ranges} object \emph{parallel}
+  of ranges). They return a \link{IntegerRanges} object \emph{parallel}
   to \code{x} and \code{y} i.e. where the i-th range corresponds
   to the i-th range in \code{x} and in\code{y}) and represents
   the union/intersection/difference/gap of/between the corresponding
@@ -130,14 +130,14 @@
 }
 
 \value{
-  On \link{Ranges} objects, \code{union}, \code{intersect}, and \code{setdiff}
-  return an \link{IRanges} \emph{instance} that is guaranteed to be
-  \emph{normal} (see \code{\link{isNormal}}) but is NOT
-  promoted to \link{NormalIRanges}.
+  On \link{IntegerRanges} objects, \code{union}, \code{intersect}, and
+  \code{setdiff} return an \link{IRanges} \emph{instance} that is guaranteed
+  to be \emph{normal} (see \code{\link{isNormal}}) but is NOT promoted to
+  \link{NormalIRanges}.
 
-  On \link{Ranges} objects, \code{punion}, \code{pintersect}, \code{psetdiff},
-  and \code{pgap} return an object of the same class and length as their first
-  argument.
+  On \link{IntegerRanges} objects, \code{punion}, \code{pintersect},
+  \code{psetdiff}, and \code{pgap} return an object of the same class
+  and length as their first argument.
 }
 
 \author{H. Pagès and M. Lawrence}
@@ -158,9 +158,9 @@
           \link{inter-range-methods} for intra range and
           inter range transformations.
 
-    \item \link{Ranges} and \link{RangesList} objects. In particular,
-          \emph{normality} of a \link{Ranges} object is discussed in
-          the man page for \link{Ranges} objects.
+    \item \link{IntegerRanges} and \link{RangesList} objects. In particular,
+          \emph{normality} of a \link{IntegerRanges} object is discussed in
+          the man page for \link{IntegerRanges} objects.
 
     \item \code{\link[S4Vectors]{mendoapply}} in the \pkg{S4Vectors} package.
   }

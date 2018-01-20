@@ -1,6 +1,6 @@
 %\VignetteIndexEntry{An Introduction to IRanges}
 %\VignetteDepends{}
-%\VignetteKeywords{Ranges}
+%\VignetteKeywords{IntegerRanges}
 %\VignettePackage{IRanges}
 \documentclass[10pt]{article}
 
@@ -440,15 +440,15 @@ position and a width, as used when extracting sequences with
 \Rfunction{window}.
 
 When analyzing subsequences in \IRanges{}, each range is treated as an
-observation. The virtual \Rclass{Ranges} class represents lists of
+observation. The virtual \Rclass{IntegerRanges} class represents lists of
 ranges, or, equivalently and as a derivative \Rclass{IntegerList},
 sequences of consecutive integers. The most commonly used
-implementation of \Rclass{Ranges} is \Rclass{IRanges}, which stores
+implementation of \Rclass{IntegerRanges} is \Rclass{IRanges}, which stores
 the starts and widths as ordinary integer vectors. To construct an
 \Rclass{IRanges} instance, we call the \Rfunction{IRanges}
-constructor. Ranges are normally specified by passing two out of the
-three parameters: start, end and width (see \Rcode{help(IRanges)} for
-more information).
+constructor. \Rclass{IntegerRanges} are normally specified by passing two
+out of the three parameters: start, end and width (see \Rcode{help(IRanges)}
+for more information).
 %
 <<iranges-constructor>>=
 ir1 <- IRanges(start = 1:10, width = 10:1)
@@ -464,7 +464,7 @@ same ranges, using different combinations of the \Rfunarg{start},
 \Rfunarg{end} and \Rfunarg{width} parameters.
 
 Accessing the starts, widths and ends is supported by every
-\Rclass{Ranges} implementation.
+\Rclass{IntegerRanges} implementation.
 <<iranges-start>>=
 start(ir)
 @
@@ -475,7 +475,7 @@ end(ir)
 width(ir)
 @
 
-For \Rclass{IRanges} and some other \Rclass{Ranges} derivatives,
+For \Rclass{IRanges} and some other \Rclass{IntegerRanges} derivatives,
 subsetting is also supported, by numeric and logical indices.
 <<iranges-subset-numeric>>=
 ir[1:4]
@@ -485,7 +485,7 @@ ir[start(ir) <= 15]
 @
 
 One may think of each range as a sequence of integer ranges, and
-\Rclass{Ranges} is, in fact, derived from \Rclass{IntegerList}.
+\Rclass{IntegerRanges} is, in fact, derived from \Rclass{IntegerList}.
 <<ranges-extraction>>=
 ir[[1]]
 @
@@ -497,7 +497,7 @@ plotRanges <- function(x, xlim = x, main = deparse(substitute(x)),
                        col = "black", sep = 0.5, ...) 
 {
   height <- 1
-  if (is(xlim, "Ranges"))
+  if (is(xlim, "IntegerRanges"))
     xlim <- c(min(start(xlim)), max(end(xlim)))
   bins <- disjointBins(IRanges(start(x), end(x) + 1))
   plot.new()
@@ -526,27 +526,28 @@ plotRanges(ir)
 Sometimes, it is necessary to formally represent a
 subsequence, where no elements are repeated and order is
 preserved. Also, it is occasionally useful to think of a
-\Rclass{Ranges} object as a set, where no elements are repeated and
-order does not matter. While every \Rclass{Ranges} object, as a
+\Rclass{IntegerRanges} object as a set, where no elements are repeated and
+order does not matter. While every \Rclass{IntegerRanges} object, as a
 \Rclass{Vector} derivative, has an implicit ordering, one can
 enforce the same ordering for all such objects, so that ordering
 becomes inconsequential within that context. 
 
 The \Rclass{NormalIRanges} class formally represents either a
 subsequence encoding or a set of integers. By definition
-a Ranges object is said to be \textit{normal} when its ranges are: (a)
-not empty (i.e. they have a non-null width); (b) not overlapping; (c)
-ordered from left to right; (d) not even adjacent (i.e. there must be
-a non empty gap between 2 consecutive ranges).
+an \Rclass{IntegerRanges} object is said to be \textit{normal} when
+its ranges are: (a) not empty (i.e. they have a non-null width);
+(b) not overlapping; (c) ordered from left to right; (d) not even
+adjacent (i.e. there must be a non empty gap between 2 consecutive
+ranges).
 
 There are three main advantages of using a \textit{normal}
-\Rclass{Ranges} object: (1) it guarantees a subsequence
+\Rclass{IntegerRanges} object: (1) it guarantees a subsequence
 encoding or set of integers, (2) it is compact in terms of the number
 of ranges, and (3) it uniquely identifies its information, which
 simplifies comparisons.
 
-The \Rfunction{reduce} function reduces any \Rclass{Ranges} object to
-a \Rclass{NormalIRanges} by merging redundant ranges.
+The \Rfunction{reduce} function reduces any \Rclass{IntegerRanges}
+object to a \Rclass{NormalIRanges} by merging redundant ranges.
 <<ranges-reduce, fig=TRUE, include=FALSE, eps=FALSE, height=2.25>>=
 reduce(ir)
 plotRanges(reduce(ir))
@@ -560,15 +561,15 @@ plotRanges(reduce(ir))
   \end{center}
 \end{figure}
 
-\subsection{Lists of \Rclass{Ranges} objects}
+\subsection{Lists of \Rclass{IntegerRanges} objects}
 
-It is common to manipulate collections of \Rclass{Ranges} objects during
-an analysis. Thus, the \IRanges{} package defines some specific classes
-for working with multiple \Rclass{Ranges} objects.
+It is common to manipulate collections of \Rclass{IntegerRanges} objects
+during an analysis. Thus, the \IRanges{} package defines some specific
+classes for working with multiple \Rclass{IntegerRanges} objects.
 
-The \Rclass{RangesList} class asserts that each element is a
-\Rclass{Ranges} object and provides convenience methods, such as
-\Rfunction{start}, \Rfunction{end} and \Rfunction{width} accessors
+The \Rclass{RangesList} class asserts that each element is an
+\Rclass{IntegerRanges} object and provides convenience methods, such
+as \Rfunction{start}, \Rfunction{end} and \Rfunction{width} accessors
 that return \Rclass{IntegerList} objects, aligning with the
 \Rclass{RangesList} object.
 To explicitly construct a \Rclass{RangesList}, use the
@@ -583,13 +584,13 @@ start(rl)
 
 \subsection{Vector Extraction}
 
-As the elements of a \Rclass{Ranges} object encode consecutive
+As the elements of an \Rclass{IntegerRanges} object encode consecutive
 subsequences, they may be used directly in sequence extraction. Note
-that when a \textit{normal} \Rclass{Ranges} is given as the index, the
-result is a subsequence, as no elements are repeated or reordered.
+that when a \textit{normal} \Rclass{IntegerRanges} is given as the index,
+the result is a subsequence, as no elements are repeated or reordered.
 If the sequence is a \Rclass{Vector} subclass (i.e. not an ordinary
-\Rclass{vector}), the canonical \Rfunction{[} function accepts a
-\Rclass{Ranges} instance.
+\Rclass{vector}), the canonical \Rfunction{[} function accepts an
+\Rclass{IntegerRanges} object.
 %
 <<bracket-ranges>>=
 irextract <- IRanges(start = c(4501, 4901) , width = 100)
@@ -600,7 +601,7 @@ xRle[irextract]
 \subsection{Finding Overlapping Ranges}
 
 The function \Rfunction{findOverlaps} detects overlaps between two
-\Rclass{Ranges} objects.
+\Rclass{IntegerRanges} objects.
 
 <<overlap-ranges>>=
 ol <- findOverlaps(ir, reduce(ir))
@@ -640,8 +641,8 @@ find the non-overlapping nearest neighbors on a specific side.
 
 \subsection{Transforming Ranges}
 
-Utilities are available for transforming a \Rclass{Ranges} object in a
-variety of ways. Some transformations, like \Rfunction{reduce}
+Utilities are available for transforming an \Rclass{IntegerRanges} object
+in a variety of ways. Some transformations, like \Rfunction{reduce}
 introduced above, can be dramatic, while others are simple per-range
 adjustments of the starts, ends or widths.
 
@@ -677,7 +678,7 @@ restrict(ir, start=2, end=3)
 @
 The \Rfunction{threebands} function extends \Rfunction{narrow} so that
 the remaining left and right regions adjacent to the narrowed region
-are also returned in separate \Rclass{Ranges} objects.
+are also returned in separate \Rclass{IntegerRanges} objects.
 % 
 <<ranges-threebands>>=
 threebands(ir, start=1:5, width=2)
@@ -686,14 +687,14 @@ threebands(ir, start=1:5, width=2)
 The arithmetic operators \Rfunction{+}, \Rfunction{-} and
 \Rfunction{*} change both the start and the end/width by symmetrically
 expanding or contracting each range.  Adding or subtracting a numeric
-(integer) vector to a \Rclass{Ranges} causes each range to be expanded
-or contracted on each side by the corresponding value in the numeric
-vector.
+(integer) vector to an \Rclass{IntegerRanges} causes each range to be
+expanded or contracted on each side by the corresponding value in the
+numeric vector.
 <<ranges-plus>>=
 ir + seq_len(length(ir))
 @
 %
-The \Rfunction{*} operator symmetrically magnifies a \Rclass{Ranges}
+The \Rfunction{*} operator symmetrically magnifies an \Rclass{IntegerRanges}
 object by a factor, where positive contracts (zooms in) and negative
 expands (zooms out).
 %
@@ -712,7 +713,7 @@ A more complex type of operation is making a set of ranges disjoint,
 \textit{i.e.} non-overlapping. For example, \Rfunction{threebands}
 returns a disjoint set of three ranges for each input range.
 
-The \Rfunction{disjoin} function makes a \Rclass{Ranges} object
+The \Rfunction{disjoin} function makes an \Rclass{IntegerRanges} object
 disjoint by fragmenting it into the widest ranges where the set of
 overlapping ranges is the same.
 
@@ -755,13 +756,13 @@ flank(ir, width = seq_len(length(ir)))
 
 \subsection{Set Operations}
 
-Sometimes, it is useful to consider a \Rclass{Ranges} object as a set
-of integers, although there is always an implicit ordering. This is
+Sometimes, it is useful to consider an \Rclass{IntegerRanges} object as a
+set of integers, although there is always an implicit ordering. This is
 formalized by \Rclass{NormalIRanges}, above, and we now present
 versions of the traditional mathematical set operations
 \textit{complement}, \textit{union}, \textit{intersect}, and
-\textit{difference} for \Rclass{Ranges} objects. There are two
-variants for each operation. The first treats each \Rclass{Ranges}
+\textit{difference} for \Rclass{IntegerRanges} objects. There are two
+variants for each operation. The first treats each \Rclass{IntegerRanges}
 object as a set and returns a \textit{normal} value, while the other
 has a ``parallel'' semantic like \Rfunction{pmin}/\Rfunction{pmax} and
 performs the operation for each range pairing separately.
@@ -786,7 +787,7 @@ plotRanges(gaps(ir, start=1, end=50), c(1,50))
 
 
 \Rfunction{pgap} considers each parallel pairing between two
-\Rclass{Ranges} objects and finds the range, if any, between
+\Rclass{IntegerRanges} objects and finds the range, if any, between
 them. Note that the function name is singular, suggesting that only
 one range is returned per range in the input.
 <<ranges-pgap>>=

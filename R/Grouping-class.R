@@ -424,15 +424,15 @@ setMethod("high2low", "ANY",
 ###
 ### A GroupingRanges object represents a "block-grouping", that is, a
 ### grouping where each group is a block of adjacent elements in the original
-### collection of objects. GroupingRanges objects support the Ranges API (e.g.
-### start/end/width) in addition to the Grouping API.
+### collection of objects. GroupingRanges objects support the IntegerRanges
+### API (e.g. start/end/width) in addition to the Grouping API.
 ###
 
 setClass("GroupingRanges",
-    ## We put Ranges before Grouping so GroupingRanges objects inherit the
-    ## "show" method for Ranges objects instead of the method for Grouping
-    ## objects.
-    contains=c("Ranges", "Grouping"),
+    ## We put IntegerRanges before Grouping so GroupingRanges objects inherit
+    ## the "show" method for IntegerRanges objects instead of the method for
+    ## Grouping objects.
+    contains=c("IntegerRanges", "Grouping"),
     representation("VIRTUAL")
 )
 
@@ -544,7 +544,7 @@ setMethod("parallelSlotNames", "PartitioningByEnd",
 
 setMethod("end", "PartitioningByEnd", function(x) x@end)
 
-### Overwrite method for Ranges objects with optimized method for
+### Overwrite method for IntegerRanges objects with optimized method for
 ### PartitioningByEnd objects.
 setMethod("length", "PartitioningByEnd", function(x) length(end(x)))
 
@@ -672,13 +672,13 @@ PartitioningByEnd <- function(x=integer(0), NG=NULL, names=NULL)
                               check=FALSE)
 }
 
-setAs("Ranges", "PartitioningByEnd",
+setAs("IntegerRanges", "PartitioningByEnd",
     function(from)
     {
         ans <- PartitioningByEnd(end(from), names=names(from))
         if (!identical(start(ans), start(from)))
-            stop(wmsg("the Ranges object to coerce does not represent ",
-                      "a partitioning"))
+            stop(wmsg("the IntegerRanges object to coerce does not ",
+                      "represent a partitioning"))
         ans
     }
 )
@@ -797,13 +797,13 @@ PartitioningByWidth <- function(x=integer(0), NG=NULL, names=NULL)
                                 check=FALSE)
 }
 
-setAs("Ranges", "PartitioningByWidth",
+setAs("IntegerRanges", "PartitioningByWidth",
     function(from)
     {
         ans <- PartitioningByWidth(width(from), names(from))
         if (!identical(start(ans), start(from)))
-            stop(wmsg("the Ranges object to coerce does not represent ",
-                      "a partitioning"))
+            stop(wmsg("the IntegerRanges object to coerce does not ",
+                      "represent a partitioning"))
         ans
     }
 )
@@ -879,12 +879,12 @@ setMethod("show", "PartitioningMap",
 ### Partitioning object).
 ### TODO: Add a "findOverlaps" method for Partitioning,Partitioning in the
 ### findOverlaps-methods.R file that calls this.
-findOverlaps_Ranges_Partitioning <- function(query, subject,
-                                             hit.empty.query.ranges=FALSE,
-                                             hit.empty.subject.ranges=FALSE)
+findOverlaps_IntegerRanges_Partitioning <-
+    function(query, subject, hit.empty.query.ranges=FALSE,
+                             hit.empty.subject.ranges=FALSE)
 {
-    if (!is(query, "Ranges"))
-        stop(wmsg("'query' must be a Ranges object"))
+    if (!is(query, "IntegerRanges"))
+        stop(wmsg("'query' must be an IntegerRanges object"))
     if (!is(subject, "Partitioning"))
         stop(wmsg("'subject' must be a Partitioning object"))
     if (!isTRUEorFALSE(hit.empty.query.ranges) ||

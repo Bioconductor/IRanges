@@ -14,7 +14,7 @@
 \alias{end,IPos-method}
 \alias{width,IPos-method}
 
-\alias{coerce,Ranges,IPos-method}
+\alias{coerce,IntegerRanges,IPos-method}
 \alias{coerce,ANY,IPos-method}
 \alias{as.data.frame,IPos-method}
 \alias{extractROWS,IPos-method}
@@ -27,8 +27,8 @@
   The IPos class is a container for storing a set of \emph{integer positions}
   where most of the positions are typically (but not necessarily) adjacent.
   Because integer positions can be seen as integer ranges of width 1, the IPos
-  class extends the \link{Ranges} virtual class. Note that even though an
-  \link{IRanges} object can be used for storing integer positions, using an
+  class extends the \link{IntegerRanges} virtual class. Note that even though
+  an \link{IRanges} object can be used for storing integer positions, using an
   IPos object will be much more memory-efficient, especially when the object
   contains long runs of adjacent positions in \emph{ascending order}.
 }
@@ -39,10 +39,11 @@ IPos(pos_runs)  # constructor function
 
 \arguments{
   \item{pos_runs}{
-    An \link{IRanges} object (or any other \link{Ranges} derivative) where
-    each range is interpreted as a run of adjacent ascending positions.
-    If \code{pos_runs} is not a \link{Ranges} derivative, \code{IPos()} first
-    tries to coerce it to one with \code{as(pos_runs, "Ranges", strict=FALSE)}.
+    An \link{IRanges} object (or any other \link{IntegerRanges} derivative)
+    where each range is interpreted as a run of adjacent ascending positions.
+    If \code{pos_runs} is not an \link{IntegerRanges} derivative,
+    \code{IPos()} first tries to coerce it to one with
+    \code{as(pos_runs, "IntegerRanges", strict=FALSE)}.
   }
 }
 
@@ -53,11 +54,11 @@ IPos(pos_runs)  # constructor function
 \section{Accessors}{
 
   \subsection{Getters}{
-    IPos objects support the same set of getters as other \link{Ranges}
+    IPos objects support the same set of getters as other \link{IntegerRanges}
     derivatives (i.e. \code{start()}, \code{end()}, \code{mcols()}, etc...),
     plus the \code{pos()} getter which is equivalent to \code{start()}
-    or \code{end()}. See \code{?\link{Ranges}} for the list of getters
-    supported by \link{Ranges} derivatives.
+    or \code{end()}. See \code{?\link{IntegerRanges}} for the list of getters
+    supported by \link{IntegerRanges} derivatives.
 
     IMPORTANT NOTE: An IPos object cannot hold names i.e. \code{names()}
     always returns \code{NULL} on it.
@@ -70,9 +71,9 @@ IPos(pos_runs)  # constructor function
 }
 
 \section{Coercion}{
-  From \link{Ranges} to IPos:
-  A \link{Ranges} derivative \code{x} in which all the ranges have a
-  width of 1 can be coerced to an IPos object with \code{as(x, "IPos")}.
+  From \link{IntegerRanges} to IPos:
+  An \link{IntegerRanges} derivative \code{x} in which all the ranges have
+  a width of 1 can be coerced to an IPos object with \code{as(x, "IPos")}.
   The names on \code{x} are not propagated (a warning is issued if \code{x}
   has names on it).
 
@@ -83,12 +84,12 @@ IPos(pos_runs)  # constructor function
   See "MEMORY USAGE" in the Examples section below.
 
   From IPos to ordinary R objects:
-  Like with any other \link{Ranges} derivative, \code{as.character()},
+  Like with any other \link{IntegerRanges} derivative, \code{as.character()},
   \code{as.factor()}, and \code{as.data.frame()} work on an IPos object
   \code{x}. Note however that \code{as.data.frame(x)} returns a data frame
   with a \code{pos} column (containing \code{pos(x)}) instead of the
   \code{start}, \code{end}, and \code{width} columns that one gets with other
-  \link{Ranges} derivatives.
+  \link{IntegerRanges} derivatives.
 }
 
 \section{Subsetting}{
@@ -125,10 +126,10 @@ IPos(pos_runs)  # constructor function
           package for a memory-efficient representation of \emph{genomic
           positions} (i.e. genomic ranges of width 1).
 
-    \item \link{Ranges} and \link{IRanges} objects.
+    \item \link{IntegerRanges} and \link{IRanges} objects.
 
-    \item \link{Ranges-comparison} for comparing and ordering integer ranges
-          and/or positions.
+    \item \link{IntegerRanges-comparison} for comparing and ordering integer
+          ranges and/or positions.
 
     \item \link{findOverlaps-methods} for finding overlapping
           integer ranges and/or positions.

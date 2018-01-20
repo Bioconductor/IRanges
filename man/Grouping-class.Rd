@@ -110,7 +110,7 @@
 \alias{nobj,PartitioningByEnd-method}
 \alias{start,PartitioningByEnd-method}
 \alias{width,PartitioningByEnd-method}
-\alias{coerce,Ranges,PartitioningByEnd-method}
+\alias{coerce,IntegerRanges,PartitioningByEnd-method}
 
 \alias{class:PartitioningByWidth}
 \alias{PartitioningByWidth-class}
@@ -121,7 +121,7 @@
 \alias{width,PartitioningByWidth-method}
 \alias{end,PartitioningByWidth-method}
 \alias{start,PartitioningByWidth-method}
-\alias{coerce,Ranges,PartitioningByWidth-method}
+\alias{coerce,IntegerRanges,PartitioningByWidth-method}
 
 % PartitioningMap objects
 \alias{class:PartitioningMap}
@@ -349,9 +349,10 @@
   The GroupingRanges class is a virtual subclass of Grouping for representing
   \emph{block-groupings}, that is, groupings where each group is a block of
   adjacent elements in the original collection of objects. GroupingRanges
-  objects support the Ranges API (e.g. \code{\link{start}}, \code{\link{end}},
-  \code{\link{width}}, etc...) in addition to the Grouping API.
-  See \code{?\link{Ranges}} for a description of the \link{Ranges} API.
+  objects support the IntegerRanges API (e.g. \code{\link{start}},
+  \code{\link{end}}, \code{\link{width}}, etc...) in addition to the Grouping
+  API. See \code{?\link{IntegerRanges}} for a description of the
+  \link{IntegerRanges} API.
 }
 
 \section{Partitioning objects}{
@@ -477,7 +478,7 @@
 
 \seealso{
   \link{IntegerList-class},
-  \link{Ranges-class},
+  \link{IntegerRanges-class},
   \link{IRanges-class},
   \link{successiveIRanges},
   \link[base]{cumsum},
@@ -551,7 +552,7 @@ togroup(pbe1)
 togrouplength(pbe1)  # same as 'grouplengths(pbe1, togroup(pbe1))'
 names(pbe1)
 
-## The Ranges core API:
+## The IntegerRanges core API:
 start(pbe1)
 end(pbe1)
 width(pbe1)

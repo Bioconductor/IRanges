@@ -42,7 +42,7 @@
 \alias{coerce,Rle,RangedData-method}
 \alias{coerce,RleList,RangedData-method}
 \alias{coerce,RleViewsList,RangedData-method}
-\alias{coerce,Ranges,RangedData-method}
+\alias{coerce,IntegerRanges,RangedData-method}
 \alias{coerce,RangesList,RangedData-method}
 \alias{coerce,list,RangedData-method}
 \alias{coerce,RangedData,CompressedIRangesList-method}
@@ -113,8 +113,8 @@
   and natural to treat the data this way, at least when the data is
   small and there is no need to distinguish the ranges by their space.
 
-  The other mode is to treat the \code{RangedData} as a list, with an
-  element (a virtual \code{\linkS4class{Ranges}}/\code{\linkS4class{DataFrame}}
+  The other mode is to treat the \code{RangedData} as a list, with an element
+  (a virtual \code{\linkS4class{IntegerRanges}}/\code{\linkS4class{DataFrame}}
   pair) for each space. The length of the object is defined as the number
   of spaces and the value returned by the \code{names} accessor gives the
   names of the spaces. The list-style \code{[} subset function behaves
@@ -175,8 +175,8 @@
         }
       }
     }
-    \item{}{Range accessors. The type of the return value depends on
-      the type of \code{\linkS4class{Ranges}}. For \code{\linkS4class{IRanges}},
+    \item{}{Range accessors. The type of the return value depends on the type
+      of \code{\linkS4class{IntegerRanges}}. For \code{\linkS4class{IRanges}},
       an integer vector. Regardless, the number of elements is always equal to
       \code{nrow(x)}.
       \describe{
@@ -256,7 +256,7 @@
       constructor \code{\linkS4class{DataFrame}} for how the \code{...}
       arguments are interpreted.
 
-      If \code{ranges} is a \code{\linkS4class{Ranges}} object, the
+      If \code{ranges} is a \code{\linkS4class{IntegerRanges}} object, the
       \code{space} argument is used to split of the data into spaces.
       If \code{space} is \code{NULL}, all of the ranges and values are
       placed into the same space, resulting in a single-space (length one)
@@ -268,7 +268,7 @@
       the supplied \code{space} argument is ignored and its value is derived
       from \code{ranges}.
 
-      If \code{ranges} is not a \code{\linkS4class{Ranges}} or
+      If \code{ranges} is not a \code{\linkS4class{IntegerRanges}} or
       \code{\linkS4class{RangesList}} object, this function calls
       \code{as(ranges, "RangedData")} and returns the result if successful.
 
@@ -306,7 +306,7 @@
           of \code{subject(from)} in each of the windows, with a value column
           \code{score} taken as the corresponding subject values.
         }
-        \item{\code{\linkS4class{Ranges}}}{
+        \item{\code{\linkS4class{IntegerRanges}}}{
           Creates a \code{RangedData} with only the ranges in \code{from};
           no data columns.
         }

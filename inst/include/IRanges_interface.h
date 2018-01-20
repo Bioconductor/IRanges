@@ -13,8 +13,8 @@
 
 
 /*
- * Comparing ranges.
- * (see Ranges_comparison.c)
+ * Comparing integer ranges.
+ * (see IntegerRanges_comparison.c)
  */
 
 int overlap_code(

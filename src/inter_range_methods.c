@@ -174,7 +174,7 @@ static int reduce_ranges(const int *x_start, const int *x_width, int x_len,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP Ranges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
+SEXP IntegerRanges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
 		SEXP min_gapwidth, SEXP with_revmap, SEXP with_inframe_start)
 {
 	int x_len, *inframe_start;
@@ -448,7 +448,7 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 /* --- .Call ENTRY POINT ---
  * Worst case complexity of O(n^2) :(, but in practice very fast.
  */
-SEXP Ranges_disjointBins(SEXP x_start, SEXP x_width)
+SEXP IntegerRanges_disjointBins(SEXP x_start, SEXP x_width)
 {
   SEXP ans;
   IntAE *bin_ends = new_IntAE(128, 0, 0);

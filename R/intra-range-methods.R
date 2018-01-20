@@ -44,7 +44,7 @@ setGeneric("shift", signature="x",
     function(x, shift=0L, use.names=TRUE) standardGeneric("shift")
 )
 
-setMethod("shift", "Ranges",
+setMethod("shift", "IntegerRanges",
     function(x, shift=0L, use.names=TRUE)
     {
         if (is(x, "NormalIRanges") && !isSingleNumber(shift))
@@ -128,7 +128,7 @@ setGeneric("narrow", signature="x",
         standardGeneric("narrow")
 )
 
-setMethod("narrow", "Ranges",
+setMethod("narrow", "IntegerRanges",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
         if (is(x, "NormalIRanges"))
@@ -205,7 +205,7 @@ setGeneric("resize", signature="x",
         standardGeneric("resize")
 )
 
-setMethod("resize", "Ranges",
+setMethod("resize", "IntegerRanges",
     function(x, width, fix="start", use.names=TRUE)
     {
         if (is(x, "NormalIRanges"))
@@ -287,7 +287,7 @@ setGeneric("flank", signature="x",
         standardGeneric("flank")
 )
 
-setMethod("flank", "Ranges",
+setMethod("flank", "IntegerRanges",
     function(x, width, start=TRUE, both=FALSE, use.names=TRUE)
     {
         if (is(x, "NormalIRanges"))
@@ -357,7 +357,7 @@ setGeneric("promoters", signature="x",
         standardGeneric("promoters")
 )
 
-setMethod("promoters", "Ranges",
+setMethod("promoters", "IntegerRanges",
     function(x, upstream=2000, downstream=200, ...)
     {
         if (is(x, "NormalIRanges"))
@@ -415,15 +415,15 @@ setGeneric("reflect", signature="x",
         standardGeneric("reflect")
 )
 
-setMethod("reflect", "Ranges",
+setMethod("reflect", "IntegerRanges",
     function(x, bounds, use.names=TRUE)
     {
         if (is(x, "NormalIRanges"))
             stop("reflecting a NormalIRanges object is not supported")
-        if (!is(bounds, "Ranges"))
-            stop("'bounds' must be a Ranges object")
+        if (!is(bounds, "IntegerRanges"))
+            stop("'bounds' must be an IntegerRanges object")
         if (length(x) > 1 && length(bounds) == 0)
-            stop("'bounds' is an empty Ranges object")
+            stop("'bounds' is an empty IntegerRanges object")
         if (length(x) < length(bounds))
             bounds <- head(bounds, length(x))
         ans_start <- (2L * start(bounds) + width(bounds) - 1L) - end(x)
@@ -463,9 +463,8 @@ setGeneric("restrict", signature="x",
 ###       Those that are not overlapping but are however adjacent are kept
 ###       (and are empty after restriction).
 ###   2L: All ranges in 'x' are kept after restriction.
-###       Ranges
 ### Note that the only mode compatible with a NormalIRanges object is 0L.
-Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
+.restrict_IntegerRanges <- function(x, start, end, drop.ranges.mode, use.names)
 {
     if (!S4Vectors:::isNumericOrNAs(start))
         stop("'start' must be a vector of integers")
@@ -544,7 +543,7 @@ Ranges.restrict <- function(x, start, end, drop.ranges.mode, use.names)
               check=FALSE)
 }
 
-setMethod("restrict", "Ranges",
+setMethod("restrict", "IntegerRanges",
     function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
     {
         if (!isTRUEorFALSE(keep.all.ranges))
@@ -561,7 +560,7 @@ setMethod("restrict", "Ranges",
             else
                 drop.ranges.mode <- 1L
         }
-        Ranges.restrict(x, start, end, drop.ranges.mode, use.names)
+        .restrict_IntegerRanges(x, start, end, drop.ranges.mode, use.names)
     }
 )
 
@@ -631,7 +630,7 @@ setMethod("threebands", "IRanges",
 ### convenience when working interactively.
 ###
 
-setMethod("Ops", c("Ranges", "numeric"),
+setMethod("Ops", c("IntegerRanges", "numeric"),
     function(e1, e2)
     {
         if (S4Vectors:::anyMissing(e2))

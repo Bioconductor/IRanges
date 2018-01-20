@@ -3,7 +3,7 @@
 \alias{coverage-methods}
 
 \alias{coverage}
-\alias{coverage,Ranges-method}
+\alias{coverage,IntegerRanges-method}
 \alias{coverage,Views-method}
 \alias{coverage,RangesList-method}
 \alias{coverage,RangedData-method}
@@ -18,7 +18,7 @@
 \usage{
 coverage(x, shift=0L, width=NULL, weight=1L, ...)
 
-\S4method{coverage}{Ranges}(x, shift=0L, width=NULL, weight=1L,
+\S4method{coverage}{IntegerRanges}(x, shift=0L, width=NULL, weight=1L,
             method=c("auto", "sort", "hash"))
 
 \S4method{coverage}{RangesList}(x, shift=0L, width=NULL, weight=1L,
@@ -27,7 +27,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
 
 \arguments{
   \item{x}{
-    A \link{Ranges}, \link{Views}, or \link{RangesList} object.
+    A \link{IntegerRanges}, \link{Views}, or \link{RangesList} object.
     See \code{?`\link[GenomicRanges]{coverage-methods}`} in the
     \pkg{GenomicRanges} package for \code{coverage} methods for
     other objects.
@@ -36,7 +36,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
     Specifies how much each range in \code{x} should be shifted before the
     coverage is computed.
     \itemize{
-      \item If \code{x} is a \link{Ranges} or \link{Views} object:
+      \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
             \code{shift} must be an integer or numeric vector parallel to
             \code{x} (will get recycled if necessary) and with no NAs.
       \item If \code{x} is a \link{RangesList} object:
@@ -54,7 +54,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
   \item{width}{
     Specifies the length of the returned coverage vector(s).
     \itemize{
-      \item If \code{x} is a \link{Ranges} object:
+      \item If \code{x} is a \link{IntegerRanges} object:
             \code{width} must be \code{NULL} (the default), an NA, or a
             single non-negative integer.
             After being shifted, the ranges in \code{x} are always clipped
@@ -68,7 +68,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
             in the underlying space covered by the shifted ranges.
 
       \item If \code{x} is a \link{Views} object:
-            Same as for a \link{Ranges} object, except that, if
+            Same as for a \link{IntegerRanges} object, except that, if
             \code{width} is \code{NULL} then it's treated as if it
             was \code{length(subject(x))}.
 
@@ -82,13 +82,13 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
             length of \code{x}.
             Finally \code{width[i]} is used to compute the coverage vector
             for \code{x[[i]]} and is therefore treated like explained above
-            (when \code{x} is a \link{Ranges} object).
+            (when \code{x} is a \link{IntegerRanges} object).
     }
   }
   \item{weight}{
     Assigns a weight to each range in \code{x}.
     \itemize{
-      \item If \code{x} is a \link{Ranges} or \link{Views} object:
+      \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
             \code{weight} must be an integer or numeric vector parallel to
             \code{x} (will get recycled if necessary).
       \item If \code{x} is a \link{RangesList} object:
@@ -131,7 +131,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
 }
 
 \value{
-  If \code{x} is a \link{Ranges} or \link{Views} object:
+  If \code{x} is a \link{IntegerRanges} or \link{Views} object:
   An integer- or numeric-\link{Rle} object depending on whether \code{weight}
   is an integer or numeric vector.
 
@@ -153,7 +153,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
     \item The \code{\link{slice}} function for slicing the \link{Rle} or
           \link{RleList} object returned by \code{coverage}.
 
-    \item The \link{Ranges}, \link{RangesList}, \link{Rle}, and
+    \item The \link{IntegerRanges}, \link{RangesList}, \link{Rle}, and
           \link{RleList} classes.
   }
 }
@@ -194,8 +194,8 @@ stopifnot(identical(coverage(sample(x)), cvg0))
 ## this doesn't hold anymore, unless the 'shift' and/or 'weight'
 ## arguments are reordered accordingly.
 
-## PROPERTY 2: The coverage of the concatenation of 2 Ranges objects 'x'
-## and 'y' is the sum of the 2 individual coverage vectors:
+## PROPERTY 2: The coverage of the concatenation of 2 IntegerRanges
+## objects 'x' and 'y' is the sum of the 2 individual coverage vectors:
 y <- IRanges(sample(-20:280, 36, replace=TRUE), width=28)
 stopifnot(identical(coverage(c(x, y), width=100),
                     coverage(x, width=100) + coverage(y, width=100)))

@@ -16,7 +16,7 @@
 setGeneric("tile", function(x, n, width, ...) standardGeneric("tile"),
            signature="x")
 
-setMethod("tile", "Ranges", function(x, n, width, ...) {
+setMethod("tile", "IntegerRanges", function(x, n, width, ...) {
   if (!missing(n)) {
     if (!missing(width))
       stop("only one of 'n' and 'width' can be specified")
@@ -54,7 +54,7 @@ setGeneric("slidingWindows",
            function(x, width, step = 1L, ...) standardGeneric("slidingWindows"),
            signature="x")
 
-setMethod("slidingWindows", "Ranges", function(x, width, step = 1L) {
+setMethod("slidingWindows", "IntegerRanges", function(x, width, step = 1L) {
     if (!isSingleNumber(width))
         stop("'width' must be a single, non-NA number")
     if (!isSingleNumber(step))

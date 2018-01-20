@@ -5,7 +5,7 @@
 
 
 setClass("IPos",
-    contains="Ranges",
+    contains="IntegerRanges",
     representation(
         pos_runs="IRanges"
     )
@@ -39,8 +39,8 @@ setMethod("width", "IPos", function(x) rep.int(1L, length(x)))
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Collapse runs of "stitchable integer ranges"
 ###
-### In a Ranges object 'x', 2 ranges x[i] and x[i+1] are "stitchable" if
-### start(x[i+1]) == end(x[i])+1. For example, in the following object:
+### In an IntegerRanges object 'x', 2 ranges x[i] and x[i+1] are "stitchable"
+### if start(x[i+1]) == end(x[i])+1. For example, in the following object:
 ###   1: .....xxxx.............
 ###   2: ...xx.................
 ###   3: .........xxx..........
@@ -53,16 +53,16 @@ setMethod("width", "IPos", function(x) rep.int(1L, length(x)))
 ### Note that x[1] and x[3] are not stitchable because they are not
 ### consecutive vector elements (but they would if we removed x[2]).
 
-### stitch_Ranges() below takes any Ranges derivative and returns an IRanges
-### object (so is NOT an endomorphism). Note that this transformation
+### stitch_Ranges() below takes any IntegerRanges derivative and returns an
+### IRanges object (so is NOT an endomorphism). Note that this transformation
 ### preserves 'sum(width(x))'.
 ### Also note that this is an "inter range transformation". However unlike
 ### range(), reduce(), gaps(), or disjoin(), its result depends on the order
 ### of the elements in the input vector. It's also idempotent like range(),
 ### reduce(), and disjoin() (gaps() is not).
 
-### TODO: Define and export stitch() generic and method for Ranges objects
-### (in inter-range-methods.R).
+### TODO: Define and export stitch() generic and method for IntegerRanges
+### objects (in inter-range-methods.R).
 ### Maybe it would also make sense to have an isStitched() generic like we
 ### have isDisjoint() to provide a quick and easy way to check the state of
 ### the object before applying the transformation to it. In theory each
@@ -106,8 +106,8 @@ stitch_IPos <- function(x) x@pos_runs
 ### columns, then 'identical(IPos(pos_runs), pos_runs)' is TRUE.
 IPos <- function(pos_runs=IRanges())
 {
-    if (!is(pos_runs, "Ranges"))
-        pos_runs <- as(pos_runs, "Ranges", strict=FALSE)
+    if (!is(pos_runs, "IntegerRanges"))
+        pos_runs <- as(pos_runs, "IntegerRanges", strict=FALSE)
     suppressWarnings(ans_len <- sum(width(pos_runs)))
     if (is.na(ans_len))
         stop("too many positions in 'pos_runs'")
@@ -121,7 +121,7 @@ IPos <- function(pos_runs=IRanges())
 ### Coercion
 ###
 
-.from_Ranges_to_IPos <- function(from)
+.from_IntegerRanges_to_IPos <- function(from)
 {
     if (!all(width(from) == 1L))
         stop(wmsg("all the ranges in the ", class(from), " object to ",
@@ -134,13 +134,15 @@ IPos <- function(pos_runs=IRanges())
     mcols(ans) <- mcols(from)
     ans
 }
-setAs("Ranges", "IPos", .from_Ranges_to_IPos)
+setAs("IntegerRanges", "IPos", .from_IntegerRanges_to_IPos)
 
-setAs("ANY", "IPos", function(from) .from_Ranges_to_IPos(as(from, "Ranges")))
+setAs("ANY", "IPos",
+    function(from) .from_IntegerRanges_to_IPos(as(from, "IntegerRanges"))
+)
 
-### The "as.data.frame" method for Ranges objects works on an IPos object
-### but returns a data.frame with identical "start" and "end" columns, and
-### a "width" column filled with 1. We overwrite it to return a data.frame
+### The "as.data.frame" method for IntegerRanges objects works on an IPos
+### object but returns a data.frame with identical "start" and "end" columns,
+### and a "width" column filled with 1. We overwrite it to return a data.frame
 ### with a "pos" column instead of the "start" and "end" columns, and no
 ### "width" column.
 ### TODO: Turn this into an S3/S4 combo for as.data.frame.IPos
@@ -163,7 +165,7 @@ setMethod("as.data.frame", "IPos",
 ### NOT exported but used in the GenomicRanges package.
 ### 'pos_runs' must be an IRanges or GRanges object or any range-based
 ### object as long as it supports start(), end(), width(), and is subsettable.
-### 'i' must be a Ranges object with no zero-width ranges.
+### 'i' must be an IntegerRanges object with no zero-width ranges.
 extract_pos_runs_by_ranges <- function(pos_runs, i)
 {
     map <- S4Vectors:::map_ranges_to_runs(width(pos_runs),
@@ -197,7 +199,8 @@ setMethod("extractROWS", "IPos",
     function(x, i)
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
-        ## TODO: Maybe make this the coercion method from NSBS to Ranges.
+        ## TODO: Maybe make this the coercion method from NSBS to
+        ## IntegerRanges.
         if (is(i, "RangesNSBS")) {
             ir <- i@subscript
             ir <- ir[width(ir) != 0L]

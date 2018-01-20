@@ -1,52 +1,52 @@
-\name{Ranges-class}
+\name{IntegerRanges-class}
 \docType{class}
 
 % Classes:
-\alias{class:Ranges}
-\alias{Ranges-class}
-\alias{Ranges}
+\alias{class:IntegerRanges}
+\alias{IntegerRanges-class}
+\alias{IntegerRanges}
 
 % Generics and methods:
-\alias{length,Ranges-method}
-\alias{elementNROWS,Ranges-method}
+\alias{length,IntegerRanges-method}
+\alias{elementNROWS,IntegerRanges-method}
 \alias{width}
-\alias{start,Ranges-method}
-\alias{width,Ranges-method}
-\alias{end,Ranges-method}
+\alias{start,IntegerRanges-method}
+\alias{width,IntegerRanges-method}
+\alias{end,IntegerRanges-method}
 \alias{mid}
-\alias{mid,Ranges-method}
+\alias{mid,IntegerRanges-method}
 \alias{start<-}
 \alias{width<-}
 \alias{end<-}
-\alias{as.character,Ranges-method}
-\alias{as.factor,Ranges-method}
-\alias{as.matrix,Ranges-method}
-\alias{as.data.frame,Ranges-method}
-\alias{as.integer,Ranges-method}
-\alias{unlist,Ranges-method}
-\alias{show,Ranges-method}
-\alias{showAsCell,Ranges-method}
-\alias{isEmpty,Ranges-method}
+\alias{as.character,IntegerRanges-method}
+\alias{as.factor,IntegerRanges-method}
+\alias{as.matrix,IntegerRanges-method}
+\alias{as.data.frame,IntegerRanges-method}
+\alias{as.integer,IntegerRanges-method}
+\alias{unlist,IntegerRanges-method}
+\alias{show,IntegerRanges-method}
+\alias{showAsCell,IntegerRanges-method}
+\alias{isEmpty,IntegerRanges-method}
 \alias{isNormal}
-\alias{isNormal,Ranges-method}
+\alias{isNormal,IntegerRanges-method}
 \alias{whichFirstNotNormal}
-\alias{whichFirstNotNormal,Ranges-method}
-\alias{update,Ranges-method}
+\alias{whichFirstNotNormal,IntegerRanges-method}
+\alias{update,IntegerRanges-method}
 \alias{tile}
-\alias{tile,Ranges-method}
+\alias{tile,IntegerRanges-method}
 \alias{slidingWindows}
-\alias{slidingWindows,Ranges-method}
+\alias{slidingWindows,IntegerRanges-method}
 
 
-\title{Ranges objects}
+\title{IntegerRanges objects}
 
 \description{
-  The Ranges virtual class is a general container for storing
+  The IntegerRanges virtual class is a general container for storing
   a set of integer ranges.
 }
 
 \details{
-  A Ranges object is a vector-like object where each element describes
+  An IntegerRanges object is a vector-like object where each element describes
   a "range of integer values".
 
   A "range of integer values" is a finite set of consecutive integer
@@ -71,35 +71,35 @@
   as the position \emph{between} its "end" and its "start" (note that
   for an empty range, the "end" equals the "start" minus one).
 
-  The length of a Ranges object is the number of ranges in it, not the
-  number of integer values in its ranges.
+  The length of an IntegerRanges object is the number of ranges in it, not
+  the number of integer values in its ranges.
 
-  A Ranges object is considered empty iff all its ranges are empty.
+  An IntegerRanges object is considered empty iff all its ranges are empty.
 
-  Ranges objects have a vector-like semantic i.e. they only support single
-  subscript subsetting (unlike, for example, standard R data frames which
-  can be subsetted by row and by column).
+  IntegerRanges objects have a vector-like semantic i.e. they only support
+  single subscript subsetting (unlike, for example, standard R data frames
+  which can be subsetted by row and by column).
 
-  The Ranges class itself is a virtual class. The following classes derive
-  directly from the Ranges class: \link{IRanges}, \link{IPos}, \link{NCList},
+  The IntegerRanges class itself is a virtual class. The following classes
+  derive directly from it: \link{IRanges}, \link{IPos}, \link{NCList},
   \link{PartitioningByEnd}.
 }
 
 \section{Methods}{
   In the code snippets below, \code{x}, \code{y} and \code{object} are
-  Ranges objects. Not all the functions described below will necessarily
-  work with all kinds of Ranges derivatives but they should work at least
-  for \link{IRanges} objects.
+  IntegerRanges objects. Not all the functions described below will necessarily
+  work with all kinds of IntegerRanges derivatives but they should work at
+  least for \link{IRanges} objects.
 
-  Note that many more operations on Ranges objects are described in other
-  man pages of the \pkg{IRanges} package. See for example the man page for
-  \emph{intra range transformations} (e.g. \code{shift()}, see
+  Note that many more operations on IntegerRanges objects are described in
+  other man pages of the \pkg{IRanges} package. See for example the man page
+  for \emph{intra range transformations} (e.g. \code{shift()}, see
   \code{?`\link{intra-range-methods}`}), or the man page for inter range
   transformations (e.g. \code{reduce()}, see
   \code{?`\link{inter-range-methods}`}), or the man page for
   \code{findOverlaps} methods (see \code{?`\link{findOverlaps-methods}`}),
   or the man page for \link{RangesList} objects where the \code{split}
-  method for Ranges objects is documented.
+  method for IntegerRanges objects is documented.
 
   \describe{
     \item{}{
@@ -142,15 +142,15 @@
       Splits each range in \code{x} into subranges as specified by \code{n}
       (number of ranges) or \code{width}. Only one of \code{n} or \code{width} 
       can be specified. The return value is a \code{IRangesList} the same 
-      length as \code{x}. Ranges with a width less than the \code{width}
+      length as \code{x}. IntegerRanges with a width less than the \code{width}
       argument are returned unchanged.
     }
     \item{}{
       \code{slidingWindows(x, width, step=1L)}: Generates sliding
       windows within each range of \code{x}, of width \code{width}, and
       starting every \code{step} positions. The return value is a
-      \code{IRangesList} the same length as \code{x}. Ranges with a
-      width less than the \code{width} argument are returned
+      \code{IRangesList} the same length as \code{x}. IntegerRanges
+      with a width less than the \code{width} argument are returned
       unchanged. If the sliding windows do not exactly cover \code{x},
       the last window is partial.
     }
@@ -190,8 +190,8 @@
     }
     \item{}{
       \code{x[i]}:
-      Return a new Ranges object (of the same type as \code{x}) made of
-      the selected ranges.
+      Return a new IntegerRanges object (of the same type as \code{x}) made
+      of the selected ranges.
       \code{i} can be a numeric vector, a logical vector, \code{NULL}
       or missing. If \code{x} is a \link{NormalIRanges} object and
       \code{i} a positive numeric subscript (i.e. a numeric vector of
@@ -202,8 +202,8 @@
       Repeats the values in \code{x} through one of the following conventions:
       \describe{
         \item{\code{times}}{Vector giving the number of times to repeat each
-          element if of length \code{length(x)}, or to repeat the Ranges
-          elements if of length 1.}
+          element if of length \code{length(x)}, or to repeat the
+          IntegerRanges elements if of length 1.}
         \item{\code{length.out}}{Non-negative integer. The desired length of
           the output vector.}
         \item{\code{each}}{Non-negative integer.  Each element of \code{x} is
@@ -212,8 +212,8 @@
     }
     \item{}{
       \code{c(x, ..., ignore.mcols=FALSE)}:
-      Concatenate Ranges object \code{x} and the Ranges objects in
-      \code{...} together.
+      Concatenate IntegerRanges object \code{x} and the IntegerRanges objects
+      in \code{...} together.
       See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package
       for more information about concatenating Vector derivatives.
     }
@@ -247,15 +247,15 @@
 }
 
 \section{Normality}{
-  A Ranges object \code{x} is implicitly representing an arbitrary finite
-  set of integers (that are not necessarily consecutive). This set is the
-  set obtained by taking the union of all the values in all the ranges in
+  An IntegerRanges object \code{x} is implicitly representing an arbitrary
+  finite set of integers (that are not necessarily consecutive). This set is
+  the set obtained by taking the union of all the values in all the ranges in
   \code{x}. This representation is clearly not unique: many different
-  Ranges objects can be used to represent the same set of integers.
+  IntegerRanges objects can be used to represent the same set of integers.
   However one and only one of them is guaranteed to be \emph{normal}.
 
-  By definition a Ranges object is said to be \emph{normal} when its ranges
-  are:
+  By definition an IntegerRanges object is said to be \emph{normal} when its
+  ranges are:
     (a) not empty (i.e. they have a non-null width);
     (b) not overlapping;
     (c) ordered from left to right;
@@ -270,9 +270,9 @@
         \preformatted{  start(x)[i] <= end(x)[i] < start(x)[i+1] <= end(x)[i+1]}
         for every 1 <= \code{i} < \code{length(x)}.
 
-  The obvious advantage of using a \emph{normal} Ranges object to represent
-  a given finite set of integers is that it is the smallest in terms of
-  number of ranges and therefore in terms of storage space.
+  The obvious advantage of using a \emph{normal} IntegerRanges object to
+  represent a given finite set of integers is that it is the smallest in
+  terms of number of ranges and therefore in terms of storage space.
   Also the fact that we impose its ranges to be ordered from left to
   right makes it unique for this representation.
 
@@ -280,7 +280,7 @@
   a \emph{normal} \link{IRanges} object: a \link{NormalIRanges} object is
   just an \link{IRanges} object that is guaranteed to be \emph{normal}.
 
-  Here are some methods related to the notion of \emph{normal} Ranges:
+  Here are some methods related to the notion of \emph{normal} IntegerRanges:
 
   \describe{
     \item{}{
@@ -302,17 +302,17 @@
     \item \link{IRanges} objects (\link{NormalIRanges} objects are documented
           in the same man page).
 
-    \item The \link{IPos} class, a memory-efficient \link{Ranges} derivative
-          for representing \emph{integer positions} (i.e. integer ranges
-          of width 1).
+    \item The \link{IPos} class, a memory-efficient \link{IntegerRanges}
+          derivative for representing \emph{integer positions} (i.e. integer
+          ranges of width 1).
 
-    \item \link{Ranges-comparison} for comparing and ordering ranges.
+    \item \link{IntegerRanges-comparison} for comparing and ordering ranges.
 
     \item \link{findOverlaps-methods} for finding/counting overlapping ranges.
 
     \item \link{intra-range-methods} and
           \link{inter-range-methods} for intra range and
-          inter range transformations of a Ranges derivative.
+          inter range transformations of an IntegerRanges derivative.
 
     \item \link{coverage-methods} for computing the coverage
           of a set of ranges.

@@ -22,7 +22,7 @@
 \alias{elementNROWS,Views-method}
 \alias{Views}
 \alias{coerce,Vector,Views-method}
-\alias{coerce,Views,Ranges-method}
+\alias{coerce,Views,IntegerRanges-method}
 \alias{coerce,Views,IRanges-method}
 \alias{coerce,Views,NormalIRanges-method}
 \alias{as.matrix,Views-method}
@@ -65,12 +65,12 @@
 
       The treatment of the \code{start}, \code{end} and \code{width}
       arguments is the same as with the \code{\link{IRanges}} constructor,
-      except that, in addition, \code{Views} allows \code{start} to be a
-      \link{Ranges} object. With this feature,
+      except that, in addition, \code{Views} allows \code{start} to be an
+      \link{IntegerRanges} object. With this feature,
       \code{Views(subject, IRanges(my_starts, my_ends, my_widths, my_names))}
       and \code{Views(subject, my_starts, my_ends, my_widths, my_names)}
       are equivalent (except when \code{my_starts} is itself a
-      \link{Ranges} object).
+      \link{IntegerRanges} object).
     }
   }
 }

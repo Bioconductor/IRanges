@@ -74,9 +74,9 @@ regroup(x, g)
   \item{i}{
     A list-like object. Unlike for \code{skeleton}, the content here matters
     (see Details section below).
-    Note that \code{i} can be a \link{Ranges} object (a particular type of
-    list-like object), and, in that case, \code{extractList} is particularly
-    fast (this is a common use case).
+    Note that \code{i} can be a \link{IntegerRanges} object (a particular
+    type of list-like object), and, in that case, \code{extractList} is
+    particularly fast (this is a common use case).
   }
   \item{g}{
     A \linkS4class{Grouping} or an object coercible to one. For
@@ -104,7 +104,7 @@ regroup(x, g)
 \preformatted{    relist(x[unlist(i), ], i)
 }
   This is more or less how the default method is implemented, except for
-  some optimizations when \code{i} is a \link{Ranges} object.
+  some optimizations when \code{i} is a \link{IntegerRanges} object.
 
   \code{relist} and \code{split} (or \code{splitAsList}) can be seen as
   special cases of \code{extractList}:
@@ -169,7 +169,7 @@ regroup(x, g)
           \code{\link[S4Vectors]{relistToClass}} is documented in the man
           page for \link[S4Vectors]{List} objects.
 
-    \item \link{Ranges} objects.
+    \item \link{IntegerRanges} objects.
   }
 }
 

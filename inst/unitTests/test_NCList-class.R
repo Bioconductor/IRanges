@@ -42,7 +42,8 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 ### false). Otherwise (i.e. if they are disjoint), return the width of the
 ### gap between them. Note that a gap width of 0 means that they are adjacent.
 ### TODO: Rename this pgapWidth(), make it a generic with various methods
-### (at least one for Ranges and one for GenomicRanges objects), and export it.
+### (at least one for IntegerRanges and one for GenomicRanges objects), and
+### export it.
 .gapwidth <- function(query, subject)
 {
     ifelse(end(query) < start(subject),
@@ -54,7 +55,8 @@ findOverlaps_NCLists <- IRanges:::findOverlaps_NCLists
 
 ### Vectorized.
 ### TODO: Rename this poverlapWidth(), make it a generic with various methods
-### (at least one for Ranges and one for GenomicRanges objects), and export it.
+### (at least one for IntegerRanges and one for GenomicRanges objects), and
+### export it.
 .overlapwidth <- function(query, subject)
 {
     score <- pmin.int(end(query), end(subject)) -

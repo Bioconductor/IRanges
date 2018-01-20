@@ -17,8 +17,8 @@ setMethod("cbind", "Rle",
         }
         if (length(noname_idx) != 0L)
             names(args)[noname_idx] <- paste0("V", noname_idx)
-        ## TODO: Add 'with.revmap' arg to disjoin method for Ranges object.
-        ## Then use that feature to avoid the call to findOverlaps() below.
+        ## TODO: Call disjoin() with 'with.revmap=TRUE' and use the revmap
+        ## to avoid the call to findOverlaps() below.
         ans_runs <- disjoin(do.call(c, unname(lapply(args, ranges))))
         DataFrame(
             runLength=width(ans_runs),

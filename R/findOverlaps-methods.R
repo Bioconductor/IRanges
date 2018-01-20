@@ -65,7 +65,7 @@ setGeneric("findOverlaps", signature=c("query", "subject"),
         standardGeneric("findOverlaps")
 )
 
-findOverlaps_Ranges <- function(query, subject,
+findOverlaps_IntegerRanges <- function(query, subject,
              maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"))
@@ -77,7 +77,9 @@ findOverlaps_Ranges <- function(query, subject,
                         type=type, select=select)
 }
 
-setMethod("findOverlaps", c("Ranges", "Ranges"), findOverlaps_Ranges)
+setMethod("findOverlaps", c("IntegerRanges", "IntegerRanges"),
+    findOverlaps_IntegerRanges
+)
 
 setMethod("findOverlaps", c("Vector", "missing"),
     function(query, subject, maxgap=-1L, minoverlap=0L,
@@ -95,7 +97,7 @@ setMethod("findOverlaps", c("Vector", "missing"),
     }
 )
 
-setMethod("findOverlaps", c("integer", "Ranges"),
+setMethod("findOverlaps", c("integer", "IntegerRanges"),
     function(query, subject, maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"))
@@ -342,7 +344,7 @@ setGeneric("countOverlaps", signature=c("query", "subject"),
 setMethod("countOverlaps", c("Vector", "Vector"), .countOverlaps_default)
 setMethod("countOverlaps", c("Vector", "missing"), .countOverlaps_default)
 
-countOverlaps_Ranges <- function(query, subject,
+countOverlaps_IntegerRanges <- function(query, subject,
               maxgap=-1L, minoverlap=0L,
               type=c("any", "start", "end", "within", "equal"))
 {
@@ -354,7 +356,9 @@ countOverlaps_Ranges <- function(query, subject,
     ans
 }
 
-setMethod("countOverlaps", c("Ranges", "Ranges"), countOverlaps_Ranges)
+setMethod("countOverlaps", c("IntegerRanges", "IntegerRanges"),
+    countOverlaps_IntegerRanges
+)
 
 setMethod("countOverlaps", c("RangesList", "RangesList"),
           function(query, subject, maxgap=-1L, minoverlap=0L,
@@ -633,7 +637,7 @@ setGeneric("overlapsRanges", signature=c("query", "subject"),
     function(query, subject, hits=NULL, ...) standardGeneric("overlapsRanges")
 )
 
-setMethod("overlapsRanges", c("Ranges", "Ranges"),
+setMethod("overlapsRanges", c("IntegerRanges", "IntegerRanges"),
     function(query, subject, hits=NULL, ...)
     {
         if (is.null(hits)) {
@@ -652,8 +656,8 @@ setMethod("overlapsRanges", c("Ranges", "Ranges"),
         }
         ### Could be replaced by 1-liner:
         ###   pintersect(query[queryHits(hits)], subject[subjectHits(hits)])
-        ### but will fail if 'query' or 'subject' is a kind of Ranges object
-        ### that cannot be subsetted (e.g. Partitioning object).
+        ### but will fail if 'query' or 'subject' is a kind of IntegerRanges
+        ### object that cannot be subsetted (e.g. Partitioning object).
         m <- as.matrix(hits)
         qstart <- start(query)[m[,1L]]
         qend <- end(query)[m[,1L]]
@@ -719,7 +723,7 @@ setGeneric("poverlaps", signature=c("query", "subject"),
                standardGeneric("poverlaps")
            )
 
-setMethod("poverlaps", c("Ranges", "Ranges"),
+setMethod("poverlaps", c("IntegerRanges", "IntegerRanges"),
           function(query, subject, maxgap=0L, minoverlap=1L,
                    type=c("any", "start", "end", "within", "equal"))
           {
@@ -752,7 +756,7 @@ setMethod("poverlaps", c("Ranges", "Ranges"),
           }
           )
 
-setMethod("poverlaps", c("integer", "Ranges"),
+setMethod("poverlaps", c("integer", "IntegerRanges"),
           function(query, subject, maxgap=0L, minoverlap=1L,
                    type=c("any", "start", "end", "within", "equal"))
           {
@@ -761,7 +765,7 @@ setMethod("poverlaps", c("integer", "Ranges"),
                         type=match.arg(type))
           })
 
-setMethod("poverlaps", c("Ranges", "integer"),
+setMethod("poverlaps", c("IntegerRanges", "integer"),
           function(query, subject, maxgap=0L, minoverlap=1L,
                    type=c("any", "start", "end", "within", "equal"))
           {

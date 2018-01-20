@@ -76,16 +76,16 @@ want to manipulate specific regions of the series. We can use the
 window() function to select a particular region from a Vector, and a
 logical Rle can represent a selection of multiple regions. A slightly
 more general representation, that supports overlapping regions, is the
-Ranges class.
+IntegerRanges class.
 
-A Ranges object holds any number of start,width pairs that describe
+An IntegerRanges object holds any number of start,width pairs that describe
 closed intervals representing the set of integers that fall within the
 endpoints. The primary implementation is IRanges, which stores the
 information as two integer vectors.
 
 Often the endpoints of the intervals are interesting independent of
 the underlying sequence. Many utilities are implemented for
-manipulating and analyzing Ranges. These include:
+manipulating and analyzing IntegerRanges. These include:
 
 1) overlap detection
 2) nearest neighbors: precede, follow, nearest
@@ -95,11 +95,11 @@ manipulating and analyzing Ranges. These include:
 6) transformations: flank, reflect, restrict, narrow...
 7) (soon) mapping/alignment
 
-There are two ways to explicitly pair a Ranges object with a
+There are two ways to explicitly pair an IntegerRanges object with a
 Vector:
 
 1) Masking, as in MaskedXString, where only the elements outside of
-the Ranges are considered by an operation.
+the IntegerRanges are considered by an operation.
 
 2) Views, which are essentially lists of subsequences. This
 relies in the fly-weight pattern for efficiency. Several fast paths,
@@ -125,6 +125,6 @@ include all atomic types, as well as:
   * SplitDataFrameList: a list of DataFrames that have the same
     columns (usually the result of a split)
     
-  * RangesList: Essentially just a list of Ranges objects, but often
-    used for splitting Ranges by their "space" (e.g. chromosome)
+  * RangesList: Essentially just a list of IntegerRanges objects, but often
+    used for splitting IntegerRanges by their "space" (e.g. chromosome)
 

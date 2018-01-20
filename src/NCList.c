@@ -76,9 +76,9 @@ typedef struct nclist_t {
 	struct nclist_t *childrenbuf;  /* Of length 'buflength'. */
 	int *rgidbuf;	/* Of length 'nchildren'. The IDs of the ranges asso-
 			   ciated with the children. The ID of a range is just
-			   its 0-based position in original Ranges object 'x'.
-			   Allows reverse mapping of the children into 'x'
-			   (e.g. to find their start, end, or width). */
+			   its 0-based position in original IntegerRanges ob-
+			   ject 'x'. Allows reverse mapping of the children in-
+			   to 'x' (e.g. to find their start, end, or width). */
 } NCList;
 
 static void init_NCList(NCList *nclist)

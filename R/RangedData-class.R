@@ -10,8 +10,8 @@
 
 ## The ranges are stored in a RangesList, while the data is stored in
 ## a SplitDataFrameList. The RangesList is uncompressed, because
-## users will likely want to apply over each Ranges separately, as
-## they are usually in separate spaces. Also, it is difficult to
+## users will likely want to apply over each IntegerRanges separately,
+## as they are usually in separate spaces. Also, it is difficult to
 ## compress RangesLists, as lists containing Views or NCLists
 ## are uncompressible. The SplitDataFrameList should be compressed,
 ## because it's cheap to create from a split factor and, more
@@ -253,11 +253,11 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
     N <- sum(elementNROWS(ranges))
     NAMES <- unlist(lapply(ranges, names), use.names=FALSE)
   } else {
-    if (!is(ranges, "Ranges")) {
+    if (!is(ranges, "IntegerRanges")) {
       coerced <- try(as(ranges, "RangedData"), silent=TRUE)
       if (is(coerced, "RangedData"))
         return(coerced)
-      stop("'ranges' must be a Ranges or directly coercible to RangedData")
+      stop("'ranges' must be an IntegerRanges or directly coercible to RangedData")
     }
     N <- length(ranges)
     NAMES <- names(ranges)
@@ -679,7 +679,7 @@ setAs("RleViewsList", "RangedData", function(from) {
              view = unlist(viewNames, use.names = FALSE)[subjectHits(ol)])
 })
 
-setAs("Ranges", "RangedData",
+setAs("IntegerRanges", "RangedData",
       function(from)
       {
         RangedData(from)

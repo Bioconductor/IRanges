@@ -10,7 +10,7 @@
 setClass("RangesNSBS",  # not exported
     contains="NSBS",
     representation(
-        subscript="Ranges"
+        subscript="IntegerRanges"
     )
     #prototype(
     #    subscript=IRanges()
@@ -20,7 +20,7 @@ setClass("RangesNSBS",  # not exported
 ### Construction methods.
 ### Supplied arguments are trusted so we don't check them!
 
-setMethod("NSBS", "Ranges",
+setMethod("NSBS", "IntegerRanges",
     function(i, x, exact=TRUE, strict.upper.bound=TRUE, allow.NAs=FALSE)
     {
         i_len <- length(i)
@@ -60,7 +60,7 @@ setMethod("isStrictlySorted", "RangesNSBS", function(x) isNormal(x@subscript))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### "extractROWS" methods for subsetting *by* a Ranges object.
+### "extractROWS" methods for subsetting *by* an IntegerRanges object.
 ###
 
 setMethod("extractROWS", c("vector_OR_factor", "RangesNSBS"),

@@ -7,7 +7,7 @@
 ###
 
 setClass("IRanges",
-    contains="Ranges",
+    contains="IntegerRanges",
     representation(
         start="integer",
         width="integer",
@@ -55,7 +55,7 @@ setMethod("width", "IRanges", function(x) x@width)
 
 setMethod("names", "IRanges", function(x) x@NAMES)
 
-setMethod("ranges", "Ranges",
+setMethod("ranges", "IntegerRanges",
     function(x, use.names=TRUE, use.mcols=FALSE)
     {
         if (!isTRUEorFALSE(use.names))
@@ -130,7 +130,7 @@ setMethod("min", "NormalIRanges",
 ### Validity.
 ###
 ### Validity of IRanges objects is taken care of by the validity method for
-### Ranges objects.
+### IntegerRanges objects.
 ###
 
 ### NormalIRanges objects
@@ -148,7 +148,7 @@ setValidity2("NormalIRanges", .valid.NormalIRanges)
 ### Coercion.
 ###
 
-setAs("Ranges", "IRanges",
+setAs("IntegerRanges", "IRanges",
     function(from) ranges(from, use.mcols=TRUE)
 )
 
@@ -226,7 +226,7 @@ setAs("character", "IRanges", .from_character_to_IRanges)
 }
 setAs("factor", "IRanges", .from_factor_to_IRanges)
 
-setAs("ANY", "Ranges", function(from) as(from, "IRanges"))
+setAs("ANY", "IntegerRanges", function(from) as(from, "IRanges"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
