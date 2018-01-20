@@ -53,9 +53,9 @@ setMethod("width", "IPos", function(x) rep.int(1L, length(x)))
 ### Note that x[1] and x[3] are not stitchable because they are not
 ### consecutive vector elements (but they would if we removed x[2]).
 
-### stitch_Ranges() below takes any IntegerRanges derivative and returns an
-### IRanges object (so is NOT an endomorphism). Note that this transformation
-### preserves 'sum(width(x))'.
+### stitch_IntegerRanges() below takes any IntegerRanges derivative and
+### returns an IRanges object (so is NOT an endomorphism). Note that this
+### transformation preserves 'sum(width(x))'.
 ### Also note that this is an "inter range transformation". However unlike
 ### range(), reduce(), gaps(), or disjoin(), its result depends on the order
 ### of the elements in the input vector. It's also idempotent like range(),
@@ -69,7 +69,7 @@ setMethod("width", "IPos", function(x) rep.int(1L, length(x)))
 ### idempotent inter range transformation could have a "state checker" so
 ### maybe add isReduced() too (range() probably doesn't need one).
 
-stitch_Ranges <- function(x)
+stitch_IntegerRanges <- function(x)
 {
     if (length(x) == 0L)
         return(IRanges())
@@ -111,7 +111,7 @@ IPos <- function(pos_runs=IRanges())
     suppressWarnings(ans_len <- sum(width(pos_runs)))
     if (is.na(ans_len))
         stop("too many positions in 'pos_runs'")
-    pos_runs <- stitch_Ranges(pos_runs)
+    pos_runs <- stitch_IntegerRanges(pos_runs)
     pos_runs <- pos_runs[width(pos_runs) != 0L]
     new2("IPos", pos_runs=pos_runs, check=FALSE)
 }
@@ -208,7 +208,7 @@ setMethod("extractROWS", "IPos",
             ir <- as(as.integer(i), "IRanges")
         }
         new_pos_runs <- extract_pos_runs_by_ranges(x@pos_runs, ir)
-        x@pos_runs <- stitch_Ranges(new_pos_runs)
+        x@pos_runs <- stitch_IntegerRanges(new_pos_runs)
         mcols(x) <- extractROWS(mcols(x), i)
         x
     }
@@ -299,7 +299,7 @@ setMethod("show", "IPos",
 
     ## Concatenate the "pos_runs" slots.
     pos_runs_list <- lapply(all_objects, slot, "pos_runs")
-    ans_pos_runs <- stitch_Ranges(
+    ans_pos_runs <- stitch_IntegerRanges(
         concatenateObjects(pos_runs_list[[1L]], pos_runs_list[-1L])
     )
 
