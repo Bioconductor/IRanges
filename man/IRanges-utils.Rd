@@ -88,7 +88,7 @@ asNormalIRanges(x, force=TRUE)
 \author{Hervé Pagès}
 
 \seealso{
-  \link{Ranges-class},
+  \link{IntegerRanges-class},
   \link{IRanges-class},
 
   \link{intra-range-methods} for intra range transformations,

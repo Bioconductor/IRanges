@@ -40,7 +40,7 @@
 \alias{merge,missing,RangesList-method}
 \alias{merge,RangesList,RangesList-method}
 
-\title{List of Ranges}
+\title{List of IntegerRanges}
 \description{An extension of \linkS4class{List} that holds only
   \linkS4class{IntegerRanges} objects. Useful for storing ranges over a set
   of spaces (e.g. chromosomes), each of which requires a separate

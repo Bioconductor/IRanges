@@ -201,7 +201,7 @@ export(
     showAsCell,
     mstack,
 
-    ## Ranges-class.R:
+    ## IntegerRanges-class.R:
     mid,
     isNormal, whichFirstNotNormal,
 
