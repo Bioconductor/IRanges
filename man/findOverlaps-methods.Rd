@@ -9,13 +9,13 @@
 \alias{findOverlaps,Views,Views-method}
 \alias{findOverlaps,Views,Vector-method}
 \alias{findOverlaps,Vector,Views-method}
-\alias{findOverlaps,RangesList,RangesList-method}
+\alias{findOverlaps,IntegerRangesList,IntegerRangesList-method}
 \alias{findOverlaps,ViewsList,ViewsList-method}
 \alias{findOverlaps,ViewsList,Vector-method}
 \alias{findOverlaps,Vector,ViewsList-method}
 \alias{findOverlaps,RangedData,RangedData-method}
-\alias{findOverlaps,RangedData,RangesList-method}
-\alias{findOverlaps,RangesList,RangedData-method}
+\alias{findOverlaps,RangedData,IntegerRangesList-method}
+\alias{findOverlaps,IntegerRangesList,RangedData-method}
 \alias{findOverlaps,Pairs,missing-method}
 \alias{findOverlaps,Pairs,ANY-method}
 \alias{findOverlaps,ANY,Pairs-method}
@@ -25,24 +25,24 @@
 \alias{countOverlaps,Vector,Vector-method}
 \alias{countOverlaps,Vector,missing-method}
 \alias{countOverlaps,IntegerRanges,IntegerRanges-method}
-\alias{countOverlaps,RangesList,RangesList-method}
+\alias{countOverlaps,IntegerRangesList,IntegerRangesList-method}
 \alias{countOverlaps,ViewsList,ViewsList-method}
 \alias{countOverlaps,ViewsList,Vector-method}
 \alias{countOverlaps,Vector,ViewsList-method}
 \alias{countOverlaps,RangedData,RangedData-method}
-\alias{countOverlaps,RangedData,RangesList-method}
-\alias{countOverlaps,RangesList,RangedData-method}
+\alias{countOverlaps,RangedData,IntegerRangesList-method}
+\alias{countOverlaps,IntegerRangesList,RangedData-method}
 
 \alias{overlapsAny}
 \alias{overlapsAny,Vector,Vector-method}
 \alias{overlapsAny,Vector,missing-method}
-\alias{overlapsAny,RangesList,RangesList-method}
+\alias{overlapsAny,IntegerRangesList,IntegerRangesList-method}
 \alias{overlapsAny,ViewsList,ViewsList-method}
 \alias{overlapsAny,ViewsList,Vector-method}
 \alias{overlapsAny,Vector,ViewsList-method}
 \alias{overlapsAny,RangedData,RangedData-method}
-\alias{overlapsAny,RangedData,RangesList-method}
-\alias{overlapsAny,RangesList,RangedData-method}
+\alias{overlapsAny,RangedData,IntegerRangesList-method}
+\alias{overlapsAny,IntegerRangesList,RangedData-method}
 
 \alias{\%over\%}
 \alias{\%within\%}
@@ -51,12 +51,12 @@
 \alias{subsetByOverlaps}
 \alias{subsetByOverlaps,Vector,Vector-method}
 \alias{subsetByOverlaps,RangedData,RangedData-method}
-\alias{subsetByOverlaps,RangedData,RangesList-method}
-\alias{subsetByOverlaps,RangesList,RangedData-method}
+\alias{subsetByOverlaps,RangedData,IntegerRangesList-method}
+\alias{subsetByOverlaps,IntegerRangesList,RangedData-method}
 
 \alias{overlapsRanges}
 \alias{overlapsRanges,IntegerRanges,IntegerRanges-method}
-\alias{overlapsRanges,RangesList,RangesList-method}
+\alias{overlapsRanges,IntegerRangesList,IntegerRangesList-method}
 
 \alias{poverlaps}
 \alias{poverlaps,IntegerRanges,IntegerRanges-method}
@@ -78,8 +78,8 @@
   "range-based" objects: a query and a subject.
 
   NOTE: This man page describes the methods that operate on
-  \link{IntegerRanges}, \link{Views}, \link{RangesList}, or
-  \link{ViewsList} objects. See
+  \link{IntegerRanges}, \link{Views}, \link{IntegerRangesList},
+  or \link{ViewsList} objects. See
   \code{?`\link[GenomicRanges]{findOverlaps,GenomicRanges,GenomicRanges-method}`}
   in the \pkg{GenomicRanges} package for methods that operate on
   \link[GenomicRanges]{GenomicRanges} or \link[GenomicRanges]{GRangesList}
@@ -121,14 +121,15 @@ findOverlapPairs(query, subject, ...)
 
 \arguments{
   \item{query, subject, x, ranges}{
-    Each of them can be a \link{IntegerRanges}, \link{Views}, \link{RangesList},
-    or \link{ViewsList} object.
+    Each of them can be a \link{IntegerRanges}, \link{Views},
+    \link{IntegerRangesList}, or \link{ViewsList} object.
     In addition, if \code{subject} or \code{ranges} is a \link{IntegerRanges}
     object, \code{query} or \code{x} can be an integer vector to be converted
     to length-one ranges.
 
-    If \code{query} (or \code{x}) is a \link{RangesList} object, then
-    \code{subject} (or \code{ranges}) must also be a \link{RangesList} object.
+    If \code{query} (or \code{x}) is a \link{IntegerRangesList} object, then
+    \code{subject} (or \code{ranges}) must also be a \link{IntegerRangesList}
+    object.
 
     If both arguments are list-like objects with names, each list element
     from the 2nd argument is paired with the list element from the 1st
@@ -197,7 +198,7 @@ findOverlapPairs(query, subject, ...)
     or arbitrary overlapping interval in \code{subject}, with \code{NA}
     indicating intervals that did not overlap any intervals in \code{subject}.
 
-    If \code{query} is a \link{RangesList} or \link{ViewsList} object:
+    If \code{query} is a \link{IntegerRangesList} or \link{ViewsList} object:
     When \code{select} is \code{"all"} (the default), the results are
     returned as a \link[S4Vectors]{HitsList} object.
     Otherwise the returned value depends on the \code{drop} argument.
@@ -221,7 +222,7 @@ findOverlapPairs(query, subject, ...)
     Further arguments to be passed to or from other methods:
     \itemize{
       \item \code{drop}: Supported only when \code{query} is a
-            \link{RangesList} or \link{ViewsList} object.
+            \link{IntegerRangesList} or \link{ViewsList} object.
             \code{FALSE} by default. See \code{select} argument above for the
             details.
       \item \code{drop.self}, \code{drop.redundant}: When \code{subject}
@@ -247,14 +248,15 @@ findOverlapPairs(query, subject, ...)
 
   For \code{countOverlaps}: the overlap hit count for each range
   in \code{query} using the specified \code{findOverlaps} parameters.
-  For \link{RangesList} objects, it returns an \link{IntegerList} object.
+  For \link{IntegerRangesList} objects, it returns an \link{IntegerList}
+  object.
 
   \code{overlapsAny} finds the ranges in \code{query} that overlap any
   of the ranges in \code{subject}. For \link{IntegerRanges} or \link{Views}
   objects, it returns a logical vector of length equal to the number of
-  ranges in \code{query}. For \link{RangesList} or \link{ViewsList} objects,
-  it returns a \link{LogicalList} object where each element of the result
-  corresponds to a space in \code{query}.
+  ranges in \code{query}. For \link{IntegerRangesList} or \link{ViewsList}
+  objects, it returns a \link{LogicalList} object where each element of the
+  result corresponds to a space in \code{query}.
 
   \code{\%over\%} and \code{\%within\%} are convenience wrappers for the
   2 most common use cases. Currently defined as
@@ -270,11 +272,11 @@ findOverlapPairs(query, subject, ...)
 
   When \code{hits} is a \link[S4Vectors]{Hits} (or \link[S4Vectors]{HitsList})
   object, \code{overlapsRanges(query, subject, hits)} returns a
-  \link{IntegerRanges} (or \link{RangesList}) object of the \emph{same shape}
-  as \code{hits} holding the regions of intersection between the overlapping
-  ranges in objects \code{query} and \code{subject}, which should be the same
-  query and subject used in the call to \code{findOverlaps} that generated
-  \code{hits}.
+  \link{IntegerRanges} (or \link{IntegerRangesList}) object of the \emph{same
+  shape} as \code{hits} holding the regions of intersection between the
+  overlapping ranges in objects \code{query} and \code{subject}, which should
+  be the same query and subject used in the call to \code{findOverlaps} that
+  generated \code{hits}.
   \emph{Same shape} means same length when \code{hits} is a
   \link[S4Vectors]{Hits} object, and same length and same elementNROWS
   when \code{hits} is a \link[S4Vectors]{HitsList} object.
@@ -319,8 +321,8 @@ findOverlapPairs(query, subject, ...)
 
     \item The \link{NCList} class and constructor.
 
-    \item The \link{IntegerRanges}, \link{Views}, \link{RangesList}, and
-          \link{ViewsList} classes.
+    \item The \link{IntegerRanges}, \link{Views}, \link{IntegerRangesList},
+          and \link{ViewsList} classes.
 
     \item The \link{IntegerList} and \link{LogicalList} classes.
   }
@@ -391,7 +393,7 @@ query \%within\% subject  # same as overlapsAny(query, subject,
 overlapsRanges(query, subject, ov)
 
 ## ---------------------------------------------------------------------
-## Using RangesList objects
+## Using IntegerRangesList objects
 ## ---------------------------------------------------------------------
 
 query <- IRanges(c(1, 4, 9), c(5, 7, 10))

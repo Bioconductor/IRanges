@@ -37,7 +37,7 @@ exportClasses(
     RawList, CompressedRawList, SimpleRawList,
     RleList, CompressedRleList, SimpleRleList,
     FactorList, CompressedFactorList, SimpleFactorList,
-    RangesList, SimpleRangesList,
+    IntegerRangesList, SimpleRangesList,
     IRangesList, CompressedIRangesList, SimpleIRangesList,
     NormalIRangesList, CompressedNormalIRangesList, SimpleNormalIRangesList,
     ViewsList, SimpleViewsList,
@@ -229,7 +229,7 @@ export(
     ## DataFrameList-class.R:
     columnMetadata, "columnMetadata<-",
 
-    ## RangesList-class.R:
+    ## IntegerRangesList-class.R:
     universe, "universe<-", space,
 
     ## MaskCollection-class.R:

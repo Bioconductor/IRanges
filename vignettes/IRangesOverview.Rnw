@@ -567,12 +567,12 @@ It is common to manipulate collections of \Rclass{IntegerRanges} objects
 during an analysis. Thus, the \IRanges{} package defines some specific
 classes for working with multiple \Rclass{IntegerRanges} objects.
 
-The \Rclass{RangesList} class asserts that each element is an
+The \Rclass{IntegerRangesList} class asserts that each element is an
 \Rclass{IntegerRanges} object and provides convenience methods, such
 as \Rfunction{start}, \Rfunction{end} and \Rfunction{width} accessors
 that return \Rclass{IntegerList} objects, aligning with the
-\Rclass{RangesList} object.
-To explicitly construct a \Rclass{RangesList}, use the
+\Rclass{IntegerRangesList} object.
+To explicitly construct an \Rclass{IntegerRangesList}, use the
 \Rfunction{RangesList} function.
 <<rangeslist-contructor>>=
 rl <- RangesList(ir, rev(ir))

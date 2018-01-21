@@ -5,7 +5,7 @@
 \alias{coverage}
 \alias{coverage,IntegerRanges-method}
 \alias{coverage,Views-method}
-\alias{coverage,RangesList-method}
+\alias{coverage,IntegerRangesList-method}
 \alias{coverage,RangedData-method}
 
 \title{Coverage of a set of ranges}
@@ -21,13 +21,13 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
 \S4method{coverage}{IntegerRanges}(x, shift=0L, width=NULL, weight=1L,
             method=c("auto", "sort", "hash"))
 
-\S4method{coverage}{RangesList}(x, shift=0L, width=NULL, weight=1L,
+\S4method{coverage}{IntegerRangesList}(x, shift=0L, width=NULL, weight=1L,
             method=c("auto", "sort", "hash"))
 }
 
 \arguments{
   \item{x}{
-    A \link{IntegerRanges}, \link{Views}, or \link{RangesList} object.
+    A \link{IntegerRanges}, \link{Views}, or \link{IntegerRangesList} object.
     See \code{?`\link[GenomicRanges]{coverage-methods}`} in the
     \pkg{GenomicRanges} package for \code{coverage} methods for
     other objects.
@@ -39,7 +39,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
       \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
             \code{shift} must be an integer or numeric vector parallel to
             \code{x} (will get recycled if necessary) and with no NAs.
-      \item If \code{x} is a \link{RangesList} object:
+      \item If \code{x} is a \link{IntegerRangesList} object:
             \code{shift} must be a numeric vector or list-like object of
             the same length as \code{x} (will get recycled if necessary).
             If it's a numeric vector, it's first turned into a list with
@@ -72,7 +72,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
             \code{width} is \code{NULL} then it's treated as if it
             was \code{length(subject(x))}.
 
-      \item If \code{x} is a \link{RangesList} object:
+      \item If \code{x} is a \link{IntegerRangesList} object:
             \code{width} must be \code{NULL} or an integer vector parallel
             to \code{x} (i.e. with one element per list element in \code{x}).
             If not \code{NULL}, the vector must contain NAs or non-negative
@@ -91,7 +91,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
       \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
             \code{weight} must be an integer or numeric vector parallel to
             \code{x} (will get recycled if necessary).
-      \item If \code{x} is a \link{RangesList} object:
+      \item If \code{x} is a \link{IntegerRangesList} object:
             \code{weight} must be a numeric vector or list-like object of
             the same length as \code{x} (will get recycled if necessary).
             If it's a numeric vector, it's first turned into a list with
@@ -135,7 +135,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
   An integer- or numeric-\link{Rle} object depending on whether \code{weight}
   is an integer or numeric vector.
 
-  If \code{x} is a \link{RangesList} object:
+  If \code{x} is a \link{IntegerRangesList} object:
   An \link{RleList} object with one coverage vector per list element
   in \code{x}, and with \code{x} names propagated to it. The i-th coverage
   vector can be either an integer- or numeric-\link{Rle} object, depending
@@ -153,7 +153,7 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
     \item The \code{\link{slice}} function for slicing the \link{Rle} or
           \link{RleList} object returned by \code{coverage}.
 
-    \item The \link{IntegerRanges}, \link{RangesList}, \link{Rle}, and
+    \item The \link{IntegerRanges}, \link{IntegerRangesList}, \link{Rle}, and
           \link{RleList} classes.
   }
 }

@@ -107,7 +107,8 @@
       determined by the \code{[} method for
       \code{SimpleList}/\code{CompressedList}, \code{j} selects the columns,
       and \code{drop} is used when one column is selected and output can
-      be coerced into an \code{AtomicList} or \code{RangesList} subclass.
+      be coerced into an \code{AtomicList} or \code{IntegerRangesList}
+      subclass.
     }
     \item{}{\code{x[i,j] <- value}: If matrix subsetting is used, \code{i}
       selects either the list elements or the rows within the list elements

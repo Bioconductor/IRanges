@@ -38,7 +38,7 @@ test_narrow_IntegerRanges <- function() {
   checkException(narrow(ir1, start=10, end=20), silent = TRUE)
 }
 
-test_narrow_RangesList <- function() {
+test_narrow_IntegerRangesList <- function() {
   range1 <- IRanges(start=c(2,5), end=c(3,7))
   range2 <- IRanges(start=1, end=3)
   for (compress in c(TRUE, FALSE)) {
@@ -63,7 +63,7 @@ test_resize_IntegerRanges <- function() {
   checkException(resize(ir1, -1), silent = TRUE)
 }
 
-test_resize_RangesList <- function() {
+test_resize_IntegerRangesList <- function() {
   range1 <- IRanges(start=c(2,5), end=c(3,7))
   range2 <- IRanges(start=1, end=3)
   for (compress in c(TRUE, FALSE)) {
@@ -103,7 +103,7 @@ test_flank_IntegerRanges <- function() {
   checkException(flank(ir1, NA), silent = TRUE)
 }
 
-test_flank_RangesList <- function() {
+test_flank_IntegerRangesList <- function() {
   range1 <- IRanges(start=c(2,5), end=c(3,7))
   range2 <- IRanges(start=1, end=3)
   for (compress in c(TRUE, FALSE)) {
@@ -188,7 +188,7 @@ test_restrict_IntegerRanges <- function() {
                  IRanges(c(2, 3, 1), c(2, 2, 2)))
 }
 
-test_restrict_RangesList <- function() {
+test_restrict_IntegerRangesList <- function() {
   range1 <- IRanges(start=c(2,5), end=c(3,7))
   range2 <- IRanges(start=1, end=3)
   for (compress in c(TRUE, FALSE)) {

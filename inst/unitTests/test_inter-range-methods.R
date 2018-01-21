@@ -16,7 +16,7 @@ test_range_IntegerRanges <- function() {
   checkIdentical(mcols(range(ir3, with.revmap=TRUE))$revmap, IntegerList())
 }
 
-test_range_RangesList <- function() {
+test_range_IntegerRangesList <- function() {
   for (compress in c(TRUE, FALSE)) {
     rl1 <- IRangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)),
                        compress = compress)
@@ -139,7 +139,7 @@ test_reduce_IntegerRanges <- function() {
   checkIdentical(y9, IRanges(start=-10, end=9))
 }
 
-test_reduce_RangesList <- function() {
+test_reduce_IntegerRangesList <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   range3 <- IRanges(start=c(3,-2,6,7,-10,-2,3), width=c(1,0,0,0,0,8,0))
@@ -189,7 +189,7 @@ test_gaps_IntegerRanges <- function() {
   checkIdentical(gaps(x, start=0, end=5), IRanges(start=c(0,4), end=c(1,5)))
 }
 
-test_gaps_RangesList <- function() {
+test_gaps_IntegerRangesList <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   for (compress in c(TRUE, FALSE)) {
@@ -238,7 +238,7 @@ test_disjoin_IntegerRanges <- function()
   check_disjoin_general_properties(disjoin(ir), ir)
 }
 
-test_disjoin_RangesList <- function()
+test_disjoin_IntegerRangesList <- function()
 {
     ir0 <- IRanges(10, 20)
     checkTrue(validObject(disjoin(IRangesList())))

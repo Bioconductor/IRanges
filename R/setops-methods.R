@@ -37,7 +37,7 @@ setMethod("union", c("IntegerRanges", "IntegerRanges"),
     }
 )
 
-setMethod("union", c("RangesList", "RangesList"),
+setMethod("union", c("IntegerRangesList", "IntegerRangesList"),
           function(x, y) mendoapply(union, x, y))
 
 setMethod("union", c("CompressedIRangesList", "CompressedIRangesList"),
@@ -78,7 +78,7 @@ setMethod("intersect", c("IntegerRanges", "IntegerRanges"),
     }
 )
 
-setMethod("intersect", c("RangesList", "RangesList"),
+setMethod("intersect", c("IntegerRangesList", "IntegerRangesList"),
           function(x, y) mendoapply(intersect, x, y))
 
 setMethod("intersect", c("CompressedIRangesList", "CompressedIRangesList"),
@@ -128,7 +128,7 @@ setMethod("setdiff", c("IntegerRanges", "IntegerRanges"),
     }
 )
 
-setMethod("setdiff", c("RangesList", "RangesList"),
+setMethod("setdiff", c("IntegerRangesList", "IntegerRangesList"),
           function(x, y) mendoapply(setdiff, x, y))
 
 setMethod("setdiff", c("CompressedIRangesList", "CompressedIRangesList"),

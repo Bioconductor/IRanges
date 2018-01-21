@@ -72,7 +72,7 @@ setMethod("range", "IPos",
                     na.rm=na.rm)
 )
 
-setMethod("range", "RangesList",
+setMethod("range", "IntegerRangesList",
     function(x, ..., with.revmap=FALSE, na.rm=FALSE)
     {
         if (length(list(x, ...)) >= 2L)
@@ -204,7 +204,7 @@ setMethod("reduce", "Views",
     }
 )
 
-setMethod("reduce", "RangesList",
+setMethod("reduce", "IntegerRangesList",
     function(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
                 with.revmap=FALSE,
                 with.inframe.attrib=FALSE)
@@ -316,7 +316,7 @@ setMethod("gaps", "Views",
     mendoapply(gaps, x, start = start, end = end)
 }
 
-setMethod("gaps", "RangesList", .gaps_RangesList)
+setMethod("gaps", "IntegerRangesList", .gaps_RangesList)
 
 .gaps_CompressedIRangesList <- function(x, start=NA, end=NA)
 {
@@ -427,7 +427,7 @@ setMethod("disjoin", "IntegerRanges",
 ### behave on a NormalIRanges object.
 setMethod("disjoin", "NormalIRanges", function(x) as(x, "NormalIRanges"))
 
-setMethod("disjoin", "RangesList",
+setMethod("disjoin", "IntegerRangesList",
     function(x, with.revmap=FALSE)
         endoapply(x, disjoin, with.revmap=with.revmap)
 )
@@ -505,7 +505,7 @@ setMethod("isDisjoint", "IPos", function(x) callGeneric(stitch_IPos(x)))
 
 setMethod("isDisjoint", "NormalIRanges", function(x) TRUE)
 
-setMethod("isDisjoint", "RangesList",
+setMethod("isDisjoint", "IntegerRangesList",
     function(x) vapply(x, isDisjoint, logical(1))
 )
 
@@ -540,7 +540,7 @@ setMethod("disjointBins", "IntegerRanges",
 ### Overwrite above method with trivial method for NormalIRanges objects.
 setMethod("disjointBins", "NormalIRanges", function(x) rep.int(1L, length(x)))
 
-setMethod("disjointBins", "RangesList",
+setMethod("disjointBins", "IntegerRangesList",
     function(x) as(lapply(x, disjointBins), "IntegerList")
 )
 

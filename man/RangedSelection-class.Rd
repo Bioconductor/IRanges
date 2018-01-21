@@ -9,7 +9,7 @@
 \alias{colnames<-,RangedSelection-method}
 
 % coercion
-\alias{coerce,RangesList,RangedSelection-method}
+\alias{coerce,IntegerRangesList,RangedSelection-method}
 
 % constructor
 \alias{RangedSelection}
@@ -35,7 +35,7 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{RangedSelection(ranges = RangesList(),
+    \item{}{\code{RangedSelection(ranges=RangesList(),
         colnames = character())}: Constructors a \code{RangedSelection}
         with the given \code{ranges} and \code{colnames}.
     }
@@ -46,7 +46,7 @@
   \describe{
     \item{}{\code{as(from, "RangedSelection")}: Coerces \code{from} to a
       \code{RangedSelection} object. Typically, \code{from} is a
-      \code{\linkS4class{RangesList}}, the ranges of which become the
+      \code{\linkS4class{IntegerRangesList}}, the ranges of which become the
       ranges in the new \code{RangedSelection}.
     }
   }
@@ -56,7 +56,7 @@
   In the code snippets below, \code{x} is always a \code{RangedSelection}.
   \describe{
     \item{}{\code{ranges(x), ranges(x) <- value}: Gets or sets the
-      ranges, a \code{\linkS4class{RangesList}}, that select rows with
+      ranges, a \code{\linkS4class{IntegerRangesList}}, that select rows with
       overlapping intervals.
     }
     \item{}{\code{colnames(x), colnames(x) <- value}: Gets the 

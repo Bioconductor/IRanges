@@ -198,7 +198,7 @@ findOverlaps_NCList <- function(query, subject,
 ###
 
 setClass("NCLists",
-    contains="RangesList",
+    contains="IntegerRangesList",
     representation(
         nclists="list",
         rglist="CompressedIRangesList"
@@ -270,8 +270,8 @@ setAs("NCLists", "IRangesList",
 ### NCLists constructor.
 NCLists <- function(x, circle.length=NA_integer_)
 {
-    if (!is(x, "RangesList"))
-        stop("'x' must be a RangesList object")
+    if (!is(x, "IntegerRangesList"))
+        stop("'x' must be a IntegerRangesList object")
     if (!is(x, "CompressedIRangesList"))
         x <- as(x, "CompressedIRangesList")
     ans_mcols <- mcols(x)
@@ -292,7 +292,7 @@ NCLists <- function(x, circle.length=NA_integer_)
                     check=FALSE)
 }
 
-setAs("RangesList", "NCLists", function(from) NCLists(from))
+setAs("IntegerRangesList", "NCLists", function(from) NCLists(from))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -394,8 +394,8 @@ findOverlaps_NCLists <- function(query, subject,
              select=c("all", "first", "last", "arbitrary", "count"),
              circle.length=NA_integer_)
 {
-    if (!(is(query, "RangesList") && is(subject, "RangesList")))
-        stop("'query' and 'subject' must be RangesList objects")
+    if (!(is(query, "IntegerRangesList") && is(subject, "IntegerRangesList")))
+        stop("'query' and 'subject' must be IntegerRangesList objects")
     type <- match.arg(type)
     select <- match.arg(select)
     circle.length <- .normarg_circle.length2(circle.length,

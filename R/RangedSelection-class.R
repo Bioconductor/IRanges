@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 
 setClass("RangedSelection",
-         representation(ranges = "RangesList", colnames = "character"))
+         representation(ranges = "IntegerRangesList", colnames = "character"))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -31,8 +31,8 @@ setReplaceMethod("colnames", "RangedSelection",
 ###
 
 RangedSelection <- function(ranges = RangesList(), colnames = character()) {
-  if (!is(ranges, "RangesList"))
-    stop("'ranges' must be a RangesList")
+  if (!is(ranges, "IntegerRangesList"))
+    stop("'ranges' must be a IntegerRangesList")
   if (!is.character(colnames) || S4Vectors:::anyMissing(colnames))
     stop("'colnames' must be a character vector without missing values")
   new("RangedSelection", ranges = ranges, colnames = colnames)
@@ -42,4 +42,7 @@ RangedSelection <- function(ranges = RangesList(), colnames = character()) {
 ### Coercion.
 ###
 
-setAs("RangesList", "RangedSelection", function(from) RangedSelection(from))
+setAs("IntegerRangesList", "RangedSelection",
+    function(from) RangedSelection(from)
+)
+

@@ -26,7 +26,7 @@
 \alias{coerce,IntegerRanges,CompressedIRangesList-method}
 \alias{coerce,List,SimpleIRangesList-method}
 \alias{coerce,SimpleList,SimpleIRangesList-method}
-\alias{coerce,RangesList,SimpleIRangesList-method}
+\alias{coerce,IntegerRangesList,SimpleIRangesList-method}
 \alias{coerce,SimpleRangesList,SimpleIRangesList-method}
 \alias{coerce,List,IRangesList-method}
 
@@ -57,12 +57,12 @@
 \alias{as.list,CompressedNormalIRangesList-method}
 \alias{unlist,SimpleNormalIRangesList-method}
 
-\alias{coerce,RangesList,SimpleNormalIRangesList-method}
+\alias{coerce,IntegerRangesList,SimpleNormalIRangesList-method}
 \alias{coerce,SimpleIRangesList,SimpleNormalIRangesList-method}
 \alias{coerce,NormalIRangesList,CompressedNormalIRangesList-method}
 \alias{coerce,CompressedIRangesList,CompressedNormalIRangesList-method}
-\alias{coerce,RangesList,CompressedNormalIRangesList-method}
-\alias{coerce,RangesList,NormalIRangesList-method}
+\alias{coerce,IntegerRangesList,CompressedNormalIRangesList-method}
+\alias{coerce,IntegerRangesList,NormalIRangesList-method}
 
 \alias{coerce,LogicalList,NormalIRangesList-method}
 \alias{coerce,LogicalList,CompressedNormalIRangesList-method}
@@ -149,7 +149,7 @@
 
 \author{ Michael Lawrence }
 \seealso{
-  \code{\linkS4class{RangesList}}, the parent of this class, for more
+  \code{\linkS4class{IntegerRangesList}}, the parent of this class, for more
   functionality.
 
   \link{intra-range-methods} and \link{inter-range-methods} for

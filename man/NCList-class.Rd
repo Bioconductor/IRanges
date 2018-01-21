@@ -29,7 +29,7 @@
 \alias{elementNROWS,NCLists-method}
 \alias{coerce,NCLists,CompressedIRangesList-method}
 \alias{coerce,NCLists,IRangesList-method}
-\alias{coerce,RangesList,NCLists-method}
+\alias{coerce,IntegerRangesList,NCLists-method}
 
 
 \title{Nested Containment List objects}
@@ -42,12 +42,12 @@
 
   The NCLists class is a container for storing a collection of NCList objects.
   An NCLists object is typically the result of preprocessing each list
-  element of a \link{RangesList} object as a Nested Containment List.
+  element of a \link{IntegerRangesList} object as a Nested Containment List.
   Like with NCList, the NCLists object can then be used for efficient
   overlap-based operations.
 
-  To preprocess a \link{IntegerRanges} or \link{RangesList} object, simply
-  call the \code{NCList} or \code{NCLists} constructor function on it.
+  To preprocess a \link{IntegerRanges} or \link{IntegerRangesList} object,
+  simply call the \code{NCList} or \code{NCLists} constructor function on it.
 }
 
 \usage{
@@ -57,10 +57,10 @@ NCLists(x, circle.length=NA_integer_)
 
 \arguments{
   \item{x}{
-    The \link{IntegerRanges} or \link{RangesList} object to preprocess.
+    The \link{IntegerRanges} or \link{IntegerRangesList} object to preprocess.
   }
   \item{circle.length}{
-    Use only if the space (or spaces if \code{x} is a \link{RangesList}
+    Use only if the space (or spaces if \code{x} is a \link{IntegerRangesList}
     object) on top of which the ranges in \code{x} are defined needs (need)
     to be considered circular. If that's the case, then use
     \code{circle.length} to specify the length(s) of the circular space(s).
@@ -94,7 +94,7 @@ NCLists(x, circle.length=NA_integer_)
     \item With the new implementation, either the query or the subject can
           be preprocessed with \code{NCList} for a \link{IntegerRanges}
           object (replacement for \code{IntervalTree}), \code{NCLists}
-          for a \link{RangesList} object (replacement for
+          for a \link{IntegerRangesList} object (replacement for
           \code{IntervalForest}), and
           \code{\link[GenomicRanges]{GNCList}} for a
           \link[GenomicRanges]{GenomicRanges} object (replacement for
@@ -156,7 +156,7 @@ NCLists(x, circle.length=NA_integer_)
     \item \code{\link{findOverlaps}} for finding/counting interval overlaps
           between two \emph{range-based} objects.
 
-    \item \link{IntegerRanges} and \link{RangesList} objects.
+    \item \link{IntegerRanges} and \link{IntegerRangesList} objects.
   }
 }
 

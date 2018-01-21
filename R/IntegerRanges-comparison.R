@@ -125,7 +125,7 @@ setMethod("order", "IntegerRanges",
                   method=c("auto", "shell", "radix"))
     {
         ## Turn off this warning for now since it triggers spurious warnings
-        ## when calling sort() on a RangesList object. The root of the
+        ## when calling sort() on an IntegerRangesList object. The root of the
         ## problem is inconsistent defaults for 'na.last' between order() and
         ## sort(), as reported here:
         ##   https://stat.ethz.ch/pipermail/r-devel/2015-November/072012.html

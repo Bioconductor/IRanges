@@ -5,43 +5,43 @@
 \alias{range}
 \alias{range,IntegerRanges-method}
 \alias{range,IPos-method}
-\alias{range,RangesList-method}
+\alias{range,IntegerRangesList-method}
 \alias{range,CompressedIRangesList-method}
 \alias{range,RangedData-method}
 
 \alias{reduce}
 \alias{reduce,IntegerRanges-method}
 \alias{reduce,Views-method}
-\alias{reduce,RangesList-method}
+\alias{reduce,IntegerRangesList-method}
 \alias{reduce,CompressedIRangesList-method}
 
 \alias{gaps}
 \alias{gaps,IntegerRanges-method}
 \alias{gaps,Views-method}
-\alias{gaps,RangesList-method}
+\alias{gaps,IntegerRangesList-method}
 \alias{gaps,CompressedIRangesList-method}
 \alias{gaps,MaskCollection-method}
 
 \alias{disjoin}
 \alias{disjoin,IntegerRanges-method}
 \alias{disjoin,NormalIRanges-method}
-\alias{disjoin,RangesList-method}
+\alias{disjoin,IntegerRangesList-method}
 \alias{disjoin,CompressedIRangesList-method}
 
 \alias{isDisjoint}
 \alias{isDisjoint,IntegerRanges-method}
 \alias{isDisjoint,IPos-method}
 \alias{isDisjoint,NormalIRanges-method}
-\alias{isDisjoint,RangesList-method}
+\alias{isDisjoint,IntegerRangesList-method}
 
 \alias{disjointBins}
 \alias{disjointBins,IntegerRanges-method}
 \alias{disjointBins,NormalIRanges-method}
-\alias{disjointBins,RangesList-method}
+\alias{disjointBins,IntegerRangesList-method}
 
 
-\title{Inter range transformations of an IntegerRanges, Views, RangesList,
-       or MaskCollection object}
+\title{Inter range transformations of an IntegerRanges, Views,
+       IntegerRangesList, or MaskCollection object}
 
 \description{
   Range-based transformations are grouped in 2 categories:
@@ -67,7 +67,7 @@
 ## -------
 \S4method{range}{IntegerRanges}(x, ..., with.revmap=FALSE, na.rm=FALSE)
 
-\S4method{range}{RangesList}(x, ..., with.revmap=FALSE, na.rm=FALSE)
+\S4method{range}{IntegerRangesList}(x, ..., with.revmap=FALSE, na.rm=FALSE)
 
 ## reduce()
 ## --------
@@ -79,7 +79,7 @@ reduce(x, drop.empty.ranges=FALSE, ...)
 \S4method{reduce}{Views}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
        with.revmap=FALSE, with.inframe.attrib=FALSE)
 
-\S4method{reduce}{RangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
+\S4method{reduce}{IntegerRangesList}(x, drop.empty.ranges=FALSE, min.gapwidth=1L,
        with.revmap=FALSE, with.inframe.attrib=FALSE)
 
 ## gaps()
@@ -91,7 +91,7 @@ gaps(x, start=NA, end=NA)
 disjoin(x, ...)
 
 \S4method{disjoin}{IntegerRanges}(x, with.revmap=FALSE)
-\S4method{disjoin}{RangesList}(x, with.revmap=FALSE)
+\S4method{disjoin}{IntegerRangesList}(x, with.revmap=FALSE)
 
 isDisjoint(x, ...)
 disjointBins(x, ...)
@@ -99,15 +99,15 @@ disjointBins(x, ...)
 
 \arguments{
   \item{x}{
-    A \link{IntegerRanges} or \link{RangesList} object for \code{range},
+    A \link{IntegerRanges} or \link{IntegerRangesList} object for \code{range},
     \code{disjoin}, \code{isDisjoint}, and \code{disjointBins}.
 
-    A \link{IntegerRanges}, \link{Views}, or \link{RangesList} object for
-    \code{reduce} and \code{gaps}.
+    A \link{IntegerRanges}, \link{Views}, or \link{IntegerRangesList} object
+    for \code{reduce} and \code{gaps}.
   }
   \item{...}{
-    For \code{range}, additional \link{IntegerRanges} or \link{RangesList}
-    object to consider.
+    For \code{range}, additional \link{IntegerRanges} or
+    \link{IntegerRangesList} object to consider.
   }
   \item{na.rm}{
     Ignored.
@@ -133,17 +133,17 @@ disjointBins(x, ...)
             A single integer or \code{NA}. Use these arguments to specify
             the interval of reference i.e. which interval the returned gaps
             should be relative to.
-      \item If \code{x} is a \link{RangesList} object:
+      \item If \code{x} is a \link{IntegerRangesList} object:
             Integer vectors containing the coordinate bounds for each
-            \link{RangesList} top-level element.
+            \link{IntegerRangesList} top-level element.
     }
   }
 }
 
 \details{
-  Unless specified otherwise, when \code{x} is a \link{RangesList} object,
-  any transformation described here is equivalent to applying the
-  transformation to each \link{RangesList} top-level element separately.
+  Unless specified otherwise, when \code{x} is a \link{IntegerRangesList}
+  object, any transformation described here is equivalent to applying the
+  transformation to each \link{IntegerRangesList} top-level element separately.
 
   \subsection{reduce}{
 
@@ -161,9 +161,9 @@ disjointBins(x, ...)
     \code{IRanges()} is returned (i.e. an \link{IRanges} instance of
     length 0).
 
-    When passing more than 1 \link{RangesList} object to \code{range()},
-    they are first merged into a single \link{RangesList} object: by name
-    if all objects have names, otherwise, if they are all of the same
+    When passing more than 1 \link{IntegerRangesList} object to \code{range()},
+    they are first merged into a single \link{IntegerRangesList} object: by
+    name if all objects have names, otherwise, if they are all of the same
     length, by position. Else, an exception is thrown.
 
   }\subsection{gaps}{
@@ -237,10 +237,10 @@ disjointBins(x, ...)
   return a \link{Views} object on the same subject as \code{x} but with
   modified views.
 
-  If \code{x} is a \link{RangesList} object:
+  If \code{x} is a \link{IntegerRangesList} object:
   \itemize{
     \item \code{range}, \code{reduce}, \code{gaps}, and \code{disjoin}
-          return a \link{RangesList} object \emph{parallel} to \code{x}.
+          return a \link{IntegerRangesList} object \emph{parallel} to \code{x}.
     \item \code{isDisjoint} returns a logical vector \emph{parallel} to
           \code{x}.
     \item \code{disjointBins} returns an \link{IntegerList} object
@@ -254,7 +254,7 @@ disjointBins(x, ...)
   \itemize{
     \item \link{intra-range-methods} for intra range transformations.
 
-    \item The \link{IntegerRanges}, \link{Views}, \link{RangesList},
+    \item The \link{IntegerRanges}, \link{Views}, \link{IntegerRangesList},
           and \link{MaskCollection} classes.
 
     \item The \link[GenomicRanges]{inter-range-methods} man page in the
@@ -278,7 +278,7 @@ x <- IRanges(start=c(-2, 6, 9, -4, 1, 0, -6, 3, 10),
              width=c( 5, 0, 6,  1, 4, 3,  2, 0,  3))
 range(x)
 
-## On a RangesList object (XVector package required):
+## On an IntegerRangesList object (XVector package required):
 range1 <- IRanges(start=c(1, 2, 3), end=c(5, 2, 8))
 range2 <- IRanges(start=c(15, 45, 20, 1), end=c(15, 100, 80, 5))
 range3 <- IRanges(start=c(-2, 6, 7), width=c(8, 0, 0))  # with empty ranges
@@ -316,7 +316,7 @@ revmap <- mcols(ir)$revmap
 revmap
 relist(mcols(ir0)[unlist(revmap), ], revmap)  # a SplitDataFrameList
 
-## On a RangesList object. These 4 are the same:
+## On an IntegerRangesList object. These 4 are the same:
 res1 <- reduce(collection)
 res2 <- IRangesList(one=reduce(range1), reduce(range2), reduce(range3))
 res3 <- do.call(IRangesList, lapply(collection, reduce))
@@ -343,7 +343,7 @@ subject <- Rle(1:-3, 6:2)
 v <- Views(subject, start=c(8, 3), end=c(14, 4))
 gaps(v)
 
-## On a RangesList object. These 4 are the same:
+## On an IntegerRangesList object. These 4 are the same:
 res1 <- gaps(collection)
 res2 <- IRangesList(one=gaps(range1), gaps(range2), gaps(range3))
 res3 <- do.call(IRangesList, lapply(collection, gaps))
@@ -370,7 +370,7 @@ ir <- IRanges(c(1, 1, 4, 10), c(6, 3, 8, 10))
 disjoin(ir)  # IRanges(c(1, 4, 7, 10), c(3, 6, 8, 10))
 disjoin(ir, with.revmap=TRUE)
 
-## On a RangesList object:
+## On an IntegerRangesList object:
 disjoin(collection)
 disjoin(collection, with.revmap=TRUE)
 
@@ -394,7 +394,7 @@ sapply(11:17,
 sapply(11:17,
        function(i) isDisjoint(c(IRanges(i, width=0), IRanges(12, 15))))
 
-## On a RangesList object:
+## On an IntegerRangesList object:
 isDisjoint(collection)
 
 ## ---------------------------------------------------------------------
@@ -405,7 +405,7 @@ isDisjoint(collection)
 disjointBins(IRanges(1, 5))  # 1L
 disjointBins(IRanges(c(3, 1, 10), c(5, 12, 13)))  # c(2L, 1L, 2L)
 
-## On a RangesList object:
+## On an IntegerRangesList object:
 disjointBins(collection)
 }
 

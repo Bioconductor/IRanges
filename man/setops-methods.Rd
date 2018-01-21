@@ -4,19 +4,19 @@
 
 \alias{union}
 \alias{union,IntegerRanges,IntegerRanges-method}
-\alias{union,RangesList,RangesList-method}
+\alias{union,IntegerRangesList,IntegerRangesList-method}
 \alias{union,CompressedIRangesList,CompressedIRangesList-method}
 \alias{union,Pairs,missing-method}
 
 \alias{intersect}
 \alias{intersect,IntegerRanges,IntegerRanges-method}
-\alias{intersect,RangesList,RangesList-method}
+\alias{intersect,IntegerRangesList,IntegerRangesList-method}
 \alias{intersect,CompressedIRangesList,CompressedIRangesList-method}
 \alias{intersect,Pairs,missing-method}
 
 \alias{setdiff}
 \alias{setdiff,IntegerRanges,IntegerRanges-method}
-\alias{setdiff,RangesList,RangesList-method}
+\alias{setdiff,IntegerRangesList,IntegerRangesList-method}
 \alias{setdiff,CompressedIRangesList,CompressedIRangesList-method}
 \alias{setdiff,Pairs,missing-method}
 
@@ -35,10 +35,11 @@
 \alias{pgap}
 \alias{pgap,IntegerRanges,IntegerRanges-method}
 
-\title{Set operations on IntegerRanges and RangesList objects}
+\title{Set operations on IntegerRanges and IntegerRangesList objects}
 
 \description{
-  Performs set operations on \link{IntegerRanges} and \link{RangesList} objects.
+  Performs set operations on \link{IntegerRanges} and \link{IntegerRangesList}
+  objects.
 }
 
 \usage{
@@ -158,9 +159,9 @@
           \link{inter-range-methods} for intra range and
           inter range transformations.
 
-    \item \link{IntegerRanges} and \link{RangesList} objects. In particular,
-          \emph{normality} of a \link{IntegerRanges} object is discussed in
-          the man page for \link{IntegerRanges} objects.
+    \item \link{IntegerRanges} and \link{IntegerRangesList} objects.
+          In particular, \emph{normality} of an \link{IntegerRanges} object
+          is discussed in the man page for \link{IntegerRanges} objects.
 
     \item \code{\link[S4Vectors]{mendoapply}} in the \pkg{S4Vectors} package.
   }
@@ -195,7 +196,7 @@ end(y)[4] <- 99
 psetdiff(x, ranges(y))
 pgap(x, ranges(y))
 
-## On RangesList objects:
+## On IntegerRangesList objects:
 irl1 <- IRangesList(a=IRanges(c(1,2),c(4,3)), b=IRanges(c(4,6),c(10,7)))
 irl2 <- IRangesList(c=IRanges(c(0,2),c(4,5)), a=IRanges(c(4,5),c(6,7)))
 union(irl1, irl2)

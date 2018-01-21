@@ -98,7 +98,7 @@
   transformations (e.g. \code{reduce()}, see
   \code{?`\link{inter-range-methods}`}), or the man page for
   \code{findOverlaps} methods (see \code{?`\link{findOverlaps-methods}`}),
-  or the man page for \link{RangesList} objects where the \code{split}
+  or the man page for \link{IntegerRangesList} objects where the \code{split}
   method for IntegerRanges objects is documented.
 
   \describe{

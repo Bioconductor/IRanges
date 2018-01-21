@@ -98,7 +98,7 @@ setMethod("shift", "Views",
     }
 )
 
-setMethod("shift", "RangesList",
+setMethod("shift", "IntegerRangesList",
           function(x, shift=0L, use.names = TRUE)
           {
               lx <- length(x)
@@ -152,7 +152,7 @@ setMethod("narrow", "Views",
     }
 )
 
-setMethod("narrow", "RangesList",
+setMethod("narrow", "IntegerRangesList",
           function(x, start = NA, end = NA, width = NA, use.names = TRUE)
           {
               lx <- length(x)
@@ -254,7 +254,7 @@ setMethod("resize", "IntegerRanges",
     }
 )
 
-setMethod("resize", "RangesList",
+setMethod("resize", "IntegerRangesList",
           function(x, width, fix = "start", use.names = TRUE)
           {
               lx <- length(x)
@@ -324,7 +324,7 @@ setMethod("flank", "IntegerRanges",
     }
 )
 
-setMethod("flank", "RangesList",
+setMethod("flank", "IntegerRangesList",
           function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
           {
               lx <- length(x)
@@ -387,7 +387,7 @@ setMethod("promoters", "Views",
     }
 )
 
-setMethod("promoters", "RangesList",
+setMethod("promoters", "IntegerRangesList",
           function(x, upstream=2000, downstream=200, ...) 
           {
               endoapply(x, promoters, upstream = upstream, 
@@ -564,7 +564,7 @@ setMethod("restrict", "IntegerRanges",
     }
 )
 
-setMethod("restrict", "RangesList",
+setMethod("restrict", "IntegerRangesList",
           function(x, start = NA, end = NA, keep.all.ranges = FALSE,
                    use.names = TRUE)
           {
@@ -659,7 +659,7 @@ setMethod("Ops", c("IntegerRanges", "numeric"),
     }
 )
 
-setMethod("Ops", c("RangesList", "numeric"),
+setMethod("Ops", c("IntegerRangesList", "numeric"),
           function(e1, e2)
           {
             for (i in seq_len(length(e1)))

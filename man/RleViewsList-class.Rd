@@ -80,7 +80,7 @@ subject2 <- Rle(c(0L,5L,2L,0L,3L), c(8,5,2,7,4))
 rleViews1 <- Views(subject1, 3:0, 5:8)
 rleViews2 <- Views(subject2, subject2 > 0) 
 
-## RleList and RangesList objects
+## RleList and IntegerRangesList objects
 rleList <- RleList(subject1, subject2)
 rangesList <- IRangesList(IRanges(3:0, 5:8), IRanges(subject2 > 0))
 

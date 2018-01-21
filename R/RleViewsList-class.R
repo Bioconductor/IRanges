@@ -43,10 +43,10 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
                       "are specified"))
         if (!is(rleList, "RleList"))
             stop(wmsg("'rleList' must be a RleList object"))
-        if (!is(rangesList, "RangesList")) {
+        if (!is(rangesList, "IntegerRangesList")) {
             rangesList <- try(IRangesList(rangesList), silent = TRUE)
             if (inherits(rangesList, "try-error"))
-                stop(wmsg("'rangesList' must be a RangesList object"))
+                stop(wmsg("'rangesList' must be a IntegerRangesList object"))
         }
         if (length(rleList) != length(rangesList))
             stop("'rleList' and 'rangesList' must have the same length")

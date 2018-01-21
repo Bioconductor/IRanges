@@ -1,20 +1,20 @@
 ### =========================================================================
-### RangesList objects
+### IntegerRangesList objects
 ### -------------------------------------------------------------------------
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### RangesList
+### IntegerRangesList
 ###
 ### Accepts any type of IntegerRanges object as an element.
 ###
 
-setClass("RangesList", representation("VIRTUAL"),
+setClass("IntegerRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "IntegerRanges"),
          contains = "List")
 
 setClass("SimpleRangesList",
-         contains = c("RangesList", "SimpleList"))
+         contains = c("IntegerRangesList", "SimpleList"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -23,7 +23,7 @@ setClass("SimpleRangesList",
 
 setClass("IRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "IRanges"),
-         contains = "RangesList")
+         contains = "IntegerRangesList")
 
 setClass("CompressedIRangesList",
          prototype = prototype(unlistData = new("IRanges")),
@@ -72,19 +72,19 @@ setValidity2("NormalIRangesList", .valid.NormalIRangesList)
 ### Accessor methods.
 ###
 
-setMethod("start", "RangesList",
+setMethod("start", "IntegerRangesList",
           function(x) S4Vectors:::new_SimpleList_from_list("SimpleIntegerList",
                                                            lapply(x, start)))
-setMethod("end", "RangesList",
+setMethod("end", "IntegerRangesList",
           function(x) S4Vectors:::new_SimpleList_from_list("SimpleIntegerList",
                                                            lapply(x, end)))
-setMethod("width", "RangesList",
+setMethod("width", "IntegerRangesList",
           function(x) S4Vectors:::new_SimpleList_from_list("SimpleIntegerList",
                                                            lapply(x, width)))
 
 setGeneric(".replaceSEW", signature="x",  # not exported
            function(x, FUN, ..., value) standardGeneric(".replaceSEW"))
-setMethod(".replaceSEW", "RangesList",
+setMethod(".replaceSEW", "IntegerRangesList",
     function(x, FUN, ..., value)
     {
         if (extends(class(value), "IntegerList")) {
@@ -107,13 +107,13 @@ setMethod(".replaceSEW", "RangesList",
         x
     }
 )
-setReplaceMethod("start", "RangesList",
+setReplaceMethod("start", "IntegerRangesList",
     function(x, ..., value) .replaceSEW(x, "start<-", ..., value=value)
 )
-setReplaceMethod("end", "RangesList",
+setReplaceMethod("end", "IntegerRangesList",
     function(x, ..., value) .replaceSEW(x, "end<-", ..., value=value)
 )
-setReplaceMethod("width", "RangesList",
+setReplaceMethod("width", "IntegerRangesList",
     function(x, ..., value) .replaceSEW(x, "width<-", ..., value=value)
 )
 
@@ -157,7 +157,7 @@ setMethod(".replaceSEW", "CompressedIRangesList",
     }
 )
 
-setMethod("space", "RangesList",
+setMethod("space", "IntegerRangesList",
           function(x)
           {
             space <- names(x)
@@ -168,14 +168,14 @@ setMethod("space", "RangesList",
 
 ### TODO: Why not define this at the List level? Or even at the Vector level?
 setGeneric("universe", function(x) standardGeneric("universe"))
-setMethod("universe", "RangesList",
+setMethod("universe", "IntegerRangesList",
           function(x)
           {
             .Defunct(msg="The universe() getter is defunct.")
           })
 
 setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
-setReplaceMethod("universe", "RangesList",
+setReplaceMethod("universe", "IntegerRangesList",
                  function(x, value)
                  {
                    .Defunct(msg="The universe() setter is defunct.")
@@ -184,12 +184,12 @@ setReplaceMethod("universe", "RangesList",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### isNormal()
 ###
-### Test the list elements of a RangesList object 'x' individually and return
-### a vector of TRUE's or FALSE's parallel to 'x'. More precisely, is
+### Test the list elements of an IntegerRangesList object 'x' individually and
+### return a vector of TRUE's or FALSE's parallel to 'x'. More precisely, is
 ### equivalent to 'sapply(x, FUN)', when FUN is 'isNormal'.
 ###
 
-setMethod("isNormal", "RangesList",
+setMethod("isNormal", "IntegerRangesList",
     function(x, use.names=FALSE)
         vapply(x, isNormal, logical(1), USE.NAMES=use.names)
 )
@@ -206,7 +206,7 @@ setMethod("isNormal", "CompressedIRangesList",
                PACKAGE="IRanges")
 )
 
-setMethod("whichFirstNotNormal", "RangesList",
+setMethod("whichFirstNotNormal", "IntegerRangesList",
           function(x) unlist(lapply(x, whichFirstNotNormal)))
 
 
@@ -288,12 +288,12 @@ setAs("IntegerRanges", "CompressedIRangesList",
 )
 setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 
-### Automatic coercion methods from SimpleList/RangesList/SimpleRangesList to
-### SimpleIRangesList silently return a broken object (unfortunately these
-### dummy automatic coercion methods don't bother to validate the object they
-### return). So we overwrite them.
+### Automatic coercion methods from SimpleList, IntegerRangesList, or
+### SimpleRangesList to SimpleIRangesList silently return a broken object
+### (unfortunately these dummy automatic coercion methods don't bother to
+### validate the object they return). So we overwrite them.
 setAs("SimpleList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
-setAs("RangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
+setAs("IntegerRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 setAs("SimpleRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 
 setAs("List", "IRangesList",
@@ -325,10 +325,10 @@ setAs("CompressedRleList", "CompressedIRangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion from list-like object to RangesList object
+### Coercion from list-like object to IntegerRangesList object
 ###
 
-### From ordinary list to RangesList
+### From ordinary list to IntegerRangesList
 
 .from_list_to_SimpleRangesList <- function(from)
 {
@@ -337,9 +337,9 @@ setAs("CompressedRleList", "CompressedIRangesList",
 }
 
 setAs("list", "SimpleRangesList", .from_list_to_SimpleRangesList)
-setAs("list", "RangesList", .from_list_to_SimpleRangesList)
+setAs("list", "IntegerRangesList", .from_list_to_SimpleRangesList)
 
-### From List to RangesList
+### From List to IntegerRangesList
 
 .from_List_to_SimpleRangesList <- function(from)
 {
@@ -357,7 +357,7 @@ setAs("List", "SimpleRangesList", .from_List_to_SimpleRangesList)
 ### a broken object, again. So we overwrite it (again).
 setAs("SimpleList", "SimpleRangesList", .from_List_to_SimpleRangesList)
 
-setAs("List", "RangesList",
+setAs("List", "IntegerRangesList",
     function(from)
     {
         if (!is(from, "IRangesList") && is(from, "SimpleList"))
@@ -476,9 +476,9 @@ showRangesList <- function(x, with.header=TRUE)
             sep="")
 }
 
-setMethod("show", "RangesList", function(object) showRangesList(object))
+setMethod("show", "IntegerRangesList", function(object) showRangesList(object))
 
-setMethod("showAsCell", "RangesList",
+setMethod("showAsCell", "IntegerRangesList",
           function(object)
           {
             unlist(lapply(object, function(x) {
@@ -515,7 +515,7 @@ setMethod("unlist", "SimpleNormalIRangesList",
             callGeneric()
           })
 
-### Coercion from RangesList to NormalIRangesList.
+### Coercion from IntegerRangesList to NormalIRangesList.
 
 .from_RangesList_to_SimpleNormalIRangesList <- function(from)
 {
@@ -525,7 +525,7 @@ setMethod("unlist", "SimpleNormalIRangesList",
         metadata=metadata(from))
 }
 
-setAs("RangesList", "SimpleNormalIRangesList",
+setAs("IntegerRangesList", "SimpleNormalIRangesList",
     .from_RangesList_to_SimpleNormalIRangesList
 )
 
@@ -552,7 +552,7 @@ setAs("CompressedIRangesList", "CompressedNormalIRangesList",
     }
 )
 
-setAs("RangesList", "CompressedNormalIRangesList",
+setAs("IntegerRangesList", "CompressedNormalIRangesList",
     function(from)
     {
         as(as(from, "CompressedIRangesList", strict=FALSE),
@@ -560,7 +560,7 @@ setAs("RangesList", "CompressedNormalIRangesList",
     }
 )
 
-setAs("RangesList", "NormalIRangesList",
+setAs("IntegerRangesList", "NormalIRangesList",
     function(from)
     {
         if (is(from, "SimpleRangesList"))
@@ -639,16 +639,17 @@ setAs("RleList", "SimpleNormalIRangesList",
 ### merge()
 ###
 
-### Merges various RangesList objects into a single RangesList object.
-### The merging is either by name (if all the RangesList objects have names),
-### or by position (if any RangesList object is missing names).
-### When merging by name, and in case of duplicated names within a given
-### RangesList, the elements corresponding to the duplicated names are ignored.
-### When merging by position, all the RangesList objects must have the same
-### length.
-### Note that the "range" method for RangesList objects expects "merge" to
-### behave like this.  
-.RangesList.merge <- function(...)
+### Merges various IntegerRangesList objects into a single IntegerRangesList
+### object. The merging is either by name (if all the IntegerRangesList
+### objects have names), or by position (if any IntegerRangesList object is
+### missing names). When merging by name, and in case of duplicated names
+### within a given IntegerRangesList, the elements corresponding to the
+### duplicated names are ignored.
+### When merging by position, all the IntegerRangesList objects must have the
+### same length.
+### Note that the "range" method for IntegerRangesList objects expects "merge"
+### to behave like this.  
+.merge_IntegerRangesList <- function(...)
 {
     args <- unname(list(...))
     if (length(args) == 0L)
@@ -659,8 +660,8 @@ setAs("RleList", "SimpleNormalIRangesList",
     if (any(S4Vectors:::sapply_isNULL(spaceList))) {
         ## Merging by position.
         if (!all(unlist(lapply(args, length)) == length(x)))
-            stop("if any RangesList objects to merge are missing names, ",
-                 "all must have same length")
+            stop("if any IntegerRangesList objects to merge are missing ",
+                 "names, all must have same length")
         names <- NULL
         spaces <- seq_len(length(x))
     }
@@ -677,16 +678,16 @@ setAs("RleList", "SimpleNormalIRangesList",
     ans
 }
 
-setMethod("merge", c("RangesList", "missing"),
-    function(x, y, ...) .RangesList.merge(x, ...)
+setMethod("merge", c("IntegerRangesList", "missing"),
+    function(x, y, ...) .merge_IntegerRangesList(x, ...)
 )
 
-setMethod("merge", c("missing", "RangesList"),
-    function(x, y, ...) .RangesList.merge(y, ...)
+setMethod("merge", c("missing", "IntegerRangesList"),
+    function(x, y, ...) .merge_IntegerRangesList(y, ...)
 )
 
-setMethod("merge", c("RangesList", "RangesList"),
-    function(x, y, ...) .RangesList.merge(x, y, ...)
+setMethod("merge", c("IntegerRangesList", "IntegerRangesList"),
+    function(x, y, ...) .merge_IntegerRangesList(x, y, ...)
 )
 
 

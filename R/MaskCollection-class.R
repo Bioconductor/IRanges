@@ -2,8 +2,9 @@
 ### MaskCollection objects
 ### -------------------------------------------------------------------------
 
+
 setClass("MaskCollection",
-    contains="RangesList",
+    contains="IntegerRangesList",
     representation(
         nir_list="list",    # a list of NormalIRanges objects
         width="integer",

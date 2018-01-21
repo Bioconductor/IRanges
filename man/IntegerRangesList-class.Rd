@@ -1,44 +1,44 @@
-\name{RangesList-class}
+\name{IntegerRangesList-class}
 \docType{class}
-\alias{class:RangesList-class}
+\alias{class:IntegerRangesList-class}
 \alias{class:SimpleRangesList-class}
-\alias{RangesList-class}
+\alias{IntegerRangesList-class}
 \alias{SimpleRangesList-class}
-\alias{RangesList}
+\alias{IntegerRangesList}
 \alias{SimpleRangesList}
 
 % accessors
-\alias{end,RangesList-method}
-\alias{end<-,RangesList-method}
-\alias{width,RangesList-method}
-\alias{width<-,RangesList-method}
-\alias{start,RangesList-method}
-\alias{start<-,RangesList-method}
+\alias{end,IntegerRangesList-method}
+\alias{end<-,IntegerRangesList-method}
+\alias{width,IntegerRangesList-method}
+\alias{width<-,IntegerRangesList-method}
+\alias{start,IntegerRangesList-method}
+\alias{start<-,IntegerRangesList-method}
 \alias{space}
-\alias{space,RangesList-method}
-\alias{universe,RangesList-method}
-\alias{universe<-,RangesList-method}
+\alias{space,IntegerRangesList-method}
+\alias{universe,IntegerRangesList-method}
+\alias{universe<-,IntegerRangesList-method}
 \alias{universe}
 \alias{universe<-}
 
-\alias{isNormal,RangesList-method}
-\alias{whichFirstNotNormal,RangesList-method}
+\alias{isNormal,IntegerRangesList-method}
+\alias{whichFirstNotNormal,IntegerRangesList-method}
 
 % coercion
 \alias{coerce,list,SimpleRangesList-method}
-\alias{coerce,list,RangesList-method}
+\alias{coerce,list,IntegerRangesList-method}
 \alias{coerce,List,SimpleRangesList-method}
-\alias{coerce,SimpleList,RangesList-method}
-\alias{coerce,List,RangesList-method}
+\alias{coerce,SimpleList,IntegerRangesList-method}
+\alias{coerce,List,IntegerRangesList-method}
 
 % show
-\alias{show,RangesList-method}
-\alias{showAsCell,RangesList-method}
+\alias{show,IntegerRangesList-method}
+\alias{showAsCell,IntegerRangesList-method}
 
 % merge
-\alias{merge,RangesList,missing-method}
-\alias{merge,missing,RangesList-method}
-\alias{merge,RangesList,RangesList-method}
+\alias{merge,IntegerRangesList,missing-method}
+\alias{merge,missing,IntegerRangesList-method}
+\alias{merge,IntegerRangesList,IntegerRangesList-method}
 
 \title{List of IntegerRanges}
 \description{An extension of \linkS4class{List} that holds only
@@ -48,7 +48,7 @@
 }
 
 \section{Accessors}{
-  In the code snippets below, \code{x} is a \code{RangesList}
+  In the code snippets below, \code{x} is a \code{IntegerRangesList}
   object. 
 
   All of these accessors collapse over the spaces:
@@ -76,7 +76,7 @@
   \describe{
     \item{}{\code{RangesList(...)}:
       Each \code{IntegerRanges} in \code{...}
-      becomes an element in the new \code{RangesList}, in the same
+      becomes an element in the new \code{IntegerRangesList}, in the same
       order. This is analogous to the \code{\link{list}} constructor,
       except every argument in \code{...} must be derived from
       \code{IntegerRanges}.
@@ -85,7 +85,7 @@
 }
 
 \section{Coercion}{
-  In the code snippet below, \code{x} is a \code{RangesList} object.
+  In the code snippet below, \code{x} is a \code{IntegerRangesList} object.
   \describe{
     \item{}{
       \code{as.data.frame(x, row.names = NULL, optional = FALSE,
@@ -97,10 +97,10 @@
   }
 
   In the following code snippet, \code{from} is something other than a
-  \code{RangesList}:
+  \code{IntegerRangesList}:
   \describe{
     \item{}{
-      \code{as(from, "RangesList")}: When \code{from} is a
+      \code{as(from, "IntegerRangesList")}: When \code{from} is a
       \code{IntegerRanges}, analogous to \code{as.list} on a vector.
     }
   }
@@ -108,9 +108,9 @@
 
 \section{Arithmetic Operations}{
   Any arithmetic operation, such as \code{x + y}, \code{x * y}, etc,
-  where \code{x} is a \code{RangesList}, is performed identically on each
-  element. Currently, \code{IntegerRanges} supports only the \code{*} operator,
-  which zooms the ranges by a numeric factor.
+  where \code{x} is a \code{IntegerRangesList}, is performed identically on
+  each element. Currently, \code{IntegerRanges} supports only the \code{*}
+  operator, which zooms the ranges by a numeric factor.
 }
 
 \author{ Michael Lawrence }

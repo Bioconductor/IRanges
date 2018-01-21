@@ -97,14 +97,14 @@
 
 ## Some packages like easyRNASeq or TEQC pass 'width' as a named list-like
 ## object where each list element is a single number, an NA, or a NULL, when
-## calling coverage() on a RangesList or RangedData object. They do so because,
-## for whatever reason, we've been supporting this for a while, and also
-## because, in the case of the method for RangedData objects, the arg default
-## for 'width' used to be such a list (a named list of NULLs in that case).
-## However, it never really made sense to support a named list-like object for
-## 'width', and it makes even less sense now that the signature of the method
-## for RangedData objects has been modified (as of BioC 2.13) to use the same
-## arg defaults as the coverage() generic and all other methods.
+## calling coverage() on an IntegerRangesList or RangedData object. They do so
+## because, for whatever reason, we've been supporting this for a while, and
+## also because, in the case of the method for RangedData objects, the arg
+## default for 'width' used to be such a list (a named list of NULLs in that
+## case). However, it never really made sense to support a named list-like
+## object for 'width', and it makes even less sense now that the signature of
+## the method for RangedData objects has been modified (as of BioC 2.13) to use
+## the same arg defaults as the coverage() generic and all other methods.
 ## TODO: Deprecate support for this. Preferred 'width' form: NULL or an integer
 ## vector. An that's it.
 .unlist_width <- function(width, x_names, x_names.label)
@@ -248,7 +248,7 @@ setMethod("coverage", "Views",
     }
 )
 
-setMethod("coverage", "RangesList",
+setMethod("coverage", "IntegerRangesList",
     function(x, shift=0L, width=NULL, weight=1L,
                 method=c("auto", "sort", "hash"))
     {

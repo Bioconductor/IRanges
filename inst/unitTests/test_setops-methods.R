@@ -80,7 +80,7 @@ test_IRanges_pgap <- function() {
   checkIdentical(start(ans)[width(ans) != 0L], c(41L, 76L))
 }
 
-test_RangesList_setops <- function() {
+test_IntegerRangesList_setops <- function() {
   rl1 <- RangesList(IRanges(c(1,2),c(4,3)), IRanges(c(4,6),c(10,7)))
   rl2 <- RangesList(IRanges(c(0,2),c(4,5)), IRanges(c(4,5),c(6,7)))
   checkIdentical(union(rl1, rl2),

@@ -8,8 +8,8 @@
 ## 1) Efficiency when data is large (i.e. apply by chromosome)
 ## 2) Convenience when data is not so large (i.e. unrolling the data)
 
-## The ranges are stored in a RangesList, while the data is stored in
-## a SplitDataFrameList. The RangesList is uncompressed, because
+## The ranges are stored in a IntegerRangesList, while the data is stored
+## in a SplitDataFrameList. The IntegerRangesList is uncompressed, because
 ## users will likely want to apply over each IntegerRanges separately,
 ## as they are usually in separate spaces. Also, it is difficult to
 ## compress RangesLists, as lists containing Views or NCLists
@@ -21,7 +21,8 @@
 ## performance penalty when applying over the RangedData.
 
 setClass("RangedData", contains = c("DataTable", "List"),
-         representation(ranges = "RangesList", values = "SplitDataFrameList"),
+         representation(ranges = "IntegerRangesList",
+                        values = "SplitDataFrameList"),
          prototype = prototype(ranges = new("SimpleRangesList"),
                                values = new("CompressedSplitDataFrameList")))
 
@@ -58,13 +59,13 @@ setMethod("ranges", "RangedData",
 
 setReplaceMethod("ranges", "RangedData",
                  function(x, value) {
-                   if (extends(class(value), "RangesList")) {
+                   if (extends(class(value), "IntegerRangesList")) {
                      if (!identical(lapply(ranges(x), names), lapply(value, names)))
                        stop("'value' must have same length and names as current 'ranges'")
                    } else if (extends(class(value), "IRanges")) {
                      value <- split(value, space(x))
                    } else {
-                     stop("'value' must extend class RangesList or IRanges")
+                     stop("'value' must extend class IntegerRangesList or IRanges")
                    }
                    x@ranges <- value
                    x
@@ -242,9 +243,9 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
                  "constructor function is defunct.")
     .Defunct(msg=msg)
   }
-  if (is(ranges, "RangesList")) {
+  if (is(ranges, "IntegerRangesList")) {
     if (!is.null(space))
-      warning("since 'class(ranges)' extends RangesList, 'space' argument is ignored")
+      warning("since 'class(ranges)' extends IntegerRangesList, 'space' argument is ignored")
     if (is.null(names(ranges)))
       names(ranges) <- as.character(seq_len(length(ranges)))
     space <-
@@ -437,9 +438,9 @@ setMethod("[", "RangedData",
                 values <- values[, j, drop=FALSE]
               }
               if (!missing(i)) {
-                if (is(i, "RangesList"))
+                if (is(i, "IntegerRangesList"))
                   stop("subsetting a RangedData object ",
-                       "by a RangesList subscript is not supported")
+                       "by an IntegerRangesList subscript is not supported")
                 if (is(i, "LogicalList")) {
                   x_eltNROWS <- elementNROWS(ranges(x))
                   whichRep <- which(x_eltNROWS != elementNROWS(i))
@@ -562,17 +563,18 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
 ### Coercion
 ###
 
-### The 2 functions, as.data.frame.RangesList() and
+### The 2 functions, as.data.frame.IntegerRangesList() and
 ### as.data.frame.DataFrameList() are needed for as.data.frame.RangedData().
 ###
 ### A new as.data.frame,List method was implemented in BioC 2.15 and
 ### is now used by all List classes. Because the RangedData class is being 
 ### phased out, we want to retain the old behavior. In order to do that 
 ### we have to keep these 2 helpers because as.data.frame.RangedData() 
-### uses old methods from both RangesList and DataFrameList.
+### uses old methods from both IntegerRangesList and DataFrameList.
 ###
 ### These helpers are not exported.
-.as.data.frame.RangesList <- function(x, row.names=NULL, optional=FALSE, ...)
+.as.data.frame.IntegerRangesList <- function(x, row.names=NULL, optional=FALSE,
+                                             ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names'  must be NULL or a character vector")
@@ -611,7 +613,7 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
         stop("'row.names'  must be NULL or a character vector")
     if (!missing(optional) || length(list(...)))
         warning("'optional' and arguments in '...' ignored")
-    data.frame(.as.data.frame.RangesList(ranges(x)),
+    data.frame(.as.data.frame.IntegerRangesList(ranges(x)),
                .as.data.frame.DataFrameList(values(x))[-1L],
                row.names = row.names,
                stringsAsFactors = FALSE)
@@ -663,7 +665,8 @@ setAs("RleViewsList", "RangedData", function(from) {
                           keep.all.ranges = TRUE)
 ### FIXME: do we want to insert NAs for out of bounds views?
   score <- subject[from_ranges]
-  score_part <- as(lapply(width(from_ranges), PartitioningByWidth), "RangesList")
+  score_part <- as(lapply(width(from_ranges), PartitioningByWidth),
+                   "IntegerRangesList")
   score_ranges <- ranges(score)
   ol <- findOverlaps(score_ranges, score_part)
   offind <- as(lapply(ol, subjectHits), "IntegerList")
@@ -685,12 +688,12 @@ setAs("IntegerRanges", "RangedData",
         RangedData(from)
       })
 
-setAs("RangesList", "RangedData",
+setAs("IntegerRangesList", "RangedData",
     function(from)
     {
         from_names <- names(from)
         if (is.null(from_names) || anyDuplicated(from_names))
-            stop("cannot coerce a RangesList object with no names ",
+            stop("cannot coerce a IntegerRangesList object with no names ",
                  "or duplicated names to a RangedData object")
         unlisted_from <- unlist(from, use.names=FALSE)
         unlisted_values <- mcols(unlisted_from)
@@ -733,7 +736,7 @@ setAs("RangedData", "CompressedIRangesList",
     .fromRangedDataToCompressedIRangesList
 )
 setAs("RangedData", "IRangesList", .fromRangedDataToCompressedIRangesList)
-setAs("RangedData", "RangesList", .fromRangedDataToCompressedIRangesList)
+setAs("RangedData", "IntegerRangesList", .fromRangedDataToCompressedIRangesList)
 
 setMethod("as.env", "RangedData", function(x, enclos = parent.frame(2)) {
   env <- callNextMethod(x, enclos)

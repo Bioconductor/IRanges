@@ -293,7 +293,7 @@
       sets the run values of each element of the list, as an AtomicList.
     }
     \item{}{\code{ranges(x)}: Gets the run ranges as a
-      \code{RangesList}.
+      \code{IntegerRangesList}.
     }
   }
 }

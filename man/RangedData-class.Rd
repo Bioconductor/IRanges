@@ -43,11 +43,11 @@
 \alias{coerce,RleList,RangedData-method}
 \alias{coerce,RleViewsList,RangedData-method}
 \alias{coerce,IntegerRanges,RangedData-method}
-\alias{coerce,RangesList,RangedData-method}
+\alias{coerce,IntegerRangesList,RangedData-method}
 \alias{coerce,list,RangedData-method}
 \alias{coerce,RangedData,CompressedIRangesList-method}
 \alias{coerce,RangedData,IRangesList-method}
-\alias{coerce,RangedData,RangesList-method}
+\alias{coerce,RangedData,IntegerRangesList-method}
 \alias{as.env,RangedData-method}
 \alias{coerce,data.frame,RangedData-method}
 \alias{coerce,DataTable,RangedData-method}
@@ -94,8 +94,8 @@
 
 \details{
   A \code{RangedData} object consists of two primary components:
-  a \code{\linkS4class{RangesList}} holding the ranges over multiple
-  spaces and a parallel \code{\linkS4class{SplitDataFrameList}},
+  a \code{\linkS4class{IntegerRangesList}} holding the ranges over
+  multiple spaces and a parallel \code{\linkS4class{SplitDataFrameList}},
   holding the split data. There is also an \code{universe} slot
   for denoting the source (e.g. the genome) of the ranges and/or
   data.
@@ -227,7 +227,7 @@
     }
     \item{}{
       \code{ranges(x), ranges(x) <- value}: Gets or sets the ranges in
-      \code{x} as a \code{\linkS4class{RangesList}}.
+      \code{x} as a \code{\linkS4class{IntegerRangesList}}.
     }
     \item{}{
       \code{space(x)}: Gets the spaces from \code{ranges(x)}.
@@ -264,12 +264,12 @@
       into spaces according to \code{space}, which is treated as a factor,
       like the \code{f} argument in \code{\link{split}}.
 
-      If \code{ranges} is a \code{\linkS4class{RangesList}} object, then
-      the supplied \code{space} argument is ignored and its value is derived
-      from \code{ranges}.
+      If \code{ranges} is a \code{\linkS4class{IntegerRangesList}} object,
+      then the supplied \code{space} argument is ignored and its value is
+      derived from \code{ranges}.
 
       If \code{ranges} is not a \code{\linkS4class{IntegerRanges}} or
-      \code{\linkS4class{RangesList}} object, this function calls
+      \code{\linkS4class{IntegerRangesList}} object, this function calls
       \code{as(ranges, "RangedData")} and returns the result if successful.
 
       The universe may be specified as a scalar string by the \code{universe}
@@ -310,13 +310,13 @@
           Creates a \code{RangedData} with only the ranges in \code{from};
           no data columns.
         }
-        \item{\code{\linkS4class{RangesList}}}{
+        \item{\code{\linkS4class{IntegerRangesList}}}{
           Creates a \code{RangedData} with the ranges in \code{from}.
           Also propagates the \emph{inner} metadata columns of the
-          \code{RangesList} (accessed with \code{mcols(unlist(from))})
+          \code{IntegerRangesList} (accessed with \code{mcols(unlist(from))})
           to the data columns (aka values) of the \code{RangedData}.
           This makes it a \emph{lossless} coercion and the exact reverse of the
-          coercion from \code{RangedData} to \code{RangesList}.
+          coercion from \code{RangedData} to \code{IntegerRangesList}.
         }
         \item{\code{data.frame} or \code{DataTable}}{Constructs a
           \code{RangedData}, using the columns \dQuote{start},
@@ -327,13 +327,13 @@
       }
     }
     \item{}{
-      \code{as(from, "RangesList")}:
-      Creates a \code{CompressedIRangesList} (a subclass of \code{RangesList})
-      made of the ranges in \code{from}.
+      \code{as(from, "IntegerRangesList")}:
+      Creates a \code{CompressedIRangesList} (a subclass of
+      \code{IntegerRangesList}) made of the ranges in \code{from}.
       Also propagates the data columns (aka values) of the \code{RangedData}
-      to the inner metadata columns of the \code{RangesList}.
+      to the inner metadata columns of the \code{IntegerRangesList}.
       This makes it a \emph{lossless} coercion and the exact reverse of the
-      coercion from \code{RangesList} to \code{RangedData}.
+      coercion from \code{IntegerRangesList} to \code{RangedData}.
     }
     \item{}{\code{as.env(x, enclos = parent.frame())}:
       Creates an \code{environment} with a symbol for each variable in
@@ -359,7 +359,7 @@
       is of the same class, with a different set of rows and columns.
       The row index \code{i} can either treat \code{x} as a flat table
       by being a character, integer, or logical vector or treat \code{x}
-      as a partitioned table by being a \code{\linkS4class{RangesList}},
+      as a partitioned table by being a \code{\linkS4class{IntegerRangesList}},
       \code{\linkS4class{LogicalList}}, or \code{\linkS4class{IntegerList}}
       of the same length as \code{x}.
     }

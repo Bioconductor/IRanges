@@ -1,4 +1,4 @@
-test_RangesList_construction <- function() {
+test_IntegerRangesList_construction <- function() {
   empty <- RangesList()
   checkTrue(validObject(empty))
   checkIdentical(length(empty), 0L)
@@ -25,7 +25,7 @@ test_RangesList_construction <- function() {
   checkIdentical(names(unnamed), NULL)
 }
 
-test_RangesList_subset <- function() { ## by RangesList
+test_IntegerRangesList_subset <- function() { ## by RangesList
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(1,15,20,45), end=c(5,15,100,80))
   collection <- RangesList(one = range1, range2)
@@ -40,7 +40,7 @@ test_RangesList_subset <- function() { ## by RangesList
                  RangesList(one=IRanges(c(1,3),c(5,8)), IRanges()))
 }
 
-test_RangesList_as_list <- function() {
+test_IntegerRangesList_as_list <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   checkIdentical(list(range1, range2),
@@ -49,7 +49,7 @@ test_RangesList_as_list <- function() {
                  as.list(RangesList(a=range1, b=range2)))
 }
 
-test_RangesList_as_data_frame <- function() {
+test_IntegerRangesList_as_data_frame <- function() {
   range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
   range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))
   rl <- RangesList(range1, range2)
@@ -91,7 +91,7 @@ test_IRangesList_annotation <- function() {
   }
 }
 
-## test_RangesList_overlap <- function() {
+## test_IntegerRangesList_overlap <- function() {
 ##   rl1 <- RangesList(a = IRanges(c(1,2),c(4,3)), b = IRanges(c(4,6),c(10,7)))
 ##   rl2 <- RangesList(b = IRanges(c(0,2),c(4,5)), a = IRanges(c(4,5),c(6,7)))
 ##   overlap(rl1, rl2)
