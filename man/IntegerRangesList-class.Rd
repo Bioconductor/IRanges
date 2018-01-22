@@ -40,11 +40,11 @@
 \alias{merge,missing,IntegerRangesList-method}
 \alias{merge,IntegerRangesList,IntegerRangesList-method}
 
-\title{List of IntegerRanges}
-\description{An extension of \linkS4class{List} that holds only
-  \linkS4class{IntegerRanges} objects. Useful for storing ranges over a set
-  of spaces (e.g. chromosomes), each of which requires a separate
-  \code{IntegerRanges} object.
+\title{IntegerRangesList objects}
+
+\description{
+  The IntegerRangesList \emph{virtual} class is a general container for
+  storing a list of \link{IntegerRanges} objects.
 }
 
 \section{Accessors}{
@@ -72,20 +72,8 @@
   }
 }
 
-\section{Constructor}{
-  \describe{
-    \item{}{\code{RangesList(...)}:
-      Each \code{IntegerRanges} in \code{...}
-      becomes an element in the new \code{IntegerRangesList}, in the same
-      order. This is analogous to the \code{\link{list}} constructor,
-      except every argument in \code{...} must be derived from
-      \code{IntegerRanges}.
-    }
-  }
-}
-
 \section{Coercion}{
-  In the code snippet below, \code{x} is a \code{IntegerRangesList} object.
+  In the code snippet below, \code{x} is an \code{IntegerRangesList} object.
   \describe{
     \item{}{
       \code{as.data.frame(x, row.names = NULL, optional = FALSE,

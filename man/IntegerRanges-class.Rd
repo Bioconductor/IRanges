@@ -41,7 +41,7 @@
 \title{IntegerRanges objects}
 
 \description{
-  The IntegerRanges virtual class is a general container for storing
+  The IntegerRanges \emph{virtual} class is a general container for storing
   a set of integer ranges.
 }
 

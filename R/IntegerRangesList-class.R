@@ -376,6 +376,14 @@ setAs("List", "IntegerRangesList",
 
 RangesList <- function(..., universe = NULL)
 {
+  msg <- c("The RangesList() constructor is deprecated. ",
+           "Please coerce to IRangesList instead e.g. do ",
+           "'as(list(x1, x2), \"IRangesList\")' instead of ",
+           "'RangesList(x1, x2)'. Alternatively, you can use ",
+           "the IRangesList() constructor e.g. ",
+           "'IRangesList(x1, x2, compress=FALSE)'. See '?IRangesList' ",
+           "for more information.")
+  .Deprecated(msg=wmsg(msg))
   if (!is.null(universe)) {
      msg <- wmsg("The 'universe' argument of the RangesList() ",
                  "constructor function is defunct.")
