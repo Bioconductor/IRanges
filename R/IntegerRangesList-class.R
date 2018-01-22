@@ -9,12 +9,18 @@
 ### Accepts any type of IntegerRanges object as an element.
 ###
 
-setClass("IntegerRangesList", representation("VIRTUAL"),
-         prototype = prototype(elementType = "IntegerRanges"),
-         contains = "List")
+setClass("IntegerRangesList",
+    contains="List",
+    representation("VIRTUAL"),
+    prototype(
+        elementType="IntegerRanges"
+    )
+)
 
 setClass("SimpleIntegerRangesList",
-         contains = c("IntegerRangesList", "SimpleList"))
+    contains=c("IntegerRangesList", "SimpleList"),
+    representation("VIRTUAL")
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
