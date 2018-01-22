@@ -35,7 +35,7 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{RangedSelection(ranges=RangesList(),
+    \item{}{\code{RangedSelection(ranges=IRangesList(),
         colnames = character())}: Constructors a \code{RangedSelection}
         with the given \code{ranges} and \code{colnames}.
     }
@@ -68,7 +68,7 @@
 \author{ Michael Lawrence }
 
 \examples{
-  rl <- RangesList(chr1 = IRanges(c(1, 5), c(3, 6)))
+  rl <- IRangesList(chr1 = IRanges(c(1, 5), c(3, 6)))
 
   RangedSelection(rl)
   as(rl, "RangedSelection") # same as above

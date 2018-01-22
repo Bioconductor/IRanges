@@ -30,9 +30,9 @@ setReplaceMethod("colnames", "RangedSelection",
 ### Constructor.
 ###
 
-RangedSelection <- function(ranges = RangesList(), colnames = character()) {
+RangedSelection <- function(ranges = IRangesList(), colnames = character()) {
   if (!is(ranges, "IntegerRangesList"))
-    stop("'ranges' must be a IntegerRangesList")
+    stop("'ranges' must be an IntegerRangesList")
   if (!is.character(colnames) || S4Vectors:::anyMissing(colnames))
     stop("'colnames' must be a character vector without missing values")
   new("RangedSelection", ranges = ranges, colnames = colnames)

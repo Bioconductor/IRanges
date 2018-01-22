@@ -38,7 +38,7 @@ test_narrow_IntegerRanges <- function() {
   checkException(narrow(ir1, start=10, end=20), silent = TRUE)
 }
 
-test_narrow_IntegerRangesList <- function() {
+test_narrow_IRangesList <- function() {
   range1 <- IRanges(start=c(2,5), end=c(3,7))
   range2 <- IRanges(start=1, end=3)
   for (compress in c(TRUE, FALSE)) {
@@ -63,7 +63,7 @@ test_resize_IntegerRanges <- function() {
   checkException(resize(ir1, -1), silent = TRUE)
 }
 
-test_resize_IntegerRangesList <- function() {
+test_resize_IRangesList <- function() {
   range1 <- IRanges(start=c(2,5), end=c(3,7))
   range2 <- IRanges(start=1, end=3)
   for (compress in c(TRUE, FALSE)) {
@@ -103,7 +103,7 @@ test_flank_IntegerRanges <- function() {
   checkException(flank(ir1, NA), silent = TRUE)
 }
 
-test_flank_IntegerRangesList <- function() {
+test_flank_IRangesList <- function() {
   range1 <- IRanges(start=c(2,5), end=c(3,7))
   range2 <- IRanges(start=1, end=3)
   for (compress in c(TRUE, FALSE)) {
@@ -147,26 +147,26 @@ test_promoters <- function() {
   ir <- IRanges(c(5, 2, 20), width=1)
   checkIdentical(start(promoters(ir, 5, 2)), c(0L, -3L, 15L))
 
-  rl <- RangesList("A"=IRanges(5:7, width=1), "B"=IRanges(10:12, width=5))
-  current <- promoters(rl, 0, 0) 
+  rl <- IRangesList("A"=IRanges(5:7, width=1), "B"=IRanges(10:12, width=5))
+  current <- promoters(rl, 0, 0)
   checkIdentical(names(current), names(rl))
   checkIdentical(start(current), start(rl))
-  current <- promoters(rl, 2, 0) 
+  current <- promoters(rl, 2, 0)
   checkIdentical(unique(unlist(width(current))), 2L)
 
   library(XVector)
   subject <- XInteger(10, 3:-6)
   view <- Views(subject, start=4:2, end=4:6)
-  current <- promoters(view, 0, 0) 
+  current <- promoters(view, 0, 0)
   checkIdentical(start(current), start(view))
-  current <- promoters(view, 2, 0) 
+  current <- promoters(view, 2, 0)
   checkIdentical(unique(width(current)), 2L)
- 
+
   cmp <- IRangesList("A"=IRanges(5:7, width=1), "B"=IRanges(10:12, width=5))
-  current <- promoters(rl, 0, 0) 
+  current <- promoters(rl, 0, 0)
   checkIdentical(names(current), names(rl))
   checkIdentical(start(current), start(rl))
-  current <- promoters(rl, 2, 0) 
+  current <- promoters(rl, 2, 0)
   checkIdentical(unique(unlist(width(current))), 2L)
 }
 
@@ -188,7 +188,7 @@ test_restrict_IntegerRanges <- function() {
                  IRanges(c(2, 3, 1), c(2, 2, 2)))
 }
 
-test_restrict_IntegerRangesList <- function() {
+test_restrict_IRangesList <- function() {
   range1 <- IRanges(start=c(2,5), end=c(3,7))
   range2 <- IRanges(start=1, end=3)
   for (compress in c(TRUE, FALSE)) {

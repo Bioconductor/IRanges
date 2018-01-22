@@ -81,13 +81,23 @@ test_IRanges_pgap <- function() {
 }
 
 test_IntegerRangesList_setops <- function() {
-  rl1 <- RangesList(IRanges(c(1,2),c(4,3)), IRanges(c(4,6),c(10,7)))
-  rl2 <- RangesList(IRanges(c(0,2),c(4,5)), IRanges(c(4,5),c(6,7)))
-  checkIdentical(union(rl1, rl2),
-                 RangesList(union(rl1[[1]], rl2[[1]]), union(rl1[[2]], rl2[[2]])))
-  checkIdentical(intersect(rl1, rl2),
-                 RangesList(intersect(rl1[[1]], rl2[[1]]), intersect(rl1[[2]], rl2[[2]])))
-  checkIdentical(setdiff(rl1, rl2),
-                 RangesList(setdiff(rl1[[1]], rl2[[1]]), setdiff(rl1[[2]], rl2[[2]])))
+  for (compress in c(TRUE, FALSE)) {
+    rl1 <- IRangesList(IRanges(c(1,2),c(4,3)), IRanges(c(4,6),c(10,7)),
+                       compress=compress)
+    rl2 <- IRangesList(IRanges(c(0,2),c(4,5)), IRanges(c(4,5),c(6,7)),
+                       compress=compress)
+    checkIdentical(union(rl1, rl2),
+                   IRangesList(union(rl1[[1]], rl2[[1]]),
+                               union(rl1[[2]], rl2[[2]]),
+                               compress=compress))
+    checkIdentical(intersect(rl1, rl2),
+                   IRangesList(intersect(rl1[[1]], rl2[[1]]),
+                               intersect(rl1[[2]], rl2[[2]]),
+                               compress=compress))
+    checkIdentical(setdiff(rl1, rl2),
+                   IRangesList(setdiff(rl1[[1]], rl2[[1]]),
+                               setdiff(rl1[[2]], rl2[[2]]),
+                               compress=compress))
+  }
 }
 

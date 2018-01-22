@@ -687,9 +687,9 @@ setMethod("overlapsRanges", c("IntegerRangesList", "IntegerRangesList"),
         queries <- as.list(query, use.names = FALSE)
         subjects <- as.list(subject, use.names = FALSE)
         els <- as.list(hits, use.names = FALSE)
-        ans <- do.call(RangesList, lapply(seq_len(length(hits)), function(i) {
-          overlapsRanges(queries[[i]], subjects[[i]], els[[i]])
-        }))
+        ans <- lapply(seq_len(length(hits)),
+            function(i) overlapsRanges(queries[[i]], subjects[[i]], els[[i]]))
+        ans <- as(ans, "SimpleIRangesList")
         names(ans) <- names(hits)
         ans
     }

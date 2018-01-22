@@ -35,9 +35,7 @@ test_IntegerRanges_isDisjoint <- function() {
 test_IRanges_concatenate <- function() {
   range <- IRanges(start=c(1,2,3,1), end=c(5,2,8,3))
   srange <- split(range, start(range) == 1)
-  checkIdentical(srange,
-                 as(RangesList(`FALSE` = range[2:3], `TRUE` = range[c(1,4)]),
-                    "CompressedIRangesList"))
+  checkIdentical(srange, IRangesList(`FALSE` = range[2:3], `TRUE` = range[c(1,4)]))
   checkIdentical(do.call(c, unname(as.list(srange))),
                  IRanges(c(2,3,1,1), c(2,8,5,3)))
 

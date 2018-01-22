@@ -125,12 +125,12 @@
 
 range1 <- IRanges(start=c(1, 2, 3), end=c(5, 2, 8))
 range2 <- IRanges(start=c(15, 45, 20, 1), end=c(15, 100, 80, 5))
-named <- RangesList(one = range1, two = range2)
+named <- IRangesList(one = range1, two = range2)
 length(named) # 2
 start(named) # same as start(c(range1, range2))
 names(named) # "one" and "two"
 named[[1]] # range1
-unnamed <- RangesList(range1, range2)
+unnamed <- IRangesList(range1, range2)
 names(unnamed) # NULL
 
 # edit the width of the ranges in the list
@@ -139,15 +139,15 @@ width(edited) <- rep(c(3,2), elementNROWS(named))
 edited
 
 # same as list(range1, range2)
-as.list(RangesList(range1, range2))
+as.list(IRangesList(range1, range2))
 
 # coerce to data.frame
 as.data.frame(named)
 
-RangesList(range1, range2)
+IRangesList(range1, range2)
 
 ## zoom in 2X
-collection <- RangesList(one = range1, range2)
+collection <- IRangesList(one = range1, range2)
 collection * 2
 }
 \keyword{methods}
