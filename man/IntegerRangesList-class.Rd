@@ -1,11 +1,11 @@
 \name{IntegerRangesList-class}
 \docType{class}
 \alias{class:IntegerRangesList-class}
-\alias{class:SimpleRangesList-class}
+\alias{class:SimpleIntegerRangesList-class}
 \alias{IntegerRangesList-class}
-\alias{SimpleRangesList-class}
+\alias{SimpleIntegerRangesList-class}
 \alias{IntegerRangesList}
-\alias{SimpleRangesList}
+\alias{SimpleIntegerRangesList}
 
 % accessors
 \alias{end,IntegerRangesList-method}
@@ -25,9 +25,9 @@
 \alias{whichFirstNotNormal,IntegerRangesList-method}
 
 % coercion
-\alias{coerce,list,SimpleRangesList-method}
+\alias{coerce,list,SimpleIntegerRangesList-method}
 \alias{coerce,list,IntegerRangesList-method}
-\alias{coerce,List,SimpleRangesList-method}
+\alias{coerce,List,SimpleIntegerRangesList-method}
 \alias{coerce,SimpleList,IntegerRangesList-method}
 \alias{coerce,List,IntegerRangesList-method}
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- *            Low-level manipulation of SimpleRangesList objects            *
+ *           Low-level manipulation of SimpleIRangesList objects            *
  ****************************************************************************/
 #include "IRanges.h"
 #include <limits.h>

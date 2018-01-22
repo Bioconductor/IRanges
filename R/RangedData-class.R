@@ -23,7 +23,7 @@
 setClass("RangedData", contains = c("DataTable", "List"),
          representation(ranges = "IntegerRangesList",
                         values = "SplitDataFrameList"),
-         prototype = prototype(ranges = new("SimpleRangesList"),
+         prototype = prototype(ranges = new("SimpleIntegerRangesList"),
                                values = new("CompressedSplitDataFrameList")))
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

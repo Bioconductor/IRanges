@@ -37,7 +37,7 @@ exportClasses(
     RawList, CompressedRawList, SimpleRawList,
     RleList, CompressedRleList, SimpleRleList,
     FactorList, CompressedFactorList, SimpleFactorList,
-    IntegerRangesList, SimpleRangesList,
+    IntegerRangesList, SimpleIntegerRangesList,
     IRangesList, CompressedIRangesList, SimpleIRangesList,
     NormalIRangesList, CompressedNormalIRangesList, SimpleNormalIRangesList,
     ViewsList, SimpleViewsList,

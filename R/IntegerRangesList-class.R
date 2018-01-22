@@ -13,7 +13,7 @@ setClass("IntegerRangesList", representation("VIRTUAL"),
          prototype = prototype(elementType = "IntegerRanges"),
          contains = "List")
 
-setClass("SimpleRangesList",
+setClass("SimpleIntegerRangesList",
          contains = c("IntegerRangesList", "SimpleList"))
 
 
@@ -30,7 +30,7 @@ setClass("CompressedIRangesList",
          contains = c("IRangesList", "CompressedList"))
 
 setClass("SimpleIRangesList",
-         contains = c("IRangesList", "SimpleRangesList"))
+         contains = c("IRangesList", "SimpleIntegerRangesList"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -289,12 +289,12 @@ setAs("IntegerRanges", "CompressedIRangesList",
 setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 
 ### Automatic coercion methods from SimpleList, IntegerRangesList, or
-### SimpleRangesList to SimpleIRangesList silently return a broken object
-### (unfortunately these dummy automatic coercion methods don't bother to
-### validate the object they return). So we overwrite them.
+### SimpleIntegerRangesList to SimpleIRangesList silently return a broken
+### object (unfortunately these dummy automatic coercion methods don't bother
+### to validate the object they return). So we overwrite them.
 setAs("SimpleList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 setAs("IntegerRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
-setAs("SimpleRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
+setAs("SimpleIntegerRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 
 setAs("List", "IRangesList",
     function(from)
@@ -330,38 +330,40 @@ setAs("CompressedRleList", "CompressedIRangesList",
 
 ### From ordinary list to IntegerRangesList
 
-.from_list_to_SimpleRangesList <- function(from)
+.from_list_to_SimpleIntegerRangesList <- function(from)
 {
     from <- .as_list_of_IRanges(from)
-    S4Vectors:::new_SimpleList_from_list("SimpleRangesList", from)
+    S4Vectors:::new_SimpleList_from_list("SimpleIntegerRangesList", from)
 }
 
-setAs("list", "SimpleRangesList", .from_list_to_SimpleRangesList)
-setAs("list", "IntegerRangesList", .from_list_to_SimpleRangesList)
+setAs("list", "SimpleIntegerRangesList", .from_list_to_SimpleIntegerRangesList)
+setAs("list", "IntegerRangesList", .from_list_to_SimpleIntegerRangesList)
 
 ### From List to IntegerRangesList
 
-.from_List_to_SimpleRangesList <- function(from)
+.from_List_to_SimpleIntegerRangesList <- function(from)
 {
-    S4Vectors:::new_SimpleList_from_list("SimpleRangesList",
+    S4Vectors:::new_SimpleList_from_list("SimpleIntegerRangesList",
                                  .as_list_of_IRanges(from),
                                  metadata=metadata(from),
                                  mcols=mcols(from))
 }
 
-setAs("List", "SimpleRangesList", .from_List_to_SimpleRangesList)
+setAs("List", "SimpleIntegerRangesList", .from_List_to_SimpleIntegerRangesList)
 
 ### You'd think that defining the above method would take care of the
-### SimpleList-to-SimpleRangesList coercion but no such luck. Another dummy
-### automatic coercion method is in the way, again. And it silently returns
-### a broken object, again. So we overwrite it (again).
-setAs("SimpleList", "SimpleRangesList", .from_List_to_SimpleRangesList)
+### SimpleList-to-SimpleIntegerRangesList coercion but no such luck.
+### Another dummy automatic coercion method is in the way, again. And it
+### silently returns a broken object, again. So we overwrite it (again).
+setAs("SimpleList", "SimpleIntegerRangesList",
+    .from_List_to_SimpleIntegerRangesList
+)
 
 setAs("List", "IntegerRangesList",
     function(from)
     {
         if (!is(from, "IRangesList") && is(from, "SimpleList"))
-            as(from, "SimpleRangesList")
+            as(from, "SimpleIntegerRangesList")
         else
             as(from, "IRangesList")
     }
@@ -384,7 +386,7 @@ RangesList <- function(..., universe = NULL)
     ranges <- ranges[[1L]]
   if (!all(sapply(ranges, is, "IntegerRanges")))
     stop("all elements in '...' must be IntegerRanges objects")
-  ans <- S4Vectors:::new_SimpleList_from_list("SimpleRangesList", ranges)
+  ans <- S4Vectors:::new_SimpleList_from_list("SimpleIntegerRangesList", ranges)
   if (!is.null(universe))
     universe(ans) <- universe
   ans
@@ -563,7 +565,7 @@ setAs("IntegerRangesList", "CompressedNormalIRangesList",
 setAs("IntegerRangesList", "NormalIRangesList",
     function(from)
     {
-        if (is(from, "SimpleRangesList"))
+        if (is(from, "SimpleIntegerRangesList"))
             as(from, "SimpleNormalIRangesList")
         else
             as(from, "CompressedNormalIRangesList")
