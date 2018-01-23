@@ -22,42 +22,87 @@ setClass("SimpleIntegerRangesList",
     representation("VIRTUAL")
 )
 
+setClass("CompressedIntegerRangesList",
+    contains=c("IntegerRangesList", "CompressedList"),
+    representation("VIRTUAL")
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### IRangesList
 ###
 
-setClass("IRangesList", representation("VIRTUAL"),
-         prototype = prototype(elementType = "IRanges"),
-         contains = "IntegerRangesList")
-
-setClass("CompressedIRangesList",
-         prototype = prototype(unlistData = new("IRanges")),
-         contains = c("IRangesList", "CompressedList"))
+setClass("IRangesList",
+    contains="IntegerRangesList",
+    representation("VIRTUAL"),
+    prototype(
+        elementType="IRanges"
+    )
+)
 
 setClass("SimpleIRangesList",
-         contains = c("IRangesList", "SimpleIntegerRangesList"))
+    contains=c("IRangesList", "SimpleIntegerRangesList")
+)
+
+setClass("CompressedIRangesList",
+    contains=c("IRangesList", "CompressedIntegerRangesList"),
+    prototype=prototype(
+        unlistData=new("IRanges")
+    )
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### NormalIRangesList
 ###
 
-setClass("NormalIRangesList", representation("VIRTUAL"),
-         prototype = prototype(elementType = "NormalIRanges"),
-         contains = "IRangesList")
+setClass("NormalIRangesList",
+    contains="IRangesList",
+    representation("VIRTUAL"),
+    prototype(
+        elementType="NormalIRanges"
+    )
+)
 
 ### CompressedNormalIRangesList cannot hold NormalIRanges as its elements,
 ### due to the compression concatenating everything into a single
 ### NormalIRanges (which could easily become non-normal). So just have it
 ### hold IRanges, instead.
 setClass("CompressedNormalIRangesList",
-         prototype = prototype(elementType = "IRanges",
-                               unlistData = new("IRanges")),
-         contains = c("NormalIRangesList", "CompressedIRangesList"))
+    contains=c("NormalIRangesList", "CompressedIRangesList"),
+    prototype=prototype(
+        elementType="IRanges",
+        unlistData=new("IRanges")
+    )
+)
 
 setClass("SimpleNormalIRangesList",
-         contains = c("NormalIRangesList", "SimpleIRangesList"))
+     contains=c("NormalIRangesList", "SimpleIRangesList")
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### IPosList
+###
+
+setClass("IPosList",
+    contains="IntegerRangesList",
+    representation("VIRTUAL"),
+    prototype(
+        elementType="IPos"
+    )
+)
+
+setClass("SimpleIPosList",
+    contains=c("IPosList", "SimpleIntegerRangesList")
+)
+
+setClass("CompressedIPosList",
+    contains=c("IPosList", "CompressedIntegerRangesList"),
+    prototype=prototype(
+        unlistData=new("IPos")
+    )
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -79,17 +124,33 @@ setValidity2("NormalIRangesList", .valid.NormalIRangesList)
 ###
 
 setMethod("start", "IntegerRangesList",
-          function(x) S4Vectors:::new_SimpleList_from_list("SimpleIntegerList",
-                                                           lapply(x, start)))
+    function(x) as(lapply(x, start), "SimpleIntegerList")
+)
+
+setMethod("start", "CompressedIntegerRangesList",
+    function(x) relist(start(unlist(x, use.names=FALSE)), x)
+)
+
 setMethod("end", "IntegerRangesList",
-          function(x) S4Vectors:::new_SimpleList_from_list("SimpleIntegerList",
-                                                           lapply(x, end)))
+    function(x) as(lapply(x, end), "SimpleIntegerList")
+)
+
+setMethod("end", "CompressedIntegerRangesList",
+    function(x) relist(end(unlist(x, use.names=FALSE)), x)
+)
+
 setMethod("width", "IntegerRangesList",
-          function(x) S4Vectors:::new_SimpleList_from_list("SimpleIntegerList",
-                                                           lapply(x, width)))
+    function(x) as(lapply(x, width), "SimpleIntegerList")
+)
+
+setMethod("width", "CompressedIntegerRangesList",
+    function(x) relist(width(unlist(x, use.names=FALSE)), x)
+)
 
 setGeneric(".replaceSEW", signature="x",  # not exported
-           function(x, FUN, ..., value) standardGeneric(".replaceSEW"))
+    function(x, FUN, ..., value) standardGeneric(".replaceSEW")
+)
+
 setMethod(".replaceSEW", "IntegerRangesList",
     function(x, FUN, ..., value)
     {
@@ -113,33 +174,8 @@ setMethod(".replaceSEW", "IntegerRangesList",
         x
     }
 )
-setReplaceMethod("start", "IntegerRangesList",
-    function(x, ..., value) .replaceSEW(x, "start<-", ..., value=value)
-)
-setReplaceMethod("end", "IntegerRangesList",
-    function(x, ..., value) .replaceSEW(x, "end<-", ..., value=value)
-)
-setReplaceMethod("width", "IntegerRangesList",
-    function(x, ..., value) .replaceSEW(x, "width<-", ..., value=value)
-)
 
-setMethod("start", "CompressedIRangesList",
-          function(x)
-          new2("CompressedIntegerList",
-               unlistData = start(unlist(x, use.names=FALSE)),
-               partitioning = x@partitioning, check=FALSE))
-setMethod("end", "CompressedIRangesList",
-          function(x)
-          new2("CompressedIntegerList",
-               unlistData = end(unlist(x, use.names=FALSE)),
-               partitioning = x@partitioning, check=FALSE))
-setMethod("width", "CompressedIRangesList",
-          function(x)
-          new2("CompressedIntegerList",
-               unlistData = width(unlist(x, use.names=FALSE)),
-               partitioning = x@partitioning, check=FALSE))
-
-setMethod(".replaceSEW", "CompressedIRangesList",
+setMethod(".replaceSEW", "CompressedIntegerRangesList",
     function(x, FUN, ..., value)
     {
         if (extends(class(value), "IntegerList")) {
@@ -161,6 +197,18 @@ setMethod(".replaceSEW", "CompressedIRangesList",
                         FUN(x@unlistData, ..., value = value)
         x
     }
+)
+
+setReplaceMethod("start", "IntegerRangesList",
+    function(x, ..., value) .replaceSEW(x, "start<-", ..., value=value)
+)
+
+setReplaceMethod("end", "IntegerRangesList",
+    function(x, ..., value) .replaceSEW(x, "end<-", ..., value=value)
+)
+
+setReplaceMethod("width", "IntegerRangesList",
+    function(x, ..., value) .replaceSEW(x, "width<-", ..., value=value)
 )
 
 setMethod("space", "IntegerRangesList",
@@ -213,7 +261,8 @@ setMethod("isNormal", "CompressedIRangesList",
 )
 
 setMethod("whichFirstNotNormal", "IntegerRangesList",
-          function(x) unlist(lapply(x, whichFirstNotNormal)))
+    function(x) unlist(lapply(x, whichFirstNotNormal))
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

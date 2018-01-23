@@ -10,6 +10,7 @@
 setMethod("lapply", "CompressedAtomicList",
           function(X, FUN, ...)
           {
+            FUN <- match.fun(FUN)
             if (is(X, "CompressedRleList")) {
               callNextMethod(X, FUN, ...)
             } else {
