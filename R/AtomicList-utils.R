@@ -675,7 +675,7 @@ setMethod("diff", "CompressedAtomicList",
                stopifnot(isSingleNumber(differences))
                r <- x
                for (i in seq_len(differences))
-                   r <- ptail(r, -lag) - phead(r, -lag)
+                   r <- tails(r, -lag) - heads(r, -lag)
                r
            })
 

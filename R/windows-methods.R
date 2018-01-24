@@ -86,8 +86,8 @@ setMethod("windows", "IntegerRanges",
 ###
 ### These are just convenience wrappers around windows().
 ###
-### They do 'mendoapply(head, x, n)' and 'mendoapply(tail, x, n)' but use a
-### fast implementation.
+### They do 'mendoapply(head, x, n)' and 'mendoapply(tail, x, n)',
+### respectively, but use a fast implementation.
 ###
 
 .normarg_n <- function(n, x_eltNROWS)
