@@ -186,6 +186,7 @@ export(
     CharacterList, RawList, RleList, FactorList, 
     DataFrameList, SplitDataFrameList,
     ManyToOneGrouping, ManyToManyGrouping, regroup,
+    heads, tails,
     selectNearest
 )
 
@@ -247,6 +248,9 @@ export(
     overlapsRanges,
     poverlaps,
 
+    ## windows-methods.R:
+    windows,
+
     ## intra-range-methods.R:
     shift, narrow, resize, flank, reflect, promoters, restrict, threebands,
 
@@ -304,6 +308,7 @@ exportMethods(
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     overlapsRanges,
     poverlaps,
+    windows,
     shift, narrow, resize, flank, reflect, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     reverse,

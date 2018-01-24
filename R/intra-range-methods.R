@@ -131,12 +131,7 @@ setGeneric("narrow", signature="x",
 setMethod("narrow", "IntegerRanges",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        if (is(x, "NormalIRanges"))
-            stop("narrowing a NormalIRanges object is not supported")
-        solved_SEW <- solveUserSEW(width(x), start=start, end=end, width=width)
-        ans_start <- start(x) + start(solved_SEW) - 1L
-        ans_width <- width(solved_SEW)
-        x <- update(x, start=ans_start, width=ans_width, check=FALSE)
+        x <- windows(x, start=start, end=end, width=width)
         if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
         x
