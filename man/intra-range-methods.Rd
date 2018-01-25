@@ -10,7 +10,7 @@
 \alias{shift,CompressedIRangesList-method}
 
 \alias{narrow}
-\alias{narrow,Ranges-method}
+\alias{narrow,Vector-method}
 \alias{narrow,IntegerRangesList-method}
 \alias{narrow,CompressedIRangesList-method}
 \alias{narrow,MaskCollection-method}

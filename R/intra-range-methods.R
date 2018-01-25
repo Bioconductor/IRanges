@@ -123,21 +123,6 @@ setMethod("shift", "CompressedIRangesList",
 ### narrow()
 ###
 
-setGeneric("narrow", signature="x",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-        standardGeneric("narrow")
-)
-
-setMethod("narrow", "Ranges",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        x <- windows(x, start=start, end=end, width=width)
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
-        x
-    }
-)
-
 setMethod("narrow", "IntegerRangesList",
           function(x, start = NA, end = NA, width = NA, use.names = TRUE)
           {

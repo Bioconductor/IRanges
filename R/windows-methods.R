@@ -127,3 +127,26 @@ tails <- function(x, n=6L)
     windows(x, end=x_eltNROWS, width=n)
 }
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### narrow()
+###
+
+setGeneric("narrow", signature="x",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+        standardGeneric("narrow")
+)
+
+### By default, narrow() is equivalent to windows(). Must be overwritten by
+### IntegerRangesList or GenomicRangesList derivatives and GAlignmentsList
+### objects.
+setMethod("narrow", "Vector",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+    {
+        x <- windows(x, start=start, end=end, width=width)
+        if (!S4Vectors:::normargUseNames(use.names))
+            names(x) <- NULL
+        x
+    }
+)
+
