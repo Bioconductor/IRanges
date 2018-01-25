@@ -4,6 +4,8 @@
 
 \alias{successiveIRanges}
 \alias{breakInChunks}
+\alias{equisplit}
+
 \alias{whichAsIRanges}
 
 % Coercion:
