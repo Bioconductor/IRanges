@@ -141,7 +141,7 @@ setMethod("windows", "IntegerRanges",
 setMethod("windows", "Views",
     function(x, start=NA, end=NA, width=NA)
     {
-        x@ranges <- windows(ranges(x), start=start, end=end, width=width)
+        x@ranges <- windows(x@ranges, start=start, end=end, width=width)
         x
     }
 )
