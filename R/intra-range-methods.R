@@ -128,21 +128,12 @@ setGeneric("narrow", signature="x",
         standardGeneric("narrow")
 )
 
-setMethod("narrow", "IntegerRanges",
+setMethod("narrow", "Ranges",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
         x <- windows(x, start=start, end=end, width=width)
         if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
-        x
-    }
-)
-
-setMethod("narrow", "Views",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        x@ranges <- narrow(ranges(x), start=start, end=end, width=width,
-                           use.names=use.names)
         x
     }
 )
@@ -601,6 +592,7 @@ setGeneric("threebands", signature="x",
     function(x, start=NA, end=NA, width=NA)
         standardGeneric("threebands")
 )
+
 ### Method for IRanges only!
 setMethod("threebands", "IRanges",
     function(x, start=NA, end=NA, width=NA)

@@ -12,14 +12,12 @@
 \alias{ranges<-}
 \alias{ranges<-,Views-method}
 \alias{start,Views-method}
-\alias{end,Views-method}
 \alias{width,Views-method}
 \alias{names,Views-method}
 \alias{start<-,Views-method}
 \alias{end<-,Views-method}
 \alias{width<-,Views-method}
 \alias{names<-,Views-method}
-\alias{elementNROWS,Views-method}
 \alias{Views}
 \alias{coerce,Vector,Views-method}
 \alias{coerce,Views,IntegerRanges-method}

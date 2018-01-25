@@ -7,33 +7,15 @@
 ### intervals with integer end points and on the domain of integers.
 ###
 
-setClass("IntegerRanges", contains="IntegerList", representation("VIRTUAL"))
+setClass("IntegerRanges",
+    contains=c("Ranges", "IntegerList"),
+    representation("VIRTUAL")
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters/setters.
 ###
-
-setMethod("length", "IntegerRanges", function(x) length(width(x)))
-
-### Without this definition, we inherit the method for Vector objects
-### which is very inefficient on IntegerRanges objects!
-setMethod("elementNROWS", "IntegerRanges",
-    function(x) setNames(width(x), names(x))
-)
-
-### The 3 default methods below provide a formalization of the relationship
-### between the starts/widths/ends of an IntegerRanges object. IntegerRanges
-### subclasses need to implement at least 2 of them!
-### Note that when width(x)[i] is 0, then end(x)[i] is start(x)[i] - 1
-setMethod("start", "IntegerRanges", function(x, ...) {1L - width(x) + end(x)})
-setMethod("width", "IntegerRanges", function(x) {end(x) - start(x) + 1L})
-setMethod("end", "IntegerRanges", function(x, ...) {width(x) - 1L + start(x)})
-
-setGeneric("mid", function(x, ...) standardGeneric("mid"))
-setMethod("mid", "IntegerRanges",
-    function(x) start(x) + as.integer((width(x)-1) / 2)
-)
 
 setMethod("update", "IntegerRanges",
     function(object, ...)
@@ -47,25 +29,7 @@ setMethod("update", "IntegerRanges",
 
 ### The checking of the names(x) is taken care of by the validity method for
 ### Vector objects.
-.valid.IntegerRanges <- function(x)
-{
-    x_start <- start(x)
-    x_end <- end(x)
-    x_width <- width(x)
-    validity_failures <- .Call2("valid_IntegerRanges",
-                                x_start, x_end, x_width,
-                                PACKAGE="IRanges")
-    if (!is.null(validity_failures))
-        return(validity_failures)
-    if (!(is.null(names(x_start)) &&
-          is.null(names(x_end)) &&
-          is.null(names(x_width))))
-        return(paste0("'start(x)', 'end(x)', and 'width(x)' ",
-                      "cannot have names on them"))
-    NULL
-}
-
-setValidity2("IntegerRanges", .valid.IntegerRanges)
+setValidity2("IntegerRanges", validate_Ranges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -232,9 +196,6 @@ setMethod("showAsCell", "IntegerRanges",
 ### All of them test an IntegerRanges object as a whole and return a single
 ### TRUE or FALSE.
 ###
-
-### An IntegerRanges object is considered empty iff all its ranges are empty.
-setMethod("isEmpty", "IntegerRanges", function(x) all(width(x) == 0L))
 
 setGeneric("isNormal", function(x, ...) standardGeneric("isNormal"))
 

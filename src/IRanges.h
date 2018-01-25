@@ -8,9 +8,9 @@
 }
 
 
-/* IntegerRanges_class.c */
+/* Ranges_class.c */
 
-SEXP valid_IntegerRanges(
+SEXP Ranges_validate(
 	SEXP x_start,
 	SEXP x_end,
 	SEXP x_width

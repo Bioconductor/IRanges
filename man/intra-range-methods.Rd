@@ -10,8 +10,7 @@
 \alias{shift,CompressedIRangesList-method}
 
 \alias{narrow}
-\alias{narrow,IntegerRanges-method}
-\alias{narrow,Views-method}
+\alias{narrow,Ranges-method}
 \alias{narrow,IntegerRangesList-method}
 \alias{narrow,CompressedIRangesList-method}
 \alias{narrow,MaskCollection-method}
@@ -78,28 +77,20 @@
 }
 
 \usage{
-## shift()
 shift(x, shift=0L, use.names=TRUE)
 
-## narrow()
 narrow(x, start=NA, end=NA, width=NA, use.names=TRUE)
 
-## resize()
 resize(x, width, fix="start", use.names=TRUE, ...)
 
-## flank()
 flank(x, width, start=TRUE, both=FALSE, use.names=TRUE, ...)
 
-## promoters()
 promoters(x, upstream=2000, downstream=200, ...)
 
-## reflect()
 reflect(x, bounds, use.names=TRUE)
 
-## restrict()
 restrict(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
 
-## threebands()
 threebands(x, start=NA, end=NA, width=NA)
 }
 

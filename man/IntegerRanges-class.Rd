@@ -7,14 +7,15 @@
 \alias{IntegerRanges}
 
 % Generics and methods:
-\alias{length,IntegerRanges-method}
-\alias{elementNROWS,IntegerRanges-method}
 \alias{width}
-\alias{start,IntegerRanges-method}
-\alias{width,IntegerRanges-method}
-\alias{end,IntegerRanges-method}
+\alias{start,Ranges-method}
+\alias{width,Ranges-method}
+\alias{end,Ranges-method}
+\alias{length,Ranges-method}
+\alias{elementNROWS,Ranges-method}
 \alias{mid}
-\alias{mid,IntegerRanges-method}
+\alias{mid,Ranges-method}
+\alias{isEmpty,Ranges-method}
 \alias{start<-}
 \alias{width<-}
 \alias{end<-}
@@ -26,7 +27,6 @@
 \alias{unlist,IntegerRanges-method}
 \alias{show,IntegerRanges-method}
 \alias{showAsCell,IntegerRanges-method}
-\alias{isEmpty,IntegerRanges-method}
 \alias{isNormal}
 \alias{isNormal,IntegerRanges-method}
 \alias{whichFirstNotNormal}

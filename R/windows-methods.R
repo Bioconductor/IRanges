@@ -22,7 +22,7 @@ make_IRanges_from_windows_args <- function(x, start=NA, end=NA, width=NA)
                   "set to NA when 'start' is an IntegerRanges object"))
     if (!is(start, "IRanges"))
         start <- as(start, "IRanges")
-    ir <- V_recycle(start, x, x_what="start", skeleton_what="x")
+    ir <- S4Vectors:::V_recycle(start, x, x_what="start", skeleton_what="x")
     if (any(start(ir) < 1L) || any(end(ir) > x_eltNROWS))
         stop(wmsg("'start' contains out-of-bounds ranges"))
     ir
@@ -77,6 +77,14 @@ setMethod("windows", "IntegerRanges",
         ans_start <- start(x) + start(ir) - 1L
         ans_width <- width(ir)
         update(x, start=ans_start, width=ans_width, check=FALSE)
+    }
+)
+
+setMethod("windows", "Views",
+    function(x, start=NA, end=NA, width=NA)
+    {
+        x@ranges <- windows(ranges(x), start=start, end=end, width=width)
+        x
     }
 )
 

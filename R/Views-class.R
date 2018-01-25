@@ -7,7 +7,7 @@
 ###
 
 setClass("Views",
-    contains="List",
+    contains=c("Ranges", "List"),
     representation(
         "VIRTUAL",
         subject="Vector",
@@ -53,7 +53,6 @@ setReplaceMethod("ranges", "Views",
 ###
 
 setMethod("start", "Views", function(x, ...) start(ranges(x)))
-setMethod("end", "Views", function(x, ...) end(ranges(x)))
 setMethod("width", "Views", function(x) width(ranges(x)))
 setMethod("names", "Views", function(x) names(ranges(x)))
 
@@ -88,8 +87,6 @@ setReplaceMethod("names", "Views",
         x
     }
 )
-
-setMethod("elementNROWS", "Views", function(x) width(x))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

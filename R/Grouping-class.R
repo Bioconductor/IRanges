@@ -544,7 +544,7 @@ setMethod("parallelSlotNames", "PartitioningByEnd",
 
 setMethod("end", "PartitioningByEnd", function(x) x@end)
 
-### Overwrite method for IntegerRanges objects with optimized method for
+### Overwrite method for Ranges objects with optimized method for
 ### PartitioningByEnd objects.
 setMethod("length", "PartitioningByEnd", function(x) length(end(x)))
 
@@ -706,6 +706,10 @@ setMethod("parallelSlotNames", "PartitioningByWidth",
 )
 
 setMethod("width", "PartitioningByWidth", function(x) x@width)
+
+### Overwrite method for Ranges objects with optimized method for
+### PartitioningByWidth objects.
+setMethod("length", "PartitioningByWidth", function(x) length(width(x)))
 
 setMethod("end", "PartitioningByWidth", function(x) cumsum(width(x)))
 

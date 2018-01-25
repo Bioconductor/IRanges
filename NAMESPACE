@@ -16,6 +16,7 @@ importFrom(stats4, summary, update)
 ###
 
 exportClasses(
+    Ranges,
     IntegerRanges, IntegerRanges_OR_missing,
     IRanges, NormalIRanges,
     IPos,

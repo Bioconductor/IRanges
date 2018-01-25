@@ -119,6 +119,7 @@
 \alias{parallelSlotNames,PartitioningByWidth-method}
 
 \alias{width,PartitioningByWidth-method}
+\alias{length,PartitioningByWidth-method}
 \alias{end,PartitioningByWidth-method}
 \alias{start,PartitioningByWidth-method}
 \alias{coerce,IntegerRanges,PartitioningByWidth-method}

@@ -7,8 +7,8 @@
 
 static const R_CallMethodDef callMethods[] = {
 
-/* IntegerRanges_class.c */
-	CALLMETHOD_DEF(valid_IntegerRanges, 3),
+/* Ranges_class.c */
+	CALLMETHOD_DEF(Ranges_validate, 3),
 
 /* IntegerRanges_comparison.c */
 	CALLMETHOD_DEF(IntegerRanges_pcompare, 4),
