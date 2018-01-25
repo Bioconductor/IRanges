@@ -123,6 +123,29 @@ setMethod("shift", "CompressedIRangesList",
 ### narrow()
 ###
 
+### The "narrow" method for Vector objects calls windows() so we only need to
+### implement "windows" methods for IntegerRanges and Views objects to make
+### narrow() work on these objects.
+setMethod("windows", "IntegerRanges",
+    function(x, start=NA, end=NA, width=NA)
+    {
+        ir <- make_IRanges_from_windows_args(x, start, end, width)
+        if (length(x) == 0L)
+            return(x)
+        ans_start <- start(x) + start(ir) - 1L
+        ans_width <- width(ir)
+        update(x, start=ans_start, width=ans_width, check=FALSE)
+    }
+)
+
+setMethod("windows", "Views",
+    function(x, start=NA, end=NA, width=NA)
+    {
+        x@ranges <- windows(ranges(x), start=start, end=end, width=width)
+        x
+    }
+)
+
 setMethod("narrow", "IntegerRangesList",
           function(x, start = NA, end = NA, width = NA, use.names = TRUE)
           {

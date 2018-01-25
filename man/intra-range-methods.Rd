@@ -11,6 +11,8 @@
 
 \alias{narrow}
 \alias{narrow,Vector-method}
+\alias{windows,IntegerRanges-method}
+\alias{windows,Views-method}
 \alias{narrow,IntegerRangesList-method}
 \alias{narrow,CompressedIRangesList-method}
 \alias{narrow,MaskCollection-method}

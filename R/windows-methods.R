@@ -68,22 +68,25 @@ setMethod("windows", "list_OR_List",
     }
 )
 
-setMethod("windows", "IntegerRanges",
-    function(x, start=NA, end=NA, width=NA)
-    {
-        ir <- make_IRanges_from_windows_args(x, start, end, width)
-        if (length(x) == 0L)
-            return(x)
-        ans_start <- start(x) + start(ir) - 1L
-        ans_width <- width(ir)
-        update(x, start=ans_start, width=ans_width, check=FALSE)
-    }
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### narrow()
+###
+
+setGeneric("narrow", signature="x",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+        standardGeneric("narrow")
 )
 
-setMethod("windows", "Views",
-    function(x, start=NA, end=NA, width=NA)
+### By default, narrow() is equivalent to windows(). Must be overwritten by
+### IntegerRangesList or GenomicRangesList derivatives and GAlignmentsList
+### objects.
+setMethod("narrow", "Vector",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        x@ranges <- windows(ranges(x), start=start, end=end, width=width)
+        x <- windows(x, start=start, end=end, width=width)
+        if (!S4Vectors:::normargUseNames(use.names))
+            names(x) <- NULL
         x
     }
 )
@@ -126,27 +129,4 @@ tails <- function(x, n=6L)
     n <- .normarg_n(n, x_eltNROWS)
     windows(x, end=x_eltNROWS, width=n)
 }
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### narrow()
-###
-
-setGeneric("narrow", signature="x",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-        standardGeneric("narrow")
-)
-
-### By default, narrow() is equivalent to windows(). Must be overwritten by
-### IntegerRangesList or GenomicRangesList derivatives and GAlignmentsList
-### objects.
-setMethod("narrow", "Vector",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        x <- windows(x, start=start, end=end, width=width)
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
-        x
-    }
-)
 
