@@ -19,7 +19,7 @@
 \usage{
 ## Create an IRanges instance:
 successiveIRanges(width, gapwidth=0, from=1)
-breakInChunks(totalsize, chunksize, nchunk)
+breakInChunks(totalsize, nchunk, chunksize)
 
 ## Turn a logical vector into a set of ranges:
 whichAsIRanges(x)
@@ -44,13 +44,13 @@ asNormalIRanges(x, force=TRUE)
   \item{totalsize}{
     A single non-negative integer. The total size of the object to break.
   }
+  \item{nchunk}{
+    A single positive integer. The number of chunks.
+  }
   \item{chunksize}{
-   A single positive integer. The size of the chunks (last chunk might be
-   smaller).
-   }
-   \item{nchunk}{
-     A single positive integer. The number of chunks.
-   }
+    A single positive integer. The size of the chunks (last chunk might be
+    smaller).
+  }
   \item{x}{
     A logical vector for \code{whichAsIRanges}.
     An \link{IRanges} object for \code{asNormalIRanges}.
@@ -105,8 +105,8 @@ asNormalIRanges(x, force=TRUE)
 
   successiveIRanges(vec)
 
-  breakInChunks(600999, 50000)  # 13 chunks of size 50000 (last chunk is
-                                # smaller).
+  breakInChunks(600999, chunksize=50000)  # chunks of size 50000 (last
+                                          # chunk is smaller)
 
   whichAsIRanges(vec >= 5)
 

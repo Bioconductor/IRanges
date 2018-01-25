@@ -348,7 +348,7 @@ setMethod("gaps", "IntegerRangesList", .gaps_RangesList)
 
     ## Process by chunk.
     verbose <- getOption("verbose", default=FALSE)
-    chunks <- as(breakInChunks(length(x), chunksize), "IRanges")
+    chunks <- as(breakInChunks(length(x), chunksize=chunksize), "IRanges")
     ans_chunks <- lapply(seq_along(chunks),
         function(i) {
             if (verbose)
