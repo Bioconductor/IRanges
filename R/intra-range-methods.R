@@ -123,9 +123,9 @@ setMethod("shift", "CompressedIRangesList",
 ### narrow()
 ###
 
-### The "narrow" method for Vector objects calls windows() so we only need to
-### implement "windows" methods for IntegerRanges and Views objects to make
-### narrow() work on these objects.
+### The default "narrow" method calls windows() so we only need to implement
+### "windows" methods for IntegerRanges and Views objects to make narrow()
+### work on these objects.
 setMethod("windows", "IntegerRanges",
     function(x, start=NA, end=NA, width=NA)
     {
