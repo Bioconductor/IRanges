@@ -10,7 +10,7 @@
 \alias{shift,CompressedIRangesList-method}
 
 \alias{narrow}
-\alias{narrow,Vector-method}
+\alias{narrow,ANY-method}
 \alias{windows,IntegerRanges-method}
 \alias{windows,Views-method}
 \alias{narrow,IntegerRangesList-method}
