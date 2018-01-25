@@ -78,18 +78,19 @@ setGeneric("narrow", signature="x",
         standardGeneric("narrow")
 )
 
+### NOT exported but used in Biostrings package.
 ### By default, narrow() is equivalent to windows(). Must be overwritten by
 ### IntegerRangesList or GenomicRangesList derivatives and GAlignmentsList
 ### objects.
-setMethod("narrow", "Vector",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        x <- windows(x, start=start, end=end, width=width)
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
-        x
-    }
-)
+default_narrow <- function(x, start=NA, end=NA, width=NA, use.names=TRUE)
+{
+    x <- windows(x, start=start, end=end, width=width)
+    if (!S4Vectors:::normargUseNames(use.names))
+        names(x) <- NULL
+    x
+}
+
+setMethod("narrow", "Vector", default_narrow)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
