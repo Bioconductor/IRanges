@@ -20,6 +20,7 @@
 ## Create an IRanges instance:
 successiveIRanges(width, gapwidth=0, from=1)
 breakInChunks(totalsize, nchunk, chunksize)
+equisplit(x, nchunk, chunksize)
 
 ## Turn a logical vector into a set of ranges:
 whichAsIRanges(x)
@@ -52,7 +53,10 @@ asNormalIRanges(x, force=TRUE)
     smaller).
   }
   \item{x}{
+    A vector-like object for \code{equisplit}.
+
     A logical vector for \code{whichAsIRanges}.
+
     An \link{IRanges} object for \code{asNormalIRanges}.
   }
   \item{force}{
@@ -62,13 +66,26 @@ asNormalIRanges(x, force=TRUE)
 }
 
 \details{
-  \code{successiveIRanges} returns an IRanges instance containing the
-  ranges that have the widths specified in the \code{width} vector
+  \code{successiveIRanges} returns an \link{IRanges} instance containing
+  the ranges that have the widths specified in the \code{width} vector
   and are separated by the gaps specified in \code{gapwidth}.
   The first range starts at position \code{from}.
   When \code{gapwidth=0} and \code{from=1} (the defaults), the returned
   IRanges can be seen as a partitioning of the 1:sum(width) interval.
   See \code{?Partitioning} for more details on this.
+
+  \code{breakInChunks} returns a \link{PartitioningByEnd} object
+  describing the "chunks" that result from breaking a vector-like object
+  of length \code{totalsize} in the chunks described by \code{nchunk} or
+  \code{chunksize}.
+
+  \code{equisplit} splits vector-like object \code{x} into a specified
+  number of partitions with equal (total) width. This is useful for
+  instance to ensure balanced loading of workers in parallel evaluation.
+  For example, if \code{x} is a \link[GenomicRanges]{GRanges} object,
+  each partition is also a \link[GenomicRanges]{GRanges} object and the
+  set of all partitions is returned as a \link[GenomicRanges]{GRangesList}
+  object.
 
   \code{whichAsIRanges} returns an \link{IRanges} instance containing all of
   the ranges where \code{x} is \code{TRUE}.
@@ -101,31 +118,35 @@ asNormalIRanges(x, force=TRUE)
 }
 
 \examples{
-  vec <- as.integer(c(19, 5, 0, 8, 5))
+vec <- as.integer(c(19, 5, 0, 8, 5))
 
-  successiveIRanges(vec)
+successiveIRanges(vec)
 
-  breakInChunks(600999, chunksize=50000)  # chunks of size 50000 (last
-                                          # chunk is smaller)
+breakInChunks(600999, chunksize=50000)  # chunks of size 50000 (last
+                                        # chunk is smaller)
 
-  whichAsIRanges(vec >= 5)
+library(GenomicRanges)
+gr <- GRanges(c("chr1", "chr2"), IRanges(1, c(100, 1e5)))
+equisplit(gr, 2)
 
-  x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
-               width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
-  asNormalIRanges(x)  # 3 non-empty ranges ordered from left to right and
-                      # separated by gaps of width >= 1.
+whichAsIRanges(vec >= 5)
 
-  ## More on normality:
-  example(`IRanges-class`)
-  isNormal(x16)                        # FALSE
-  if (interactive())
-      x16 <- asNormalIRanges(x16)      # Error!
-  whichFirstNotNormal(x16)             # 57
-  isNormal(x16[1:56])                  # TRUE
-  xx <- asNormalIRanges(x16[1:56])
-  class(xx)
-  max(xx)
-  min(xx)
+x <- IRanges(start=c(-2L, 6L, 9L, -4L, 1L, 0L, -6L, 10L),
+             width=c( 5L, 0L, 6L,  1L, 4L, 3L,  2L,  3L))
+asNormalIRanges(x)  # 3 non-empty ranges ordered from left to right and
+                    # separated by gaps of width >= 1.
+
+## More on normality:
+example(`IRanges-class`)
+isNormal(x16)                        # FALSE
+if (interactive())
+    x16 <- asNormalIRanges(x16)      # Error!
+whichFirstNotNormal(x16)             # 57
+isNormal(x16[1:56])                  # TRUE
+xx <- asNormalIRanges(x16[1:56])
+class(xx)
+max(xx)
+min(xx)
 }
 
 \keyword{utilities}
