@@ -131,6 +131,27 @@ breakInChunks <- function(totalsize, nchunk, chunksize)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### equisplit()
+###
+
+### Will work out-of-the box on any object 'x' that supoorts elementNROWS()
+### [, windows(), and relist() e.g. IRanges, GRanges, DNAStringSet,
+### GAlignments objects and more...
+equisplit <- function(x, nchunk, chunksize)
+{
+    x_eltNROWS <- elementNROWS(x)
+    q <- breakInChunks(sum(x_eltNROWS), nchunk=nchunk, chunksize=chunksize)
+    s <- PartitioningByWidth(x_eltNROWS)
+    hits <- findOverlaps(q, s)
+    unlisted_ans <- x[subjectHits(hits)]
+    Ltrim <- pmax(start(q)[queryHits(hits)] - start(s)[subjectHits(hits)], 0L)
+    Rtrim <- pmax(end(s)[subjectHits(hits)] - end(q)[queryHits(hits)], 0L)
+    unlisted_ans <- windows(unlisted_ans, start=1L+Ltrim, end=-1L-Rtrim)
+    relist(unlisted_ans, as(hits, "PartitioningByEnd"))
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "centeredIRanges" function.
 ###
 

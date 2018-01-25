@@ -158,7 +158,7 @@ export(
     solveUserSEW0, IRanges, solveUserSEW,
     successiveIRanges,
     slidingIRanges,
-    breakInChunks,
+    breakInChunks, equisplit,
     whichAsIRanges,
     asNormalIRanges,
     rangeComparisonCodeToLetter,
