@@ -4,6 +4,7 @@
 
 \alias{coverage}
 \alias{coverage,IntegerRanges-method}
+\alias{coverage,IPos-method}
 \alias{coverage,Views-method}
 \alias{coverage,IntegerRangesList-method}
 \alias{coverage,RangedData-method}
@@ -32,29 +33,45 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
     \pkg{GenomicRanges} package for \code{coverage} methods for
     other objects.
   }
-  \item{shift}{
-    Specifies how much each range in \code{x} should be shifted before the
-    coverage is computed.
+  \item{shift, weight}{
+    \code{shift} specifies how much each range in \code{x} should be shifted
+    before the coverage is computed. A positive shift value will shift the
+    corresponding range in \code{x} to the right, and a negative value to
+    the left. NAs are not allowed.
+
+    \code{weight} assigns a weight to each range in \code{x}.
+
     \itemize{
-      \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
-            \code{shift} must be an integer or numeric vector parallel to
-            \code{x} (will get recycled if necessary) and with no NAs.
-      \item If \code{x} is a \link{IntegerRangesList} object:
-            \code{shift} must be a numeric vector or list-like object of
-            the same length as \code{x} (will get recycled if necessary).
+      \item If \code{x} is an \link{IntegerRanges} or \link{Views} object:
+            each of these arguments must be an integer or numeric vector
+            parallel to \code{x} (will get recycled if necessary).
+            Alternatively, each of these arguments can also be specified
+            as a single string naming a metadata column in \code{x} (i.e.
+            a column in \code{mcols(x)}) to be used as the \code{shift}
+            (or \code{weight}) vector.
+            Note that when \code{x} is an \link{IPos} object, each of these
+            arguments can only be a single number.
+
+      \item If \code{x} is an \link{IntegerRangesList} object:
+            each of these arguments must be a numeric vector or list-like
+            object of the same length as \code{x} (will get recycled if
+            necessary).
             If it's a numeric vector, it's first turned into a list with
             \code{as.list}.
-            After recycling, each list element \code{shift[[i]]} must be an
-            integer or numeric vector parallel to \code{x[[i]]} (will get
-            recycled if necessary) and with no NAs.
+            After recycling, each list element \code{shift[[i]]} (or
+            \code{weight[[i]]}) must be an integer or numeric vector
+            parallel to \code{x[[i]]} (will get recycled if necessary).
     }
-    A positive shift value will shift the corresponding range in \code{x} to
-    the right, and a negative value to the left.
+    If \code{weight} is an integer vector or list-like object of integer
+    vectors, the coverage vector(s) will be returned as integer-\link{Rle}
+    object(s). If it's a numeric vector or list-like object of numeric
+    vectors, the coverage vector(s) will be returned as numeric-\link{Rle}
+    object(s).
   }
   \item{width}{
     Specifies the length of the returned coverage vector(s).
     \itemize{
-      \item If \code{x} is a \link{IntegerRanges} object:
+      \item If \code{x} is an \link{IntegerRanges} object:
             \code{width} must be \code{NULL} (the default), an NA, or a
             single non-negative integer.
             After being shifted, the ranges in \code{x} are always clipped
@@ -84,31 +101,6 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
             for \code{x[[i]]} and is therefore treated like explained above
             (when \code{x} is a \link{IntegerRanges} object).
     }
-  }
-  \item{weight}{
-    Assigns a weight to each range in \code{x}.
-    \itemize{
-      \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
-            \code{weight} must be an integer or numeric vector parallel to
-            \code{x} (will get recycled if necessary).
-      \item If \code{x} is a \link{IntegerRangesList} object:
-            \code{weight} must be a numeric vector or list-like object of
-            the same length as \code{x} (will get recycled if necessary).
-            If it's a numeric vector, it's first turned into a list with
-            \code{as.list}.
-            After recycling, each list element \code{weight[[i]]} must be an
-            integer or numeric vector parallel to \code{x[[i]]} (will get
-            recycled if necessary).
-    }
-    If \code{weight} is an integer vector or list-like object of integer
-    vectors, the coverage vector(s) will be returned as integer-\link{Rle}
-    object(s). If it's a numeric vector or list-like object of numeric
-    vectors, the coverage vector(s) will be returned as numeric-\link{Rle}
-    object(s).
-
-    Alternatively, \code{weight} can also be specified as a single string
-    naming a metadata column in \code{x} (i.e. a column in \code{mcols(x)})
-    to be used as the \code{weight} vector.
   }
   \item{method}{
     If \code{method} is set to \code{"sort"}, then \code{x} is sorted
@@ -153,8 +145,8 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
     \item The \code{\link{slice}} function for slicing the \link{Rle} or
           \link{RleList} object returned by \code{coverage}.
 
-    \item The \link{IntegerRanges}, \link{IntegerRangesList}, \link{Rle}, and
-          \link{RleList} classes.
+    \item \link{IntegerRanges}, \link{IPos}, \link{IntegerRangesList},
+          \link{Rle}, and \link{RleList} objects.
   }
 }
 
@@ -180,7 +172,36 @@ coverage(x, weight=as.integer(10^(0:7)))  # integer-Rle
 coverage(x, weight=c(2.8, -10))  # numeric-Rle, 'shift' gets recycled
 
 ## ---------------------------------------------------------------------
-## B. SOME MATHEMATICAL PROPERTIES OF THE coverage() FUNCTION
+## B. COVERAGE OF AN IPos OBJECT
+## ---------------------------------------------------------------------
+pos_runs <- IRanges(c(1, 5, 9), c(10, 8, 15))
+ipos <- IPos(pos_runs)
+coverage(ipos)
+
+## ---------------------------------------------------------------------
+## C. COVERAGE OF AN IRangesList OBJECT
+## ---------------------------------------------------------------------
+x <- IRangesList(A=IRanges(3*(4:-1), width=1:3), B=IRanges(2:10, width=5))
+cvg <- coverage(x)
+cvg
+
+stopifnot(identical(cvg[[1]], coverage(x[[1]])))
+stopifnot(identical(cvg[[2]], coverage(x[[2]])))
+
+coverage(x, width=c(50, 9))
+coverage(x, width=c(NA, 9))
+coverage(x, width=9)  # 'width' gets recycled
+
+## Each list element in 'shift' and 'weight' gets recycled to the length
+## of the corresponding element in 'x'.
+weight <- list(as.integer(10^(0:5)), -0.77)
+cvg2 <- coverage(x, weight=weight)
+cvg2  # 1st coverage vector is an integer-Rle, 2nd is a numeric-Rle
+
+identical(mapply(coverage, x=x, weight=weight), as.list(cvg2))
+
+## ---------------------------------------------------------------------
+## D. SOME MATHEMATICAL PROPERTIES OF THE coverage() FUNCTION
 ## ---------------------------------------------------------------------
 
 ## PROPERTY 1: The coverage vector is not affected by reordering the
@@ -204,10 +225,10 @@ stopifnot(identical(coverage(c(x, y), width=100),
 ## the length of the longest, the following is generally FALSE:
 identical(coverage(c(x, y)), coverage(x) + coverage(y))  # FALSE
 
-## It would only be TRUE if the 2 coverage vectors we add had the same
-## length, which would only happen by chance. By using the same 'width'
-## value when we computed the 2 coverages previously, we made sure they
-## had the same length.
+## It would only be TRUE if the 2 coverage vectors that we add had the
+## same length, which would only happen by chance. By using the same
+## 'width' value when we computed the 2 coverages previously, we made
+## sure they had the same length.
 
 ## Because of properties 1 & 2, we have:
 x1 <- x[c(TRUE, FALSE)]  # pick up 1st, 3rd, 5th, etc... ranges
@@ -272,7 +293,7 @@ stopifnot(identical(coverage(disjoin(x)), shaved_cvg0))
 stopifnot(identical(coverage(reduce(x)), shaved_cvg0))
 
 ## ---------------------------------------------------------------------
-## C. SOME SANITY CHECKS
+## E. SOME SANITY CHECKS
 ## ---------------------------------------------------------------------
 dummy.coverage <- function(x, shift=0L, width=NULL)
 {
@@ -298,28 +319,6 @@ check_real_vs_dummy(x, shift=-max(end(x)))
 ## With a set of distinct single positions:
 x3 <- IRanges(sample(50000, 20000), width=1)
 stopifnot(identical(sort(start(x3)), which(coverage(x3) != 0L)))
-
-## ---------------------------------------------------------------------
-## D. COVERAGE OF AN IRangesList OBJECT
-## ---------------------------------------------------------------------
-x <- IRangesList(A=IRanges(3*(4:-1), width=1:3), B=IRanges(2:10, width=5))
-cvg <- coverage(x)
-cvg
-
-stopifnot(identical(cvg[[1]], coverage(x[[1]])))
-stopifnot(identical(cvg[[2]], coverage(x[[2]])))
-
-coverage(x, width=c(50, 9))
-coverage(x, width=c(NA, 9))
-coverage(x, width=9)  # 'width' gets recycled
-
-## Each list element in 'shift' and 'weight' gets recycled to the length
-## of the corresponding element in 'x'.
-weight <- list(as.integer(10^(0:5)), -0.77)
-cvg2 <- coverage(x, weight=weight)
-cvg2  # 1st coverage vector is an integer-Rle, 2nd is a numeric-Rle
-
-identical(mapply(coverage, x=x, weight=weight), as.list(cvg2))
 }
 
 \keyword{methods}

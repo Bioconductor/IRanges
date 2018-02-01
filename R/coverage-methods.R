@@ -21,10 +21,9 @@
 }
 
 ### Returns an Rle object.
-.coverage_IRanges <- function(x,
-                              shift=0L, width=NULL,
-                              weight=1L, circle.length=NA,
-                              method=c("auto", "sort", "hash"))
+.coverage_IRanges <- function(x, shift=0L, width=NULL,
+                                 weight=1L, circle.length=NA,
+                                 method=c("auto", "sort", "hash"))
 {
     ## Check 'x'.
     if (!is(x, "IRanges"))
@@ -68,14 +67,14 @@
     .fold_and_truncate_coverage(ans, circle.length, width)
 }
 
-### Returns an ordinary list.
-.normarg_shift_or_weight <- function(arg, arg.label)
+### Return an ordinary list.
+.normarg_shift_or_weight_list <- function(arg, argname)
 {
     if (!is.list(arg)) {
         if (!(is.numeric(arg) ||
               (is(arg, "Rle") && is.numeric(runValue(arg))) ||
               is(arg, "List")))
-            stop("'", arg.label, "' must be a numeric vector ",
+            stop("'", argname, "' must be a numeric vector ",
                  "or a list-like object")
         arg <- as.list(arg)
     }
@@ -87,11 +86,11 @@
     arg
 }
 
-.check_arg_names <- function(arg, arg.label, x_names, x_names.label)
+.check_arg_names <- function(arg, argname, x_names, x_names.label)
 {
     arg_names <- names(arg)
     if (!(is.null(arg_names) || identical(arg_names, x_names)))
-        stop("when '", arg.label, "' has names, ",
+        stop("when '", argname, "' has names, ",
              "they must be identical to ", x_names.label)
 }
 
@@ -134,7 +133,7 @@ coverage_CompressedIRangesList <- function(x,
     x_names <- names(x)
 
     ## Check and normalize 'shift'.
-    shift <- .normarg_shift_or_weight(shift, "shift")
+    shift <- .normarg_shift_or_weight_list(shift, "shift")
     .check_arg_names(shift, "shift", x_names, x_names.label)
 
     ## Check and normalize 'width'.
@@ -156,7 +155,7 @@ coverage_CompressedIRangesList <- function(x,
     }
 
     ## Check and normalize 'weight'.
-    weight <- .normarg_shift_or_weight(weight, "weight")
+    weight <- .normarg_shift_or_weight_list(weight, "weight")
     .check_arg_names(weight, "weight", x_names, x_names.label)
 
     ## Check and normalize 'circle.length'.
@@ -216,21 +215,45 @@ setGeneric("coverage", signature="x",
         standardGeneric("coverage")
 )
 
+### NOT exported but used in the GenomicRanges package.
+replace_with_mcol_if_single_string <- function(arg, x)
+{
+    if (!isSingleString(arg))
+        return(arg)
+    x_mcols <- mcols(x)
+    j <- which(colnames(x_mcols) == arg)
+    if (length(j) == 0L)
+        stop(wmsg("'mcols(x)' has no \"", arg, "\" column"))
+    if (length(j) > 1L)
+        stop(wmsg("'mcols(x)' has more than one \"", arg, "\" column"))
+    x_mcols[[j]]
+}
+
 setMethod("coverage", "IntegerRanges",
     function(x, shift=0L, width=NULL, weight=1L,
                 method=c("auto", "sort", "hash"))
     {
-        if (isSingleString(weight)) {
-            x_mcols <- mcols(x)
-            if (!is(x_mcols, "DataTable")
-             || sum(colnames(x_mcols) == weight) != 1L)
-                stop("'mcols(x)' has 0 or more than 1 \"",
-                     weight, "\" columns")
-            weight <- x_mcols[[weight]]
-        }
+        shift <- replace_with_mcol_if_single_string(shift, x)
+        weight <- replace_with_mcol_if_single_string(weight, x)
         .coverage_IRanges(as(x, "IRanges"),
                           shift=shift, width=width, weight=weight,
                           method=method)
+    }
+)
+
+### Overwrite above method with optimized method for IPos objects.
+setMethod("coverage", "IPos",
+    function(x, shift=0L, width=NULL, weight=1L,
+                method=c("auto", "sort", "hash"))
+    {
+        CAN_ONLY_ETC <- c(" can only be a single number when ",
+                          "calling coverage() on an IPos object")
+        if (!isSingleNumber(shift))
+            stop(wmsg("'shift'", CAN_ONLY_ETC))
+        if (!isSingleNumber(weight))
+            stop(wmsg("'weight'", CAN_ONLY_ETC))
+        x <- stitch_IPos(x)
+        callGeneric()
     }
 )
 
