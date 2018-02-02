@@ -13,9 +13,12 @@ setGeneric("coverage2", signature="x",
         standardGeneric("coverage2")
 )
 
-### Methods for IntegerRanges and IntegerRangesList (defined in this file)
-### add the 'circle.length' argument.
-### Method for GenomicRanges objects adds the 'ignore.strand' argument.
+### TODO: Methods for IntegerRanges and IntegerRangesList objects (defined in
+### this file) need to support the 'circle.length' argument.
+### TODO: Implement method for GenomicRanges objects (in GenomicRanges package).
+### Should it support the 'ignore.strand' argument?
+### TODO: The end-user should be able to switch between collapsed and expanded
+### representation by calling collapse() and expand() on the returned object.
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -90,9 +93,6 @@ effective_restriction_windows_for_IntegerRangesList <-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### "coverage2" methods
 ###
-
-### TODO: Add and support the 'circle.length' argument to the 2 methods
-### below.
 
 ### Takes an IntegerRanges derivative 'x' and returns its coverage as the
 ### metadata column of an IPos object by default. If 'collapse' is TRUE',
