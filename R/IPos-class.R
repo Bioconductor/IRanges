@@ -5,7 +5,7 @@
 
 
 setClass("IPos",
-    contains="IntegerRanges",
+    contains="IntegerPos",
     representation(
         pos_runs="IRanges"
     )
@@ -15,6 +15,8 @@ setClass("IPos",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters
 ###
+
+setMethod("pos", "IPos", function(x) as.integer(x@pos_runs))
 
 setMethod("length", "IPos", function(x) sum(width(x@pos_runs)))
 
@@ -28,12 +30,6 @@ setReplaceMethod("names", "IPos",
         x
     }
 )
-
-setGeneric("pos", function(x) standardGeneric("pos"))
-setMethod("pos", "IPos", function(x) as.integer(x@pos_runs))
-setMethod("start", "IPos", function(x) pos(x))
-setMethod("end", "IPos", function(x) pos(x))
-setMethod("width", "IPos", function(x) rep.int(1L, length(x)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -16,8 +16,8 @@ importFrom(stats4, summary, update)
 ###
 
 exportClasses(
-    Ranges,
-    IntegerRanges, IntegerRanges_OR_missing,
+    Ranges, Pos,
+    IntegerRanges, IntegerRanges_OR_missing, IntegerPos,
     IRanges, NormalIRanges,
     IPos,
     NCList, NCLists,
@@ -107,7 +107,7 @@ exportMethods(
     rev,
     rep,
     drop,
-    start, "start<-", end, "end<-", width, "width<-",
+    start, "start<-", end, "end<-", width, "width<-", pos,
     min, max, range, which.max, which.min,
     diff,
     mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
@@ -208,9 +208,6 @@ export(
     mid,
     isNormal, whichFirstNotNormal,
 
-    ## IPos-class.R:
-    pos,
-
     ## Views-class.R:
     subject,
     "ranges<-",
@@ -291,7 +288,6 @@ exportMethods(
     mstack,
     mid,
     isNormal, whichFirstNotNormal,
-    pos,
     subject,
     "ranges<-",
     Views,

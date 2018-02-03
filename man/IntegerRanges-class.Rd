@@ -6,12 +6,19 @@
 \alias{IntegerRanges-class}
 \alias{IntegerRanges}
 
+\alias{class:IntegerPos}
+\alias{IntegerPos-class}
+\alias{IntegerPos}
+
 % Generics and methods:
 \alias{width}
 \alias{start,Ranges-method}
-\alias{width,Ranges-method}
 \alias{end,Ranges-method}
+\alias{width,Ranges-method}
 \alias{length,Ranges-method}
+\alias{start,Pos-method}
+\alias{end,Pos-method}
+\alias{width,Pos-method}
 \alias{elementNROWS,Ranges-method}
 \alias{mid}
 \alias{mid,Ranges-method}
@@ -81,7 +88,7 @@
   which can be subsetted by row and by column).
 
   The IntegerRanges class itself is a virtual class. The following classes
-  derive directly from it: \link{IRanges}, \link{IPos}, \link{NCList},
+  derive directly from it: \link{IRanges}, \link{NCList},
   \link{PartitioningByEnd}.
 }
 

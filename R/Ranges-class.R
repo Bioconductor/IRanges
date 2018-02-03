@@ -17,6 +17,8 @@
 
 setClass("Ranges", contains="Vector", representation("VIRTUAL"))
 
+setClass("Pos", contains="Ranges", representation("VIRTUAL"))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some default methods
@@ -25,10 +27,15 @@ setClass("Ranges", contains="Vector", representation("VIRTUAL"))
 ### Note that the 3 default methods below implement a circular relationship.
 ### So Ranges subclasses must overwrite at least 2 of them!
 setMethod("start", "Ranges", function(x, ...) {1L - width(x) + end(x)})
-setMethod("width", "Ranges", function(x) {end(x) - start(x) + 1L})
 setMethod("end", "Ranges", function(x, ...) {width(x) - 1L + start(x)})
+setMethod("width", "Ranges", function(x) {end(x) - start(x) + 1L})
 
 setMethod("length", "Ranges", function(x) length(start(x)))
+
+### Pos subclasses only need to implement a "pos" method.
+setMethod("start", "Pos", function(x) pos(x))
+setMethod("end", "Pos", function(x) pos(x))
+setMethod("width", "Pos", function(x) rep.int(1L, length(x)))
 
 setMethod("elementNROWS", "Ranges",
     function(x) setNames(width(x), names(x))
@@ -37,7 +44,7 @@ setMethod("elementNROWS", "Ranges",
 setGeneric("mid", function(x, ...) standardGeneric("mid"))
 
 setMethod("mid", "Ranges",
-    function(x) start(x) + as.integer((width(x)-1) / 2)
+    function(x) start(x) + as.integer((width(x) - 1) / 2)
 )
 
 ### A Ranges object is considered empty iff all its ranges are empty.
@@ -61,8 +68,20 @@ validate_Ranges <- function(x)
     if (!(is.null(names(x_start)) &&
           is.null(names(x_end)) &&
           is.null(names(x_width))))
-        return(paste0("'start(x)', 'end(x)', and 'width(x)' ",
-                      "cannot have names on them"))
+        return(wmsg("'start(x)', 'end(x)', and 'width(x)' ",
+                    "cannot have names on them"))
+    NULL
+}
+
+validate_Pos <- function(x)
+{
+    x_width <- width(x)
+    if (!all(x_width == 1L))
+        return(wmsg())
+    x_pos <- pos(x)
+    x_start <- start(x)
+    if (!all(x_pos == x_start))
+        return(wmsg())
     NULL
 }
 

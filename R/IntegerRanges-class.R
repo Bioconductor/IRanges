@@ -7,8 +7,14 @@
 ### intervals with integer end points and on the domain of integers.
 ###
 
+
 setClass("IntegerRanges",
     contains=c("Ranges", "IntegerList"),
+    representation("VIRTUAL")
+)
+
+setClass("IntegerPos",
+    contains=c("IntegerRanges", "Pos"),
     representation("VIRTUAL")
 )
 
@@ -29,7 +35,10 @@ setMethod("update", "IntegerRanges",
 
 ### The checking of the names(x) is taken care of by the validity method for
 ### Vector objects.
+
 setValidity2("IntegerRanges", validate_Ranges)
+
+setValidity2("IntegerPos", validate_Pos)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

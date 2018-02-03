@@ -5,14 +5,11 @@
 \alias{IPos-class}
 \alias{IPos}
 
+\alias{pos}
+\alias{pos,IPos-method}
 \alias{length,IPos-method}
 \alias{names,IPos-method}
 \alias{names<-,IPos-method}
-\alias{pos}
-\alias{pos,IPos-method}
-\alias{start,IPos-method}
-\alias{end,IPos-method}
-\alias{width,IPos-method}
 
 \alias{coerce,IntegerRanges,IPos-method}
 \alias{coerce,ANY,IPos-method}
