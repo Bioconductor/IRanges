@@ -20,17 +20,6 @@ setMethod("pos", "IPos", function(x) as.integer(x@pos_runs))
 
 setMethod("length", "IPos", function(x) sum(width(x@pos_runs)))
 
-setMethod("names", "IPos", function(x) NULL)
-
-setReplaceMethod("names", "IPos",
-    function(x, value)
-    {
-        if (!is.null(value))
-            stop(class(x), " objects don't accept names")
-        x
-    }
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Collapse runs of "stitchable integer ranges"

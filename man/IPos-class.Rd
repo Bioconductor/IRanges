@@ -8,8 +8,6 @@
 \alias{pos}
 \alias{pos,IPos-method}
 \alias{length,IPos-method}
-\alias{names,IPos-method}
-\alias{names<-,IPos-method}
 
 \alias{coerce,IntegerRanges,IPos-method}
 \alias{coerce,ANY,IPos-method}
