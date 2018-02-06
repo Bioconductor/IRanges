@@ -10,20 +10,24 @@
 ###
 
 setClass("IntegerRangesList",
-    contains="List",
+    contains="RangesList",
     representation("VIRTUAL"),
-    prototype(
-        elementType="IntegerRanges"
-    )
+    prototype(elementType="IntegerRanges")
 )
 
 setClass("SimpleIntegerRangesList",
-    contains=c("IntegerRangesList", "SimpleList"),
+    contains=c("IntegerRangesList", "SimpleRangesList"),
     representation("VIRTUAL")
 )
 
-setClass("CompressedIntegerRangesList",
-    contains=c("IntegerRangesList", "CompressedList"),
+setClass("IntegerPosList",
+    contains=c("PosList", "IntegerRangesList"),
+    representation("VIRTUAL"),
+    prototype(elementType="IntegerPos")
+)
+
+setClass("SimpleIntegerPosList",
+    contains=c("IntegerPosList", "SimpleIntegerRangesList"),
     representation("VIRTUAL")
 )
 
@@ -35,20 +39,11 @@ setClass("CompressedIntegerRangesList",
 setClass("IRangesList",
     contains="IntegerRangesList",
     representation("VIRTUAL"),
-    prototype(
-        elementType="IRanges"
-    )
+    prototype(elementType="IRanges")
 )
 
 setClass("SimpleIRangesList",
     contains=c("IRangesList", "SimpleIntegerRangesList")
-)
-
-setClass("CompressedIRangesList",
-    contains=c("IRangesList", "CompressedIntegerRangesList"),
-    prototype=prototype(
-        unlistData=new("IRanges")
-    )
 )
 
 
@@ -59,21 +54,7 @@ setClass("CompressedIRangesList",
 setClass("NormalIRangesList",
     contains="IRangesList",
     representation("VIRTUAL"),
-    prototype(
-        elementType="NormalIRanges"
-    )
-)
-
-### CompressedNormalIRangesList cannot hold NormalIRanges as its elements,
-### due to the compression concatenating everything into a single
-### NormalIRanges (which could easily become non-normal). So just have it
-### hold IRanges, instead.
-setClass("CompressedNormalIRangesList",
-    contains=c("NormalIRangesList", "CompressedIRangesList"),
-    prototype=prototype(
-        elementType="IRanges",
-        unlistData=new("IRanges")
-    )
+    prototype(elementType="NormalIRanges")
 )
 
 setClass("SimpleNormalIRangesList",
@@ -86,22 +67,13 @@ setClass("SimpleNormalIRangesList",
 ###
 
 setClass("IPosList",
-    contains="IntegerRangesList",
+    contains="IntegerPosList",
     representation("VIRTUAL"),
-    prototype(
-        elementType="IPos"
-    )
+    prototype(elementType="IPos")
 )
 
 setClass("SimpleIPosList",
-    contains=c("IPosList", "SimpleIntegerRangesList")
-)
-
-setClass("CompressedIPosList",
-    contains=c("IPosList", "CompressedIntegerRangesList"),
-    prototype=prototype(
-        unlistData=new("IPos")
-    )
+    contains=c("IPosList", "SimpleIntegerPosList")
 )
 
 
@@ -122,30 +94,6 @@ setValidity2("NormalIRangesList", .valid.NormalIRangesList)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
-
-setMethod("start", "IntegerRangesList",
-    function(x) as(lapply(x, start), "SimpleIntegerList")
-)
-
-setMethod("start", "CompressedIntegerRangesList",
-    function(x) relist(start(unlist(x, use.names=FALSE)), x)
-)
-
-setMethod("end", "IntegerRangesList",
-    function(x) as(lapply(x, end), "SimpleIntegerList")
-)
-
-setMethod("end", "CompressedIntegerRangesList",
-    function(x) relist(end(unlist(x, use.names=FALSE)), x)
-)
-
-setMethod("width", "IntegerRangesList",
-    function(x) as(lapply(x, width), "SimpleIntegerList")
-)
-
-setMethod("width", "CompressedIntegerRangesList",
-    function(x) relist(width(unlist(x, use.names=FALSE)), x)
-)
 
 setGeneric(".replaceSEW", signature="x",  # not exported
     function(x, FUN, ..., value) standardGeneric(".replaceSEW")
@@ -171,30 +119,6 @@ setMethod(".replaceSEW", "IntegerRangesList",
         FUN <- match.fun(FUN)
         for (i in seq_len(length(x)))
             x[[i]] <- FUN(x[[i]], ..., value = value[[i]])
-        x
-    }
-)
-
-setMethod(".replaceSEW", "CompressedIntegerRangesList",
-    function(x, FUN, ..., value)
-    {
-        if (extends(class(value), "IntegerList")) {
-            if (!identical(lapply(x, names), lapply(value, names)) &&
-                !all(elementNROWS(x) == elementNROWS(value)))
-                stop("'value' must have same length and names as current 'ranges'")
-            value <- unlist(value)
-        } else if (is.numeric(value)) {
-            lelts <- sum(elementNROWS(x))
-            if (lelts != length(value))
-                value <- rep(value, length.out = lelts)
-            if (!is.integer(value))
-                value <- as.integer(value)
-        } else {
-            stop("'value' must extend class IntegerList or integer")
-        }
-        FUN <- match.fun(FUN)
-        slot(x, "unlistData", check=FALSE) <-
-                        FUN(x@unlistData, ..., value = value)
         x
     }
 )
@@ -254,12 +178,6 @@ setMethod("isNormal", "SimpleIRangesList",
                PACKAGE="IRanges")
 )
 
-setMethod("isNormal", "CompressedIRangesList",
-    function(x, use.names=FALSE)
-        .Call2("CompressedIRangesList_isNormal", x, use.names,
-               PACKAGE="IRanges")
-)
-
 setMethod("whichFirstNotNormal", "IntegerRangesList",
     function(x) unlist(lapply(x, whichFirstNotNormal))
 )
@@ -287,47 +205,16 @@ setMethod("whichFirstNotNormal", "IntegerRangesList",
 
 ### From ordinary list to IRangesList
 
-.from_list_to_CompressedIRangesList <- function(from)
-{
-    from <- .as_list_of_IRanges(from)
-    new_CompressedList_from_list("CompressedIRangesList", from)
-}
-
 .from_list_to_SimpleIRangesList <- function(from)
 {
     from <- .as_list_of_IRanges(from)
     S4Vectors:::new_SimpleList_from_list("SimpleIRangesList", from)
 }
 
-setAs("list", "CompressedIRangesList", .from_list_to_CompressedIRangesList)
 setAs("list", "SimpleIRangesList", .from_list_to_SimpleIRangesList)
 setAs("list", "IRangesList", .from_list_to_SimpleIRangesList)
 
 ### From List to IRangesList
-
-.from_List_to_CompressedIRangesList <- function(from)
-{
-    new_CompressedList_from_list("CompressedIRangesList",
-                                 .as_list_of_IRanges(from),
-                                 metadata=metadata(from),
-                                 mcols=mcols(from))
-}
-
-### IntegerRanges objects are List objects so this case is already covered
-### by the .from_List_to_CompressedIRangesList() helper above. However, we
-### can implement it much more efficiently.
-.from_IntegerRanges_to_CompressedIRangesList <- function(from)
-{
-    if (!is(from, "IRanges"))
-        from <- as(from, "IRanges", strict=FALSE)
-    ans_partitioning <- PartitioningByEnd(seq_along(from), names=names(from))
-    names(from) <- NULL
-    ans_mcols <- mcols(from)
-    mcols(from) <- NULL
-    ans <- relist(from, ans_partitioning)
-    mcols(ans) <- ans_mcols
-    ans
-}
 
 .from_List_to_SimpleIRangesList <- function(from)
 {
@@ -337,10 +224,6 @@ setAs("list", "IRangesList", .from_list_to_SimpleIRangesList)
                                  mcols=mcols(from))
 }
 
-setAs("List", "CompressedIRangesList", .from_List_to_CompressedIRangesList)
-setAs("IntegerRanges", "CompressedIRangesList",
-    .from_IntegerRanges_to_CompressedIRangesList
-)
 setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 
 ### Automatic coercion methods from SimpleList, IntegerRangesList, or
@@ -350,33 +233,6 @@ setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 setAs("SimpleList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 setAs("IntegerRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 setAs("SimpleIntegerRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
-
-setAs("List", "IRangesList",
-    function(from)
-    {
-        if (is(from, "CompressedList") || is(from, "IntegerRanges"))
-            as(from, "CompressedIRangesList")
-        else
-            as(from, "SimpleIRangesList")
-    }
-)
-
-### This case is already covered by the List-to-CompressedIRangesList coercion
-### above. However, we can implement it much more efficiently.
-setAs("CompressedRleList", "CompressedIRangesList",
-      function(from)
-      {
-        if ((length(from) > 0) &&
-            (!is.logical(runValue(from[[1L]])) ||
-             S4Vectors:::anyMissing(runValue(from[[1L]]))))
-          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
-               "with NAs to a CompressedIRangesList object")
-        ranges <- as(unlist(from, use.names = FALSE), "IRanges")
-        to <- diceRangesByList(ranges, from)
-        metadata(to) <- metadata(from)
-        mcols(to) <- mcols(from)
-        to
-      })
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -499,15 +355,6 @@ IRangesList <- function(..., universe=NULL, compress=TRUE)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting.
-###
-
-setMethod("getListElement", "CompressedNormalIRangesList",
-    function(x, i, exact=TRUE) newNormalIRangesFromIRanges(callNextMethod())
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
 
@@ -560,18 +407,6 @@ setMethod("showAsCell", "IntegerRangesList",
 ### More coercions
 ###
 
-.as.list.CompressedNormalIRangesList <- function(x, use.names=TRUE)
-{
-    if (!isTRUEorFALSE(use.names))
-        stop("'use.names' must be TRUE or FALSE")
-    ans <- lapply_CompressedList(x, newNormalIRangesFromIRanges)
-    if (use.names)
-        names(ans) <- names(x)
-    ans
-}
-setMethod("as.list", "CompressedNormalIRangesList",
-    .as.list.CompressedNormalIRangesList)
-
 setMethod("unlist", "SimpleNormalIRangesList",
           function(x, recursive = TRUE, use.names = TRUE)
           {
@@ -598,61 +433,6 @@ setAs("SimpleIRangesList", "SimpleNormalIRangesList",
     .from_RangesList_to_SimpleNormalIRangesList
 )
 
-setAs("NormalIRangesList", "CompressedNormalIRangesList",
-    function(from)
-    {
-        ans <- as(from, "CompressedIRangesList", strict=FALSE)
-        class(ans) <- "CompressedNormalIRangesList"
-        ans
-    }
-)
-
-setAs("CompressedIRangesList", "CompressedNormalIRangesList",
-    function(from)
-    {
-        if (!all(isNormal(from)))
-            from <- reduce(from, drop.empty.ranges=TRUE)
-        class(from) <- "CompressedNormalIRangesList"
-        from
-    }
-)
-
-setAs("IntegerRangesList", "CompressedNormalIRangesList",
-    function(from)
-    {
-        as(as(from, "CompressedIRangesList", strict=FALSE),
-           "CompressedNormalIRangesList")
-    }
-)
-
-setAs("IntegerRangesList", "NormalIRangesList",
-    function(from)
-    {
-        if (is(from, "SimpleIntegerRangesList"))
-            as(from, "SimpleNormalIRangesList")
-        else
-            as(from, "CompressedNormalIRangesList")
-    }
-)
-
-### Coercion from LogicalList to NormalIRangesList.
-
-setAs("LogicalList", "NormalIRangesList",
-      function(from)
-      {
-        if (is(from, "CompressedList"))
-          as(from, "CompressedNormalIRangesList")
-        else
-          as(from, "SimpleNormalIRangesList")
-      })
-
-setAs("LogicalList", "CompressedNormalIRangesList",
-      function(from)
-      new_CompressedList_from_list("CompressedNormalIRangesList",
-                                   lapply(from, as, "NormalIRanges"),
-                                   metadata = metadata(from),
-                                   mcols = mcols(from)))
-
 setAs("LogicalList", "SimpleNormalIRangesList",
       function(from)
       S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
@@ -661,29 +441,6 @@ setAs("LogicalList", "SimpleNormalIRangesList",
                                            mcols = mcols(from)))
 
 ### Coercion from RleList to NormalIRangesList.
-
-setAs("RleList", "NormalIRangesList",
-        function(from)
-        {
-            if (is(from, "CompressedList"))
-                as(from, "CompressedNormalIRangesList")
-            else
-                as(from, "SimpleNormalIRangesList")
-        })
-
-setAs("RleList", "CompressedNormalIRangesList",
-      function(from)
-      {
-        if ((length(from) > 0) &&
-            (!is.logical(runValue(from[[1L]])) ||
-             S4Vectors:::anyMissing(runValue(from[[1L]]))))
-          stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
-               "with NAs to a CompressedNormalIRangesList object")
-        new_CompressedList_from_list("CompressedNormalIRangesList",
-                                     lapply(from, as, "NormalIRanges"),
-                                     metadata = metadata(from),
-                                     mcols = mcols(from))
-      })
 
 setAs("RleList", "SimpleNormalIRangesList",
       function(from)
@@ -760,42 +517,11 @@ setMethod("merge", c("IntegerRangesList", "IntegerRangesList"),
 ### The "max" and "min" methods for NormalIRangesList objects.
 ###
 
-CompressedNormalIRangesList.max <- function(x, use.names)
-{
-    if (!is(x, "CompressedNormalIRangesList"))
-        stop("'x' must be a CompressedNormalIRangesList object")
-    use.names <- S4Vectors:::normargUseNames(use.names)
-    .Call2("CompressedNormalIRangesList_max", x, use.names, PACKAGE="IRanges")
-}
-
-setMethod("max", "CompressedNormalIRangesList",
-          function(x, ..., na.rm) CompressedNormalIRangesList.max(x, TRUE))
-
 setMethod("max", "SimpleNormalIRangesList",
           function(x, ..., na.rm)
           .Call2("SimpleNormalIRangesList_max", x, PACKAGE="IRanges"))
 
-CompressedNormalIRangesList.min <- function(x, use.names)
-{
-    if (!is(x, "CompressedNormalIRangesList"))
-        stop("'x' must be a CompressedNormalIRangesList object")
-    use.names <- S4Vectors:::normargUseNames(use.names)
-    .Call2("CompressedNormalIRangesList_min", x, use.names, PACKAGE="IRanges")
-}
-
-setMethod("min", "CompressedNormalIRangesList",
-          function(x, ..., na.rm) CompressedNormalIRangesList.min(x, TRUE))
-
 setMethod("min", "SimpleNormalIRangesList",
           function(x, ..., na.rm)
           .Call2("SimpleNormalIRangesList_min", x, PACKAGE="IRanges"))
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "summary" method.
-###
-
-setMethod("summary", "CompressedIRangesList",
-          function(object)
-          .Call2("CompressedIRangesList_summary", object, PACKAGE="IRanges"))
 

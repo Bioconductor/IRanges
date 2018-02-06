@@ -11,9 +11,8 @@
 \alias{RleViewsList}
 
 % coercion
-\alias{coerce,RleViewsList,IRangesList-method}
-\alias{coerce,RleViewsList,CompressedIRangesList-method}
 \alias{coerce,RleViewsList,SimpleIRangesList-method}
+\alias{coerce,RleViewsList,IRangesList-method}
 
 \title{List of RleViews}
 \description{An extension of \linkS4class{ViewsList} that holds only
@@ -44,20 +43,11 @@
 }
 
 \section{Coercion}{
-  In the code snippets below, \code{from} is an RleViewsList object:
+  In the code snippet below, \code{from} is an RleViewsList object:
 
   \describe{
     \item{}{
-      \code{as(from, "IRangesList")}: Creates a \code{CompressedIRangesList}
-      object containing the view locations in \code{from}.
-    }
-    \item{}{
-      \code{as(from, "CompressedIRangesList")}: Creates a
-      \code{CompressedIRangesList} object containing the view locations in
-      \code{from}.
-    }
-    \item{}{
-      \code{as(from, "SimpleIRangesList")}: Creates a \code{SimpleIRangesList}
+      \code{as(from, "IRangesList")}: Creates an \code{IRangesList}
       object containing the view locations in \code{from}.
     }
   }

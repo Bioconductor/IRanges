@@ -8,12 +8,13 @@
 \alias{SimpleIntegerRangesList}
 
 % accessors
-\alias{end,IntegerRangesList-method}
-\alias{end<-,IntegerRangesList-method}
-\alias{width,IntegerRangesList-method}
-\alias{width<-,IntegerRangesList-method}
-\alias{start,IntegerRangesList-method}
+\alias{start,RangesList-method}
 \alias{start<-,IntegerRangesList-method}
+\alias{end,RangesList-method}
+\alias{end<-,IntegerRangesList-method}
+\alias{width,RangesList-method}
+\alias{width<-,IntegerRangesList-method}
+\alias{pos,PosList-method}
 \alias{space}
 \alias{space,IntegerRangesList-method}
 \alias{universe,IntegerRangesList-method}

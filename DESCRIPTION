@@ -1,14 +1,13 @@
 Package: IRanges
 Title: Infrastructure for manipulating intervals on sequences
 Description: Provides efficient low-level and highly reusable S4
-	     classes for storing, manipulating and aggregating over annotated
-             ranges of integers. Implements an algebra of range operations,
-             including efficient algorithms for finding
-             overlaps and nearest neighbors. Defines efficient
-             list-like classes for storing, transforming and aggregating
-             large grouped data, i.e., collections of atomic vectors and
-             DataFrames.
-Version: 2.13.20
+	classes for storing, manipulating and aggregating over annotated
+	ranges of integers. Implements an algebra of range operations,
+	including efficient algorithms for finding overlaps and nearest
+	neighbors. Defines efficient list-like classes for storing,
+	transforming and aggregating large grouped data, i.e., collections
+	of atomic vectors and DataFrames.
+Version: 2.13.21
 Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
@@ -24,6 +23,7 @@ Collate: range-squeezers.R
 	Vector-class-leftovers.R
 	List-class-leftovers.R
 	AtomicList-class.R
+	AtomicList-utils.R
 	Ranges-class.R
 	IntegerRanges-class.R
 	subsetting-utils.R
@@ -33,8 +33,6 @@ Collate: range-squeezers.R
 	IRanges-utils.R
 	IPos-class.R
 	Grouping-class.R
-	CompressedList-class.R
-	CompressedList-comparison.R
 	Views-class.R
 	Rle-class-leftovers.R
 	RleViews-class.R
@@ -42,10 +40,7 @@ Collate: range-squeezers.R
 	extractList.R
 	seqapply.R
 	multisplit.R
-	AtomicList-impl.R
-	AtomicList-utils.R
 	ListGrouping-class.R
-	Hits-class-leftovers.R
 	DataFrame-utils.R
 	DataFrameList-class.R
 	DataFrameList-utils.R
@@ -53,13 +48,21 @@ Collate: range-squeezers.R
 	ViewsList-class.R
 	RleViewsList-class.R
 	RleViewsList-utils.R
+	RangedSelection-class.R
 	MaskCollection-class.R
+	read.Mask.R
+	CompressedList-class.R
+	CompressedList-comparison.R
+	CompressedHitsList-class.R
+	CompressedDataFrameList-class.R
+	CompressedAtomicList-class.R
+	CompressedGrouping-class.R
+	CompressedRangesList-class.R
+	CompressedIntegerRangesList-class.R
 	RangedData-class.R
 	RangedData-utils.R
-	CompressedHitsList-class.R
+	Hits-class-leftovers.R
 	NCList-class.R
-	RangedSelection-class.R
-	read.Mask.R
 	findOverlaps-methods.R
 	windows-methods.R
 	intra-range-methods.R

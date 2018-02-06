@@ -13,9 +13,10 @@
 \alias{SimpleIRangesList}
 
 % accessors
-\alias{end,CompressedIRangesList-method}
-\alias{width,CompressedIRangesList-method}
-\alias{start,CompressedIRangesList-method}
+\alias{end,CompressedRangesList-method}
+\alias{width,CompressedRangesList-method}
+\alias{start,CompressedRangesList-method}
+\alias{pos,CompressedPosList-method}
 
 % coercion
 \alias{coerce,list,CompressedIRangesList-method}

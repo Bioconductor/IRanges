@@ -19,6 +19,28 @@ setClass("Ranges", contains="Vector", representation("VIRTUAL"))
 
 setClass("Pos", contains="Ranges", representation("VIRTUAL"))
 
+setClass("RangesList",
+    contains="List",
+    representation("VIRTUAL"),
+    prototype(elementType="Ranges")
+)
+
+setClass("SimpleRangesList",
+    contains=c("RangesList", "SimpleList"),
+    representation("VIRTUAL")
+)
+
+setClass("PosList",
+    contains="RangesList",
+    representation("VIRTUAL"),
+    prototype(elementType="Pos")
+)
+
+setClass("SimplePosList",
+    contains=c("PosList", "SimpleRangesList"),
+    representation("VIRTUAL")
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Some default methods
@@ -61,6 +83,23 @@ setMethod("mid", "Ranges",
 
 ### A Ranges object is considered empty iff all its ranges are empty.
 setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0L))
+
+
+setMethod("start", "RangesList",
+    function(x) as(lapply(x, start), "SimpleIntegerList")
+)
+
+setMethod("end", "RangesList",
+    function(x) as(lapply(x, end), "SimpleIntegerList")
+)
+
+setMethod("width", "RangesList",
+    function(x) as(lapply(x, width), "SimpleIntegerList")
+)
+
+setMethod("pos", "PosList",
+    function(x) as(lapply(x, pos), "SimpleIntegerList")
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

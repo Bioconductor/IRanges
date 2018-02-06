@@ -6,15 +6,8 @@ setClass("SimpleGrouping",
 ### TODO: contain VIRTUAL after R 3.4 release
          contains=c("Grouping", "SimpleIntegerList"))
 
-setClass("CompressedGrouping",
-### TODO: contain VIRTUAL after R 3.4 release
-         contains=c("Grouping", "CompressedIntegerList"))
-
 setClass("SimpleManyToOneGrouping",
          contains=c("ManyToOneGrouping", "SimpleGrouping"))
-
-setClass("CompressedManyToOneGrouping",
-         contains=c("ManyToOneGrouping", "CompressedGrouping"))
 
 setClass("BaseManyToManyGrouping",
          representation(nobj="integer"),
@@ -28,19 +21,10 @@ setClass("BaseManyToManyGrouping",
 setClass("SimpleManyToManyGrouping",
          contains=c("BaseManyToManyGrouping", "SimpleGrouping"))
 
-setClass("CompressedManyToManyGrouping",
-         contains=c("BaseManyToManyGrouping", "CompressedGrouping"))
-
 ### -------------------------------------------------------------------------
 ### Grouping API implementation
 ### ----------------------------
 ###
-
-setMethod("grouplengths", "CompressedGrouping",
-          function(x, i=NULL) grouplengths(PartitioningByEnd(x), i))
-
-setMethod("nobj", "CompressedManyToOneGrouping",
-          function(x) nobj(PartitioningByEnd(x)))
 
 setMethod("nobj", "BaseManyToManyGrouping", function(x) x@nobj)
 

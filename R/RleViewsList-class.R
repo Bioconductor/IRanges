@@ -88,11 +88,9 @@ RleViewsList <- function(..., rleList, rangesList, universe = NULL)
 ### Coercion.
 ###
 
-setAs("RleViewsList", "IRangesList", function(from)
-      IRangesList(lapply(from, as, "IRanges")))
-
-setAs("RleViewsList", "CompressedIRangesList", function(from)
-      IRangesList(lapply(from, as, "IRanges"), compress=TRUE))
-
 setAs("RleViewsList", "SimpleIRangesList", function(from)
       IRangesList(lapply(from, as, "IRanges"), compress=FALSE))
+
+setAs("RleViewsList", "IRangesList",
+      function(from) as(from, "SimpleIRangesList"))
+

@@ -169,8 +169,6 @@ setMethod("unlist", "CompressedList",
     }
 )
 
-setAs("ANY", "CompressedList", function(from) coerceToCompressedList(from))
-
 coerceToCompressedList <- function(from, element.type = NULL, ...) {
   if (is(from, S4Vectors:::listClassName("Compressed", element.type)))
     return(from)
@@ -191,6 +189,22 @@ coerceToCompressedList <- function(from, element.type = NULL, ...) {
   to <- relist(v, part)
   names(to) <- names(from)
   to
+}
+
+setAs("ANY", "CompressedList", function(from) coerceToCompressedList(from))
+
+setListCoercions <- function(type) {
+  CompressedClass <- S4Vectors:::listClassName("Compressed", type)
+  SimpleClass <- S4Vectors:::listClassName("Simple", type)
+  Class <- S4Vectors:::listClassName("", type)
+  hasCompressedList <- CompressedClass != "CompressedList"
+  if (hasCompressedList) {
+    setAs("ANY", CompressedClass, CoercerToList(type, compress = TRUE))
+  }
+  setAs("ANY", SimpleClass, CoercerToList(type, compress = FALSE))
+  setAs("ANY", Class, CoercerToList(type, compress = hasCompressedList))
+  setAs("SimpleList", Class, CoercerToList(type, compress = FALSE))
+  setAs("list", Class, CoercerToList(type, compress = FALSE))
 }
 
 
