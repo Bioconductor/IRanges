@@ -15,6 +15,7 @@
 ### GenomicAlignments.
 ###
 
+
 setClass("Ranges", contains="Vector", representation("VIRTUAL"))
 
 setClass("Pos", contains="Ranges", representation("VIRTUAL"))
@@ -134,5 +135,15 @@ validate_Pos <- function(x)
     if (!all(x_pos == x_start))
         return(wmsg())
     NULL
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### unlist_as_integer()
+###
+
+unlist_as_integer <- function(x)
+{
+    S4Vectors:::fancy_mseq(width(x), offset=start(x)-1L)
 }
 

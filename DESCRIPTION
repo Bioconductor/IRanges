@@ -30,13 +30,13 @@ Collate: range-squeezers.R
 	Ranges-and-RangesList-classes.R
 	IntegerRanges-class.R
 	IntegerRanges-comparison.R
-	subsetting-utils.R
-        IntegerRangesList-class.R
+	IntegerRangesList-class.R
 	IRanges-class.R
 	IRanges-constructor.R
 	IRanges-utils.R
 	Rle-class-leftovers.R
 	IPos-class.R
+	subsetting-utils.R
 	Grouping-class.R
 	Views-class.R
 	RleViews-class.R
