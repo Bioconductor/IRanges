@@ -49,7 +49,7 @@ setClass("CompressedIPosList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### CompressedRangesList getters
+### Methods for CompressedRangesList objects
 ###
 
 setMethod("start", "CompressedRangesList",
@@ -67,11 +67,6 @@ setMethod("width", "CompressedRangesList",
 setMethod("pos", "CompressedPosList",
     function(x) relist(pos(unlist(x, use.names=FALSE)), x)
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### CompressedRangesList setter.
-###
 
 setMethod(".replaceSEW", "CompressedRangesList",
     function(x, FUN, ..., value)
@@ -222,7 +217,7 @@ setMethod("min", "CompressedNormalIRangesList",
     if (!isTRUEorFALSE(use.names))
         stop("'use.names' must be TRUE or FALSE")
     ans <- lapply_CompressedList(x, newNormalIRangesFromIRanges)
-    if (use.names) 
+    if (use.names)
         names(ans) <- names(x)
     ans
 }
@@ -310,4 +305,27 @@ setAs("RleList", "CompressedNormalIRangesList",
                                      metadata = metadata(from),
                                      mcols = mcols(from))
       })
+
+### Coercion from IntegerRanges to IPosList.
+
+.from_IntegerRanges_to_CompressedIPosList <- function(from)
+{
+    from <- as(from, "IRanges")
+    ans <- relist(IPos(from), from)
+    metadata(ans) <- metadata(from)
+    mcols(ans) <- mcols(from)
+    ans
+}
+
+setAs("IntegerRanges", "CompressedIPosList",
+    .from_IntegerRanges_to_CompressedIPosList
+)
+
+setAs("IntegerRanges", "IPosList",
+    .from_IntegerRanges_to_CompressedIPosList
+)
+
+setAs("IRanges", "IPosList",
+    .from_IntegerRanges_to_CompressedIPosList
+)
 
