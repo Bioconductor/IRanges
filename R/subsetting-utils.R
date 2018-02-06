@@ -31,8 +31,7 @@ setMethod("NSBS", "IntegerRanges",
             i <- i@pos_runs  # TODO: Use collapse() when it's available
         i_start <- start(i)
         i_end <- end(i)
-        if (min(i_start) < 1L ||
-            strict.upper.bound && max(i_end) > x_NROW)
+        if (min(i_start) < 1L || strict.upper.bound && max(i_end) > x_NROW)
             S4Vectors:::.subscript_error("subscript contains out-of-bounds ",
                                          "ranges")
         if (i_len > 1L) {
