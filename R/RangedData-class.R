@@ -243,7 +243,7 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
                  "constructor function is defunct.")
     .Defunct(msg=msg)
   }
-  if (is(ranges, "IntegerRangesList")) {
+  if (is(ranges, "IntegerRangesList") && !is(ranges, "IntegerRanges")) {
     if (!is.null(space))
       warning("since 'class(ranges)' extends IntegerRangesList, 'space' argument is ignored")
     if (is.null(names(ranges)))
