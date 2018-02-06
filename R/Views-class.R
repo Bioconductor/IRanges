@@ -168,7 +168,7 @@ setMethod("as.matrix", "Views", function(x, rev = FALSE, max.width = NA) {
   v <- extractROWS(subject(x), x_ranges)[ord]
   v_fill <- rep.int(NA, max.width * length(x))
   part <- PartitioningByWidth(rep(max.width, length(x)))
-  i <- as.integer(IRanges(start(part), width = width(x_ranges)))
+  i <- unlist_as_integer(IRanges(start(part), width = width(x_ranges)))
   v_fill[i] <- as.vector(v)
   matrix(v_fill, ncol = max.width, byrow = TRUE,
          dimnames = list(names(x), NULL))

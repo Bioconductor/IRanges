@@ -759,7 +759,7 @@ setMethod("rank", "CompressedAtomicList",
                   stop("'ties.method' last/random not yet supported")
               p <- PartitioningByEnd(x)
               o <- order(togroup(p), unlist(x, use.names=FALSE))
-              r <- as.integer(IRanges(1L, width=width(p)))
+              r <- unlist_as_integer(IRanges(1L, width=width(p)))
               gp <- PartitioningByEnd(end(Rle(unlist(x, use.names=FALSE)[o])))
               v <- switch(ties.method,
                           average=(r[start(gp)] + r[end(gp)])/2,

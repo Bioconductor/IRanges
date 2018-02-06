@@ -62,7 +62,7 @@ setMethod("as.matrix", "ViewsList",
               nms <- rep(nms, elementNROWS(x))
               rownms <- rownames(m)
               if (is.null(rownms))
-                rownms <- as.integer(IRanges(1L, width = elementNROWS(x)))
+                rownms <- unlist_as_integer(IRanges(1L, width=elementNROWS(x)))
               rownames(m) <- paste(nms, rownms, sep = ".")
             }
             m

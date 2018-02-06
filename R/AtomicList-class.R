@@ -154,7 +154,7 @@ as.matrix.AtomicList <- function(x, col.names=NULL, ...) {
         col.names <- names(vx)
     }
     if (is.null(col.names) || is.character(col.names)) {
-        col.ind <- as.integer(IRanges(1, width(p)))
+        col.ind <- unlist_as_integer(IRanges(1, width(p)))
     } else if (is.list(col.names) || is(col.names, "List")) {
         col.names <- unlist(col.names, use.names=FALSE)
         if (is.factor(col.names)) {

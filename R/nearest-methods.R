@@ -79,7 +79,7 @@ vectorToHits <- function(i, srle, ord) {
   v <- !is.na(i)
   i <- i[v]
   w <- width(srle)[i]
-  subj <- as.integer(IRanges(start(srle)[i], width=w))
+  subj <- unlist_as_integer(IRanges(start(srle)[i], width=w))
   m <- cbind(queryHits = rep(seq(lx)[v], w),
              subjectHits = if (!is.null(ord)) ord[subj] else subj)
   if (!is.null(ord))

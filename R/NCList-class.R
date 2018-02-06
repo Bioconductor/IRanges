@@ -257,7 +257,7 @@ setAs("NCLists", "IRangesList",
 .extract_groups_from_RangesList <- function(x)
 {
     x_partitioning <- PartitioningByEnd(x)
-    relist(as.integer(x_partitioning) - 1L, x_partitioning)
+    relist(unlist_as_integer(x_partitioning) - 1L, x_partitioning)
 }
 
 .nclists <- function(x, x_groups)
@@ -271,7 +271,7 @@ setAs("NCLists", "IRangesList",
 NCLists <- function(x, circle.length=NA_integer_)
 {
     if (!is(x, "IntegerRangesList"))
-        stop("'x' must be a IntegerRangesList object")
+        stop("'x' must be an IntegerRangesList object")
     if (!is(x, "CompressedIRangesList"))
         x <- as(x, "CompressedIRangesList")
     ans_mcols <- mcols(x)

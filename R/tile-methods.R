@@ -36,7 +36,7 @@ setMethod("tile", "IntegerRanges", function(x, n, width, ...) {
   width <- IRanges::width(x) / n
   ## The floor() is intentional for compatibility with Jim Kent's BigWig code
   ## tileGenome() uses ceiling() instead
-  tile.end <- floor(as.integer(IRanges(rep(1L, length(n)), width=n)) *
+  tile.end <- floor(unlist_as_integer(IRanges(rep(1L, length(n)), width=n)) *
                     rep(width, n))
   tile.end.abs <- tile.end + rep(start(x), n) - 1L
   tile.width <- S4Vectors:::diffWithInitialZero(as.integer(tile.end.abs))
@@ -64,8 +64,8 @@ setMethod("slidingWindows", "IntegerRanges", function(x, width, step = 1L) {
     if (any(step < 0L))
         stop("some 'step' are negative")
     n <- ceiling(pmax(width(x) - width, 0L) / step) + 1L
-    window.starts <- as.integer(IRanges(rep(0L, length(n)), width=n)) *
-        step + 1L
+    window.starts <- unlist_as_integer(IRanges(rep(0L, length(n)), width=n)) *
+                     step + 1L
     windows <- restrict(IRanges(window.starts, width=width),
                         end=rep(width(x), n))
     windows.abs <- shift(windows, rep(start(x), n) - 1L)
