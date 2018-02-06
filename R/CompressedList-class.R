@@ -12,6 +12,10 @@ setClass("CompressedList",
     )
 )
 
+setMethod("classNameForDisplay", "CompressedList",
+    function(x) sub("^Compressed", "", class(x))
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters and setters
@@ -378,14 +382,5 @@ setMethod("revElements", "CompressedList",
         x@unlistData <- extractROWS(x@unlistData, ii)
         x
     }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### classNameForDisplay()
-###
-
-setMethod("classNameForDisplay", "CompressedList",
-    function(x) sub("^Compressed", "", class(x))
 )
 

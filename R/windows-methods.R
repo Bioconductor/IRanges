@@ -72,10 +72,8 @@ setMethod("windows", "list_OR_List",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### narrow()
 ###
-### Defined on Ranges and RangeList derivatives only.
-###
-### On Ranges derivatives, it's equivalent to windows().
-### On RangesList derivatives, it's equivalent to:
+### A recursive version of windows() i.e. on a list-like object it's
+### equivalent to:
 ###
 ###     mendoapply(narrow, x, start, end, width,
 ###                        MoreArgs=list(use.names=use.names))
@@ -86,40 +84,40 @@ setGeneric("narrow", signature="x",
         standardGeneric("narrow")
 )
 
-setMethod("narrow", "Ranges",
+### Should operate recursively on an ordinary list or an IntegerRangesList,
+### GenomicRangesList, DNAStrinSetList, or GAlignmentsList derivative.
+### But not on an IRanges, GRanges, DNAStringSet, or GAlignments object
+### where it's equivalent to windows().
+setMethod("narrow", "ANY",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        x <- windows(x, start=start, end=end, width=width)
+        if (is(x, "list_OR_List") && pcompareRecursively(x)) {
+            lx <- length(x)
+            start <- normargAtomicList1(start, IntegerList, lx)
+            end <- normargAtomicList1(end, IntegerList, lx)
+            width <- normargAtomicList1(width, IntegerList, lx)
+            ans <- mendoapply(narrow, x, start, end, width,
+                                      MoreArgs=list(use.names=use.names))
+            return(ans)
+        }
+        ans <- windows(x, start=start, end=end, width=width)
         if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
-        x
+            names(ans) <- NULL
+        ans
     }
 )
 
-setMethod("narrow", "RangesList",
-    function(x, start = NA, end = NA, width = NA, use.names = TRUE)
-    {
-        lx <- length(x)
-        start <- normargAtomicList1(start, IntegerList, lx)
-        end <- normargAtomicList1(end, IntegerList, lx)
-        width <- normargAtomicList1(width, IntegerList, lx)
-        mendoapply(narrow, x = x, start = start, end = end, width = width,
-                           MoreArgs = list(use.names = use.names))
-    }
-)
-
-setMethod("narrow", "CompressedRangesList",
-    function(x, start = NA, end = NA, width = NA, use.names = TRUE)
+setMethod("narrow", "CompressedList",
+    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
         lx <- length(x)
         x_eltNROWS <- elementNROWS(x)
         start <- normargAtomicList2(start, IntegerList, lx, x_eltNROWS)
         end <- normargAtomicList2(end, IntegerList, lx, x_eltNROWS)
         width <- normargAtomicList2(width, IntegerList, lx, x_eltNROWS)
-        slot(x, "unlistData", check=FALSE) <-
-            narrow(x@unlistData, start = start, end = end, width = width,
-                                 use.names = use.names)
-        x
+        unlisted_ans <- narrow(x@unlistData, start, end, width,
+                                             use.names=use.names)
+        BiocGenerics:::replaceSlots(x, unlistData=unlisted_ans, check=FALSE)
     }
 )
 
