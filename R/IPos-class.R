@@ -16,7 +16,7 @@ setClass("IPos",
 ### Getters
 ###
 
-setMethod("pos", "IPos", function(x) as.integer(x@pos_runs))
+setMethod("pos", "IPos", function(x) unlist_as_integer(x@pos_runs))
 
 setMethod("length", "IPos", function(x) sum(width(x@pos_runs)))
 

@@ -44,7 +44,7 @@ setClass("SimplePosList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Some default methods
+### Methods for Ranges derivatives
 ###
 
 ### Note that the 3 default methods below implement a circular relationship.
@@ -54,6 +54,24 @@ setMethod("end", "Ranges", function(x, ...) {width(x) - 1L + start(x)})
 setMethod("width", "Ranges", function(x) {end(x) - start(x) + 1L})
 
 setMethod("length", "Ranges", function(x) length(start(x)))
+
+setMethod("elementNROWS", "Ranges",
+    function(x) setNames(width(x), names(x))
+)
+
+setGeneric("mid", function(x, ...) standardGeneric("mid"))
+
+setMethod("mid", "Ranges",
+    function(x) start(x) + as.integer((width(x) - 1) / 2)
+)
+
+### A Ranges object is considered empty iff all its ranges are empty.
+setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0L))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Methods for Pos derivatives
+###
 
 ### Pos subclasses only need to implement a "pos" method.
 setMethod("start", "Pos", function(x) pos(x))
@@ -72,19 +90,12 @@ setReplaceMethod("names", "Pos",
     }
 )
 
-setMethod("elementNROWS", "Ranges",
-    function(x) setNames(width(x), names(x))
-)
+setMethod("as.integer", "Pos", function(x, ...) pos(x))
 
-setGeneric("mid", function(x, ...) standardGeneric("mid"))
 
-setMethod("mid", "Ranges",
-    function(x) start(x) + as.integer((width(x) - 1) / 2)
-)
-
-### A Ranges object is considered empty iff all its ranges are empty.
-setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0L))
-
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Methods for RangesList derivatives
+###
 
 setMethod("start", "RangesList",
     function(x) as(lapply(x, start), "SimpleIntegerList")
@@ -97,6 +108,11 @@ setMethod("end", "RangesList",
 setMethod("width", "RangesList",
     function(x) as(lapply(x, width), "SimpleIntegerList")
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Methods for PosList derivatives
+###
 
 setMethod("pos", "PosList",
     function(x) as(lapply(x, pos), "SimpleIntegerList")
