@@ -360,7 +360,7 @@ setMethod("countOverlaps", c("IntegerRanges", "IntegerRanges"),
     countOverlaps_IntegerRanges
 )
 
-setMethod("countOverlaps", c("IntegerRangesList", "IntegerRangesList"),
+setMethod("countOverlaps", c("RangesList", "RangesList"),
           function(query, subject, maxgap=-1L, minoverlap=0L,
                    type = c("any", "start", "end", "within", "equal"))
           {
@@ -456,10 +456,10 @@ setGeneric("overlapsAny", signature=c("query", "subject"),
     !is.na(ahit)
 }
 
-setMethod("overlapsAny", c("Vector", "Vector"), .overlapsAny_default)
+setMethod("overlapsAny", c("Ranges", "Ranges"), .overlapsAny_default)
 setMethod("overlapsAny", c("Vector", "missing"), .overlapsAny_default)
 
-setMethod("overlapsAny", c("IntegerRangesList", "IntegerRangesList"),
+setMethod("overlapsAny", c("RangesList", "RangesList"),
     function(query, subject, maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "equal"),
              ...)
