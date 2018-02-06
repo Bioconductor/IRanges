@@ -91,30 +91,33 @@ setGeneric("narrow", signature="x",
 setMethod("narrow", "ANY",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        if (is(x, "list_OR_List") && pcompareRecursively(x)) {
-            lx <- length(x)
-            start <- normargAtomicList1(start, IntegerList, lx)
-            end <- normargAtomicList1(end, IntegerList, lx)
-            width <- normargAtomicList1(width, IntegerList, lx)
-            ans <- mendoapply(narrow, x, start, end, width,
-                                      MoreArgs=list(use.names=use.names))
+        call_windows <- is(x, "Ranges") ||
+                        !is(x, "list_OR_List") ||
+                        !pcompareRecursively(x)
+        if (call_windows) {
+            ## We've reached a leaf in the recursion tree.
+            ans <- windows(x, start=start, end=end, width=width)
+            if (!S4Vectors:::normargUseNames(use.names))
+                names(ans) <- NULL
             return(ans)
         }
-        ans <- windows(x, start=start, end=end, width=width)
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(ans) <- NULL
-        ans
+        x_len <- length(x)
+        start <- normargAtomicList1(start, IntegerList, x_len)
+        end <- normargAtomicList1(end, IntegerList, x_len)
+        width <- normargAtomicList1(width, IntegerList, x_len)
+        mendoapply(narrow, x, start, end, width,
+                           MoreArgs=list(use.names=use.names))
     }
 )
 
 setMethod("narrow", "CompressedList",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
-        lx <- length(x)
+        x_len <- length(x)
         x_eltNROWS <- elementNROWS(x)
-        start <- normargAtomicList2(start, IntegerList, lx, x_eltNROWS)
-        end <- normargAtomicList2(end, IntegerList, lx, x_eltNROWS)
-        width <- normargAtomicList2(width, IntegerList, lx, x_eltNROWS)
+        start <- normargAtomicList2(start, IntegerList, x_len, x_eltNROWS)
+        end <- normargAtomicList2(end, IntegerList, x_len, x_eltNROWS)
+        width <- normargAtomicList2(width, IntegerList, x_len, x_eltNROWS)
         unlisted_ans <- narrow(x@unlistData, start, end, width,
                                              use.names=use.names)
         BiocGenerics:::replaceSlots(x, unlistData=unlisted_ans, check=FALSE)
