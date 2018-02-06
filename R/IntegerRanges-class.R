@@ -90,32 +90,12 @@ setMethod("as.matrix", "IntegerRanges",
 }
 setMethod("as.data.frame", "IntegerRanges", .as.data.frame.IntegerRanges)
 
-setMethod("as.integer", "IntegerRanges",
-    function(x, ...) S4Vectors:::fancy_mseq(width(x), offset=start(x)-1L)
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### More stuff.
 ###
 ### TODO: Reorganize this
 ###
-
-setMethod("unlist", "IntegerRanges",
-    function(x, recursive=TRUE, use.names=TRUE)
-    {
-        if (!identical(recursive, TRUE))
-            stop("\"unlist\" method for IntegerRanges objects ",
-                 "does not support the 'recursive' argument")
-        if (!isTRUEorFALSE(use.names))
-            stop("'use.names' must be TRUE or FALSE")
-        ans <- as.integer(x)  # 'ans' should have no names
-        stopifnot(is.null(names(ans)))  # sanity check
-        if (use.names && !is.null(names(x)))
-            names(ans) <- rep.int(names(x), elementNROWS(x))
-        ans
-    }
-)
 
 setMethod("getListElement", "IntegerRanges",
     function(x, i, exact=TRUE)

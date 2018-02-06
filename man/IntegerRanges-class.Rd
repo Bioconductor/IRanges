@@ -32,8 +32,6 @@
 \alias{as.factor,IntegerRanges-method}
 \alias{as.matrix,IntegerRanges-method}
 \alias{as.data.frame,IntegerRanges-method}
-\alias{as.integer,IntegerRanges-method}
-\alias{unlist,IntegerRanges-method}
 \alias{show,IntegerRanges-method}
 \alias{showAsCell,IntegerRanges-method}
 \alias{isNormal}
@@ -181,16 +179,6 @@
       additional argument (\code{...}) is ignored.
       See \code{?\link{as.data.frame}} for more information about these
       arguments.
-    }
-    \item{}{
-      \code{as.integer(x)}:
-      Convert \code{x} into an integer vector, by converting each range
-      into the integer sequence formed by \code{from:to} and concatenating
-      them together.
-    }
-    \item{}{
-      \code{unlist(x, recursive = TRUE, use.names = TRUE)}:
-      Similar to \code{as.integer(x)} except can add names to elements.
     }
     \item{}{
       \code{x[[i]]}:
