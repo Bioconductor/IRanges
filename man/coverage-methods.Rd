@@ -295,9 +295,9 @@ stopifnot(identical(coverage(reduce(x)), shaved_cvg0))
 ## ---------------------------------------------------------------------
 ## E. SOME SANITY CHECKS
 ## ---------------------------------------------------------------------
-dummy.coverage <- function(x, shift=0L, width=NULL)
+dummy_coverage <- function(x, shift=0L, width=NULL)
 {
-    y <- unlist(shift(x, shift))
+    y <- as.integer(unlist(shift(x, shift)))
     if (is.null(width))
         width <- max(c(0L, y))
     Rle(tabulate(y,  nbins=width))
@@ -306,7 +306,7 @@ dummy.coverage <- function(x, shift=0L, width=NULL)
 check_real_vs_dummy <- function(x, shift=0L, width=NULL)
 {
     res1 <- coverage(x, shift=shift, width=width)
-    res2 <- dummy.coverage(x, shift=shift, width=width)
+    res2 <- dummy_coverage(x, shift=shift, width=width)
     stopifnot(identical(res1, res2))
 }
 check_real_vs_dummy(x)
