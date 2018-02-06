@@ -146,31 +146,6 @@ setMethod("windows", "Views",
     }
 )
 
-setMethod("narrow", "IntegerRangesList",
-          function(x, start = NA, end = NA, width = NA, use.names = TRUE)
-          {
-              lx <- length(x)
-              start <- normargAtomicList1(start, IntegerList, lx)
-              end <- normargAtomicList1(end, IntegerList, lx)
-              width <- normargAtomicList1(width, IntegerList, lx)
-              mendoapply(narrow, x = x, start = start, end = end, width = width,
-                         MoreArgs = list(use.names = use.names))
-          })
-
-setMethod("narrow", "CompressedIRangesList",
-          function(x, start = NA, end = NA, width = NA, use.names = TRUE)
-          {
-              lx <- length(x)
-              x_eltNROWS <- elementNROWS(x)
-              start <- normargAtomicList2(start, IntegerList, lx, x_eltNROWS)
-              end <- normargAtomicList2(end, IntegerList, lx, x_eltNROWS)
-              width <- normargAtomicList2(width, IntegerList, lx, x_eltNROWS)
-              slot(x, "unlistData", check=FALSE) <-
-                narrow(x@unlistData, start = start, end = end, width = width,
-                       use.names = use.names)
-              x
-          })
-
 setMethod("narrow", "MaskCollection",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {

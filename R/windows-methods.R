@@ -72,28 +72,53 @@ setMethod("windows", "list_OR_List",
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### narrow()
 ###
+### Defined on Ranges and RangeList derivatives only.
+###
+### On Ranges derivatives it's equivalent to windows().
+### On RangesList derivatives, it's equivalent to:
+###
+###     mendoapply(narrow, x, start, end, width,
+###                MoreArgs=list(use.names=use.names))
+###
 
 setGeneric("narrow", signature="x",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
         standardGeneric("narrow")
 )
 
-### By default, narrow() is equivalent to windows(). With the exception
-### of IntegerRangesList and GenomicRangesList derivatives, as well as
-### GAlignmentsList objects. For these objects the semantic must be:
-###
-###     mendoapply(narrow, x, start, end, width,
-###                MoreArgs=list(use.names=use.names))
-###
-### TODO: Once the RangeList class is back as the parent of the
-### IntegerRangesList, GenomicRangesList, and GAlignmentsList classes,
-### implement a "narrow" method for RangeList objects that does the above.
-setMethod("narrow", "ANY",
+setMethod("narrow", "Ranges",
     function(x, start=NA, end=NA, width=NA, use.names=TRUE)
     {
         x <- windows(x, start=start, end=end, width=width)
         if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
+        x
+    }
+)
+
+setMethod("narrow", "RangesList",
+    function(x, start = NA, end = NA, width = NA, use.names = TRUE)
+    {
+        lx <- length(x)
+        start <- normargAtomicList1(start, IntegerList, lx)
+        end <- normargAtomicList1(end, IntegerList, lx)
+        width <- normargAtomicList1(width, IntegerList, lx)
+        mendoapply(narrow, x = x, start = start, end = end, width = width,
+                           MoreArgs = list(use.names = use.names))
+    }
+)
+
+setMethod("narrow", "CompressedRangesList",
+    function(x, start = NA, end = NA, width = NA, use.names = TRUE)
+    {
+        lx <- length(x)
+        x_eltNROWS <- elementNROWS(x)
+        start <- normargAtomicList2(start, IntegerList, lx, x_eltNROWS)
+        end <- normargAtomicList2(end, IntegerList, lx, x_eltNROWS)
+        width <- normargAtomicList2(width, IntegerList, lx, x_eltNROWS)
+        slot(x, "unlistData", check=FALSE) <-
+            narrow(x@unlistData, start = start, end = end, width = width,
+                                 use.names = use.names)
         x
     }
 )

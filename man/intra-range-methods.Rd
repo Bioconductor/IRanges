@@ -10,11 +10,11 @@
 \alias{shift,CompressedIRangesList-method}
 
 \alias{narrow}
-\alias{narrow,ANY-method}
+\alias{narrow,Ranges-method}
+\alias{narrow,RangesList-method}
+\alias{narrow,CompressedRangesList-method}
 \alias{windows,IntegerRanges-method}
 \alias{windows,Views-method}
-\alias{narrow,IntegerRangesList-method}
-\alias{narrow,CompressedIRangesList-method}
 \alias{narrow,MaskCollection-method}
 
 \alias{resize}
