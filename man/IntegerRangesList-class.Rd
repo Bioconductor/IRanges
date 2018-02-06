@@ -25,13 +25,6 @@
 \alias{isNormal,IntegerRangesList-method}
 \alias{whichFirstNotNormal,IntegerRangesList-method}
 
-% coercion
-\alias{coerce,list,SimpleIntegerRangesList-method}
-\alias{coerce,list,IntegerRangesList-method}
-\alias{coerce,List,SimpleIntegerRangesList-method}
-\alias{coerce,SimpleList,IntegerRangesList-method}
-\alias{coerce,List,IntegerRangesList-method}
-
 % show
 \alias{show,IntegerRangesList-method}
 \alias{showAsCell,IntegerRangesList-method}

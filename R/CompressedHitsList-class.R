@@ -3,6 +3,7 @@
 ### -------------------------------------------------------------------------
 
 ### [H.P. - 2015/12/17] Why do we need this? Where is it used?
+### It's not even exported.
 
 setClass("CompressedHitsList",
     prototype = prototype(elementType = "Hits",

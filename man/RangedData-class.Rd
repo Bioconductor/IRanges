@@ -47,7 +47,6 @@
 \alias{coerce,list,RangedData-method}
 \alias{coerce,RangedData,CompressedIRangesList-method}
 \alias{coerce,RangedData,IRangesList-method}
-\alias{coerce,RangedData,IntegerRangesList-method}
 \alias{as.env,RangedData-method}
 \alias{coerce,data.frame,RangedData-method}
 \alias{coerce,DataTable,RangedData-method}

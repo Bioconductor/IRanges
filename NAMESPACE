@@ -16,18 +16,11 @@ importFrom(stats4, summary, update)
 ###
 
 exportClasses(
-    Ranges, Pos,
-    IntegerRanges, IntegerRanges_OR_missing, IntegerPos,
-    IRanges, NormalIRanges,
-    IPos,
-    NCList, NCLists,
-    Grouping, ManyToOneGrouping, ManyToManyGrouping,
-    H2LGrouping, Dups,
-    GroupingRanges, GroupingIRanges,
-    Partitioning, PartitioningByEnd, PartitioningByWidth, PartitioningMap,
-    Views,
-    RleViews,
-    MaskCollection,
+    ## DataFrameList-class.R:
+    DataFrameList, SimpleDataFrameList,
+    SplitDataFrameList, SimpleSplitDataFrameList,
+
+    ## AtomicList-class.R:
     AtomicList, SimpleAtomicList,
     LogicalList, SimpleLogicalList,
     IntegerList, SimpleIntegerList,
@@ -37,24 +30,69 @@ exportClasses(
     RawList, SimpleRawList,
     RleList, SimpleRleList,
     FactorList, SimpleFactorList,
+
+    ## Ranges-and-RangesList-classes.R:
+    Ranges, Pos,
     RangesList, SimpleRangesList,
     PosList, SimplePosList,
+
+    ## IntegerRanges-class.R:
+    IntegerRanges, IntegerPos,
+
+    ## IntegerRangesList-class.R
     IntegerRangesList, SimpleIntegerRangesList,
     IntegerPosList, SimpleIntegerPosList,
-    IRangesList, SimpleIRangesList,
-    NormalIRangesList, SimpleNormalIRangesList,
-    IPosList, SimpleIPosList,
-    ViewsList, SimpleViewsList,
-    RleViewsList, SimpleRleViewsList,
-    DataFrameList, SimpleDataFrameList,
-    SplitDataFrameList, SimpleSplitDataFrameList,
-    RangedData,
-    RangedSelection,
+
+    ## IRanges-class.R:
+    IRanges, NormalIRanges,
+
+    ## IPos-class.R:
+    IPos,
+
+    ## Grouping-class.R:
+    Grouping, ManyToOneGrouping, ManyToManyGrouping,
+    H2LGrouping, Dups,
+    GroupingRanges, GroupingIRanges,
+    Partitioning, PartitioningByEnd, PartitioningByWidth, PartitioningMap,
+
+    ## Views-class.R:
+    Views,
+
+    ## RleViews-class.R:
+    RleViews,
+
+    ## SimpleGrouping-class.R:
     SimpleGrouping,
     SimpleManyToOneGrouping,
+    BaseManyToManyGrouping,
     SimpleManyToManyGrouping,
+
+    ## IRangesList-class.R:
+    IRangesList, SimpleIRangesList,
+    NormalIRangesList, SimpleNormalIRangesList,
+
+    ## IPosList-class.R:
+    IPosList, SimpleIPosList,
+
+    ## ViewsList-class.R:
+    ViewsList, SimpleViewsList,
+
+    ## RleViewsList-class.R:
+    RleViewsList, SimpleRleViewsList,
+
+    ## RangedSelection-class.R:
+    RangedSelection,
+
+    ## MaskCollection-class.R:
+    MaskCollection,
+
+    ## CompressedList-class.R:
     CompressedList,
+
+    ## CompressedDataFrameList-class.R:
     CompressedDataFrameList, CompressedSplitDataFrameList,
+
+    ## CompressedAtomicList-class.R:
     CompressedAtomicList,
     CompressedLogicalList,
     CompressedIntegerList,
@@ -64,11 +102,24 @@ exportClasses(
     CompressedRawList,
     CompressedRleList,
     CompressedFactorList,
+
+    ## CompressedGrouping-class.R:
     CompressedGrouping,
     CompressedManyToOneGrouping, CompressedManyToManyGrouping,
+
+    ## CompressedRangesList-class.R:
     CompressedRangesList, CompressedPosList,
     CompressedIntegerRangesList, CompressedIntegerPosList,
-    CompressedIRangesList, CompressedNormalIRangesList, CompressedIPosList
+    CompressedIRangesList, CompressedNormalIRangesList, CompressedIPosList,
+
+    ## RangedData-class.R:
+    RangedData,
+
+    ## NCList-class.R:
+    NCList, NCLists,
+
+    ## nearest-methods.R:
+    IntegerRanges_OR_missing
 )
 
 

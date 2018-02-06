@@ -736,7 +736,6 @@ setAs("RangedData", "CompressedIRangesList",
     .fromRangedDataToCompressedIRangesList
 )
 setAs("RangedData", "IRangesList", .fromRangedDataToCompressedIRangesList)
-setAs("RangedData", "IntegerRangesList", .fromRangedDataToCompressedIRangesList)
 
 setMethod("as.env", "RangedData", function(x, enclos = parent.frame(2)) {
   env <- callNextMethod(x, enclos)

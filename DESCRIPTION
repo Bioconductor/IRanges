@@ -22,29 +22,31 @@ License: Artistic-2.0
 Collate: range-squeezers.R
 	Vector-class-leftovers.R
 	List-class-leftovers.R
+	DataFrame-utils.R
+	DataFrameList-class.R
+	DataFrameList-utils.R
 	AtomicList-class.R
 	AtomicList-utils.R
-	Ranges-class.R
+	Ranges-and-RangesList-classes.R
 	IntegerRanges-class.R
-	subsetting-utils.R
 	IntegerRanges-comparison.R
+	subsetting-utils.R
+        IntegerRangesList-class.R
 	IRanges-class.R
 	IRanges-constructor.R
 	IRanges-utils.R
+	Rle-class-leftovers.R
 	IPos-class.R
 	Grouping-class.R
 	Views-class.R
-	Rle-class-leftovers.R
 	RleViews-class.R
 	RleViews-utils.R
 	extractList.R
 	seqapply.R
 	multisplit.R
-	ListGrouping-class.R
-	DataFrame-utils.R
-	DataFrameList-class.R
-	DataFrameList-utils.R
-	IntegerRangesList-class.R
+	SimpleGrouping-class.R
+	IRangesList-class.R
+	IPosList-class.R
 	ViewsList-class.R
 	RleViewsList-class.R
 	RleViewsList-utils.R
@@ -58,7 +60,6 @@ Collate: range-squeezers.R
 	CompressedAtomicList-class.R
 	CompressedGrouping-class.R
 	CompressedRangesList-class.R
-	CompressedIntegerRangesList-class.R
 	RangedData-class.R
 	RangedData-utils.R
 	Hits-class-leftovers.R

@@ -1,5 +1,5 @@
 ### =========================================================================
-### Ranges objects
+### Ranges and RangesList objects
 ### -------------------------------------------------------------------------
 ###
 ### Ranges is a virtual class that serves as the parent class for any class
