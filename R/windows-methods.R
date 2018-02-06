@@ -43,11 +43,13 @@ setMethod("windows", "list_OR_List",
 
         ## -- Fast path --
 
-        ## Unlist 'x' and shift the ranges in 'ir'.
-        if (is.list(x))
-            unlisted_x <- unlist(x, recursive=FALSE, use.names=FALSE)
-        else
+        ## Unlist 'x' (preserving the inner names) and shift the ranges
+        ## in 'ir'.
+        if (is.list(x)) {
+            unlisted_x <- concatenateObjects(x[[1L]], x[-1L])
+        } else {
             unlisted_x <- unlist(x, use.names=FALSE)
+        }
         offsets <- c(0L, end(PartitioningByEnd(x))[-length(x)])
         ir <- shift(ir, shift=offsets)
 
