@@ -74,11 +74,11 @@ setMethod("windows", "list_OR_List",
 ###
 ### Defined on Ranges and RangeList derivatives only.
 ###
-### On Ranges derivatives it's equivalent to windows().
+### On Ranges derivatives, it's equivalent to windows().
 ### On RangesList derivatives, it's equivalent to:
 ###
 ###     mendoapply(narrow, x, start, end, width,
-###                MoreArgs=list(use.names=use.names))
+###                        MoreArgs=list(use.names=use.names))
 ###
 
 setGeneric("narrow", signature="x",
