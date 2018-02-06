@@ -456,7 +456,7 @@ ir2 <- IRanges(start = 1:10, end = 11)
 ir3 <- IRanges(end = 11, width = 10:1)
 identical(ir1, ir2) & identical(ir2, ir3)
 ir <- IRanges(c(1, 8, 14, 15, 19, 34, 40),
-  width = c(12, 6, 6, 15, 6, 2, 7))
+              width = c(12, 6, 6, 15, 6, 2, 7))
 @
 %
 All of the above calls construct an \Rclass{IRanges} instance with the
