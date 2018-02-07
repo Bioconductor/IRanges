@@ -13,11 +13,6 @@ setClass("IntegerRanges",
     representation("VIRTUAL")
 )
 
-setClass("IntegerPos",
-    contains=c("IntegerRanges", "Pos"),
-    representation("VIRTUAL")
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters/setters.
@@ -37,8 +32,6 @@ setMethod("update", "IntegerRanges",
 ### Vector objects.
 
 setValidity2("IntegerRanges", validate_Ranges)
-
-setValidity2("IntegerPos", validate_Pos)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

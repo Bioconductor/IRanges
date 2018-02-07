@@ -37,7 +37,7 @@ exportClasses(
     PosList, SimplePosList,
 
     ## IntegerRanges-class.R:
-    IntegerRanges, IntegerPos,
+    IntegerRanges,
 
     ## IntegerRangesList-class.R
     IntegerRangesList, SimpleIntegerRangesList,

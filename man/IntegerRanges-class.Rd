@@ -6,10 +6,6 @@
 \alias{IntegerRanges-class}
 \alias{IntegerRanges}
 
-\alias{class:IntegerPos}
-\alias{IntegerPos-class}
-\alias{IntegerPos}
-
 % Generics and methods:
 \alias{width}
 \alias{start,Ranges-method}

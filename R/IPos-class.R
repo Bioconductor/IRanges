@@ -5,11 +5,14 @@
 
 
 setClass("IPos",
-    contains="IntegerPos",
+    contains="IntegerRanges",
     representation(
         pos_runs="IRanges"
     )
 )
+
+### Expensive! (and not needed)
+#setValidity2("IPos", validate_Pos)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
