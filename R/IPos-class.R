@@ -5,7 +5,7 @@
 
 
 setClass("IPos",
-    contains="IntegerRanges",
+    contains=c("Pos", "IntegerRanges"),
     representation(
         pos_runs="IRanges"
     )
