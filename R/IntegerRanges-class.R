@@ -200,18 +200,3 @@ setMethod("whichFirstNotNormal", "IntegerRanges",
     }
 )
 
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting
-###
-### TODO: "extractROWS" and most of the IntegerRanges endomorphisms are only
-### defined for IRanges objects. Need to fix up the update mechanism, so that
-### they can be defined on IntegerRanges. "extractROWS" and other endomorphisms
-### are currently implemented as wrappers that coerce to IRanges, which is not
-### efficient so not a general, long-term solution.
-
-setMethod("extractROWS", "IntegerRanges",
-    function(x, i)
-        as(callNextMethod(as(x, "IRanges", strict=FALSE), i), class(x))
-)
-

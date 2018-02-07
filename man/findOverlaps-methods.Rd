@@ -6,13 +6,7 @@
 \alias{findOverlaps,IntegerRanges,IntegerRanges-method}
 \alias{findOverlaps,Vector,missing-method}
 \alias{findOverlaps,integer,IntegerRanges-method}
-\alias{findOverlaps,Views,Views-method}
-\alias{findOverlaps,Views,Vector-method}
-\alias{findOverlaps,Vector,Views-method}
 \alias{findOverlaps,IntegerRangesList,IntegerRangesList-method}
-\alias{findOverlaps,ViewsList,ViewsList-method}
-\alias{findOverlaps,ViewsList,Vector-method}
-\alias{findOverlaps,Vector,ViewsList-method}
 \alias{findOverlaps,RangedData,RangedData-method}
 \alias{findOverlaps,RangedData,IntegerRangesList-method}
 \alias{findOverlaps,IntegerRangesList,RangedData-method}
@@ -26,9 +20,6 @@
 \alias{countOverlaps,Vector,missing-method}
 \alias{countOverlaps,IntegerRanges,IntegerRanges-method}
 \alias{countOverlaps,IntegerRangesList,IntegerRangesList-method}
-\alias{countOverlaps,ViewsList,ViewsList-method}
-\alias{countOverlaps,ViewsList,Vector-method}
-\alias{countOverlaps,Vector,ViewsList-method}
 \alias{countOverlaps,RangedData,RangedData-method}
 \alias{countOverlaps,RangedData,IntegerRangesList-method}
 \alias{countOverlaps,IntegerRangesList,RangedData-method}
@@ -37,9 +28,6 @@
 \alias{overlapsAny,Vector,Vector-method}
 \alias{overlapsAny,Vector,missing-method}
 \alias{overlapsAny,IntegerRangesList,IntegerRangesList-method}
-\alias{overlapsAny,ViewsList,ViewsList-method}
-\alias{overlapsAny,ViewsList,Vector-method}
-\alias{overlapsAny,Vector,ViewsList-method}
 \alias{overlapsAny,RangedData,RangedData-method}
 \alias{overlapsAny,RangedData,IntegerRangesList-method}
 \alias{overlapsAny,IntegerRangesList,RangedData-method}
@@ -78,8 +66,7 @@
   "range-based" objects: a query and a subject.
 
   NOTE: This man page describes the methods that operate on
-  \link{IntegerRanges}, \link{Views}, \link{IntegerRangesList},
-  or \link{ViewsList} objects. See
+  \link{IntegerRanges} and \link{IntegerRangesList} derivatives. See
   \code{?`\link[GenomicRanges]{findOverlaps,GenomicRanges,GenomicRanges-method}`}
   in the \pkg{GenomicRanges} package for methods that operate on
   \link[GenomicRanges]{GenomicRanges} or \link[GenomicRanges]{GRangesList}
@@ -121,15 +108,16 @@ findOverlapPairs(query, subject, ...)
 
 \arguments{
   \item{query, subject, x, ranges}{
-    Each of them can be a \link{IntegerRanges}, \link{Views},
-    \link{IntegerRangesList}, or \link{ViewsList} object.
-    In addition, if \code{subject} or \code{ranges} is a \link{IntegerRanges}
+    Each of them can be an \link{IntegerRanges} (e.g. \link{IRanges},
+    \link{Views}) or \link{IntegerRangesList} (e.g. \link{IRangesList},
+    \link{ViewsList}) derivative.
+    In addition, if \code{subject} or \code{ranges} is an \link{IntegerRanges}
     object, \code{query} or \code{x} can be an integer vector to be converted
     to length-one ranges.
 
-    If \code{query} (or \code{x}) is a \link{IntegerRangesList} object, then
-    \code{subject} (or \code{ranges}) must also be a \link{IntegerRangesList}
-    object.
+    If \code{query} (or \code{x}) is an \link{IntegerRangesList} object,
+    then \code{subject} (or \code{ranges}) must also be an
+    \link{IntegerRangesList} object.
 
     If both arguments are list-like objects with names, each list element
     from the 2nd argument is paired with the list element from the 1st
@@ -190,7 +178,7 @@ findOverlapPairs(query, subject, ...)
     (the default), it's replaced internally by 0.
   }
   \item{select}{
-    If \code{query} is a \link{IntegerRanges} or \link{Views} object:
+    If \code{query} is an \link{IntegerRanges} derivative:
     When \code{select} is \code{"all"} (the default), the results are
     returned as a \link[S4Vectors]{Hits} object.
     Otherwise the returned value is an integer vector \emph{parallel} to
@@ -198,7 +186,7 @@ findOverlapPairs(query, subject, ...)
     or arbitrary overlapping interval in \code{subject}, with \code{NA}
     indicating intervals that did not overlap any intervals in \code{subject}.
 
-    If \code{query} is a \link{IntegerRangesList} or \link{ViewsList} object:
+    If \code{query} is an \link{IntegerRangesList} derivative:
     When \code{select} is \code{"all"} (the default), the results are
     returned as a \link[S4Vectors]{HitsList} object.
     Otherwise the returned value depends on the \code{drop} argument.
@@ -221,8 +209,8 @@ findOverlapPairs(query, subject, ...)
   \item{...}{
     Further arguments to be passed to or from other methods:
     \itemize{
-      \item \code{drop}: Supported only when \code{query} is a
-            \link{IntegerRangesList} or \link{ViewsList} object.
+      \item \code{drop}: Supported only when \code{query} is an
+            \link{IntegerRangesList} derivative.
             \code{FALSE} by default. See \code{select} argument above for the
             details.
       \item \code{drop.self}, \code{drop.redundant}: When \code{subject}
@@ -252,11 +240,11 @@ findOverlapPairs(query, subject, ...)
   object.
 
   \code{overlapsAny} finds the ranges in \code{query} that overlap any
-  of the ranges in \code{subject}. For \link{IntegerRanges} or \link{Views}
-  objects, it returns a logical vector of length equal to the number of
-  ranges in \code{query}. For \link{IntegerRangesList} or \link{ViewsList}
-  objects, it returns a \link{LogicalList} object where each element of the
-  result corresponds to a space in \code{query}.
+  of the ranges in \code{subject}. For \link{IntegerRanges} derivatives,
+  it returns a logical vector of length equal to the number of
+  ranges in \code{query}. For \link{IntegerRangesList} derivatives,
+  it returns a \link{LogicalList} object where each element of the result
+  corresponds to a space in \code{query}.
 
   \code{\%over\%} and \code{\%within\%} are convenience wrappers for the
   2 most common use cases. Currently defined as

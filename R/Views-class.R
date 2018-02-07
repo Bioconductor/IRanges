@@ -7,7 +7,7 @@
 ###
 
 setClass("Views",
-    contains=c("Ranges", "List"),
+    contains="IntegerRanges",
     representation(
         "VIRTUAL",
         subject="Vector",

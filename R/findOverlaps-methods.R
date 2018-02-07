@@ -108,39 +108,6 @@ setMethod("findOverlaps", c("integer", "IntegerRanges"),
     }
 )
 
-setMethod("findOverlaps", c("Views", "Views"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"))
-    {
-        findOverlaps(ranges(query), ranges(subject),
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=match.arg(type), select=match.arg(select))
-    }
-)
-
-setMethod("findOverlaps", c("Views", "Vector"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"))
-    {
-        findOverlaps(ranges(query), subject,
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=match.arg(type), select=match.arg(select))
-    }
-)
-
-setMethod("findOverlaps", c("Vector", "Views"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"))
-    {
-        findOverlaps(query, ranges(subject),
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=match.arg(type), select=match.arg(select))
-    }
-)
-
 # might consider making this the following:
 # setMethod("findOverlaps", c("IntegerRangesList", "IntegerRangesList"),
 #           function(query, subject, maxgap = -1L, minoverlap = 0L,
@@ -199,45 +166,6 @@ setMethod("findOverlaps", c("IntegerRangesList", "IntegerRangesList"),
             }
             ans
           })
-
-setMethod("findOverlaps", c("ViewsList", "ViewsList"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"),
-             drop=FALSE)
-    {
-        findOverlaps(ranges(query), ranges(subject),
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=match.arg(type), select=match.arg(select),
-                     drop=drop)
-    }
-)
-
-setMethod("findOverlaps", c("ViewsList", "Vector"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"),
-             drop=FALSE)
-    {
-        findOverlaps(ranges(query), subject,
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=match.arg(type), select=match.arg(select),
-                     drop=drop)
-    }
-)
-
-setMethod("findOverlaps", c("Vector", "ViewsList"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"),
-             drop=FALSE)
-    {
-        findOverlaps(query, ranges(subject),
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=match.arg(type), select=match.arg(select),
-                     drop=drop)
-    }
-)
 
 setMethod("findOverlaps", c("RangedData", "RangedData"),
           function(query, subject, maxgap = -1L, minoverlap = 0L,
@@ -371,36 +299,6 @@ setMethod("countOverlaps", c("IntegerRangesList", "IntegerRangesList"),
                               SIMPLIFY = FALSE))
           })
 
-setMethod("countOverlaps", c("ViewsList", "ViewsList"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"))
-    {
-         countOverlaps(ranges(query), ranges(subject),
-                       maxgap=maxgap, minoverlap=minoverlap,
-                       type=type)
-    }
-)
-
-setMethod("countOverlaps", c("ViewsList", "Vector"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"))
-    {
-         countOverlaps(ranges(query), subject,
-                       maxgap=maxgap, minoverlap=minoverlap,
-                       type=type)
-    }
-)
-
-setMethod("countOverlaps", c("Vector", "ViewsList"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"))
-    {
-         countOverlaps(query, ranges(subject),
-                       maxgap=maxgap, minoverlap=minoverlap,
-                       type=type)
-    }
-)
-
 setMethod("countOverlaps", c("RangedData", "RangedData"),
           function(query, subject, maxgap = -1L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"))
@@ -483,42 +381,6 @@ setMethod("overlapsAny", c("IntegerRangesList", "IntegerRangesList"),
                                          maxgap=maxgap, minoverlap=minoverlap,
                                          type=type,
                                          ...)))
-    }
-)
-
-setMethod("overlapsAny", c("ViewsList", "ViewsList"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        overlapsAny(ranges(query), ranges(subject),
-                    maxgap=maxgap, minoverlap=minoverlap,
-                    type=match.arg(type),
-                    ...)
-    }
-)
-
-setMethod("overlapsAny", c("ViewsList", "Vector"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        overlapsAny(ranges(query), subject,
-                    maxgap=maxgap, minoverlap=minoverlap,
-                    type=match.arg(type),
-                    ...)
-    }
-)
-
-setMethod("overlapsAny", c("Vector", "ViewsList"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        overlapsAny(query, ranges(subject),
-                    maxgap=maxgap, minoverlap=minoverlap,
-                    type=match.arg(type),
-                    ...)
     }
 )
 

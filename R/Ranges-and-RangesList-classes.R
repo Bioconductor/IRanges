@@ -16,7 +16,7 @@
 ###
 
 
-setClass("Ranges", contains="Vector", representation("VIRTUAL"))
+setClass("Ranges", contains="List", representation("VIRTUAL"))
 
 setClass("Pos", contains="Ranges", representation("VIRTUAL"))
 
@@ -55,10 +55,6 @@ setMethod("width", "Ranges", function(x) {end(x) - start(x) + 1L})
 
 setMethod("length", "Ranges", function(x) length(start(x)))
 
-setMethod("elementNROWS", "Ranges",
-    function(x) setNames(width(x), names(x))
-)
-
 setGeneric("mid", function(x, ...) standardGeneric("mid"))
 
 setMethod("mid", "Ranges",
@@ -67,6 +63,20 @@ setMethod("mid", "Ranges",
 
 ### A Ranges object is considered empty iff all its ranges are empty.
 setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0L))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Ranges extends List
+###
+
+setMethod("elementNROWS", "Ranges",
+    function(x) setNames(width(x), names(x))
+)
+
+unlist_as_integer <- function(x)
+{
+    S4Vectors:::fancy_mseq(width(x), offset=start(x)-1L)
+}
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -151,15 +161,5 @@ validate_Pos <- function(x)
     if (!all(x_pos == x_start))
         return(wmsg())
     NULL
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### unlist_as_integer()
-###
-
-unlist_as_integer <- function(x)
-{
-    S4Vectors:::fancy_mseq(width(x), offset=start(x)-1L)
 }
 

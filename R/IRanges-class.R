@@ -377,7 +377,7 @@ setMethod("update", "IRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Subsetting.
+### Subsetting
 ###
 
 setMethod("extractROWS", "NormalIRanges",

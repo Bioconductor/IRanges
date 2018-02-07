@@ -4,15 +4,14 @@
 
 
 setClass("ViewsList",
-    contains="List",
+    contains="IntegerRangesList",
     representation("VIRTUAL"),
     prototype(elementType="Views")
 )
 
 setClass("SimpleViewsList",
     contains=c("ViewsList", "SimpleList"),
-    representation("VIRTUAL"),
-    prototype(elementType="Views")
+    representation("VIRTUAL")
 )
 
 

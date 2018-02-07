@@ -128,8 +128,6 @@ NCList <- function(x, circle.length=NA_integer_)
                    check=FALSE)
 }
 
-setAs("IntegerRanges", "NCList", function(from) NCList(from))
-
 ### NOT exported.
 print_NCList <- function(x)
 {
@@ -139,6 +137,14 @@ print_NCList <- function(x)
                                    PACKAGE="IRanges")
     invisible(NULL)
 }
+
+setAs("IntegerRanges", "NCList", function(from) NCList(from))
+
+### Subsetting is inefficient because it rebuilds a new NCList object for
+### the selected ranges from scratch. Supported for completeness only!
+setMethod("extractROWS", "NCList",
+    function(x, i) as(extractROWS(as(x, "IRanges"), i), class(x))
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
