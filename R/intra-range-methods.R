@@ -212,7 +212,7 @@ setMethod("resize", "RangesList",
             unlisted_width <- unlist(width, use.names=FALSE)
             unlisted_fix <- unlist(fix, use.names=FALSE)
             new_unlistData <- resize(x@unlistData, width=unlisted_width,
-                                                   fix=unlisted_fix.
+                                                   fix=unlisted_fix,
                                                    use.names=use.names)
             ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
                                                   check=FALSE)
@@ -293,7 +293,7 @@ setMethod("flank", "RangesList",
             unlisted_width <- unlist(width, use.names=FALSE)
             unlisted_start <- unlist(start, use.names=FALSE)
             new_unlistData <- flank(x@unlistData, width=unlisted_width,
-                                                  start=unlisted_start.
+                                                  start=unlisted_start,
                                                   both=both,
                                                   use.names=use.names)
             ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
