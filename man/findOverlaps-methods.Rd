@@ -25,7 +25,7 @@
 \alias{countOverlaps,Vector,Vector-method}
 \alias{countOverlaps,Vector,missing-method}
 \alias{countOverlaps,IntegerRanges,IntegerRanges-method}
-\alias{countOverlaps,RangesList,RangesList-method}
+\alias{countOverlaps,IntegerRangesList,IntegerRangesList-method}
 \alias{countOverlaps,ViewsList,ViewsList-method}
 \alias{countOverlaps,ViewsList,Vector-method}
 \alias{countOverlaps,Vector,ViewsList-method}
@@ -34,9 +34,9 @@
 \alias{countOverlaps,IntegerRangesList,RangedData-method}
 
 \alias{overlapsAny}
-\alias{overlapsAny,Ranges,Ranges-method}
+\alias{overlapsAny,Vector,Vector-method}
 \alias{overlapsAny,Vector,missing-method}
-\alias{overlapsAny,RangesList,RangesList-method}
+\alias{overlapsAny,IntegerRangesList,IntegerRangesList-method}
 \alias{overlapsAny,ViewsList,ViewsList-method}
 \alias{overlapsAny,ViewsList,Vector-method}
 \alias{overlapsAny,Vector,ViewsList-method}
