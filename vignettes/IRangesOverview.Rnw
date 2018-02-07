@@ -484,12 +484,6 @@ ir[1:4]
 ir[start(ir) <= 15]
 @
 
-One may think of each range as a sequence of integer ranges, and
-\Rclass{IntegerRanges} is, in fact, derived from \Rclass{IntegerList}.
-<<ranges-extraction>>=
-ir[[1]]
-@
-
 In order to illustrate range operations, we'll create a function to plot ranges.
 
 <<plotRanges>>=

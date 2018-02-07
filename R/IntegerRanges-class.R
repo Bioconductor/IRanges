@@ -9,7 +9,7 @@
 
 
 setClass("IntegerRanges",
-    contains=c("Ranges", "IntegerList"),
+    contains="Ranges",
     representation("VIRTUAL")
 )
 
@@ -92,20 +92,8 @@ setMethod("as.data.frame", "IntegerRanges", .as.data.frame.IntegerRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### More stuff.
+### show()
 ###
-### TODO: Reorganize this
-###
-
-setMethod("getListElement", "IntegerRanges",
-    function(x, i, exact=TRUE)
-    {
-        i <- normalizeDoubleBracketSubscript(i, x, exact=exact)
-        ans_shift <- start(x)[i] - 1L
-        ans_length <- width(x)[i]
-        seq_len(ans_length) + ans_shift
-    }
-)
 
 .make_naked_matrix_from_IntegerRanges <- function(x)
 {
