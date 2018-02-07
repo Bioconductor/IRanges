@@ -1,39 +1,6 @@
 ### =========================================================================
 ### Intra-range methods
 ### -------------------------------------------------------------------------
-###
-
-
-normargAtomicList1 <- function(arg, List, lx, argname = deparse(substitute(arg)))
-{
-    if (is.vector(arg))
-        arg <- List(as.list(S4Vectors:::recycleVector(arg, lx)))
-    else if (!is(arg, "AtomicList"))
-        stop("'", argname,"' must be a vector or AtomicList object")
-    arg
-}
-
-normargAtomicList2 <- function(arg, List, lx, x_eltNROWS,
-                               argname = deparse(substitute(arg)))
-{
-    if (!(is.vector(arg) && length(arg) == 1L)) {
-        if (is.vector(arg))
-          arg <- as(rep(S4Vectors:::recycleVector(arg, lx), x_eltNROWS),
-                    class(unlist(List())))
-        else {
-          if (!is(arg, "AtomicList"))
-            stop("'arg' must be a vector or AtomicList object")
-          if (!isTRUE(all.equal(elementNROWS(arg), x_eltNROWS,
-                                check.attributes=FALSE)))
-            arg <- mapply(S4Vectors:::recycleVector,
-                          arg, List(as.list(x_eltNROWS)))
-          arg <- unlist(arg, use.names=FALSE)
-        }
-    } else if (is.list(arg)){
-        arg <- unlist(arg, use.names=FALSE)
-    }
-    arg
-}
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -85,38 +52,38 @@ setMethod("shift", "IPos",
                 shift <- shift[[1L]]
             }
         }
-        x@pos_runs <- callGeneric(x@pos_runs, shift=shift)
-        x
+        new_pos_runs <- callGeneric(x@pos_runs, shift=shift)
+        BiocGenerics:::replaceSlots(x, pos_runs=new_pos_runs, check=FALSE)
     }
 )
 
 setMethod("shift", "Views",
     function(x, shift=0L, use.names=TRUE)
     {
-        x@ranges <- shift(ranges(x), shift=shift, use.names=use.names)
-        x
+        new_ranges <- shift(ranges(x), shift=shift, use.names=use.names)
+        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
     }
 )
 
-setMethod("shift", "IntegerRangesList",
-          function(x, shift=0L, use.names = TRUE)
-          {
-              lx <- length(x)
-              shift <- normargAtomicList1(shift, IntegerList, lx)
-              mendoapply("shift", x = x, shift = shift,
-                         MoreArgs = list(use.names = use.names))
-          })
+setMethod("shift", "RangesList",
+    function(x, shift=0L, use.names = TRUE)
+    {
+        if (!is(shift, "List"))
+            shift <- as(shift, "List")
+        shift <- S4Vectors:::VH_recycle(shift, x, "shift", "x")
 
-setMethod("shift", "CompressedIRangesList",
-          function(x, shift=0L, use.names = TRUE)
-          {
-              lx <- length(x)
-              x_eltNROWS <- elementNROWS(x)
-              shift <- normargAtomicList2(shift, IntegerList, lx, x_eltNROWS)
-              slot(x, "unlistData", check=FALSE) <-
-                shift(x@unlistData, shift = shift, use.names = use.names)
-              x
-          })
+        if (is(x, "CompressedRangesList")) {
+            unlisted_shift <- unlist(shift, use.names=FALSE)
+            new_unlistData <- shift(x@unlistData, shift=unlisted_shift,
+                                                  use.names=use.names)
+            ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
+                                                  check=FALSE)
+            return(ans)
+        }
+        mendoapply(shift, x, shift,
+                          MoreArgs=list(use.names=use.names))
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -141,8 +108,8 @@ setMethod("windows", "IntegerRanges",
 setMethod("windows", "Views",
     function(x, start=NA, end=NA, width=NA)
     {
-        x@ranges <- windows(x@ranges, start=start, end=end, width=width)
-        x
+        new_ranges <- windows(ranges(x), start=start, end=end, width=width)
+        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
     }
 )
 
@@ -187,7 +154,7 @@ setMethod("resize", "IntegerRanges",
         if (S4Vectors:::anyMissingOrOutside(width, 0L))
             stop("'width' values must be non-negative")
         if (!(is.character(fix) ||
-              (is(fix, "Rle") && is.character(runValue(fix)))) || 
+              (is(fix, "Rle") && is.character(runValue(fix)))) ||
             (length(fix) == 0L && length(x) > 0L) ||
             (length(setdiff(unique(fix),
                             c("start", "end", "center"))) > 0)) {
@@ -223,28 +190,38 @@ setMethod("resize", "IntegerRanges",
     }
 )
 
-setMethod("resize", "IntegerRangesList",
-          function(x, width, fix = "start", use.names = TRUE)
-          {
-              lx <- length(x)
-              width <- normargAtomicList1(width, IntegerList, lx)
-              fix <- normargAtomicList1(fix, CharacterList, lx)
-              mendoapply(resize, x = x, width = width, fix = fix,
-                         MoreArgs = list(use.names = use.names))
-          })
+setMethod("resize", "Views",
+    function(x, width, fix="start", use.names=TRUE)
+    {
+        new_ranges <- resize(ranges(x), width, fix=fix, use.names=use.names)
+        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
+    }
+)
 
-setMethod("resize", "CompressedIRangesList",
-          function(x, width, fix = "start", use.names = TRUE)
-          {
-              lx <- length(x)
-              x_eltNROWS <- elementNROWS(x)
-              width <- normargAtomicList2(width, IntegerList, lx, x_eltNROWS)
-              fix <- normargAtomicList2(fix, CharacterList, lx, x_eltNROWS)
-              slot(x, "unlistData", check=FALSE) <-
-                resize(x@unlistData, width = width, fix = fix,
-                       use.names = use.names)
-              x
-          })
+setMethod("resize", "RangesList",
+    function(x, width, fix="start", use.names=TRUE)
+    {
+        if (!is(width, "List"))
+            width <- as(width, "List")
+        width <- S4Vectors:::VH_recycle(width, x, "width", "x")
+        if (!is(fix, "List"))
+            fix <- as(fix, "List")
+        fix <- S4Vectors:::VH_recycle(fix, x, "fix", "x")
+
+        if (is(x, "CompressedRangesList")) {
+            unlisted_width <- unlist(width, use.names=FALSE)
+            unlisted_fix <- unlist(fix, use.names=FALSE)
+            new_unlistData <- resize(x@unlistData, width=unlisted_width,
+                                                   fix=unlisted_fix.
+                                                   use.names=use.names)
+            ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
+                                                  check=FALSE)
+            return(ans)
+        }
+        mendoapply(resize, x, width, fix,
+                           MoreArgs=list(use.names=use.names))
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -293,41 +270,53 @@ setMethod("flank", "IntegerRanges",
     }
 )
 
-setMethod("flank", "IntegerRangesList",
-          function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
-          {
-              lx <- length(x)
-              width <- normargAtomicList1(width, IntegerList, lx)
-              start <- normargAtomicList1(start, LogicalList, lx)
-              mendoapply(flank, x = x, width = width, start = start,
-                         MoreArgs = list(both = both, use.names = use.names))
-          })
+setMethod("flank", "Views",
+    function(x, width, start=TRUE, both=FALSE, use.names=TRUE)
+    {
+        new_ranges <- flank(ranges(x), width, start=start, both=both,
+                                       use.names=use.names)
+        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
+    }
+)
 
-setMethod("flank", "CompressedIRangesList",
-          function(x, width, start = TRUE, both = FALSE, use.names = TRUE)
-          {
-              lx <- length(x)
-              x_eltNROWS <- elementNROWS(x)
-              width <- normargAtomicList2(width, IntegerList, lx, x_eltNROWS)
-              start <- normargAtomicList2(start, LogicalList, lx, x_eltNROWS)
-              slot(x, "unlistData", check=FALSE) <-
-                flank(x@unlistData, width = width, start = start, both = both,
-                      use.names = use.names)
-              x
-          })
+setMethod("flank", "RangesList",
+    function(x, width, start=TRUE, both=FALSE, use.names=TRUE)
+    {
+        if (!is(width, "List"))
+            width <- as(width, "List")
+        width <- S4Vectors:::VH_recycle(width, x, "width", "x")
+        if (!is(start, "List"))
+            start <- as(start, "List")
+        start <- S4Vectors:::VH_recycle(start, x, "start", "x")
+
+        if (is(x, "CompressedRangesList")) {
+            unlisted_width <- unlist(width, use.names=FALSE)
+            unlisted_start <- unlist(start, use.names=FALSE)
+            new_unlistData <- flank(x@unlistData, width=unlisted_width,
+                                                  start=unlisted_start.
+                                                  both=both,
+                                                  use.names=use.names)
+            ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
+                                                  check=FALSE)
+            return(ans)
+        }
+        mendoapply(flank, x, width, start,
+                          MoreArgs=list(both=both, use.names=use.names))
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### promoters() 
+### promoters()
 ###
 
 setGeneric("promoters", signature="x",
-    function(x, upstream=2000, downstream=200, ...)
+    function(x, upstream=2000, downstream=200, use.names=TRUE, ...)
         standardGeneric("promoters")
 )
 
 setMethod("promoters", "IntegerRanges",
-    function(x, upstream=2000, downstream=200, ...)
+    function(x, upstream=2000, downstream=200, use.names=TRUE)
     {
         if (is(x, "NormalIRanges"))
             stop("promoters on a NormalIRanges object is not supported")
@@ -344,34 +333,46 @@ setMethod("promoters", "IntegerRanges",
         st <- start(x)
         start(x) <- st - upstream
         end(x) <- st + downstream - 1L
+        if (!S4Vectors:::normargUseNames(use.names))
+            names(x) <- NULL
         x
     }
 )
 
 setMethod("promoters", "Views",
-    function(x, upstream=2000, downstream=200, ...)
+    function(x, upstream=2000, downstream=200, use.names=TRUE)
     {
-        x@ranges <- promoters(ranges(x), upstream, downstream)
-        x
+        new_ranges <- promoters(ranges(x), upstream=upstream,
+                                           downstream=downstream,
+                                           use.names=use.names)
+        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
     }
 )
 
-setMethod("promoters", "IntegerRangesList",
-          function(x, upstream=2000, downstream=200, ...) 
-          {
-              endoapply(x, promoters, upstream = upstream, 
-                         downstream = downstream)
-          }
-)
+setMethod("promoters", "RangesList",
+    function(x, upstream=2000, downstream=200, use.names=TRUE)
+    {
+        if (!is(upstream, "List"))
+            upstream <- as(upstream, "List")
+        upstream <- S4Vectors:::VH_recycle(upstream, x, "upstream", "x")
+        if (!is(downstream, "List"))
+            downstream <- as(downstream, "List")
+        downstream <- S4Vectors:::VH_recycle(downstream, x, "downstream", "x")
 
-setMethod("promoters", "CompressedIRangesList",
-          function(x, upstream=2000, downstream=200, ...)
-          {
-              slot(x, "unlistData", check=FALSE) <-
-                promoters(x@unlistData, upstream = upstream, 
-                          downstream = downstream, ...)
-              x
-          }
+        if (is(x, "CompressedRangesList")) {
+            unlisted_upstream <- unlist(upstream, use.names=FALSE)
+            unlisted_downstream <- unlist(downstream, use.names=FALSE)
+            new_unlistData <- promoters(x@unlistData,
+                                        upstream=unlisted_upstream,
+                                        downstream=unlisted_downstream,
+                                        use.names=use.names)
+            ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
+                                                  check=FALSE)
+            return(ans)
+        }
+        mendoapply(promoters, x, upstream, downstream,
+                              MoreArgs=list(use.names=use.names))
+    }
 )
 
 
@@ -533,38 +534,44 @@ setMethod("restrict", "IntegerRanges",
     }
 )
 
-setMethod("restrict", "IntegerRangesList",
-          function(x, start = NA, end = NA, keep.all.ranges = FALSE,
-                   use.names = TRUE)
-          {
-              lx <- length(x)
-              start <- normargAtomicList1(start, IntegerList, lx)
-              end <- normargAtomicList1(end, IntegerList, lx)
-              mendoapply(restrict, x, start = start, end = end,
-                         MoreArgs = list(keep.all.ranges = keep.all.ranges,
-                           use.names = use.names))
-          })
+setMethod("restrict", "Views",
+    function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
+    {
+        new_ranges <- restrict(ranges(x), start=start, end=end,
+                                          keep.all.ranges=keep.all.ranges,
+                                          use.names=use.names)
+        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
+    }
+)
 
-setMethod("restrict", "CompressedIRangesList",
-          function(x, start = NA, end = NA, keep.all.ranges = FALSE,
-                   use.names = TRUE)
-          {
-              if (!isTRUEorFALSE(keep.all.ranges))
-                  stop("'keep.all.ranges' must be TRUE or FALSE")
-              if (keep.all.ranges) {
-                  lx <- length(x)
-                  x_eltNROWS <- elementNROWS(x)
-                  start <- normargAtomicList2(start, IntegerList,
-                                              lx, x_eltNROWS)
-                  end <- normargAtomicList2(end, IntegerList, lx, x_eltNROWS)
-                  slot(x, "unlistData", check=FALSE) <-
-                    restrict(x@unlistData, start = start, end = end,
-                             keep.all.ranges = keep.all.ranges,
-                             use.names = use.names)
-              } else
-                  x <- callNextMethod()
-              x
-          })
+setMethod("restrict", "RangesList",
+    function(x, start=NA, end=NA, keep.all.ranges=FALSE, use.names=TRUE)
+    {
+        if (!isTRUEorFALSE(keep.all.ranges))
+            stop("'keep.all.ranges' must be TRUE or FALSE")
+        if (!is(start, "List"))
+            start <- as(start, "List")
+        start <- S4Vectors:::VH_recycle(start, x, "start", "x")
+        if (!is(end, "List"))
+            end <- as(end, "List")
+        end <- S4Vectors:::VH_recycle(end, x, "end", "x")
+
+        if (is(x, "CompressedRangesList") && keep.all.ranges) {
+            unlisted_start <- unlist(start, use.names=FALSE)
+            unlisted_end <- unlist(end, use.names=FALSE)
+            new_unlistData <- restrict(x@unlistData, start=unlisted_start,
+                                                     end=unlisted_end,
+                                                     keep.all.ranges=TRUE,
+                                                     use.names=use.names)
+            ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
+                                                  check=FALSE)
+            return(ans)
+        }
+        mendoapply(restrict, x, start, end,
+                             MoreArgs=list(keep.all.ranges=keep.all.ranges,
+                                           use.names=use.names))
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

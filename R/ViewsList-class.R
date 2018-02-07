@@ -2,6 +2,7 @@
 ### ViewsList objects
 ### -------------------------------------------------------------------------
 
+
 setClass("ViewsList",
     contains="List",
     representation("VIRTUAL"),
@@ -52,7 +53,9 @@ setMethod("as.matrix", "ViewsList",
           {
             if (!isTRUEorFALSE(use.names))
               stop("use.names must be TRUE or FALSE")
-            rev <- normargAtomicList1(rev, LogicalList, length(x))
+            if (!is(rev, "List"))
+              rev <- as(rev, "List")
+            rev <- S4Vectors:::VH_recycle(rev, x, "rev", "x")
             max_width <- max(max(width(restrict(ranges(x), start = 1L))))
             m <- do.call(rbind, mapply(as.matrix, x, rev,
                                        IntegerList(max_width),

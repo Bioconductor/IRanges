@@ -6,40 +6,36 @@
 \alias{shift,IntegerRanges-method}
 \alias{shift,IPos-method}
 \alias{shift,Views-method}
-\alias{shift,IntegerRangesList-method}
-\alias{shift,CompressedIRangesList-method}
+\alias{shift,RangesList-method}
 
 \alias{narrow}
-\alias{narrow,Vector-method}
-\alias{narrow,CompressedList-method}
+\alias{narrow,ANY-method}
 \alias{windows,IntegerRanges-method}
 \alias{windows,Views-method}
 \alias{narrow,MaskCollection-method}
 
 \alias{resize}
 \alias{resize,IntegerRanges-method}
-\alias{resize,IntegerRangesList-method}
-\alias{resize,IntervalList-method}
-\alias{resize,CompressedIRangesList-method}
+\alias{resize,Views-method}
+\alias{resize,RangesList-method}
 
 \alias{flank}
 \alias{flank,IntegerRanges-method}
-\alias{flank,IntegerRangesList-method}
-\alias{flank,CompressedIRangesList-method}
+\alias{flank,Views-method}
+\alias{flank,RangesList-method}
 
 \alias{promoters}
 \alias{promoters,IntegerRanges-method}
 \alias{promoters,Views-method}
-\alias{promoters,IntegerRangesList-method}
-\alias{promoters,CompressedIRangesList-method}
+\alias{promoters,RangesList-method}
 
 \alias{reflect}
 \alias{reflect,IntegerRanges-method}
 
 \alias{restrict}
 \alias{restrict,IntegerRanges-method}
-\alias{restrict,IntegerRangesList-method}
-\alias{restrict,CompressedIRangesList-method}
+\alias{restrict,Views-method}
+\alias{restrict,RangesList-method}
 
 \alias{threebands}
 \alias{threebands,IRanges-method}
@@ -86,7 +82,7 @@ resize(x, width, fix="start", use.names=TRUE, ...)
 
 flank(x, width, start=TRUE, both=FALSE, use.names=TRUE, ...)
 
-promoters(x, upstream=2000, downstream=200, ...)
+promoters(x, upstream=2000, downstream=200, use.names=TRUE, ...)
 
 reflect(x, bounds, use.names=TRUE)
 

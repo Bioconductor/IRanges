@@ -103,26 +103,31 @@ setMethod("narrow", "ANY",
                 names(ans) <- NULL
             return(ans)
         }
-        x_len <- length(x)
-        start <- normargAtomicList1(start, IntegerList, x_len)
-        end <- normargAtomicList1(end, IntegerList, x_len)
-        width <- normargAtomicList1(width, IntegerList, x_len)
+
+        if (!is(start, "List"))
+            start <- as(start, "List")
+        start <- S4Vectors:::VH_recycle(start, x, "start", "x")
+        if (!is(width, "List"))
+            width <- as(width, "List")
+        width <- S4Vectors:::VH_recycle(width, x, "width", "x")
+        if (!is(end, "List"))
+            end <- as(end, "List")
+        end <- S4Vectors:::VH_recycle(end, x, "end", "x")
+
+        if (is(x, "CompressedList")) {
+            unlisted_start <- unlist(start, use.names=FALSE)
+            unlisted_end <- unlist(end, use.names=FALSE)
+            unlisted_width <- unlist(width, use.names=FALSE)
+            new_unlistData <- narrow(x@unlistData, start=unlisted_start,
+                                                   end=unlisted_end,
+                                                   width=unlisted_width,
+                                                   use.names=use.names)
+            ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
+                                                  check=FALSE)
+            return(ans)
+        }
         mendoapply(narrow, x, start, end, width,
                            MoreArgs=list(use.names=use.names))
-    }
-)
-
-setMethod("narrow", "CompressedList",
-    function(x, start=NA, end=NA, width=NA, use.names=TRUE)
-    {
-        x_len <- length(x)
-        x_eltNROWS <- elementNROWS(x)
-        start <- normargAtomicList2(start, IntegerList, x_len, x_eltNROWS)
-        end <- normargAtomicList2(end, IntegerList, x_len, x_eltNROWS)
-        width <- normargAtomicList2(width, IntegerList, x_len, x_eltNROWS)
-        unlisted_ans <- narrow(x@unlistData, start, end, width,
-                                             use.names=use.names)
-        BiocGenerics:::replaceSlots(x, unlistData=unlisted_ans, check=FALSE)
     }
 )
 
