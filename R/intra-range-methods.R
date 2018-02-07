@@ -319,20 +319,18 @@ setMethod("promoters", "IntegerRanges",
     function(x, upstream=2000, downstream=200, use.names=TRUE)
     {
         if (is(x, "NormalIRanges"))
-            stop("promoters on a NormalIRanges object is not supported")
-        if (!isSingleNumber(upstream))
-            stop("'upstream' must be a single integer")
-        if (!is.integer(upstream))
-            upstream <- as.numeric(upstream)
-        if (!isSingleNumber(downstream))
-            stop("'downstream' must be a single integer")
-        if (!is.integer(downstream))
-            downstream <- as.numeric(downstream)
-        if (upstream < 0 | downstream < 0)
-            stop("'upstream' and 'downstream' must be integers >= 0")
-        st <- start(x)
-        start(x) <- st - upstream
-        end(x) <- st + downstream - 1L
+            stop("promoters() is not supported on a NormalIRanges object")
+        x_len <- length(x)
+        upstream <- recycleIntegerArg(upstream, "upstream", x_len)
+        downstream <- recycleIntegerArg(downstream, "downstream", x_len)
+        if (x_len > 0L) {
+            if (min(upstream) < 0L || min(downstream) < 0L)
+                stop("'upstream' and 'downstream' must be integers >= 0")
+            x_start <- start(x)
+            new_start <- x_start - upstream
+            new_end <- x_start + downstream - 1L
+            x <- update(x, start=new_start, end=new_end, check=FALSE)
+        }
         if (!S4Vectors:::normargUseNames(use.names))
             names(x) <- NULL
         x

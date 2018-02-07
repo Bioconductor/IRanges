@@ -47,7 +47,7 @@
 
 
 \title{Intra range transformations of an IntegerRanges, Views,
-       IntegerRangesList, or MaskCollection object}
+       RangesList, or MaskCollection object}
 
 \description{
   Range-based transformations are grouped in 2 categories:
@@ -93,80 +93,59 @@ threebands(x, start=NA, end=NA, width=NA)
 
 \arguments{
   \item{x}{
-    An \link{IntegerRanges}, \link{Views}, \link{IntegerRangesList}, or
+    An \link{IntegerRanges}, \link{Views}, \link{RangesList}, or
     \link{MaskCollection} object.
   }
   \item{shift}{
-    An integer vector containing the shift information. Recycled as 
+    An integer vector containing the shift information. Recycled as
     necessary so that each element corresponds to a range in \code{x}.
-    It can also be an \link{IntegerList} object if \code{x} is a
-    \link{IntegerRangesList} object.
+
+    Can also be a list-like object \emph{parallel} to \code{x}
+    if \code{x} is a \link{RangesList} object.
   }
   \item{use.names}{
     \code{TRUE} or \code{FALSE}. Should names be preserved?
   }
   \item{start, end}{
-    \itemize{
-      \item If \code{x} is an \link{IntegerRanges} or \link{Views} object:
-            A vector of integers for all functions except for \code{flank}.
-            For \code{restrict}, the supplied \code{start} and \code{end}
-            arguments must be vectors of integers, eventually with NAs, that
-            specify the restriction interval(s). Recycled as necessary so
-            that each element corresponds to a range in \code{x}.
-            Same thing for \code{narrow} and \code{threebands}, except that
-            here \code{start} and \code{end} must contain coordinates relative
-            to the ranges in \code{x}. See the Details section below.
-            For \code{flank}, \code{start} is a logical indicating whether
-            \code{x} should be flanked at the start (\code{TRUE}) or the end
-            (\code{FALSE}). Recycled as necessary so that each element
-            corresponds to a range in \code{x}.
-      \item If \code{x} is a \link{IntegerRangesList} object:
-            For \code{flank}, \code{start} must be either a logical vector
-            or a \link{LogicalList} object indicating whether \code{x} should
-            be flanked at the start (\code{TRUE}) or the end (\code{FALSE}).
-            Recycled as necessary so that each element corresponds to a range
-            in \code{x}. For \code{narrow}, \code{start} and \code{end} must
-            be either an integer vector or an \link{IntegerList} object
-            containing coordinates relative to the current ranges.
-            For \code{restrict}, \code{start} and \code{end} must be either
-            an integer vector or an \link{IntegerList} object (possibly
-            containing NA's).
-    }
+    If \code{x} is an \link{IntegerRanges} or \link{Views} object:
+    A vector of integers for all functions except for \code{flank}.
+    For \code{restrict}, the supplied \code{start} and \code{end}
+    arguments must be vectors of integers, eventually with NAs, that
+    specify the restriction interval(s). Recycled as necessary so
+    that each element corresponds to a range in \code{x}.
+    Same thing for \code{narrow} and \code{threebands}, except that
+    here \code{start} and \code{end} must contain coordinates relative
+    to the ranges in \code{x}. See the Details section below.
+    For \code{flank}, \code{start} is a logical indicating whether
+    \code{x} should be flanked at the start (\code{TRUE}) or the end
+    (\code{FALSE}). Recycled as necessary so that each element
+    corresponds to a range in \code{x}.
+
+    Can also be list-like objects \emph{parallel} to \code{x}
+    if \code{x} is a \link{RangesList} object.
   }
   \item{width}{
-    \itemize{
-      \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
-            For \code{narrow} and \code{threebands}, a vector of integers,
-            eventually with NAs. See the SEW (Start/End/Width) interface for
-            the details (\code{?solveUserSEW}).
-            For \code{resize} and \code{flank}, the width of the resized or
-            flanking regions. Note that if \code{both} is \code{TRUE}, this
-            is effectively doubled. Recycled as necessary so that each
-            element corresponds to a range in \code{x}.
-      \item If \code{x} is a \link{IntegerRangesList} object:
-            For \code{resize} and \code{flank}, either an integer vector or an
-            \link{IntegerList} object containing the width of the flanking
-            or resized regions. Recycled as necessary so that each element
-            corresponds to a range in \code{x}. (Note for \code{flank}:
-            if \code{both} is \code{TRUE}, this is effectively doubled.)
-            For \code{narrow}, either an integer vector or a \link{IntegerList}
-            object containing the widths to narrow to. See the SEW
-            (Start/End/Width) interface for the details (\code{?solveUserSEW}).
-    }
+    If \code{x} is an \link{IntegerRanges} or \link{Views} object:
+    For \code{narrow} and \code{threebands}, a vector of integers,
+    eventually with NAs. See the SEW (Start/End/Width) interface for
+    the details (\code{?solveUserSEW}).
+    For \code{resize} and \code{flank}, the width of the resized or
+    flanking regions. Note that if \code{both} is \code{TRUE}, this
+    is effectively doubled. Recycled as necessary so that each
+    element corresponds to a range in \code{x}.
+
+    Can also be a list-like object \emph{parallel} to \code{x}
+    if \code{x} is a \link{RangesList} object.
   }
   \item{fix}{
-    \itemize{
-      \item If \code{x} is a \link{IntegerRanges} or \link{Views} object:
-            A character vector or character-Rle of length 1 or \code{length(x)}
-            containing the values \code{"start"}, \code{"end"}, and
-            \code{"center"} denoting what to use as an anchor for each
-            element in \code{x}.
-      \item If \code{x} is a \link{IntegerRangesList} object:
-            A character vector of length 1, a \link{CharacterList} object,
-            or a character-RleList object containing the values
-            \code{"start"}, \code{"end"}, and \code{"center"} denoting what
-            to use as an anchor for each element in \code{x}.
-    }
+    If \code{x} is an \link{IntegerRanges} or \link{Views} object:
+    A character vector or character-Rle of length 1 or \code{length(x)}
+    containing the values \code{"start"}, \code{"end"}, and
+    \code{"center"} denoting what to use as an anchor for each
+    element in \code{x}.
+
+    Can also be a list-like object \emph{parallel} to \code{x}
+    if \code{x} is a \link{RangesList} object.
   }
   \item{...}{
     Additional arguments for methods.
@@ -177,14 +156,19 @@ threebands(x, start=NA, end=NA, width=NA)
     point, with \code{width} positions on either side.
   }
   \item{upstream, downstream}{
-    Single \code{integer} values >= 0L. \code{upstream} defines the number 
-    of nucleotides toward the 5' end and \code{downstream} defines the number
-    toward the 3' end, relative to the transcription start site. Promoter 
-    regions are formed by merging the upstream and downstream ranges.
+    Vectors of non-NA non-negative integers. Recycled as
+    necessary so that each element corresponds to a range in \code{x}.
+    Can also be list-like objects \emph{parallel} to \code{x}
+    if \code{x} is a \link{RangesList} object.
+
+    \code{upstream} defines the number of nucleotides toward the 5' end
+    and \code{downstream} defines the number toward the 3' end, relative
+    to the transcription start site. Promoter regions are formed by merging
+    the upstream and downstream ranges.
 
     Default values for \code{upstream} and \code{downstream} were chosen based
     on our current understanding of gene regulation. On average, promoter
-    regions in the mammalian genome are 5000 bp upstream and downstream of the 
+    regions in the mammalian genome are 5000 bp upstream and downstream of the
     transcription start site.
   }
   \item{bounds}{
@@ -203,9 +187,9 @@ threebands(x, start=NA, end=NA, width=NA)
 }
 
 \details{
-  Unless specified otherwise, when \code{x} is a \link{IntegerRangesList}
+  Unless specified otherwise, when \code{x} is a \link{RangesList}
   object, any transformation described here is equivalent to applying the
-  transformation to each \link{IntegerRangesList} top-level element separately.
+  transformation to each list element in \code{x}.
 
   \subsection{shift}{
 
@@ -258,13 +242,13 @@ threebands(x, start=NA, end=NA, width=NA)
   }\subsection{promoters}{
 
     \code{promoters} generates promoter ranges for each range in \code{x}
-    relative to the transcription start site (TSS), where TSS is 
-    \code{start(x)}. The promoter range is expanded around the TSS 
+    relative to the transcription start site (TSS), where TSS is
+    \code{start(x)}. The promoter range is expanded around the TSS
     according to the \code{upsteam} and \code{downstream} arguments.
-    \code{upstream} represents the number of nucleotides in the 5' 
-    direction and \code{downstream} the number in the 3' direction. 
-    The full range is defined as, 
-    (start(x) - upstream) to (start(x) + downstream - 1). 
+    \code{upstream} represents the number of nucleotides in the 5'
+    direction and \code{downstream} the number in the 3' direction.
+    The full range is defined as,
+    (start(x) - upstream) to (start(x) + downstream - 1).
     For documentation for using \code{promoters} on a
     \link[GenomicRanges]{GRanges} object see
     \code{?`\link[GenomicRanges]{promoters,GenomicRanges-method}`} in
@@ -312,7 +296,7 @@ threebands(x, start=NA, end=NA, width=NA)
   \itemize{
     \item \link{inter-range-methods} for inter range transformations.
 
-    \item The \link{IntegerRanges}, \link{Views}, \link{IntegerRangesList},
+    \item The \link{IntegerRanges}, \link{Views}, \link{RangesList},
           and \link{MaskCollection} classes.
 
     \item The \link[GenomicRanges]{intra-range-methods} man page in the
@@ -331,12 +315,12 @@ threebands(x, start=NA, end=NA, width=NA)
 ## shift()
 ## ---------------------------------------------------------------------
 
-## On an IntegerRanges object:
+## On an IRanges object:
 ir1 <- successiveIRanges(c(19, 5, 0, 8, 5))
 ir1
 shift(ir1, shift=-3)
 
-## On a IntegerRangesList object:
+## On an IRangesList object:
 range1 <- IRanges(start=c(1, 2, 3), end=c(5, 2, 8))
 range2 <- IRanges(start=c(15, 45, 20, 1), end=c(15, 100, 80, 5))
 range3 <- IRanges(start=c(-2, 6, 7), width=c(8, 0, 0))  # with empty ranges
@@ -352,14 +336,14 @@ stopifnot(identical(res1, res2))
 ## narrow()
 ## ---------------------------------------------------------------------
 
-## On an IntegerRanges object:
+## On an IRanges object:
 ir2 <- ir1[width(ir1) != 0]
 narrow(ir2, start=4, end=-2)
 narrow(ir2, start=-4, end=-2)
 narrow(ir2, end=5, width=3)
 narrow(ir2, start=c(3, 4, 2, 3), end=c(12, 5, 7, 4))
 
-## On an IntegerRangesList object:
+## On an IRangesList object:
 narrow(collection[-3], start=2)
 narrow(collection[-3], end=-2)
 
@@ -375,18 +359,18 @@ narrow(mymasks, start=8)
 ## resize()
 ## ---------------------------------------------------------------------
 
-## On an IntegerRanges object:
+## On an IRanges object:
 resize(ir2, 200)
 resize(ir2, 2, fix="end")
 
-## On an IntegerRangesList object:
+## On an IRangesList object:
 resize(collection, width=200)
 
 ## ---------------------------------------------------------------------
 ## flank()
 ## ---------------------------------------------------------------------
 
-## On an IntegerRanges object:
+## On an IRanges object:
 ir3 <- IRanges(c(2,5,1), c(3,7,3))
 flank(ir3, 2)
 flank(ir3, 2, start=FALSE)
@@ -396,56 +380,56 @@ flank(ir3, 2, both = TRUE)
 flank(ir3, 2, start=FALSE, both=TRUE)
 flank(ir3, -2, start=FALSE, both=TRUE)
 
-## On an IntegerRangesList object:
+## On an IRangesList object:
 flank(collection, width=10)
 
 ## ---------------------------------------------------------------------
 ## promoters()
 ## ---------------------------------------------------------------------
 
-## On an IntegerRanges object:
+## On an IRanges object:
 ir4 <- IRanges(20:23, width=3)
 promoters(ir4, upstream=0, downstream=0) ## no change
 promoters(ir4, upstream=0, downstream=1) ## start value only
-promoters(ir4, upstream=1, downstream=0) ## single upstream nucleotide 
+promoters(ir4, upstream=1, downstream=0) ## single upstream nucleotide
 
-## On an IntegerRangesList object:
+## On an IRangesList object:
 promoters(collection, upstream=5, downstream=2)
 
 ## ---------------------------------------------------------------------
 ## reflect()
 ## ---------------------------------------------------------------------
 
-## On an IntegerRanges object:
+## On an IRanges object:
 bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
 reflect(ir3, bounds)
 
-## reflect() does not yet support IntegerRangesList objects!
+## reflect() does not yet support IRangesList objects!
 
 ## ---------------------------------------------------------------------
 ## restrict()
 ## ---------------------------------------------------------------------
 
-## On an IntegerRanges object:
+## On an IRanges object:
 restrict(ir1, start=12, end=34)
 restrict(ir1, start=20)
 restrict(ir1, start=21)
 restrict(ir1, start=21, keep.all.ranges=TRUE)
 
-## On an IntegerRangesList object:
+## On an IRangesList object:
 restrict(collection, start=2, end=8)
 
 ## ---------------------------------------------------------------------
 ## threebands()
 ## ---------------------------------------------------------------------
 
-## On an IntegerRanges object:
+## On an IRanges object:
 z <- threebands(ir2, start=4, end=-2)
 ir2b <- punion(z$left, z$right, fill.gap=TRUE)
 stopifnot(identical(ir2, ir2b))
 threebands(ir2, start=-5)
 
-## threebands() does not support IntegerRangesList objects.
+## threebands() does not support IRangesList objects.
 }
 
 \keyword{utilities}
