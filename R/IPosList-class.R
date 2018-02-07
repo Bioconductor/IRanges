@@ -4,12 +4,12 @@
 
 
 setClass("IPosList",
-    contains="IntegerPosList",
+    contains=c("PosList", "IntegerRangesList"),
     representation("VIRTUAL"),
     prototype(elementType="IPos")
 )
 
 setClass("SimpleIPosList",
-    contains=c("IPosList", "SimpleIntegerPosList")
+    contains=c("IPosList", "SimplePosList", "SimpleIntegerRangesList")
 )
 

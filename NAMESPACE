@@ -41,7 +41,6 @@ exportClasses(
 
     ## IntegerRangesList-class.R
     IntegerRangesList, SimpleIntegerRangesList,
-    IntegerPosList, SimpleIntegerPosList,
 
     ## IRanges-class.R:
     IRanges, NormalIRanges,
@@ -109,7 +108,7 @@ exportClasses(
 
     ## CompressedRangesList-class.R:
     CompressedRangesList, CompressedPosList,
-    CompressedIntegerRangesList, CompressedIntegerPosList,
+    CompressedIntegerRangesList,
     CompressedIRangesList, CompressedNormalIRangesList, CompressedIPosList,
 
     ## RangedData-class.R:

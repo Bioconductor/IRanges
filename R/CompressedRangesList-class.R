@@ -18,13 +18,6 @@ setClass("CompressedIntegerRangesList",
     representation("VIRTUAL")
 )
 
-setClass("CompressedIntegerPosList",
-    contains=c("IntegerPosList",
-               "CompressedPosList",
-               "CompressedIntegerRangesList"),
-    representation("VIRTUAL")
-)
-
 setClass("CompressedIRangesList",
     contains=c("IRangesList", "CompressedIntegerRangesList"),
     prototype=prototype(unlistData=new("IRanges"))
@@ -43,7 +36,7 @@ setClass("CompressedNormalIRangesList",
 )
 
 setClass("CompressedIPosList",
-    contains=c("IPosList", "CompressedIntegerPosList"),
+    contains=c("IPosList", "CompressedPosList", "CompressedIntegerRangesList"),
     prototype=prototype(unlistData=new("IPos"))
 )
 

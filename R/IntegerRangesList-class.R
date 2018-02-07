@@ -14,17 +14,6 @@ setClass("SimpleIntegerRangesList",
     representation("VIRTUAL")
 )
 
-setClass("IntegerPosList",
-    contains=c("PosList", "IntegerRangesList"),
-    representation("VIRTUAL"),
-    prototype(elementType="IntegerPos")
-)
-
-setClass("SimpleIntegerPosList",
-    contains=c("IntegerPosList", "SimpleIntegerRangesList"),
-    representation("VIRTUAL")
-)
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
