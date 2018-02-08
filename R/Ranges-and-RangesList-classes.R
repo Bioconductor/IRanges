@@ -1,19 +1,46 @@
 ### =========================================================================
 ### Ranges and RangesList objects
 ### -------------------------------------------------------------------------
-
-### General ranges.
-### Ranges is a virtual class that serves as the parent class for any class
-### that represents a vector of ranges. The core Ranges API consists of the
-### start(), end() and width() getters. All 3 getters must return an integer
-### vector parallel to the object and with no NAs. In addition the 3 vectors
-### must satisfy the 2 following properties:
+###
+### The Ranges class is a virtual class that serves as the parent class for
+### any container that represents a vector of ranges. The core Ranges API
+### consists of the start(), end() and width() getters. All 3 getters must
+### return an integer vector parallel to the object and with no NAs. In
+### addition the 3 vectors must satisfy the 2 following properties:
 ###
 ###   (1) all(width(x) >= 0) is TRUE
 ###   (2) all(start(x) + width(x) - 1L == end(x)) is TRUE
 ###
 ### The direct Ranges subclasses defined in the IRanges and GenomicRanges
 ### packages are: Pos, IntegerRanges, and GenomicRanges.
+###
+### The Ranges hierarchy:
+### - showing the top-level classes only;
+### - showing only classes defined in the IRanges package;
+### - all classes showed in the diagram are virtual except IRanges, NCList,
+###   and IPos (marked with an asterisk).
+###
+###                               Ranges
+###                              ^      ^
+###                             /        \
+###                 IntegerRanges        Pos
+###                 ^           ^         ^
+###                 |           |         |
+###               Views     IPosRanges    |
+###                ^        ^ ^    ^ ^    |
+###               /        /  |    |  \   |
+###              .        /   |    |   \  |
+###                      /    |    |    IPos*
+###                     /     |    |
+###              IRanges*     |    |
+###                 ^     NCList*  |
+###                 |             GroupingRanges
+###                 |                   ^
+###                 .                   |
+###                                     .
+###
+
+### General ranges.
 setClass("Ranges", contains="List", representation("VIRTUAL"))
 
 ### Positions (i.e. ranges of with 1).
