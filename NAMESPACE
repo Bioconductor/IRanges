@@ -331,8 +331,8 @@ export(
     ## coverage-methods.R:
     coverage,
 
-    ## coverage2-methods.R:
-    coverage2,
+    ## cvg-methods.R:
+    cvg,
 
     ## slice-methods.R:
     slice,
@@ -383,7 +383,7 @@ exportMethods(
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     reverse,
     coverage,
-    coverage2,
+    cvg,
     slice,
     punion, pintersect, psetdiff, pgap,
     precede, follow, nearest, distance, distanceToNearest,

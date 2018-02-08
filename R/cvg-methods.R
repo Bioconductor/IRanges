@@ -1,5 +1,5 @@
 ### =========================================================================
-### coverage2()
+### cvg()
 ### -------------------------------------------------------------------------
 ###
 ### A better coverage().
@@ -8,9 +8,9 @@
 ### https://stackoverflow.com/questions/17138760/counting-overlaps-of-integer-ranges
 ###
 
-setGeneric("coverage2", signature="x",
+setGeneric("cvg", signature="x",
     function(x, from=NA, to=NA, weight=1L, varname="cvg", collapse=FALSE, ...)
-        standardGeneric("coverage2")
+        standardGeneric("cvg")
 )
 
 ### TODO: Methods for IntegerRanges and IntegerRangesList objects (defined in
@@ -91,7 +91,7 @@ effective_restriction_windows_for_IntegerRangesList <-
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### "coverage2" methods
+### "cvg" methods
 ###
 
 ### Takes an IntegerRanges derivative 'x' and returns its coverage as the
@@ -108,8 +108,8 @@ effective_restriction_windows_for_IntegerRangesList <-
 ### ranges span the from-to window (i.e. 'reduce(ans)' will return the single
 ### range from-to). In particular, when 'ans' is an IPos object, 'pos(ans)'
 ### returns the from:to sequence.
-coverage2_IntegerRanges <- function(x, from=NA, to=NA, weight=1L,
-                                       varname="cvg", collapse=FALSE)
+cvg_IntegerRanges <- function(x, from=NA, to=NA, weight=1L,
+                                 varname="cvg", collapse=FALSE)
 {
     stopifnot(isSingleString(varname), isTRUEorFALSE(collapse))
     from_to <- effective_restriction_window_for_IntegerRanges(x, from, to)
@@ -122,18 +122,19 @@ coverage2_IntegerRanges <- function(x, from=NA, to=NA, weight=1L,
             ans <- IRanges(from_to[[1L]], width=width)
         }
         ## 'weight' determines the type of Rle.
-        cvg <- Rle(weight * 0L, sum(width(ans)))
+        cvg0 <- Rle(weight * 0L, sum(width(ans)))
     } else {
-        cvg <- coverage(x, shift=shift, width=width, weight=weight)  # Rle
-        ans_width <- runLength(cvg)
+        ## Compute coverage as an Rle object.
+        cvg0 <- coverage(x, shift=shift, width=width, weight=weight)
+        ans_width <- runLength(cvg0)
         ans_end <- cumsum(ans_width) - shift
         ans <- IRanges(end=ans_end, width=ans_width)
     }
     if (collapse) {
-        var <- runValue(cvg)
+        var <- runValue(cvg0)
     } else {
         ans <- IPos(ans)
-        var <- cvg
+        var <- cvg0
     }
     mcols(ans) <- S4Vectors:::new_DataFrame(setNames(list(var), varname))
     ans
@@ -149,31 +150,32 @@ coverage2_IntegerRanges <- function(x, from=NA, to=NA, weight=1L,
 ### of 'x'.
 ### The object to return is computed with a fast implementation of
 ###
-###     mapply(coverage2_IntegerRanges, x, from, to, weight,
+###     mapply(cvg_IntegerRanges, x, from, to, weight,
 ###            MoreArgs=list(varname=varname, collapse=collapse))
 ###
 ### and then returned as an IPosList or IRangesList, obeying 'collapse'.
-coverage2_IntegerRangesList <- function(x, from=NA, to=NA, weight=1L,
-                                           varname="cvg", collapse=FALSE)
+cvg_IntegerRangesList <- function(x, from=NA, to=NA, weight=1L,
+                                     varname="cvg", collapse=FALSE)
 {
     stopifnot(isSingleString(varname), isTRUEorFALSE(collapse))
     from_to <- effective_restriction_windows_for_IntegerRangesList(x, from, to)
     shift <- 1L - unname(from_to[ , 1L])
     width <- unname(from_to[ , 2L]) + shift
-    cvg <- coverage(x, shift=shift, width=width, weight=weight)  # SimpleRleList
-    ans_width <- as(runLength(cvg), "CompressedIntegerList")
+    ## Compute coverage as a SimpleRleList object.
+    cvg0 <- coverage(x, shift=shift, width=width, weight=weight)
+    ans_width <- as(runLength(cvg0), "CompressedIntegerList")
     ans_end <- as(cumsum(ans_width), class(ans_width)) - shift
     unlisted_ans <- IRanges(end=unlist(ans_end, use.names=FALSE),
                             width=unlist(ans_width, use.names=FALSE))
     if (collapse) {
-        var <- unlist(runValue(cvg), use.names=FALSE)
+        var <- unlist(runValue(cvg0), use.names=FALSE)
     } else {
         unlisted_ans <- IPos(unlisted_ans)
-        if (length(cvg) == 0L) {
+        if (length(cvg0) == 0L) {
             ## 'weight' determines the type of Rle.
             var <- Rle(weight * 0L, 0L)
         } else {
-            var <- unlist(cvg, use.names=FALSE)
+            var <- unlist(cvg0, use.names=FALSE)
         }
     }
     mcols(unlisted_ans) <- S4Vectors:::new_DataFrame(
@@ -181,11 +183,11 @@ coverage2_IntegerRangesList <- function(x, from=NA, to=NA, weight=1L,
     if (collapse) {
         ans <- relist(unlisted_ans, ans_width)
     } else {
-        ans <- relist(unlisted_ans, cvg)
+        ans <- relist(unlisted_ans, cvg0)
     }
     ans
 }
 
-setMethod("coverage2", "IntegerRanges", coverage2_IntegerRanges)
-setMethod("coverage2", "IntegerRangesList", coverage2_IntegerRangesList)
+setMethod("cvg", "IntegerRanges", cvg_IntegerRanges)
+setMethod("cvg", "IntegerRangesList", cvg_IntegerRangesList)
 
