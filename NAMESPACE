@@ -32,12 +32,13 @@ exportClasses(
     FactorList, SimpleFactorList,
 
     ## Ranges-and-RangesList-classes.R:
-    Ranges, Pos,
+    Ranges, IntegerRanges, Pos,
     RangesList, SimpleRangesList,
+    IntegerRangesList, SimpleIntegerRangesList,
     PosList, SimplePosList,
 
-    ## IntegerRanges-class.R:
-    IntegerRanges,
+    ## IPosRanges-class.R:
+    IPosRanges,
 
     ## IntegerRangesList-class.R
     IntegerRangesList, SimpleIntegerRangesList,
@@ -272,7 +273,7 @@ export(
     showAsCell,
     mstack,
 
-    ## IntegerRanges-class.R:
+    ## Ranges-and-RangesList-classes.R:
     mid,
     isNormal, whichFirstNotNormal,
 

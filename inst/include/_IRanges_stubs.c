@@ -28,7 +28,7 @@ void stubname Targs \
 
 
 /*
- * Stubs for callables defined in IntegerRanges_comparison.c
+ * Stubs for callables defined in IPosRanges_comparison.c
  */
 
 DEFINE_CCALLABLE_STUB(int, overlap_code,

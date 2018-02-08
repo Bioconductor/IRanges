@@ -1,7 +1,8 @@
 ### =========================================================================
 ### Ranges and RangesList objects
 ### -------------------------------------------------------------------------
-###
+
+### General ranges.
 ### Ranges is a virtual class that serves as the parent class for any class
 ### that represents a vector of ranges. The core Ranges API consists of the
 ### start(), end() and width() getters. All 3 getters must return an integer
@@ -11,14 +12,17 @@
 ###   (1) all(width(x) >= 0) is TRUE
 ###   (2) all(start(x) + width(x) - 1L == end(x)) is TRUE
 ###
-### Direct Ranges subclasses are: IntegerRanges, Views, GenomicRanges, and
-### GenomicAlignments.
-###
-
-
+### The direct Ranges subclasses defined in the IRanges and GenomicRanges
+### packages are: Pos, IntegerRanges, and GenomicRanges.
 setClass("Ranges", contains="List", representation("VIRTUAL"))
 
+### Positions (i.e. ranges of with 1).
 setClass("Pos", contains="Ranges", representation("VIRTUAL"))
+
+### All ranges are on a single space.
+### Direct IntegerRanges subclasses: Views, IPosRanges.
+setClass("IntegerRanges", contains="Ranges", representation("VIRTUAL"))
+
 
 setClass("RangesList",
     contains="List",
@@ -39,6 +43,17 @@ setClass("PosList",
 
 setClass("SimplePosList",
     contains=c("PosList", "SimpleRangesList"),
+    representation("VIRTUAL")
+)
+
+setClass("IntegerRangesList",
+    contains="RangesList",
+    representation("VIRTUAL"),
+    prototype(elementType="IntegerRanges")
+)
+
+setClass("SimpleIntegerRangesList",
+    contains=c("IntegerRangesList", "SimpleRangesList"),
     representation("VIRTUAL")
 )
 
@@ -101,6 +116,37 @@ setReplaceMethod("names", "Pos",
 )
 
 setMethod("as.integer", "Pos", function(x, ...) pos(x))
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Methods for IntegerRanges derivatives
+###
+
+setGeneric("isNormal", function(x, ...) standardGeneric("isNormal"))
+
+setMethod("isNormal", "IntegerRanges",
+    function(x)
+    {
+        all_ok <- all(width(x) >= 1L)
+        if (length(x) >= 2)
+            all_ok <- all_ok && all(start(x)[-1L] - end(x)[-length(x)] >= 2L)
+        all_ok
+    }
+)
+
+setGeneric("whichFirstNotNormal",
+    function(x) standardGeneric("whichFirstNotNormal")
+)
+
+setMethod("whichFirstNotNormal", "IntegerRanges",
+    function(x)
+    {
+        is_ok <- width(x) >= 1L
+        if (length(x) >= 2)
+            is_ok <- is_ok & c(TRUE, start(x)[-1L] - end(x)[-length(x)] >= 2L)
+        which(!is_ok)[1L]
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

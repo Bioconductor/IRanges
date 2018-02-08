@@ -424,15 +424,15 @@ setMethod("high2low", "ANY",
 ###
 ### A GroupingRanges object represents a "block-grouping", that is, a
 ### grouping where each group is a block of adjacent elements in the original
-### collection of objects. GroupingRanges objects support the IntegerRanges
+### collection of objects. GroupingRanges objects support the IPosRanges
 ### API (e.g. start/end/width) in addition to the Grouping API.
 ###
 
 setClass("GroupingRanges",
-    ## We put IntegerRanges before Grouping so GroupingRanges objects inherit
-    ## the "show" method for IntegerRanges objects instead of the method for
+    ## We put IPosRanges before Grouping so GroupingRanges objects inherit
+    ## the "show" method for IPosRanges objects instead of the method for
     ## Grouping objects.
-    contains=c("IntegerRanges", "Grouping"),
+    contains=c("IPosRanges", "Grouping"),
     representation("VIRTUAL")
 )
 

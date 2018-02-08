@@ -9,7 +9,7 @@
 
 ### We deliberately do NOT extend IRanges.
 setClass("NCList",
-    contains="IntegerRanges",
+    contains="IPosRanges",
     representation(
         nclist="integer",
         ranges="IRanges"

@@ -7,16 +7,11 @@
 ###
 
 setClass("IRanges",
-    contains="IntegerRanges",
+    contains="IPosRanges",
     representation(
         start="integer",
         width="integer",
         NAMES="character_OR_NULL"  # R doesn't like @names !!
-    ),
-    prototype(
-        start=integer(),
-        width=integer(),
-        NAMES=NULL
     )
 )
 
@@ -130,7 +125,7 @@ setMethod("min", "NormalIRanges",
 ### Validity.
 ###
 ### Validity of IRanges objects is taken care of by the validity method for
-### IntegerRanges objects.
+### IPosRanges objects.
 ###
 
 ### NormalIRanges objects
@@ -226,6 +221,7 @@ setAs("character", "IRanges", .from_character_to_IRanges)
 }
 setAs("factor", "IRanges", .from_factor_to_IRanges)
 
+setAs("ANY", "IPosRanges", function(from) as(from, "IRanges"))
 setAs("ANY", "IntegerRanges", function(from) as(from, "IRanges"))
 
 

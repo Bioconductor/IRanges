@@ -3,18 +3,6 @@
 ### -------------------------------------------------------------------------
 
 
-setClass("IntegerRangesList",
-    contains="RangesList",
-    representation("VIRTUAL"),
-    prototype(elementType="IntegerRanges")
-)
-
-setClass("SimpleIntegerRangesList",
-    contains=c("IntegerRangesList", "SimpleRangesList"),
-    representation("VIRTUAL")
-)
-
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###

@@ -17,7 +17,7 @@ SEXP Ranges_validate(
 );
 
 
-/* IntegerRanges_comparison.c */
+/* IPosRanges_comparison.c */
 
 int _overlap_code(
 	int x_start,
@@ -30,7 +30,7 @@ int _invert_overlap_code(
 	int code
 );
 
-SEXP IntegerRanges_pcompare(
+SEXP IPosRanges_pcompare(
 	SEXP x_start,
 	SEXP x_width,
 	SEXP y_start,

@@ -14,7 +14,7 @@
 
 /*
  * Comparing integer ranges.
- * (see IntegerRanges_comparison.c)
+ * (see IPosRanges_comparison.c)
  */
 
 int overlap_code(

@@ -1,52 +1,54 @@
-\name{IntegerRanges-comparison}
+\name{IPosRanges-comparison}
 
-\alias{IntegerRanges-comparison}
+\alias{IPosRanges-comparison}
 
 \alias{pcompare}
-\alias{pcompare,IntegerRanges,IntegerRanges-method}
+\alias{pcompare,IPosRanges,IPosRanges-method}
 \alias{rangeComparisonCodeToLetter}
 
-\alias{match,IntegerRanges,IntegerRanges-method}
-\alias{selfmatch,IntegerRanges-method}
+\alias{match,IPosRanges,IPosRanges-method}
+\alias{selfmatch,IPosRanges-method}
 
-\alias{is.unsorted,IntegerRanges-method}
-\alias{order,IntegerRanges-method}
+\alias{is.unsorted,IPosRanges-method}
+\alias{order,IPosRanges-method}
 
 
 \title{Comparing and ordering ranges}
 
 \description{
-  Methods for comparing and/or ordering \link{IntegerRanges} objects.
+  Methods for comparing and/or ordering the ranges in \link{IPosRanges}
+  derivatives (e.g. \link{IRanges}, \link{IPos}, or \link{NCList} objects).
 }
 
 \usage{
 ## match() & selfmatch()
 ## ---------------------
 
-\S4method{match}{IntegerRanges,IntegerRanges}(x, table, nomatch=NA_integer_, incomparables=NULL,
+\S4method{match}{IPosRanges,IPosRanges}(x, table, nomatch=NA_integer_, incomparables=NULL,
       method=c("auto", "quick", "hash"))
 
-\S4method{selfmatch}{IntegerRanges}(x, method=c("auto", "quick", "hash"))
+\S4method{selfmatch}{IPosRanges}(x, method=c("auto", "quick", "hash"))
 
 ## order() and related methods
 ## ----------------------------
 
-\S4method{is.unsorted}{IntegerRanges}(x, na.rm=FALSE, strictly=FALSE)
+\S4method{is.unsorted}{IPosRanges}(x, na.rm=FALSE, strictly=FALSE)
 
-\S4method{order}{IntegerRanges}(..., na.last=TRUE, decreasing=FALSE,
+\S4method{order}{IPosRanges}(..., na.last=TRUE, decreasing=FALSE,
            method=c("auto", "shell", "radix"))
 
-## Generalized parallel comparison of 2 IntegerRanges objects
-## ---------------------------------------------------
+## Generalized parallel comparison of 2 IPosRanges derivatives
+## -----------------------------------------------------------
 
-\S4method{pcompare}{IntegerRanges,IntegerRanges}(x, y)
+\S4method{pcompare}{IPosRanges,IPosRanges}(x, y)
 
 rangeComparisonCodeToLetter(code)
 }
 
 \arguments{
   \item{x, table, y}{
-    \link{IntegerRanges} objects.
+    \link{IPosRanges} derivatives e.g. \link{IRanges}, \link{IPos}, or
+    \link{NCList} objects.
   }
   \item{nomatch}{
     The value to be returned in the case when no match is found.
@@ -74,8 +76,8 @@ rangeComparisonCodeToLetter(code)
     values.
   }
   \item{...}{
-    One or more \link{IntegerRanges} objects. The \link{IntegerRanges} objects 
-    after the first one are used to break ties.
+    One or more \link{IPosRanges} derivatives. The 2nd and following objects
+    are used to break ties.
   }
   \item{na.last}{
     Ignored.
@@ -89,9 +91,9 @@ rangeComparisonCodeToLetter(code)
 }
 
 \details{
-  Two elements of an \link{IntegerRanges} derivative (i.e. two integer
-  ranges) are considered equal iff they share the same start and width.
-  \code{duplicated()} and \code{unique()} on an \link{IntegerRanges}
+  Two ranges of an \link{IPosRanges} derivative are considered equal iff
+  they share the same start and width.
+  \code{duplicated()} and \code{unique()} on an \link{IPosRanges}
   derivative are conforming to this.
 
   Note that with this definition, 2 empty ranges are generally
@@ -101,27 +103,27 @@ rangeComparisonCodeToLetter(code)
   typical usecase is comparison of insertion points defined along a string
   (like a DNA sequence) and represented as empty ranges.
 
-  The "natural order" for the elements of an \link{IntegerRanges}
+  The "natural order" for the elements of an \link{IPosRanges}
   derivative is to order them (a) first by start and (b) then by width.
   This way, the space of integer ranges is totally ordered.
 
   \code{pcompare()}, \code{==}, \code{!=}, \code{<=}, \code{>=}, \code{<}
-  and \code{>} on \link{IntegerRanges} derivatives behave accordingly to
+  and \code{>} on \link{IPosRanges} derivatives behave accordingly to
   this "natural order".
 
   \code{is.unsorted()}, \code{order()}, \code{sort()}, \code{rank()} on
-  \link{IntegerRanges} derivatives also behave accordingly to this
+  \link{IPosRanges} derivatives also behave accordingly to this
   "natural order".
 
   Finally, note that some \emph{inter range transformations} like
   \code{\link{reduce}} or \code{\link{disjoin}} also use this "natural order"
-  implicitly when operating on \link{IntegerRanges} derivatives.
+  implicitly when operating on \link{IPosRanges} derivatives.
 
   \describe{
     \item{}{
       \code{pcompare(x, y)}:
       Performs element-wise (aka "parallel") comparison of 2
-      \link{IntegerRanges} objects of \code{x} and \code{y}, that is,
+      \link{IPosRanges} objects of \code{x} and \code{y}, that is,
       returns an integer vector where the i-th element is a code describing
       how \code{x[i]} is qualitatively positioned with respect to \code{y[i]}.
 
@@ -157,7 +159,7 @@ rangeComparisonCodeToLetter(code)
       \code{x[i] < y[i]}, \code{x[i] == y[i]}, or \code{x[i] > y[i]},
       respectively.
 
-      The \code{pcompare} method for \link{IntegerRanges} objects is
+      The \code{pcompare} method for \link{IPosRanges} derivatives is
       guaranteed to return predefined codes only but methods for other
       objects (e.g. for \link[GenomicRanges]{GenomicRanges} objects) can
       return non-predefined codes. Like for the predefined codes, the sign
@@ -190,16 +192,16 @@ rangeComparisonCodeToLetter(code)
       Determines which elements of \code{x} are equal to elements
       with smaller subscripts, and returns a logical vector indicating
       which elements are duplicates. \code{duplicated(x)} is equivalent to,
-      but more efficient than, \code{duplicated(as.data.frame(x))} on a
-      \link{IntegerRanges} object.
+      but more efficient than, \code{duplicated(as.data.frame(x))} on an
+      \link{IPosRanges} derivative.
       See \code{\link[base]{duplicated}} in the \pkg{base} package for more
       details.
     }
     \item{}{
       \code{unique(x, fromLast=FALSE, method=c("auto", "quick", "hash"))}:
       Removes duplicate ranges from \code{x}. \code{unique(x)} is equivalent
-      to, but more efficient than, \code{unique(as.data.frame(x))} on a
-      \link{IntegerRanges} object.
+      to, but more efficient than, \code{unique(as.data.frame(x))} on an
+      \link{IPosRanges} derivative.
       See \code{\link[base]{unique}} in the \pkg{base} package for more
       details.
     }
@@ -221,9 +223,9 @@ rangeComparisonCodeToLetter(code)
     }
     \item{}{
       \code{order(...)}:
-      Returns a permutation which rearranges its first argument (a
-      \link{IntegerRanges} object) into ascending order, breaking ties
-      by further arguments (also \link{IntegerRanges} objects).
+      Returns a permutation which rearranges its first argument (an
+      \link{IPosRanges} derivative) into ascending order, breaking ties
+      by further arguments (also \link{IPosRanges} derivatives).
     }
     \item{}{
       \code{sort(x)}:
@@ -242,7 +244,7 @@ rangeComparisonCodeToLetter(code)
 
 \seealso{
   \itemize{
-    \item The \link{IntegerRanges} class.
+    \item The \link{IPosRanges} class.
 
     \item \link[S4Vectors]{Vector-comparison} in the \pkg{S4Vectors}
           package for general information about comparing, ordering, and
@@ -264,8 +266,8 @@ rangeComparisonCodeToLetter(code)
 
 \examples{
 ## ---------------------------------------------------------------------
-## A. ELEMENT-WISE (AKA "PARALLEL") COMPARISON OF 2 IntegerRanges
-##    OBJECTS
+## A. ELEMENT-WISE (AKA "PARALLEL") COMPARISON OF 2 IPosRanges
+##    DERIVATIVES
 ## ---------------------------------------------------------------------
 x0 <- IRanges(1:11, width=4)
 x0

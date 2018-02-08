@@ -123,7 +123,7 @@ IPos(pos_runs)  # constructor function
 
     \item \link{IntegerRanges} and \link{IRanges} objects.
 
-    \item \link{IntegerRanges-comparison} for comparing and ordering integer
+    \item \link{IPosRanges-comparison} for comparing and ordering integer
           ranges and/or positions.
 
     \item \link{findOverlaps-methods} for finding overlapping

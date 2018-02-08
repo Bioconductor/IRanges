@@ -1,10 +1,10 @@
-\name{IntegerRanges-class}
+\name{IPosRanges-class}
 \docType{class}
 
 % Classes:
-\alias{class:IntegerRanges}
-\alias{IntegerRanges-class}
-\alias{IntegerRanges}
+\alias{class:IPosRanges}
+\alias{IPosRanges-class}
+\alias{IPosRanges}
 
 % Generics and methods:
 \alias{width}
@@ -21,36 +21,35 @@
 \alias{mid}
 \alias{mid,Ranges-method}
 \alias{isEmpty,Ranges-method}
+\alias{isNormal}
+\alias{isNormal,Ranges-method}
+\alias{whichFirstNotNormal}
+\alias{whichFirstNotNormal,Ranges-method}
 \alias{start<-}
 \alias{width<-}
 \alias{end<-}
-\alias{as.character,IntegerRanges-method}
-\alias{as.factor,IntegerRanges-method}
-\alias{as.matrix,IntegerRanges-method}
-\alias{as.data.frame,IntegerRanges-method}
-\alias{show,IntegerRanges-method}
-\alias{showAsCell,IntegerRanges-method}
-\alias{isNormal}
-\alias{isNormal,IntegerRanges-method}
-\alias{whichFirstNotNormal}
-\alias{whichFirstNotNormal,IntegerRanges-method}
-\alias{update,IntegerRanges-method}
+\alias{as.character,IPosRanges-method}
+\alias{as.factor,IPosRanges-method}
+\alias{as.matrix,IPosRanges-method}
+\alias{as.data.frame,IPosRanges-method}
+\alias{show,IPosRanges-method}
+\alias{showAsCell,IPosRanges-method}
 \alias{tile}
-\alias{tile,IntegerRanges-method}
+\alias{tile,IPosRanges-method}
 \alias{slidingWindows}
-\alias{slidingWindows,IntegerRanges-method}
+\alias{slidingWindows,IPosRanges-method}
 
 
-\title{IntegerRanges objects}
+\title{IPosRanges objects}
 
 \description{
-  The IntegerRanges \emph{virtual} class is a general container for storing
-  a set of integer ranges.
+  The IPosRanges \emph{virtual} class is a general container for storing
+  a vector of ranges of integer positions.
 }
 
 \details{
-  An IntegerRanges object is a vector-like object where each element describes
-  a "range of integer values".
+  An IPosRanges object is a vector-like object where each element
+  describes a "range of integer positions".
 
   A "range of integer values" is a finite set of consecutive integer
   values. Each range can be fully described with exactly 2 integer
@@ -74,27 +73,27 @@
   as the position \emph{between} its "end" and its "start" (note that
   for an empty range, the "end" equals the "start" minus one).
 
-  The length of an IntegerRanges object is the number of ranges in it, not
+  The length of an IPosRanges object is the number of ranges in it, not
   the number of integer values in its ranges.
 
-  An IntegerRanges object is considered empty iff all its ranges are empty.
+  An IPosRanges object is considered empty iff all its ranges are empty.
 
-  IntegerRanges objects have a vector-like semantic i.e. they only support
+  IPosRanges objects have a vector-like semantic i.e. they only support
   single subscript subsetting (unlike, for example, standard R data frames
   which can be subsetted by row and by column).
 
-  The IntegerRanges class itself is a virtual class. The following classes
-  derive directly from it: \link{IRanges}, \link{NCList},
-  \link{PartitioningByEnd}.
+  The IPosRanges class itself is a virtual class. The following classes
+  derive directly from it: \link{IRanges}, \link{IPos}, \link{NCList},
+  and \link{GroupingRanges}.
 }
 
 \section{Methods}{
   In the code snippets below, \code{x}, \code{y} and \code{object} are
-  IntegerRanges objects. Not all the functions described below will necessarily
-  work with all kinds of IntegerRanges derivatives but they should work at
+  IPosRanges objects. Not all the functions described below will necessarily
+  work with all kinds of IPosRanges derivatives but they should work at
   least for \link{IRanges} objects.
 
-  Note that many more operations on IntegerRanges objects are described in
+  Note that many more operations on IPosRanges objects are described in
   other man pages of the \pkg{IRanges} package. See for example the man page
   for \emph{intra range transformations} (e.g. \code{shift()}, see
   \code{?`\link{intra-range-methods}`}), or the man page for inter range
@@ -102,7 +101,7 @@
   \code{?`\link{inter-range-methods}`}), or the man page for
   \code{findOverlaps} methods (see \code{?`\link{findOverlaps-methods}`}),
   or the man page for \link{IntegerRangesList} objects where the \code{split}
-  method for IntegerRanges objects is documented.
+  method for \link{IntegerRanges} derivatives is documented.
 
   \describe{
     \item{}{
@@ -145,14 +144,14 @@
       Splits each range in \code{x} into subranges as specified by \code{n}
       (number of ranges) or \code{width}. Only one of \code{n} or \code{width} 
       can be specified. The return value is a \code{IRangesList} the same 
-      length as \code{x}. IntegerRanges with a width less than the \code{width}
+      length as \code{x}. IPosRanges with a width less than the \code{width}
       argument are returned unchanged.
     }
     \item{}{
       \code{slidingWindows(x, width, step=1L)}: Generates sliding
       windows within each range of \code{x}, of width \code{width}, and
       starting every \code{step} positions. The return value is a
-      \code{IRangesList} the same length as \code{x}. IntegerRanges
+      \code{IRangesList} the same length as \code{x}. IPosRanges
       with a width less than the \code{width} argument are returned
       unchanged. If the sliding windows do not exactly cover \code{x},
       the last window is partial.
@@ -183,7 +182,7 @@
     }
     \item{}{
       \code{x[i]}:
-      Return a new IntegerRanges object (of the same type as \code{x}) made
+      Return a new IPosRanges object (of the same type as \code{x}) made
       of the selected ranges.
       \code{i} can be a numeric vector, a logical vector, \code{NULL}
       or missing. If \code{x} is a \link{NormalIRanges} object and
@@ -196,7 +195,7 @@
       \describe{
         \item{\code{times}}{Vector giving the number of times to repeat each
           element if of length \code{length(x)}, or to repeat the
-          IntegerRanges elements if of length 1.}
+          IPosRanges elements if of length 1.}
         \item{\code{length.out}}{Non-negative integer. The desired length of
           the output vector.}
         \item{\code{each}}{Non-negative integer.  Each element of \code{x} is
@@ -205,7 +204,7 @@
     }
     \item{}{
       \code{c(x, ..., ignore.mcols=FALSE)}:
-      Concatenate IntegerRanges object \code{x} and the IntegerRanges objects
+      Concatenate IPosRanges object \code{x} and the IPosRanges objects
       in \code{...} together.
       See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package
       for more information about concatenating Vector derivatives.
@@ -240,14 +239,14 @@
 }
 
 \section{Normality}{
-  An IntegerRanges object \code{x} is implicitly representing an arbitrary
+  An IPosRanges object \code{x} is implicitly representing an arbitrary
   finite set of integers (that are not necessarily consecutive). This set is
   the set obtained by taking the union of all the values in all the ranges in
   \code{x}. This representation is clearly not unique: many different
-  IntegerRanges objects can be used to represent the same set of integers.
+  IPosRanges objects can be used to represent the same set of integers.
   However one and only one of them is guaranteed to be \emph{normal}.
 
-  By definition an IntegerRanges object is said to be \emph{normal} when its
+  By definition an IPosRanges object is said to be \emph{normal} when its
   ranges are:
     (a) not empty (i.e. they have a non-null width);
     (b) not overlapping;
@@ -263,7 +262,7 @@
         \preformatted{  start(x)[i] <= end(x)[i] < start(x)[i+1] <= end(x)[i+1]}
         for every 1 <= \code{i} < \code{length(x)}.
 
-  The obvious advantage of using a \emph{normal} IntegerRanges object to
+  The obvious advantage of using a \emph{normal} IPosRanges object to
   represent a given finite set of integers is that it is the smallest in
   terms of number of ranges and therefore in terms of storage space.
   Also the fact that we impose its ranges to be ordered from left to
@@ -273,7 +272,7 @@
   a \emph{normal} \link{IRanges} object: a \link{NormalIRanges} object is
   just an \link{IRanges} object that is guaranteed to be \emph{normal}.
 
-  Here are some methods related to the notion of \emph{normal} IntegerRanges:
+  Here are some methods related to the notion of \emph{normal} IPosRanges:
 
   \describe{
     \item{}{
@@ -295,17 +294,17 @@
     \item \link{IRanges} objects (\link{NormalIRanges} objects are documented
           in the same man page).
 
-    \item The \link{IPos} class, a memory-efficient \link{IntegerRanges}
-          derivative for representing \emph{integer positions} (i.e. integer
+    \item The \link{IPos} class, a memory-efficient IPosRanges derivative
+          for representing \emph{integer positions} (i.e. integer
           ranges of width 1).
 
-    \item \link{IntegerRanges-comparison} for comparing and ordering ranges.
+    \item \link{IPosRanges-comparison} for comparing and ordering ranges.
 
     \item \link{findOverlaps-methods} for finding/counting overlapping ranges.
 
     \item \link{intra-range-methods} and
           \link{inter-range-methods} for intra range and
-          inter range transformations of an IntegerRanges derivative.
+          inter range transformations of \link{IntegerRanges} derivatives.
 
     \item \link{coverage-methods} for computing the coverage
           of a set of ranges.

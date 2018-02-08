@@ -203,7 +203,7 @@ disjointBins(x, ...)
     \preformatted{    start(B) <= end(A) < end(B)}
     Finally, it is also equivalent to:
     \preformatted{    pcompare(A, B) == 2}
-    See \code{?`\link{IntegerRanges-comparison}`} for the meaning of the codes
+    See \code{?`\link{IPosRanges-comparison}`} for the meaning of the codes
     returned by the \code{\link{pcompare}} function.
 
   }\subsection{disjoin}{

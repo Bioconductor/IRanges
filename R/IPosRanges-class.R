@@ -1,26 +1,17 @@
 ### =========================================================================
-### IntegerRanges objects
+### IPosRanges objects
 ### -------------------------------------------------------------------------
 ###
-### IntegerRanges is a virtual class that serves as the base for all integer
-### range containers. Conceptually integer ranges are closed, one-dimensional
+### The ranges in an IPosRanges derivative are closed, one-dimensional
 ### intervals with integer end points and on the domain of integers.
 ###
+### The direct IPosRanges subclasses defined in the IRanges package are:
+### IRanges, IPos, NCList, and GroupingRanges.
 
 
-setClass("IntegerRanges",
-    contains="Ranges",
+setClass("IPosRanges",
+    contains="IntegerRanges",
     representation("VIRTUAL")
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Getters/setters.
-###
-
-setMethod("update", "IntegerRanges",
-    function(object, ...)
-        as(update(as(object, "IRanges"), ...), class(object))
 )
 
 
@@ -30,8 +21,7 @@ setMethod("update", "IntegerRanges",
 
 ### The checking of the names(x) is taken care of by the validity method for
 ### Vector objects.
-
-setValidity2("IntegerRanges", validate_Ranges)
+setValidity2("IPosRanges", validate_Ranges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -39,7 +29,7 @@ setValidity2("IntegerRanges", validate_Ranges)
 ###
 
 ### Propagate the names.
-setMethod("as.character", "IntegerRanges",
+setMethod("as.character", "IPosRanges",
     function(x)
     {
         if (length(x) == 0L)
@@ -56,18 +46,18 @@ setMethod("as.character", "IntegerRanges",
 
 ### The as.factor() generic doesn't have the ... argument so this method
 ### cannot support the 'ignore.strand' argument.
-setMethod("as.factor", "IntegerRanges",
+setMethod("as.factor", "IPosRanges",
     function(x)
         factor(as.character(x), levels=as.character(sort(unique(x))))
 )
 
-setMethod("as.matrix", "IntegerRanges",
+setMethod("as.matrix", "IPosRanges",
     function(x, ...)
         matrix(data=c(start(x), width(x)), ncol=2,
                dimnames=list(names(x), NULL))
 )
 
-.as.data.frame.IntegerRanges <- function(x, row.names=NULL, optional=FALSE, ...)
+.as.data.frame.IPosRanges <- function(x, row.names=NULL, optional=FALSE, ...)
 {
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names' must be NULL or a character vector")
@@ -81,14 +71,14 @@ setMethod("as.matrix", "IntegerRanges",
     ans$names <- names(x)
     ans
 }
-setMethod("as.data.frame", "IntegerRanges", .as.data.frame.IntegerRanges)
+setMethod("as.data.frame", "IPosRanges", .as.data.frame.IPosRanges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### show()
 ###
 
-.make_naked_matrix_from_IntegerRanges <- function(x)
+.make_naked_matrix_from_IPosRanges <- function(x)
 {
     x_len <- length(x)
     x_mcols <- mcols(x)
@@ -104,7 +94,7 @@ setMethod("as.data.frame", "IntegerRanges", .as.data.frame.IntegerRanges)
     ans
 }
 
-show_IntegerRanges <- function(x, margin="", print.classinfo=FALSE)
+show_IPosRanges <- function(x, margin="", print.classinfo=FALSE)
 {
     x_class <- class(x)
     x_len <- length(x)
@@ -116,14 +106,14 @@ show_IntegerRanges <- function(x, margin="", print.classinfo=FALSE)
         x_nmc, " metadata ", ifelse(x_nmc == 1L, "column", "columns"),
         ":\n", sep="")
     ## S4Vectors:::makePrettyMatrixForCompactPrinting() assumes that 'x' is
-    ## subsettable but not all IntegerRanges objects are (and if they are,
-    ## subsetting them could be costly). However IRanges objects are assumed
-    ## to be subsettable so if 'x' is not one then we turn it into one (this
-    ## coercion is expected to work on any IntegerRanges object).
+    ## subsettable but not all IPosRanges objects necesseraly are (and if they
+    ## are, subsetting them could be costly). However IRanges objects are
+    ## assumed to be subsettable so if 'x' is not one then we turn it into
+    ## one (this coercion is expected to work on any IPosRanges object).
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges", strict=FALSE)
     out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
-               .make_naked_matrix_from_IntegerRanges)
+               .make_naked_matrix_from_IPosRanges)
     if (print.classinfo) {
         .COL2CLASS <- c(
             start="integer",
@@ -144,52 +134,18 @@ show_IntegerRanges <- function(x, margin="", print.classinfo=FALSE)
     print(out, quote=FALSE, right=TRUE, max=length(out))
 }
 
-setMethod("show", "IntegerRanges",
+setMethod("show", "IPosRanges",
     function(object)
-        show_IntegerRanges(object, margin="  ", print.classinfo=TRUE)
+        show_IPosRanges(object, margin="  ", print.classinfo=TRUE)
 )
 
-setMethod("showAsCell", "IntegerRanges",
+setMethod("showAsCell", "IPosRanges",
     function(object)
     {
         if (length(object) == 0L)
             return(character(0))
         paste("[", format(start(object)), ", ", format(end(object)), "]",
               sep = "")
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### isEmpty() and isNormal()
-###
-### All of them test an IntegerRanges object as a whole and return a single
-### TRUE or FALSE.
-###
-
-setGeneric("isNormal", function(x, ...) standardGeneric("isNormal"))
-
-setMethod("isNormal", "IntegerRanges",
-    function(x)
-    {
-        all_ok <- all(width(x) >= 1L)
-        if (length(x) >= 2)
-            all_ok <- all_ok && all(start(x)[-1L] - end(x)[-length(x)] >= 2L)
-        all_ok
-    }
-)
-
-setGeneric("whichFirstNotNormal",
-    function(x) standardGeneric("whichFirstNotNormal")
-)
-
-setMethod("whichFirstNotNormal", "IntegerRanges",
-    function(x)
-    {
-        is_ok <- width(x) >= 1L
-        if (length(x) >= 2)
-            is_ok <- is_ok & c(TRUE, start(x)[-1L] - end(x)[-length(x)] >= 2L)
-        which(!is_ok)[1L]
     }
 )
 
