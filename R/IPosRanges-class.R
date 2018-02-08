@@ -16,6 +16,36 @@ setClass("IPosRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### updateObject()
+###
+### Value of elementType slot has changed from "integer" to "ANY" for
+### IPosRanges objects in IRanges 2.13.22 (Bioc 3.7). It will soon change
+### again to "IPos".
+###
+
+setMethod("updateObject", "IPosRanges",
+    function(object, ..., verbose=FALSE)
+    {
+        target <- new(class(object))@elementType
+        current <- object@elementType
+        if (identical(target, current)) {
+            if (verbose)
+                message("[updateObject] Internal representation of ",
+                        class(object), " object is current.\n",
+                        "[updateObject] Nothing to update.")
+            return(object)
+        }
+        if (verbose)
+            message("[updateObject] elementType slot of ", class(object),
+                    " object should be set to \"", target, "\",\n",
+                    "[updateObject] not \"", current, "\". Updating it ...")
+        object@elementType <- target
+        object
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 

@@ -239,6 +239,8 @@ setAs("ANY", "IntegerRanges", function(from) as(from, "IRanges"))
 {
     if (!isTRUEorFALSE(check))
         stop("'check' must be TRUE or FALSE")
+    ## Fix elementType slot on-the-fly.
+    x <- updateObject(x)
     old_start <- start(x)
     ## Use 'x@start[]' instead of 'x@start' so the right value is recycled.
     x@start[] <- S4Vectors:::numeric2integer(value)
@@ -256,6 +258,8 @@ setReplaceMethod("start", "IRanges",
 {
     if (!isTRUEorFALSE(check))
         stop("'check' must be TRUE or FALSE")
+    ## Fix elementType slot on-the-fly.
+    x <- updateObject(x)
     ## Use 'x@width[]' instead of 'x@width' so the right value is recycled.
     x@width[] <- width(x) + S4Vectors:::numeric2integer(value) - end(x)
     if (check)
@@ -271,6 +275,8 @@ setReplaceMethod("end", "IRanges",
 {
     if (!isTRUEorFALSE(check))
         stop("'check' must be TRUE or FALSE")
+    ## Fix elementType slot on-the-fly.
+    x <- updateObject(x)
     ## Use 'x@width[]' instead of 'x@width' so the right value is recycled.
     x@width[] <- S4Vectors:::numeric2integer(value)
     if (check)
@@ -284,6 +290,8 @@ setReplaceMethod("width", "IRanges",
 
 set_IRanges_names <- function(x, value)
 {
+    ## Fix elementType slot on-the-fly.
+    x <- updateObject(x)
     x@NAMES <- S4Vectors:::normalize_names_replacement_value(value, x)
     ## No need to validate an IRanges object after setting its names so this
     ## should be safe.
@@ -364,6 +372,8 @@ setMethod("update", "IRanges",
     {
         if (!isTRUEorFALSE(check))
             stop("'check' must be TRUE or FALSE")
+        ## Fix elementType slot on-the-fly.
+        object <- updateObject(object)
         object <- .update_IRanges(object, ...)
         if (check)
             validObject(object)

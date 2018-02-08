@@ -198,6 +198,7 @@ exportMethods(
     table,
     tapply,
     union, intersect, setdiff,
+    updateObject,
     concatenateObjects,
     extractROWS, replaceROWS, getListElement,
     parallelSlotNames,
