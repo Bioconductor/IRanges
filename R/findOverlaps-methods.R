@@ -70,6 +70,8 @@ findOverlaps_IntegerRanges <- function(query, subject,
              type=c("any", "start", "end", "within", "equal"),
              select=c("all", "first", "last", "arbitrary"))
 {
+    if (is.integer(query))
+        query <- IRanges(query, width=1L)
     type <- match.arg(type)
     select <- match.arg(select)
     findOverlaps_NCList(query, subject,
@@ -78,6 +80,10 @@ findOverlaps_IntegerRanges <- function(query, subject,
 }
 
 setMethod("findOverlaps", c("IntegerRanges", "IntegerRanges"),
+    findOverlaps_IntegerRanges
+)
+
+setMethod("findOverlaps", c("integer", "IntegerRanges"),
     findOverlaps_IntegerRanges
 )
 
@@ -94,17 +100,6 @@ setMethod("findOverlaps", c("Vector", "missing"),
                                type=match.arg(type), select="all",
                                ...)
         process_self_hits(result, select, drop.self, drop.redundant)
-    }
-)
-
-setMethod("findOverlaps", c("integer", "IntegerRanges"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             select=c("all", "first", "last", "arbitrary"))
-    {
-        findOverlaps(IRanges(query, query), subject,
-                     maxgap=maxgap, minoverlap=minoverlap,
-                     type=match.arg(type), select=match.arg(select))
     }
 )
 
@@ -252,6 +247,8 @@ setGeneric("countOverlaps", signature=c("query", "subject"),
              type=c("any", "start", "end", "within", "equal"),
              ...)
 {
+    if (is.integer(query))
+        query <- IRanges(query, width=1L)
     type <- match.arg(type)
     if (missing(subject)) {
         hits <- findOverlaps(query,
@@ -270,6 +267,7 @@ setGeneric("countOverlaps", signature=c("query", "subject"),
 }
 
 setMethod("countOverlaps", c("Vector", "Vector"), .countOverlaps_default)
+setMethod("countOverlaps", c("integer", "Vector"), .countOverlaps_default)
 setMethod("countOverlaps", c("Vector", "missing"), .countOverlaps_default)
 
 countOverlaps_IntegerRanges <- function(query, subject,
@@ -339,6 +337,8 @@ setGeneric("overlapsAny", signature=c("query", "subject"),
              type=c("any", "start", "end", "within", "equal"),
              ...)
 {
+    if (is.integer(query))
+        query <- IRanges(query, width=1L)
     type <- match.arg(type)
     if (missing(subject)) {
         ahit <- findOverlaps(query,
@@ -355,6 +355,7 @@ setGeneric("overlapsAny", signature=c("query", "subject"),
 }
 
 setMethod("overlapsAny", c("Vector", "Vector"), .overlapsAny_default)
+setMethod("overlapsAny", c("integer", "Vector"), .overlapsAny_default)
 setMethod("overlapsAny", c("Vector", "missing"), .overlapsAny_default)
 
 setMethod("overlapsAny", c("IntegerRangesList", "IntegerRangesList"),

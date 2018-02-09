@@ -4,8 +4,8 @@
 
 \alias{findOverlaps}
 \alias{findOverlaps,IntegerRanges,IntegerRanges-method}
-\alias{findOverlaps,Vector,missing-method}
 \alias{findOverlaps,integer,IntegerRanges-method}
+\alias{findOverlaps,Vector,missing-method}
 \alias{findOverlaps,IntegerRangesList,IntegerRangesList-method}
 \alias{findOverlaps,RangedData,RangedData-method}
 \alias{findOverlaps,RangedData,IntegerRangesList-method}
@@ -17,6 +17,7 @@
 
 \alias{countOverlaps}
 \alias{countOverlaps,Vector,Vector-method}
+\alias{countOverlaps,integer,Vector-method}
 \alias{countOverlaps,Vector,missing-method}
 \alias{countOverlaps,IntegerRanges,IntegerRanges-method}
 \alias{countOverlaps,IntegerRangesList,IntegerRangesList-method}
@@ -26,6 +27,7 @@
 
 \alias{overlapsAny}
 \alias{overlapsAny,Vector,Vector-method}
+\alias{overlapsAny,integer,Vector-method}
 \alias{overlapsAny,Vector,missing-method}
 \alias{overlapsAny,IntegerRangesList,IntegerRangesList-method}
 \alias{overlapsAny,RangedData,RangedData-method}
