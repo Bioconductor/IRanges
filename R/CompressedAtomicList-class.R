@@ -87,6 +87,22 @@ setMethod("as.list", "CompressedAtomicList",
 
 setAs("CompressedAtomicList", "list", function(from) as.list(from))
 
+.from_IPosRanges_to_CompressedIntegerList <- function(from)
+{
+    ans <- relist(unlist_as_integer(from), from)
+    metadata(ans) <- metadata(from)
+    mcols(ans) <- mcols(from)
+    ans
+}
+
+### Propagate the names, metadata, and metadata columns.
+setAs("IPosRanges", "CompressedIntegerList",
+    .from_IPosRanges_to_CompressedIntegerList
+)
+setAs("IPosRanges", "IntegerList",
+    .from_IPosRanges_to_CompressedIntegerList
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### General methods

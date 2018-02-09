@@ -117,6 +117,9 @@ setMethod("elementNROWS", "Ranges",
 
 unlist_as_integer <- function(x)
 {
+    stopifnot(is(x, "Ranges"))
+    if (is(x, "Pos"))
+        return(pos(x))
     S4Vectors:::fancy_mseq(width(x), offset=start(x)-1L)
 }
 
@@ -142,7 +145,7 @@ setReplaceMethod("names", "Pos",
     }
 )
 
-setMethod("as.integer", "Pos", function(x, ...) pos(x))
+setMethod("as.integer", "Pos", function(x) pos(x))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

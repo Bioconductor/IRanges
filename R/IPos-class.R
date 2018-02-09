@@ -90,10 +90,12 @@ stitch_IPos <- function(x) x@pos_runs
 ### Constructor
 ###
 
-### Note that if 'pos_runs' is an IPos instance with no metadata or metadata
-### columns, then 'identical(IPos(pos_runs), pos_runs)' is TRUE.
+### Does not propagate the metadata or metadata columns, except when 'pos_runs'
+### is an IPos object, in which case the object is returned as-is (no-op).
 IPos <- function(pos_runs=IRanges())
 {
+    if (is(pos_runs, "IPos"))
+        return(pos_runs)
     if (!is(pos_runs, "IntegerRanges"))
         pos_runs <- as(pos_runs, "IntegerRanges", strict=FALSE)
     suppressWarnings(ans_len <- sum(width(pos_runs)))
