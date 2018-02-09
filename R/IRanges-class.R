@@ -181,6 +181,8 @@ setAs("integer", "NormalIRanges",
     function(from) newNormalIRangesFromIRanges(as(from, "IRanges"))
 )
 
+setMethod("as.integer", "NormalIRanges", function(x) unlist_as_integer(x))
+
 setAs("numeric", "IRanges", function(from) as(as.integer(from), "IRanges"))
 
 setAs("numeric", "NormalIRanges", 
