@@ -124,6 +124,7 @@ RangesList <- function(..., universe = NULL)
 ### The "show" method.
 ###
 
+### NOT exported but used in the Biostrings package.
 show_IntegerRangesList <- function(x, with.header=TRUE)
 {
     x_len <- length(x)
