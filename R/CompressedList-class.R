@@ -57,7 +57,7 @@ setMethod("updateObject", "CompressedList",
         ## See "updateObject" method for IPosRanges objects for more
         ## information.
         object@partitioning <- updateObject(object@partitioning,
-                                            verbose=verbose)
+                                            ..., verbose=verbose)
         object
     }
 )
