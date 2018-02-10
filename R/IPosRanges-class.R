@@ -16,6 +16,15 @@ setClass("IPosRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
+
+### The checking of the names(x) is taken care of by the validity method for
+### Vector objects.
+setValidity2("IPosRanges", validate_Ranges)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### updateObject()
 ###
 ### Value of elementType slot has changed from "integer" to "ANY" for
@@ -43,15 +52,6 @@ setMethod("updateObject", "IPosRanges",
         object
     }
 )
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Validity.
-###
-
-### The checking of the names(x) is taken care of by the validity method for
-### Vector objects.
-setValidity2("IPosRanges", validate_Ranges)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

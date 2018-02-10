@@ -18,6 +18,52 @@ setMethod("classNameForDisplay", "CompressedList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity.
+###
+
+.valid.CompressedList.partitioning <- function(x)
+{
+    dataLength <- NROW(x@unlistData)
+    if (nobj(x@partitioning) != dataLength)
+        "improper partitioning"
+    else NULL
+}
+.valid.CompressedList.unlistData <- function(x)
+{
+    ## FIXME: workaround to support CompressedNormalIRangesList
+    ## elementTypeX <- elementType(x)
+    elementTypeX <- elementType(new(class(x)))
+    if (!extends(class(x@unlistData), elementTypeX))
+        paste("the 'unlistData' slot must be of class", elementTypeX)
+    else NULL
+}
+.valid.CompressedList <- function(x)
+{
+    c(.valid.CompressedList.unlistData(x),
+      .valid.CompressedList.partitioning(x))
+}
+setValidity2("CompressedList", .valid.CompressedList)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### updateObject()
+###
+
+setMethod("updateObject", "CompressedList",
+    function(object, ..., verbose=FALSE)
+    {
+        ## The partitioning slot is a PartitioningByEnd object which derives
+        ## from IPosRanges so its elementType slot might need to be updated.
+        ## See "updateObject" method for IPosRanges objects for more
+        ## information.
+        object@partitioning <- updateObject(object@partitioning,
+                                            verbose=verbose)
+        object
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters and setters
 ###
 
@@ -127,34 +173,6 @@ new_CompressedList_from_list <- function(Class, x, ..., mcols)
     }
     .reconcileMetadatacols(ans)
 }
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Validity.
-###
-
-.valid.CompressedList.partitioning <- function(x)
-{
-    dataLength <- NROW(x@unlistData)
-    if (nobj(x@partitioning) != dataLength)
-        "improper partitioning"
-    else NULL
-}
-.valid.CompressedList.unlistData <- function(x)
-{
-    ## FIXME: workaround to support CompressedNormalIRangesList
-    ## elementTypeX <- elementType(x)
-    elementTypeX <- elementType(new(class(x)))
-    if (!extends(class(x@unlistData), elementTypeX))
-        paste("the 'unlistData' slot must be of class", elementTypeX)
-    else NULL
-}
-.valid.CompressedList <- function(x)
-{
-    c(.valid.CompressedList.unlistData(x),
-      .valid.CompressedList.partitioning(x))
-}
-setValidity2("CompressedList", .valid.CompressedList)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
