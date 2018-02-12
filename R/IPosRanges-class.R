@@ -169,13 +169,3 @@ setMethod("show", "IPosRanges",
         show_IPosRanges(object, margin="  ", print.classinfo=TRUE)
 )
 
-setMethod("showAsCell", "IPosRanges",
-    function(object)
-    {
-        if (length(object) == 0L)
-            return(character(0))
-        paste("[", format(start(object)), ", ", format(end(object)), "]",
-              sep = "")
-    }
-)
-

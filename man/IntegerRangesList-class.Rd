@@ -27,7 +27,6 @@
 
 % show
 \alias{show,IntegerRangesList-method}
-\alias{showAsCell,IntegerRangesList-method}
 
 % merge
 \alias{merge,IntegerRangesList,missing-method}

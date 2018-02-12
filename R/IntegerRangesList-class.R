@@ -159,18 +159,6 @@ setMethod("show", "IntegerRangesList",
     function(object) show_IntegerRangesList(object)
 )
 
-setMethod("showAsCell", "IntegerRangesList",
-          function(object)
-          {
-            unlist(lapply(object, function(x) {
-                            if (length(x) <= 3)
-                              paste(showAsCell(x), collapse = " ")
-                            else
-                              paste(c(showAsCell(head(x, 3)), "..."),
-                                    collapse = " ")
-                          }), use.names = FALSE)
-          })
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### merge()
