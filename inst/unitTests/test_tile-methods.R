@@ -24,6 +24,9 @@ test_tile <- function() {
   checkException(tile(ir, n=4), silent=TRUE)
   checkException(tile(ir, width=-1), silent=TRUE)
   checkException(tile(ir, n=-1), silent=TRUE)
+  ir <- setNames(IRanges(1:3, width = 10), letters[1:3])
+  checkIdentical(names(ir), names(tile(ir, n = 2)))
+  checkIdentical(names(ir), names(tile(ir, width = 3)))
 }
 
 test_slidingWindows <- function() {
@@ -35,4 +38,6 @@ test_slidingWindows <- function() {
                    IRangesList(IRanges(c(1, 3), c(3, 5)),
                                IRanges(c(2, 4), c(4, 5)),
                                IRanges(3, 5)))
+    ir <- setNames(IRanges(1:3, width = 10), letters[1:3])
+    checkIdentical(names(ir), names(slidingWindows(ir, width = 3)))
 }

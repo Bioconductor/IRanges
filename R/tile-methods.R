@@ -40,7 +40,7 @@ setMethod("tile", "IntegerRanges", function(x, n, width, ...) {
                     rep(width, n))
   tile.end.abs <- tile.end + rep(start(x), n) - 1L
   tile.width <- S4Vectors:::diffWithInitialZero(as.integer(tile.end.abs))
-  p <- PartitioningByWidth(n)
+  p <- PartitioningByWidth(n, names = names(x))
   tile.width[start(p)] <- tile.end[start(p)]
   relist(IRanges(width=tile.width, end=tile.end.abs), p)
 })
@@ -69,5 +69,5 @@ setMethod("slidingWindows", "IntegerRanges", function(x, width, step = 1L) {
     windows <- restrict(IRanges(window.starts, width=width),
                         end=rep(width(x), n))
     windows.abs <- shift(windows, rep(start(x), n) - 1L)
-    relist(windows.abs, PartitioningByWidth(n))
+    relist(windows.abs, PartitioningByWidth(n, names = names(x)))
 })
