@@ -605,8 +605,10 @@ endoapply(sIntList2, safe.max)[[1]]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 \section{Session Information}
+
+Here is the output of \Rcode{sessionInfo()} on the system on which this
+document was compiled:
 
 <<SessionInfo, echo=FALSE>>=
 sessionInfo()
