@@ -66,7 +66,7 @@ setMethod("shift", "Views",
 )
 
 setMethod("shift", "RangesList",
-    function(x, shift=0L, use.names = TRUE)
+    function(x, shift=0L, use.names=TRUE)
     {
         if (!is(shift, "List"))
             shift <- as(shift, "List")
@@ -199,7 +199,7 @@ setMethod("resize", "Views",
 )
 
 setMethod("resize", "RangesList",
-    function(x, width, fix="start", use.names=TRUE)
+    function(x, width, fix="start", use.names=TRUE, ...)
     {
         if (!is(width, "List"))
             width <- as(width, "List")
@@ -213,13 +213,14 @@ setMethod("resize", "RangesList",
             unlisted_fix <- unlist(fix, use.names=FALSE)
             new_unlistData <- resize(x@unlistData, width=unlisted_width,
                                                    fix=unlisted_fix,
-                                                   use.names=use.names)
+                                                   use.names=use.names,
+                                                   ...)
             ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
                                                   check=FALSE)
             return(ans)
         }
         mendoapply(resize, x, width, fix,
-                           MoreArgs=list(use.names=use.names))
+                           MoreArgs=list(use.names=use.names, ...))
     }
 )
 
@@ -280,7 +281,7 @@ setMethod("flank", "Views",
 )
 
 setMethod("flank", "RangesList",
-    function(x, width, start=TRUE, both=FALSE, use.names=TRUE)
+    function(x, width, start=TRUE, both=FALSE, use.names=TRUE, ...)
     {
         if (!is(width, "List"))
             width <- as(width, "List")
@@ -295,13 +296,14 @@ setMethod("flank", "RangesList",
             new_unlistData <- flank(x@unlistData, width=unlisted_width,
                                                   start=unlisted_start,
                                                   both=both,
-                                                  use.names=use.names)
+                                                  use.names=use.names,
+                                                  ...)
             ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
                                                   check=FALSE)
             return(ans)
         }
         mendoapply(flank, x, width, start,
-                          MoreArgs=list(both=both, use.names=use.names))
+                          MoreArgs=list(both=both, use.names=use.names, ...))
     }
 )
 

@@ -244,7 +244,7 @@ threebands(x, start=NA, end=NA, width=NA)
     \code{promoters} generates promoter ranges for each range in \code{x}
     relative to the transcription start site (TSS), where TSS is
     \code{start(x)}. The promoter range is expanded around the TSS
-    according to the \code{upsteam} and \code{downstream} arguments.
+    according to the \code{upstream} and \code{downstream} arguments.
     \code{upstream} represents the number of nucleotides in the 5'
     direction and \code{downstream} the number in the 3' direction.
     The full range is defined as,

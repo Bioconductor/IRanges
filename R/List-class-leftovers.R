@@ -44,7 +44,7 @@ setMethod("stack", "List",
               df[[name.var]] <- nms
               df <- df[c(index.var, name.var, value.var)]
             }
-            if (!is.null(mcols(x))) {
+            if (!is.null(mcols(x)) && nrow(mcols(x)) > 0L) {
                 df <- cbind(df,
                             mcols(x)[togroup(PartitioningByEnd(x)),,drop=FALSE])
             }
