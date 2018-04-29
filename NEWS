@@ -1,3 +1,87 @@
+CHANGES IN VERSION 2.14.0
+-------------------------
+
+NEW FEATURES
+
+    o Add the windows() generic with various methods. This is a "parallel"
+      version of window() for list-like objects i.e. it does
+      'mendoapply(window, x, start, end, width)' but uses a fast
+      implementation.
+      Also add heads() and tails() as convenience wrappers around windows().
+      They do 'mendoapply(head, x, n)' and 'mendoapply(tail, x, n)',
+      respectively, but use a fast implementation. They're replacements for
+      S4Vectors::phead() and S4Vectors::ptail() which are now deprecated.
+    
+    o Add equisplit() to split a vector-like object into a specified number
+      of partitions with equal (total) width. This is useful for instance to
+      ensure balanced loading of workers in parallel evaluation.
+
+    o promoters() arguments 'upstream' and 'downstream' now can be integer
+      vectors parallel to 'x' (for consistency with the other intra range
+      transformations).
+
+    o The promoters() generic and methods get the 'use.names' argument.
+
+    o Add "resize", "flank", and "restrict" methods for Views objects.
+
+    o Add "as.integer" method for Pos objects (equivalent to pos()).
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o The Ranges virtual class is now the common parent of the IRanges,
+      GRanges, and GAlignments classes (GRanges and GAlignments are defined
+      in the GenomicRanges and GenomicAlignments packages, respectively).
+      More precisely, Ranges is a virtual class that now serves as the parent
+      class for any class that represents a vector of ranges. The ranges can
+      be integer ranges (i.e. ranges on the space of integers) like in an
+      IRanges object, or genomic ranges (i.e. ranges on a genome) like in a
+      GRanges object. Note that because Ranges extends List, all Ranges
+      derivatives are considered list-like objects. This means that GRanges
+      objects and their derivatives are considered list-like objects, which
+      is new (even though [[ don't work on them yet, this will be implemented
+      in Bioconductor 3.8).
+
+    o Similarly the RangesList virtual class is now the common parent of the
+      IRangesList, GRangesList, and GAlignmentsList classes.
+
+    o IRanges objects don't support [[, unlist(), as.list(), lapply(), and
+      as.integer() anymore. This is a temporary situation only. These
+      operations will be re-introduced in Bioconductor 3.8 but with a
+      different semantic. The overall goal of all these changes is to bring
+      more consitency between IRanges and GRanges objects (GRanges objects will
+      also support [[, unlist(), as.list(), and lapply() in Bioconductor 3.8).
+      Non-exported IRanges:::unlist_as_integer() helper is a temporary
+      replacement for what unlist() and as.integer() used to do a IRanges
+      object.
+
+    o Move the pos() generic to BiocGenerics.
+
+    o Switch order of breakInChunks() arguments 'chunksize' and 'nchunk' to be
+      consistent with tileGenome().
+
+    o Optimize [[<- on a CompressedList object. Was very inefficient. The
+      optimized method can be up to 100x faster or more on a long object.
+
+    o All the S4Vectors-specific material in the IRangesOverview.Rnw vignette
+      has moved to the new S4VectorsOverview.Rnw vignette located in the
+      S4Vectors package.
+
+DEPRECATED AND DEFUNCT
+
+    o Deprecate the RangesList() constructor. IRangesList() should be used
+      instead.
+
+    o The "ranges" methods for Hits and HitsList objects are now defunct
+      (were deprecated in BioC 3.6).
+
+    o The "overlapsAny", "subsetByOverlaps", "coverage" and "range" methods
+      for RangedData objects are now defunct (were deprecated in BioC 3.6).
+
+    o The universe() getter and setter as well as the 'universe' argument of
+      the RangesList(), IRangesList(), RleViewsList(), and RangedData()
+      constructor functions are now defunct (were deprecated in BioC 3.6).
+
+
 CHANGES IN VERSION 2.12.0
 -------------------------
 
