@@ -59,6 +59,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o Switch order of breakInChunks() arguments 'chunksize' and 'nchunk' to be
       consistent with tileGenome().
 
+    o tile() and slidingWindows() now preserve names.
+
     o Optimize [[<- on a CompressedList object. Was very inefficient. The
       optimized method can be up to 100x faster or more on a long object.
 
