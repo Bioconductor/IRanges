@@ -81,20 +81,14 @@ setMethod("whichFirstNotNormal", "IntegerRangesList",
 
 RangesList <- function(...)
 {
-  msg <- c("The RangesList() constructor is deprecated. ",
+  msg <- c("The RangesList() constructor is defunct. ",
            "Please coerce to IRangesList instead e.g. do ",
            "'as(list(x1, x2), \"IRangesList\")' instead of ",
            "'RangesList(x1, x2)'. Alternatively, you can use ",
            "the IRangesList() constructor e.g. ",
            "'IRangesList(x1, x2, compress=FALSE)'. See '?IRangesList' ",
            "for more information.")
-  .Deprecated(msg=wmsg(msg))
-  ranges <- list(...)
-  if (length(ranges) == 1 && is.list(ranges[[1L]]))
-    ranges <- ranges[[1L]]
-  if (!all(sapply(ranges, is, "IntegerRanges")))
-    stop("all elements in '...' must be IntegerRanges objects")
-  S4Vectors:::new_SimpleList_from_list("SimpleIntegerRangesList", ranges)
+  .Defunct(msg=wmsg(msg))
 }
 
 
