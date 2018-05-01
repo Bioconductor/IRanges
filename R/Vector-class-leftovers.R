@@ -67,15 +67,6 @@ setMethod("rev", "Vector",
 setMethod("rep", "Vector", function(x, ...)
           x[rep(seq_len(length(x)), ...)])
 
-setMethod("subset", "Vector",
-          function(x, subset, select, drop = FALSE, ...) {
-            i <- S4Vectors:::evalqForSubset(subset, x, ...)
-            if (!is.null(mcols(x))) {
-                j <- S4Vectors:::evalqForSelect(select, mcols(x), ...)
-                mcols(x) <- mcols(x)[,j,drop=FALSE]
-            }
-            x[i, drop=drop]
-          })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### mstack()

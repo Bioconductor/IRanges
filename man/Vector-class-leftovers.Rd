@@ -11,7 +11,6 @@
 \alias{rev,Vector-method}
 \alias{rep,Vector-method}
 \alias{rep.int,Vector-method}
-\alias{subset,Vector-method}
 
 \alias{mstack}
 \alias{mstack,Vector-method}
@@ -60,14 +59,6 @@
 
   \describe{
     \item{}{
-      \code{window(x, start=NA, end=NA, width=NA)}:
-      Extract the subsequence window from the Vector object using:
-      \describe{
-        \item{\code{start}, \code{end}, \code{width}}{The start, end, or width
-          of the window. Two of the three are required.}
-      }
-    }
-    \item{}{
       \code{window(x, start=NA, end=NA, width=NA) <- value}:
       Replace the subsequence window specified on the left (i.e. the
       subsequence in \code{x} specified by \code{start}, \code{end} and
@@ -78,20 +69,6 @@
       The elements of \code{value} are repeated to create a Vector with the
       same number of elements as the width of the subsequence window it is
       replacing.
-    }
-    \item{}{
-      \code{head(x, n = 6L)}:
-      If \code{n} is non-negative, returns the first n elements of the Vector
-      object.
-      If \code{n} is negative, returns all but the last \code{abs(n)} elements
-      of the Vector object.
-    }
-    \item{}{
-      \code{tail(x, n = 6L)}:
-      If \code{n} is non-negative, returns the last n elements of the Vector
-      object.
-      If \code{n} is negative, returns all but the first \code{abs(n)} elements
-      of the Vector object.
     }
     \item{}{
       \code{rev(x)}:
@@ -110,11 +87,6 @@
         \item{\code{each}}{Non-negative integer.  Each element of \code{x} is
           repeated \code{each} times.}
       }
-    }
-    \item{}{
-      \code{subset(x, subset)}:
-      Return a new Vector object made of the subset using logical vector
-      \code{subset}, where missing values are taken as FALSE.
     }
   }
 }
