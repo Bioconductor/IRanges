@@ -112,7 +112,11 @@ setReplaceMethod("names", "RangedData",
 setMethod("elementNROWS", "RangedData", function(x) elementNROWS(ranges(x)))
 
 setMethod("space", "RangedData", function(x) space(ranges(x)))
+
+setGeneric("universe", function(x) standardGeneric("universe"))
 setMethod("universe", "RangedData", function(x) universe(ranges(x)))
+
+setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
 setReplaceMethod("universe", "RangedData",
                  function(x, value) {
                    universe(x@ranges) <- value
@@ -235,14 +239,9 @@ setValidity2("RangedData", .valid.RangedData)
 
 ## creates a single-element RangedData (unless splitter (space) is specified)
 
-RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
+RangedData <- function(ranges = IRanges(), ..., space = NULL)
 {
-  hasDots <- (((nargs() - !missing(space)) - !missing(universe)) > 1)
-  if (!is.null(universe)) {
-     msg <- wmsg("The 'universe' argument of the RangedData() ",
-                 "constructor function is defunct.")
-    .Defunct(msg=msg)
-  }
+  hasDots <- (((nargs() - !missing(space))) > 1)
   if (is(ranges, "IntegerRangesList") && !is(ranges, "IntegerRanges")) {
     if (!is.null(space))
       warning("since 'class(ranges)' extends IntegerRangesList, 'space' argument is ignored")
@@ -289,8 +288,6 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL, universe = NULL)
         ranges <- as(ranges, "IRanges")
     ranges <- split(ranges, space)
   }
-  if (!is.null(universe))
-    universe(ranges) <- universe
 
   if (hasDots) {
     args <- list(...)

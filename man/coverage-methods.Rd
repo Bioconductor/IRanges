@@ -7,7 +7,6 @@
 \alias{coverage,IPos-method}
 \alias{coverage,Views-method}
 \alias{coverage,IntegerRangesList-method}
-\alias{coverage,RangedData-method}
 
 \title{Coverage of a set of ranges}
 

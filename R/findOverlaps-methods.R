@@ -385,41 +385,6 @@ setMethod("overlapsAny", c("IntegerRangesList", "IntegerRangesList"),
     }
 )
 
-.overlapsAny_RangedData_defunct_msg <- c(
-    "The \"overlapsAny\" methods for RangedData objects are defunct ",
-    "and won't be replaced. Please migrate your code to use GRanges or ",
-    "GRangesList objects instead. RangedData objects will be deprecated ",
-    "soon (their use has been discouraged since BioC 2.12, that is, since ",
-    "2014). See IMPORTANT NOTE in ?RangedData"
-)
-
-setMethod("overlapsAny", c("RangedData", "RangedData"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        .Defunct(msg=wmsg(.overlapsAny_RangedData_defunct_msg))
-    }
-)
-
-setMethod("overlapsAny", c("RangedData", "IntegerRangesList"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        .Defunct(msg=wmsg(.overlapsAny_RangedData_defunct_msg))
-    }
-)
-
-setMethod("overlapsAny", c("IntegerRangesList", "RangedData"),
-    function(query, subject, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"),
-             ...)
-    {
-        .Defunct(msg=wmsg(.overlapsAny_RangedData_defunct_msg))
-    }
-)
-
 ### Convenience wrappers for the 3 most common use cases.
 `%over%` <- function(query, subject) overlapsAny(query, subject)
 `%within%` <- function(query, subject) overlapsAny(query, subject,
@@ -456,38 +421,6 @@ setMethod("subsetByOverlaps", c("Vector", "Vector"),
         x[ov_any]
     }
 )
-
-.subsetByOverlaps_RangedData_defunct_msg <- c(
-    "The \"subsetByOverlaps\" methods for RangedData objects are defunct ",
-    "and won't be replaced. Please migrate your code to use GRanges or ",
-    "GRangesList objects instead. RangedData objects will be deprecated ",
-    "soon (their use has been discouraged since BioC 2.12, that is, since ",
-    "2014). See IMPORTANT NOTE in ?RangedData"
-)
-
-setMethod("subsetByOverlaps", c("RangedData", "RangedData"),
-          function(x, ranges, maxgap = -1L, minoverlap = 0L,
-                   type = c("any", "start", "end", "within", "equal"),
-                   invert = FALSE)
-          {
-            .Defunct(msg=wmsg(.subsetByOverlaps_RangedData_defunct_msg))
-          })
-
-setMethod("subsetByOverlaps", c("RangedData", "IntegerRangesList"),
-          function(x, ranges, maxgap = -1L, minoverlap = 0L,
-                   type = c("any", "start", "end", "within", "equal"),
-                   invert = FALSE)
-          {
-            .Defunct(msg=wmsg(.subsetByOverlaps_RangedData_defunct_msg))
-          })
-
-setMethod("subsetByOverlaps", c("IntegerRangesList", "RangedData"),
-          function(x, ranges, maxgap = -1L, minoverlap = 0L,
-                   type = c("any", "start", "end", "within", "equal"),
-                   invert = FALSE)
-          {
-            .Defunct(msg=wmsg(.subsetByOverlaps_RangedData_defunct_msg))
-          })
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -557,22 +490,6 @@ setMethod("overlapsRanges", c("IntegerRangesList", "IntegerRangesList"),
         ans
     }
 )
-
-setMethod("ranges", "Hits", function(x, use.names=TRUE, use.mcols=FALSE,
-                                        query, subject)
-{
-    msg <- c("\"ranges\" method for Hits objects is defunct. ",
-             "Please use overlapsRanges() instead.")
-    .Defunct(msg=wmsg(msg))
-})
-
-setMethod("ranges", "HitsList", function(x, use.names=TRUE, use.mcols=FALSE,
-                                            query, subject)
-{
-    msg <- c("\"ranges\" method for HitsList objects is defunct. ",
-             "Please use overlapsRanges() instead.")
-    .Defunct(msg=wmsg(msg))
-})
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

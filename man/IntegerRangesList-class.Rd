@@ -17,10 +17,6 @@
 \alias{pos,PosList-method}
 \alias{space}
 \alias{space,IntegerRangesList-method}
-\alias{universe,IntegerRangesList-method}
-\alias{universe<-,IntegerRangesList-method}
-\alias{universe}
-\alias{universe<-}
 
 \alias{isNormal,IntegerRangesList-method}
 \alias{whichFirstNotNormal,IntegerRangesList-method}

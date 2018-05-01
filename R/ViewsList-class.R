@@ -29,19 +29,6 @@ setMethod("start", "SimpleViewsList", function(x, ...) start(ranges(x)))
 setMethod("end", "SimpleViewsList", function(x, ...) end(ranges(x)))
 setMethod("width", "SimpleViewsList", function(x) width(ranges(x)))
 
-### TODO: Why not define this at the List level? Or even at the Vector level?
-setMethod("universe", "ViewsList",
-          function(x)
-          {
-            .Defunct(msg="The universe() getter is defunct.")
-          })
-
-### TODO: Why not define this at the List level? Or even at the Vector level?
-setReplaceMethod("universe", "ViewsList",
-                 function(x, value)
-                 {
-                   .Defunct(msg="The universe() setter is defunct.")
-                 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion

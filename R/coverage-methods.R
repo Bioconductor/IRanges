@@ -302,19 +302,3 @@ setMethod("coverage", "IntegerRangesList",
     }
 )
 
-.coverage_RangedData_defunct_msg <- c(
-    "The \"coverage\" method for RangedData objects is defunct ",
-    "and won't be replaced. Please migrate your code to use GRanges or ",
-    "GRangesList objects instead. RangedData objects will be deprecated ",
-    "soon (their use has been discouraged since BioC 2.12, that is, since ",
-    "2014). See IMPORTANT NOTE in ?RangedData"
-)
-
-setMethod("coverage", "RangedData",
-    function(x, shift=0L, width=NULL, weight=1L,
-                method=c("auto", "sort", "hash"))
-    {
-        .Defunct(msg=wmsg(.coverage_RangedData_defunct_msg))
-    }
-)
-

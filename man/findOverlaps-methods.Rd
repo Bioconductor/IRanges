@@ -30,9 +30,6 @@
 \alias{overlapsAny,integer,Vector-method}
 \alias{overlapsAny,Vector,missing-method}
 \alias{overlapsAny,IntegerRangesList,IntegerRangesList-method}
-\alias{overlapsAny,RangedData,RangedData-method}
-\alias{overlapsAny,RangedData,IntegerRangesList-method}
-\alias{overlapsAny,IntegerRangesList,RangedData-method}
 
 \alias{\%over\%}
 \alias{\%within\%}
@@ -40,9 +37,6 @@
 
 \alias{subsetByOverlaps}
 \alias{subsetByOverlaps,Vector,Vector-method}
-\alias{subsetByOverlaps,RangedData,RangedData-method}
-\alias{subsetByOverlaps,RangedData,IntegerRangesList-method}
-\alias{subsetByOverlaps,IntegerRangesList,RangedData-method}
 
 \alias{overlapsRanges}
 \alias{overlapsRanges,IntegerRanges,IntegerRanges-method}
@@ -56,10 +50,6 @@
 \alias{mergeByOverlaps}
 
 \alias{findOverlapPairs}
-
-% defunct
-\alias{ranges,Hits-method}
-\alias{ranges,HitsList-method}
 
 \title{Finding overlapping ranges}
 

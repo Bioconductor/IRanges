@@ -56,20 +56,6 @@ setMethod("space", "IntegerRangesList",
             space
           })
 
-### TODO: Why not define this at the List level? Or even at the Vector level?
-setGeneric("universe", function(x) standardGeneric("universe"))
-setMethod("universe", "IntegerRangesList",
-          function(x)
-          {
-            .Defunct(msg="The universe() getter is defunct.")
-          })
-
-setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
-setReplaceMethod("universe", "IntegerRangesList",
-                 function(x, value)
-                 {
-                   .Defunct(msg="The universe() setter is defunct.")
-                 })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### isNormal()
@@ -93,7 +79,7 @@ setMethod("whichFirstNotNormal", "IntegerRangesList",
 ### Constructor.
 ###
 
-RangesList <- function(..., universe = NULL)
+RangesList <- function(...)
 {
   msg <- c("The RangesList() constructor is deprecated. ",
            "Please coerce to IRangesList instead e.g. do ",
@@ -103,20 +89,12 @@ RangesList <- function(..., universe = NULL)
            "'IRangesList(x1, x2, compress=FALSE)'. See '?IRangesList' ",
            "for more information.")
   .Deprecated(msg=wmsg(msg))
-  if (!is.null(universe)) {
-     msg <- wmsg("The 'universe' argument of the RangesList() ",
-                 "constructor function is defunct.")
-    .Defunct(msg=msg)
-  }
   ranges <- list(...)
   if (length(ranges) == 1 && is.list(ranges[[1L]]))
     ranges <- ranges[[1L]]
   if (!all(sapply(ranges, is, "IntegerRanges")))
     stop("all elements in '...' must be IntegerRanges objects")
-  ans <- S4Vectors:::new_SimpleList_from_list("SimpleIntegerRangesList", ranges)
-  if (!is.null(universe))
-    universe(ans) <- universe
-  ans
+  S4Vectors:::new_SimpleList_from_list("SimpleIntegerRangesList", ranges)
 }
 
 

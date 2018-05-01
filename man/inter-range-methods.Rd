@@ -7,7 +7,6 @@
 \alias{range,IPos-method}
 \alias{range,IntegerRangesList-method}
 \alias{range,CompressedIRangesList-method}
-\alias{range,RangedData-method}
 
 \alias{reduce}
 \alias{reduce,IntegerRanges-method}

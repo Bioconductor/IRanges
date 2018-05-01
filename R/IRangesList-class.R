@@ -114,15 +114,10 @@ setMethod("isNormal", "SimpleIRangesList",
 ### Constructor.
 ###
 
-IRangesList <- function(..., universe=NULL, compress=TRUE)
+IRangesList <- function(..., compress=TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    if (!is.null(universe)) {
-        msg <- wmsg("The 'universe' argument of the IRangesList() ",
-                    "constructor function is defunct.")
-        .Defunct(msg=msg)
-    }
     args <- list(...)
     if (length(args) == 2L &&
         setequal(names(args), c("start", "end")) &&
@@ -151,8 +146,6 @@ IRangesList <- function(..., universe=NULL, compress=TRUE)
         else
             ans <- as(args, "SimpleIRangesList")
     }
-    if (!is.null(universe))
-        universe(ans) <- universe
     ans
 }
 

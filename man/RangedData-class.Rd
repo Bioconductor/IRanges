@@ -26,7 +26,9 @@
 \alias{width,RangedData-method}
 \alias{width<-,RangedData-method}
 \alias{space,RangedData-method}
+\alias{universe}
 \alias{universe,RangedData-method}
+\alias{universe<-}
 \alias{universe<-,RangedData-method}
 \alias{score,RangedData-method}
 \alias{score<-,RangedData-method}
@@ -248,8 +250,7 @@
 \section{Constructor}{
   \describe{
     \item{}{
-      \code{RangedData(ranges = IRanges(), ..., space = NULL,
-        universe = NULL)}:
+      \code{RangedData(ranges = IRanges(), ..., space = NULL)}:
       Creates a \code{RangedData} with the ranges in \code{ranges} and
       variables given by the arguments in \code{...}.  See the
       constructor \code{\linkS4class{DataFrame}} for how the \code{...}
@@ -270,9 +271,6 @@
       If \code{ranges} is not a \code{\linkS4class{IntegerRanges}} or
       \code{\linkS4class{IntegerRangesList}} object, this function calls
       \code{as(ranges, "RangedData")} and returns the result if successful.
-
-      The universe may be specified as a scalar string by the \code{universe}
-      argument.
     }
   }
 }

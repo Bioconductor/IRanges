@@ -12,8 +12,6 @@
 \alias{start,SimpleViewsList-method}
 \alias{end,SimpleViewsList-method}
 \alias{width,SimpleViewsList-method}
-\alias{universe,ViewsList-method}
-\alias{universe<-,ViewsList-method}
 
 % coercion
 \alias{as.matrix,ViewsList-method}
