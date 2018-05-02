@@ -96,9 +96,9 @@
 
 ## Some packages like easyRNASeq or TEQC pass 'width' as a named list-like
 ## object where each list element is a single number, an NA, or a NULL, when
-## calling coverage() on an IntegerRangesList or RangedData object. They do so
-## because, for whatever reason, we've been supporting this for a while, and
-## also because, in the case of the method for RangedData objects, the arg
+## calling coverage() on an IntegerRangesList object. They do so because, for
+## whatever reason, we've been supporting this for a while, and also because,
+## in the case of the (now defunct) method for RangedData objects, the arg
 ## default for 'width' used to be such a list (a named list of NULLs in that
 ## case). However, it never really made sense to support a named list-like
 ## object for 'width', and it makes even less sense now that the signature of

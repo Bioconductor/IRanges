@@ -297,10 +297,19 @@ setMethod("countOverlaps", c("IntegerRangesList", "IntegerRangesList"),
                               SIMPLIFY = FALSE))
           })
 
+.countOverlaps_RangedData_deprecated_msg <- c(
+    "The \"countOverlaps\" methods for RangedData objects are deprecated ",
+    "and won't be replaced. Please migrate your code to use GRanges or ",
+    "GRangesList objects instead. RangedData objects will be deprecated ",
+    "soon (their use has been discouraged since BioC 2.12, that is, since ",
+    "2014). See IMPORTANT NOTE in ?RangedData"
+)
+
 setMethod("countOverlaps", c("RangedData", "RangedData"),
           function(query, subject, maxgap = -1L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"))
           {
+              .Deprecated(msg=wmsg(.countOverlaps_RangedData_deprecated_msg))
               countOverlaps(ranges(query), ranges(subject), maxgap = maxgap,
                             minoverlap = minoverlap, type = match.arg(type))
           })
@@ -308,6 +317,7 @@ setMethod("countOverlaps", c("RangedData", "IntegerRangesList"),
           function(query, subject, maxgap = -1L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"))
           {
+              .Deprecated(msg=wmsg(.countOverlaps_RangedData_deprecated_msg))
               countOverlaps(ranges(query), subject, maxgap = maxgap,
                             minoverlap = minoverlap, type = match.arg(type))
           })
@@ -315,6 +325,7 @@ setMethod("countOverlaps", c("IntegerRangesList", "RangedData"),
           function(query, subject, maxgap = -1L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"))
           {
+              .Deprecated(msg=wmsg(.countOverlaps_RangedData_deprecated_msg))
               countOverlaps(query, ranges(subject), maxgap = maxgap,
                             minoverlap = minoverlap, type = match.arg(type))
           })

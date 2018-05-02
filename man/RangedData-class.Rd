@@ -73,7 +73,7 @@
 
 \title{Data on ranges}
 \description{
-  IMPORTANT NOTE: \code{RangedData} objects will be deprecated in BioC 3.7!
+  IMPORTANT NOTE: \code{RangedData} objects will be deprecated in BioC 3.9!
   The use of \code{RangedData} objects has been discouraged in favor
   of \link[GenomicRanges]{GRanges} or \link[GenomicRanges]{GRangesList}
   objects since BioC 2.12, that is, since 2014.
@@ -236,13 +236,6 @@
     \item{}{
       \code{values(x), values(x) <- value}: Gets or sets the data values in
       \code{x} as a \code{\linkS4class{SplitDataFrameList}}.
-    }
-    \item{}{
-      \code{score(x), score(x) <- value}: Gets or sets the column
-      representing a "score" in \code{x}, as a vector. This is the column
-      named \code{score}, or, if this does not exist, the first column, if it
-      is numeric. The get method return \code{NULL} if no suitable score
-      column is found. The set method takes a numeric vector as its value.
     }
   }
 }
@@ -414,17 +407,6 @@
   }
 }
 
-\section{Applying}{
-  An \code{lapply} method is provided to apply a function over the spaces
-  of a \code{RangedData}:
-  \describe{
-    \item{}{\code{lapply(X, FUN, ...)}:
-      Applies \code{FUN} to each space in \code{X} with extra parameters
-      in \code{...}.
-    }
-  }
-}
-
 \author{ Michael Lawrence }
 
 \seealso{
@@ -529,10 +511,6 @@
   rd <- RangedData(ranges, score, space = c(1, 2, 1))
   c(rd[1], rd[2]) # equal to 'rd'
   rd2 <- RangedData(ranges, score)
-
-  ## applying
-
-  lapply(rd, `[[`, 1) # get first column in each space
 }
 
 \keyword{methods}

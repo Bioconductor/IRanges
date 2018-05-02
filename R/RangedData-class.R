@@ -26,6 +26,13 @@ setClass("RangedData", contains = c("DataTable", "List"),
          prototype = prototype(ranges = new("SimpleIRangesList"),
                                values = new("CompressedSplitDataFrameList")))
 
+RangedData_method_is_deprecated_msg <- function(what)
+  c("The ", what, " is deprecated ",
+    "and won't be replaced. Please migrate your code to use GRanges or ",
+    "GRangesList objects instead. RangedData objects will be deprecated ",
+    "soon (their use has been discouraged since BioC 2.12, that is, since ",
+    "2014). See IMPORTANT NOTE in ?RangedData")
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
 ###
@@ -125,6 +132,8 @@ setReplaceMethod("universe", "RangedData",
 
 setMethod("score", "RangedData",
           function(x) {
+              what <- "score() getter for RangedData objects"
+              .Deprecated(msg=wmsg(RangedData_method_is_deprecated_msg(what)))
               score <- x[["score"]]
               ## if (is.null(score) && ncol(x) > 0 && is.numeric(x[[1L]]))
               ##     score <- x[[1L]]
@@ -133,6 +142,8 @@ setMethod("score", "RangedData",
 
 setReplaceMethod("score", "RangedData",
                  function(x, value) {
+                     what <- "score() setter for RangedData objects"
+                     .Deprecated(msg=wmsg(RangedData_method_is_deprecated_msg(what)))
                      if (!is.numeric(value))
                          stop("score must be numeric")
                      if (length(value) != nrow(x))
@@ -627,6 +638,8 @@ setAs("RangedData", "DataFrame",
 setAs("Rle", "RangedData",
       function(from)
       {
+        what <- "coercion method from Rle to RangedData"
+        .Deprecated(msg=wmsg(RangedData_method_is_deprecated_msg(what)))
         new2("RangedData",
              ranges = IRangesList("1" = successiveIRanges(runLength(from))),
              values =
@@ -638,6 +651,8 @@ setAs("Rle", "RangedData",
 setAs("RleList", "RangedData",
       function(from)
       {
+        what <- "coercion method from RleList to RangedData"
+        .Deprecated(msg=wmsg(RangedData_method_is_deprecated_msg(what)))
         ranges <-
           IRangesList(lapply(from, function(x)
                              successiveIRanges(runLength(x))))
@@ -657,6 +672,8 @@ setAs("RleList", "RangedData",
       })
 
 setAs("RleViewsList", "RangedData", function(from) {
+  what <- "coercion method from RleViewsList to RangedData"
+  .Deprecated(msg=wmsg(RangedData_method_is_deprecated_msg(what)))
   subject <- subject(from)
   from_ranges <- restrict(ranges(from), 1L, elementNROWS(subject),
                           keep.all.ranges = TRUE)
@@ -682,12 +699,16 @@ setAs("RleViewsList", "RangedData", function(from) {
 setAs("IntegerRanges", "RangedData",
       function(from)
       {
+        what <- "coercion method from IntegerRanges to RangedData"
+        .Deprecated(msg=wmsg(RangedData_method_is_deprecated_msg(what)))
         RangedData(from)
       })
 
 setAs("IntegerRangesList", "RangedData",
     function(from)
     {
+        what <- "coercion method from IntegerRangesList to RangedData"
+        .Deprecated(msg=wmsg(RangedData_method_is_deprecated_msg(what)))
         from_names <- names(from)
         if (is.null(from_names) || anyDuplicated(from_names))
             stop("cannot coerce a IntegerRangesList object with no names ",
@@ -718,7 +739,13 @@ setAs("IntegerRangesList", "RangedData",
     }
 )
 
-setAs("list", "RangedData", function(from) do.call(c, unname(from)))
+setAs("list", "RangedData",
+  function(from) {
+    what <- "coercion method from list to RangedData"
+    .Deprecated(msg=wmsg(RangedData_method_is_deprecated_msg(what)))
+    do.call(c, unname(from))
+  }
+)
 
 .fromRangedDataToCompressedIRangesList <- function(from)
 {
@@ -753,6 +780,8 @@ setMethod("as.env", "RangedData", function(x, enclos = parent.frame(2)) {
 })
 
 .RangedData_fromDataFrame <- function(from) {
+  what <- "coercion method from data.frame or DataTable to RangedData"
+  .Deprecated(msg=wmsg(RangedData_method_is_deprecated_msg(what)))
   required <- c("start", "end")
   if (!all(required %in% colnames(from)))
     stop("'from' must at least include a 'start' and 'end' column")
