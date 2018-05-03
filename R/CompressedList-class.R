@@ -176,9 +176,11 @@ new_CompressedList_from_list <- function(Class, x, ..., mcols)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion.
+### unlist()
 ###
 
+### Overwrite method for List objects with super fast method for CompressedList
+### objects.
 setMethod("unlist", "CompressedList",
     function(x, recursive=TRUE, use.names=TRUE)
     {
@@ -190,6 +192,11 @@ setMethod("unlist", "CompressedList",
         unlisted_x
     }
 )
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Coercion.
+###
 
 coerceToCompressedList <- function(from, element.type = NULL, ...) {
   if (is(from, S4Vectors:::listClassName("Compressed", element.type)))
