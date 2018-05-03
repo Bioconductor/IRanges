@@ -8,8 +8,6 @@
 \alias{window<-,factor-method}
 \alias{window<-.factor}
 
-\alias{rep.int,Vector-method}
-
 \alias{mstack}
 \alias{mstack,Vector-method}
 \alias{mstack,vector-method}
