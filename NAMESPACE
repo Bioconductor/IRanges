@@ -173,8 +173,6 @@ exportMethods(
     is.unsorted, order,
     Ops, Math, Math2, Summary, Complex,
     summary,
-    rev,
-    rep,
     drop,
     start, "start<-", end, "end<-", width, "width<-", pos,
     min, max, range, which.max, which.min,

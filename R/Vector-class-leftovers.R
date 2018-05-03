@@ -55,18 +55,6 @@ setReplaceMethod("window", "vector", `window<-.vector`)
 }
 setReplaceMethod("window", "factor", `window<-.factor`)
 
-setMethod("rev", "Vector",
-    function(x)
-    {
-        if (length(x) == 0L)
-            return(x)
-        x[length(x):1]
-    }
-)
-
-setMethod("rep", "Vector", function(x, ...)
-          x[rep(seq_len(length(x)), ...)])
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### mstack()

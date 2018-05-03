@@ -8,8 +8,6 @@
 \alias{window<-,factor-method}
 \alias{window<-.factor}
 
-\alias{rev,Vector-method}
-\alias{rep,Vector-method}
 \alias{rep.int,Vector-method}
 
 \alias{mstack}
@@ -69,24 +67,6 @@
       The elements of \code{value} are repeated to create a Vector with the
       same number of elements as the width of the subsequence window it is
       replacing.
-    }
-    \item{}{
-      \code{rev(x)}:
-      Return a new Vector object made of the original elements in the reverse
-      order.
-    }
-    \item{}{
-      \code{rep(x, times, length.out, each)}, \code{rep.int(x, times)}:
-      Repeats the values in \code{x} through one of the following conventions:
-      \describe{
-        \item{\code{times}}{Vector giving the number of times to repeat each
-          element if of length \code{length(x)}, or to repeat the whole vector
-          if of length 1.}
-        \item{\code{length.out}}{Non-negative integer. The desired length of
-          the output vector.}
-        \item{\code{each}}{Non-negative integer.  Each element of \code{x} is
-          repeated \code{each} times.}
-      }
     }
   }
 }
