@@ -134,6 +134,24 @@ setGeneric("Views", signature="subject",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### unlist()
+###
+
+### Overwrite method for List objects with optimized method for Views objects.
+setMethod("unlist", "Views",
+    function(x, recursive=TRUE, use.names=TRUE)
+    {
+        if (!isTRUEorFALSE(use.names))
+            stop("'use.names' must be TRUE or FALSE")
+        unlisted_x <- subject(x)[ranges(x)]
+        if (use.names)
+            unlisted_x <- S4Vectors:::set_unlisted_names(unlisted_x, x)
+        unlisted_x
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion.
 ###
 

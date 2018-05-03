@@ -19,6 +19,7 @@
 \alias{width<-,Views-method}
 \alias{names<-,Views-method}
 \alias{Views}
+\alias{unlist,Views-method}
 \alias{coerce,Vector,Views-method}
 \alias{coerce,Views,IntegerRanges-method}
 \alias{coerce,Views,IRanges-method}
