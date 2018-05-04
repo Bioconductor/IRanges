@@ -228,7 +228,7 @@ export(
     solveUserSEW0, IRanges, solveUserSEW,
     successiveIRanges,
     slidingIRanges,
-    breakInChunks, equisplit,
+    breakInChunks,
     whichAsIRanges,
     asNormalIRanges,
     rangeComparisonCodeToLetter,
@@ -258,7 +258,8 @@ export(
     DataFrameList, SplitDataFrameList,
     ManyToOneGrouping, ManyToManyGrouping, regroup,
     heads, tails,
-    selectNearest
+    selectNearest,
+    splitListElements, equisplit
 )
 
 

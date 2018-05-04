@@ -10,7 +10,7 @@ setGeneric("windows", signature="x",
     function(x, start=NA, end=NA, width=NA) standardGeneric("windows")
 )
 
-### Not exported.
+### NOT exported.
 ### Low-level utility used by various "windows" methods.
 make_IRanges_from_windows_args <- function(x, start=NA, end=NA, width=NA)
 {

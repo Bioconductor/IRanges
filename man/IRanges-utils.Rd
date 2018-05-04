@@ -4,7 +4,6 @@
 
 \alias{successiveIRanges}
 \alias{breakInChunks}
-\alias{equisplit}
 
 \alias{whichAsIRanges}
 
@@ -22,7 +21,6 @@
 ## Create an IRanges instance:
 successiveIRanges(width, gapwidth=0, from=1)
 breakInChunks(totalsize, nchunk, chunksize)
-equisplit(x, nchunk, chunksize)
 
 ## Turn a logical vector into a set of ranges:
 whichAsIRanges(x)
@@ -55,8 +53,6 @@ asNormalIRanges(x, force=TRUE)
     smaller).
   }
   \item{x}{
-    A vector-like object for \code{equisplit}.
-
     A logical vector for \code{whichAsIRanges}.
 
     An \link{IRanges} object for \code{asNormalIRanges}.
@@ -81,14 +77,6 @@ asNormalIRanges(x, force=TRUE)
   of length \code{totalsize} in the chunks described by \code{nchunk} or
   \code{chunksize}.
 
-  \code{equisplit} splits vector-like object \code{x} into a specified
-  number of partitions with equal (total) width. This is useful for
-  instance to ensure balanced loading of workers in parallel evaluation.
-  For example, if \code{x} is a \link[GenomicRanges]{GRanges} object,
-  each partition is also a \link[GenomicRanges]{GRanges} object and the
-  set of all partitions is returned as a \link[GenomicRanges]{GRangesList}
-  object.
-
   \code{whichAsIRanges} returns an \link{IRanges} instance containing all of
   the ranges where \code{x} is \code{TRUE}.
 
@@ -107,16 +95,24 @@ asNormalIRanges(x, force=TRUE)
 \author{Hervé Pagès}
 
 \seealso{
-  \link{IntegerRanges-class},
-  \link{IRanges-class},
+  \itemize{
+    \item \link{IRanges} objects.
 
-  \link{intra-range-methods} for intra range transformations,
+    \item \link{Partitioning} objects.
 
-  \link{inter-range-methods} for inter range transformations,
+    \item \code{\link{equisplit}} for splitting a list-like object into
+          a specified number of partitions.
 
-  \link{setops-methods},
-  \code{\link{solveUserSEW}},
-  \code{\link{successiveViews}}
+    \item \link{intra-range-methods} and \link{inter-range-methods}
+          for intra range and inter range transformations.
+
+    \item \link{setops-methods} for performing set operations on
+          \link{IRanges} objects.
+
+    \item \code{\link{solveUserSEW}}
+
+    \item \code{\link{successiveViews}}
+  }
 }
 
 \examples{
@@ -126,10 +122,6 @@ successiveIRanges(vec)
 
 breakInChunks(600999, chunksize=50000)  # chunks of size 50000 (last
                                         # chunk is smaller)
-
-library(GenomicRanges)
-gr <- GRanges(c("chr1", "chr2"), IRanges(1, c(100, 1e5)))
-equisplit(gr, 2)
 
 whichAsIRanges(vec >= 5)
 
