@@ -53,10 +53,11 @@ regroupBySupergroup <- function(x, supergroups)
 ### splitListElements()
 ###
 
-### Will work out-of-the box on any List derivative 'x' that supports [ and
-### windows() e.g. all the AtomicList derivatives, IRanges, GRanges,
-### DNAStringSet, DNAStringSetList, GAlignments, GAlignmentsList objects and
-### more...
+### Act as an endomorphism.
+### Will work out-of-the box on any List derivative 'x' that supports [
+### and windows() e.g. all the AtomicList derivatives, IRanges, GRanges,
+### DNAStringSet, DNAStringSetList, GAlignments, GAlignmentsList objects
+### and more...
 splitListElements <- function(x, partitioning, use.mcols=FALSE)
 {
     if (!isTRUEorFALSE(use.mcols))
