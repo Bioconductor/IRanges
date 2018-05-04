@@ -59,6 +59,13 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
   object.
 }
 
+\value{
+  An object of the same class as \code{x} for \code{splitListElements}.
+
+  An object of class \code{\link[S4Vectors]{relistToClass}(x)} for
+  \code{equisplit}.
+}
+
 \author{Hervé Pagès}
 
 \seealso{
