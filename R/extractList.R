@@ -298,7 +298,7 @@ splitAsList_default <- function(x, f, drop=FALSE)
         x <- extractROWS(x, keep_idx)
         f <- f[keep_idx]
     }
-    
+
     if (is.integer(f))
         return(.splitAsList_by_integer(x, f, drop))
     if (!is(f, "Rle")) {
@@ -356,51 +356,6 @@ setMethod("extractList", c("ANY", "ANY"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### regroupBySupergroup()
-###
-### A very efficient way to concatenate groups of successive list elements
-### in 'x'.
-### 'x' must be a list-like object (typically a CompressedList object).
-### 'supergroups' must be an object that defines a partitioning of
-### 'seq_along(x)' (i.e. it could be used to do
-### 'relist(seq_along(x), supergroups)'). It will be immediately replaced with
-### 'PartitioningByEnd(supergroups)' so it should be an object that is
-### accepted by the PartitioningByEnd() constructor (note that this constructor
-### is a no-op if 'supergroups' is already a PartitioningByEnd object).
-### Return a list-like object of the same elementType() as 'x' and parallel
-### to 'supergroups'. The names on 'supergroups' are propagated but not the
-### metadata columns.
-###
-### Some properties:
-### - Behaves as an endomorphism on a CompressedList or PartitioningByEnd
-###   object.
-### - This
-###       regroupBySupergroup(x, length(x))[[1L]]
-###   is equivalent to
-###       unlist(x, use.names=FALSE)
-###
-### Other possible names for regroupBySupergroup: regroup,
-### mergeGroupsInSupergroups, combineGroupsOfListElements,
-### unlistGroupsOfListElements, unlistBySupergroup.
-###
-### TODO: Maybe export and document this?
-
-regroupBySupergroup <- function(x, supergroups)
-{
-    supergroups <- PartitioningByEnd(supergroups)
-    x_breakpoints <- end(PartitioningByEnd(x))
-    ans_breakpoints <- x_breakpoints[end(supergroups)]
-    nleading0s <- length(supergroups) - length(ans_breakpoints)
-    if (nleading0s != 0L)
-        ans_breakpoints <- c(rep.int(0L, nleading0s), ans_breakpoints)
-    ans_partitioning <- PartitioningByEnd(ans_breakpoints,
-                                          names=names(supergroups))
-    if (is(x, "PartitioningByEnd"))
-        return(ans_partitioning)
-    relist(unlist(x, use.names=FALSE), ans_partitioning)
-}
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### resplit() and regroup()
 ###
 ### Similar to regroupBySupergroup() but there is no assumption that
@@ -422,3 +377,4 @@ regroup <- function(x, g) {
     names(p) <- names(g)
     relist(unlist(xg, use.names=FALSE, recursive=FALSE), p)
 }
+
