@@ -1,5 +1,6 @@
 \name{splitListElements}
 
+\alias{INCOMPATIBLE_PARTITIONING_MSG}
 \alias{splitListElements}
 \alias{equisplit}
 
@@ -10,7 +11,8 @@
 }
 
 \usage{
-splitListElements(x, partitioning, use.mcols=FALSE)
+splitListElements(x, partitioning, use.mcols=FALSE,
+                  msg.if.incompatible=INCOMPATIBLE_PARTITIONING_MSG)
 equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
 
@@ -36,6 +38,10 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
     from \code{x}, the object returned by \code{splitListElements} has
     metadata columns \code{revmap} and \code{partition} and the object
     returned by \code{equisplit} has metadata column \code{revmap}.
+  }
+  \item{msg.if.incompatible}{
+    The error message to use if \code{partitioning} is not compatible with
+    the \emph{cumulated length} of all the list elements in \code{x}.
   }
   \item{nchunk}{
     A single positive integer. The number of chunks.
@@ -146,8 +152,9 @@ splitListElements(x3, partitioning1, use.mcols=TRUE)
 ## SANITY CHECKS
 ## ---------------------------------------------------------------------
 
-## If 'partitioning' is PartitioningByEnd(x) or PartitioningByWidth(x)
-## then 'splitListElements(x, partitioning, use.mcols=TRUE)' is a no-op.
+## If 'partitioning' is 'PartitioningByEnd(x)' or 'PartitioningByWidth(x)'
+## and 'x' has no zero-length list elements, then
+## 'splitListElements(x, partitioning, use.mcols=TRUE)' is a no-op.
 check_no_ops <- function(x) {
   partitioning <- PartitioningByEnd(x)
   stopifnot(identical(
@@ -160,9 +167,10 @@ check_no_ops <- function(x) {
     x
   ))
 }
-check_no_ops(x)
-check_no_ops(x2)
-check_no_ops(x3)
+
+check_no_ops(x[lengths(x) != 0])
+check_no_ops(x2[lengths(x2) != 0])
+check_no_ops(x3[lengths(x3) != 0])
 check_no_ops(gr)
 }
 
