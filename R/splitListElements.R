@@ -53,12 +53,18 @@ regroupBySupergroup <- function(x, supergroups)
 ### splitListElements()
 ###
 
+INCOMPATIBLE_PARTITIONING_MSG <- c(
+    "'partitioning' is incompatible with the cumulated ",
+    "length of all the list elements in 'x'"
+)
+
 ### Act as an endomorphism.
 ### Will work out-of-the box on any List derivative 'x' that supports [
 ### and windows() e.g. all the AtomicList derivatives, IRanges, GRanges,
 ### DNAStringSet, DNAStringSetList, GAlignments, GAlignmentsList objects
 ### and more...
-splitListElements <- function(x, partitioning, use.mcols=FALSE)
+splitListElements <- function(x, partitioning, use.mcols=FALSE,
+                              msg.if.incompatible=INCOMPATIBLE_PARTITIONING_MSG)
 {
     if (!isTRUEorFALSE(use.mcols))
         stop(wmsg("'use.mcols' must be TRUE or FALSE"))
@@ -71,10 +77,11 @@ splitListElements <- function(x, partitioning, use.mcols=FALSE)
     }
     if (!is(partitioning, "Partitioning"))
         stop(wmsg("'partitioning' must be a Partitioning object"))
+    if (!is.character(msg.if.incompatible))
+        stop(wmsg("'msg.if.incompatible' must be a character vector"))
     x_partitioning <- PartitioningByEnd(x)
     if (nobj(x_partitioning) != nobj(partitioning))
-        stop(wmsg("'partitioning' is incompatible with the cumulated ",
-                  "length of all the list elements in 'x'"))
+        stop(wmsg(msg.if.incompatible))
     ## Partitioning objects are a particular type of disjoint and strictly
     ## sorted IntegerRanges objects. Finding the overlaps between 2 such
     ## objects is a simple business that could be solved in linear time with

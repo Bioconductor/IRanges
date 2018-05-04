@@ -259,7 +259,7 @@ export(
     ManyToOneGrouping, ManyToManyGrouping, regroup,
     heads, tails,
     selectNearest,
-    splitListElements, equisplit
+    INCOMPATIBLE_PARTITIONING_MSG, splitListElements, equisplit
 )
 
 
