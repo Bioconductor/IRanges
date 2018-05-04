@@ -20,22 +20,37 @@ splitListElements <- function(x, partitioning, use.mcols=FALSE)
     }
     if (!is(partitioning, "Partitioning"))
         stop(wmsg("'partitioning' must be a Partitioning object"))
-    x_eltNROWS <- elementNROWS(x)
-    if (sum(x_eltNROWS) != nobj(partitioning))
+    x_partitioning <- PartitioningByEnd(x)
+    if (nobj(x_partitioning) != nobj(partitioning))
         stop(wmsg("'partitioning' is incompatible with the cumulated ",
                   "length of all the list elements in 'x'"))
-    q <- PartitioningByWidth(x_eltNROWS)
-    ## findOverlaps() returns a SortedByQueryHits object which is only
-    ## guaranteed to have its queryHits() sorted. By sorting the object,
-    ## we make sure that its subjectHits() is sorted too.
-    hits <- sort(findOverlaps(q, partitioning))
+    ## Partitioning objects are a particular type of disjoint and strictly
+    ## sorted IntegerRanges objects. Finding the overlaps between 2 such
+    ## objects is a simple business that could be solved in linear time with
+    ## dedicated code (the code would just walk along the 2 objects at the
+    ## same time). This would be slightly more efficient than using
+    ## findOverlaps() which is a little bit overkill for this (it builds a
+    ## Nested Containment List object and uses a binary search on it).
+    ## Also, in the case of disjoint and strictly sorted IntegerRanges objects,
+    ## an important property of the Hits object representing the hits between
+    ## the overlapping ranges is that it can always be sorted in such a way
+    ## that **both** queryHits() and subjectHits() end up sorted in ascending
+    ## order. However, the SortedByQueryHits object returned by findOverlaps()
+    ## is only guaranteed to have its queryHits() sorted. We need to call
+    ## sort() on it if we want to make sure that its subjectHits() is sorted
+    ## too. If we were using our dedicated code for finding the overlaps
+    ## between 2 disjoint and strictly sorted IntegerRanges objects, we
+    ## wouldn't need to do that.
+    hits <- sort(findOverlaps(x_partitioning, partitioning))
     revmap <- queryHits(hits)       # sorted
     partition <- subjectHits(hits)  # sorted
     ans <- x[revmap]
     if (!use.mcols)
         mcols(ans) <- DataFrame(revmap=revmap, partition=partition)
-    Ltrim <- pmax(start(partitioning)[partition] - start(q)[revmap], 0L)
-    Rtrim <- pmax(end(q)[revmap] - end(partitioning)[partition], 0L)
+    Ltrim <- pmax(start(partitioning)[partition] -
+                  start(x_partitioning)[revmap], 0L)
+    Rtrim <- pmax(end(x_partitioning)[revmap] -
+                  end(partitioning)[partition], 0L)
     windows(ans, start=1L+Ltrim, end=-1L-Rtrim)
 }
 
