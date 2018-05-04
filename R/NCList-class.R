@@ -140,10 +140,26 @@ print_NCList <- function(x)
 
 setAs("IntegerRanges", "NCList", function(from) NCList(from))
 
-### Subsetting is inefficient because it rebuilds a new NCList object for
-### the selected ranges from scratch. Supported for completeness only!
-setMethod("extractROWS", "NCList",
-    function(x, i) as(extractROWS(as(x, "IRanges"), i), class(x))
+### Inefficient because it rebuilds a new NCList object from scratch for the
+### selected ranges. Supported for completeness only!
+setMethod("extractROWS", c("NCList", "ANY"),
+    function(x, i)
+    {
+        x_class <- class(x)
+        x <- as(x, "IRanges")
+        as(callGeneric(), x_class)
+    }
+)
+
+### Inefficient because it rebuilds a new NCList object from scratch for the
+### concatenated ranges. Supported for completeness only!
+setMethod("concatenateObjects", "NCList",
+    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+    {
+        x_class <- class(x)
+        x <- as(x, "IRanges")
+        as(callGeneric(), x_class)
+    }
 )
 
 

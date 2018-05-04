@@ -12,6 +12,8 @@
 \alias{end,NCList-method}
 \alias{width,NCList-method}
 \alias{coerce,IntegerRanges,NCList-method}
+\alias{extractROWS,NCList,ANY-method}
+\alias{concatenateObjects,NCList-method}
 
 % NCLists objects:
 \alias{class:NCLists}
