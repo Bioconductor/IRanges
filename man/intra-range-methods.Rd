@@ -7,21 +7,21 @@
 \alias{update_ranges,Views-method}
 
 \alias{shift}
-\alias{shift,IntegerRanges-method}
+\alias{shift,Ranges-method}
 \alias{shift,IPos-method}
 \alias{shift,RangesList-method}
 
 \alias{narrow}
 \alias{narrow,ANY-method}
-\alias{windows,IntegerRanges-method}
+\alias{windows,Ranges-method}
 \alias{narrow,MaskCollection-method}
 
 \alias{resize}
-\alias{resize,IntegerRanges-method}
+\alias{resize,Ranges-method}
 \alias{resize,RangesList-method}
 
 \alias{flank}
-\alias{flank,IntegerRanges-method}
+\alias{flank,Ranges-method}
 \alias{flank,RangesList-method}
 
 \alias{promoters}
@@ -39,10 +39,9 @@
 \alias{threebands}
 \alias{threebands,IRanges-method}
 
-\alias{Ops,IntegerRanges,numeric-method}
-\alias{Ops,IntegerRanges,ANY-method}
-\alias{Ops,CompressedIRangesList,numeric-method}
-\alias{Ops,IntegerRangesList,numeric-method}
+\alias{Ops,Ranges,numeric-method}
+\alias{Ops,RangesList,numeric-method}
+\alias{Ops,CompressedRangesList,numeric-method}
 
 
 \title{Intra range transformations of an IRanges, IPos, Views, RangesList,
