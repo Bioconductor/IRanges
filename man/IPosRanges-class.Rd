@@ -130,15 +130,6 @@
       \code{NULL} or a character vector of the same length as \code{x}.
     }
     \item{}{
-      \code{update(object, ...)}:
-      Convenience method for combining multiple modifications of
-      \code{object} in one single call. For example
-      \code{object <- update(object, start=start(object)-2L,
-                                     end=end(object)+2L)}
-      is equivalent to
-      \code{start(object) <- start(object)-2L; end(object) <- end(object)+2L}.
-    }
-    \item{}{
       \code{tile(x, n, width, ...)}:
       Splits each range in \code{x} into subranges as specified by \code{n}
       (number of ranges) or \code{width}. Only one of \code{n} or \code{width} 
