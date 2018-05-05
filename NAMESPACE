@@ -8,7 +8,7 @@ importFrom(stats, cov, cor, median, quantile,
 
 import(BiocGenerics)
 import(S4Vectors)
-importFrom(stats4, summary, update)
+importFrom(stats4, summary)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -184,7 +184,6 @@ exportMethods(
     nchar, chartr, tolower, toupper, sub, gsub,
     unlist, stack, "split<-", unsplit,
     relist,
-    update,
     append,
     "!", which,
     merge,
@@ -321,6 +320,7 @@ export(
     windows, narrow,
 
     ## intra-range-methods.R:
+    update_ranges,
     shift, resize, flank, reflect, promoters, restrict, threebands,
 
     ## inter-range-methods.R:
@@ -380,6 +380,7 @@ exportMethods(
     overlapsRanges,
     poverlaps,
     windows, narrow,
+    update_ranges,
     shift, resize, flank, reflect, promoters, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     reverse,
