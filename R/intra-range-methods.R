@@ -93,7 +93,7 @@ setGeneric("shift", signature="x",
     function(x, shift=0L, use.names=TRUE) standardGeneric("shift")
 )
 
-setMethod("shift", "IntegerRanges",
+setMethod("shift", "Ranges",
     function(x, shift=0L, use.names=TRUE)
     {
         if (is(x, "NormalIRanges") && !isSingleNumber(shift))
@@ -163,7 +163,7 @@ setMethod("shift", "RangesList",
 ### The default "narrow" method calls windows() so we only need to implement
 ### a "windows" method for IntegerRanges objects to make narrow() work on
 ### these objects.
-setMethod("windows", "IntegerRanges",
+setMethod("windows", "Ranges",
     function(x, start=NA, end=NA, width=NA)
     {
         ir <- make_IRanges_from_windows_args(x, start, end, width)
@@ -203,7 +203,7 @@ setGeneric("resize", signature="x",
         standardGeneric("resize")
 )
 
-setMethod("resize", "IntegerRanges",
+setMethod("resize", "Ranges",
     function(x, width, fix="start", use.names=TRUE)
     {
         if (is(x, "NormalIRanges"))
@@ -285,7 +285,7 @@ setGeneric("flank", signature="x",
         standardGeneric("flank")
 )
 
-setMethod("flank", "IntegerRanges",
+setMethod("flank", "Ranges",
     function(x, width, start=TRUE, both=FALSE, use.names=TRUE)
     {
         if (is(x, "NormalIRanges"))
@@ -630,7 +630,7 @@ setMethod("threebands", "IRanges",
 ### convenience when working interactively.
 ###
 
-setMethod("Ops", c("IntegerRanges", "numeric"),
+setMethod("Ops", c("Ranges", "numeric"),
     function(e1, e2)
     {
         if (S4Vectors:::anyMissing(e2))
@@ -659,7 +659,7 @@ setMethod("Ops", c("IntegerRanges", "numeric"),
     }
 )
 
-setMethod("Ops", c("IntegerRangesList", "numeric"),
+setMethod("Ops", c("RangesList", "numeric"),
           function(e1, e2)
           {
             for (i in seq_len(length(e1)))
@@ -667,7 +667,7 @@ setMethod("Ops", c("IntegerRangesList", "numeric"),
             e1
           })
 
-setMethod("Ops", c("CompressedIRangesList", "numeric"),
+setMethod("Ops", c("CompressedRangesList", "numeric"),
           function(e1, e2)
           {
             relist(callGeneric(unlist(e1, use.names = FALSE), e2), e1)
