@@ -304,87 +304,6 @@ setReplaceMethod("names", "IRanges", set_IRanges_names)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The "update" method.
-###
-### This is a convenience method for combining multiple modifications in one
-### single call.
-###
-### It must verify 2 important properties:
-###   (1) update(x) must be identical to x (doesn't touch x at all)
-###   (2) update(x, start=start(x), width=width(x), names=names(x))
-###       must be identical to x too (but this time it updates x with its own
-###       content)
-###
-
-.update_IRanges <- function(object, ...)
-{
-    valid_argnames <- c("start", "width", "end", "names", "mcols")
-    args <- S4Vectors:::extraArgsAsList(valid_argnames, ...)
-    argnames <- names(args)
-    sew <- c("start", "end", "width")
-    narg_in_sew <- sum(sew %in% argnames)
-    if (narg_in_sew == 3L)
-        stop("at most 2 out of the ",
-             paste("'", sew, "'", sep="", collapse=", "),
-             " arguments can be supplied")
-    if (narg_in_sew == 2L &&
-        ("names" %in% argnames || is.null(names(object))) &&
-        ("mcols" %in% argnames || is.null(mcols(object))))
-    {
-        ## The update can change the length of the object.
-        if ("end" %in% argnames) {
-            if ("width" %in% argnames) {
-                width <- args$width
-                start <- args$end - width + 1L
-            } else {
-                start <- args$start
-                width <- args$end - start + 1L
-            }
-        } else {
-            start <- args$start
-            width <- args$width
-        }
-        object <- BiocGenerics:::replaceSlots(object,
-                      start=S4Vectors:::numeric2integer(start),
-                      width=S4Vectors:::numeric2integer(width),
-                      NAMES=args$names,
-                      elementMetadata=args$mcols,
-                      check=FALSE)
-        return(object)
-    }
-    ## The update preserves the length of the object.
-    if ("start" %in% argnames)
-        object <- .set_IRanges_start(object, args$start, check=FALSE)
-    if ("end" %in% argnames)
-        object <- .set_IRanges_end(object, args$end, check=FALSE)
-    if ("width" %in% argnames)
-        object <- .set_IRanges_width(object, args$width, check=FALSE)
-    if ("names" %in% argnames)
-        names(object) <- args$names
-    if ("mcols" %in% argnames)
-        mcols(object) <- args$mcols
-    object
-}
-
-### FIXME: need some way of specifying the extent of validity
-### checking, like giving the class up to which the object is
-### assumed valid.
-setMethod("update", "IRanges",
-    function(object, ..., check = TRUE)
-    {
-        if (!isTRUEorFALSE(check))
-            stop("'check' must be TRUE or FALSE")
-        ## Fix elementType slot on-the-fly.
-        object <- updateObject(object, check=FALSE)
-        object <- .update_IRanges(object, ...)
-        if (check)
-            validObject(object)
-        object
-    }
-)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting
 ###
 
@@ -408,10 +327,10 @@ setMethod("replaceROWS", "IRanges",
         ans_start <- replaceROWS(start(x), i, start(value))
         ans_width <- replaceROWS(width(x), i, width(value))
         ans_mcols <- replaceROWS(mcols(x), i, mcols(value))
-        update(x, start=ans_start,
-                  width=ans_width,
-                  mcols=ans_mcols,
-                  check=FALSE)
+        BiocGenerics:::replaceSlots(x, start=ans_start,
+                                       width=ans_width,
+                                       mcols=ans_mcols,
+                                       check=FALSE)
     }
 )
 

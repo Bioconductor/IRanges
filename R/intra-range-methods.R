@@ -4,6 +4,88 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### update_ranges()
+###
+
+### For internal use by the intra-range methods.
+### Update the ranges of a Ranges derivative. Return an object of the same
+### class as and parallel to 'x'.
+setGeneric("update_ranges", signature="x",
+    function(x, start=NULL, end=NULL, width=NULL, use.names=TRUE)
+        standardGeneric("update_ranges")
+)
+
+### Shallow check: only check type and length, not the content.
+.check_start_or_end_or_width <- function(start, x_len)
+{
+    if (is.null(start))
+        return()
+    stopifnot(is.integer(start))
+    stopifnot(length(start) == x_len)
+}
+
+### Does not validate the modified object.
+setMethod("update_ranges", "IRanges",
+    function(x, start=NULL, end=NULL, width=NULL, use.names=TRUE)
+    {
+        use.names <- S4Vectors:::normargUseNames(use.names)
+        narg <- sum(!is.null(start), !is.null(end), !is.null(width))
+        if (narg == 0L) {
+            if (!(use.names || is.null(x@NAMES)))
+                x@NAMES <- NULL
+            return(x)
+        }
+        stopifnot(narg <= 2L)
+        x_len <- length(x)
+        .check_start_or_end_or_width(start, x_len)
+        .check_start_or_end_or_width(end, x_len)
+        .check_start_or_end_or_width(width, x_len)
+        if (narg == 2L) {
+            if (!is.null(end)) {
+                if (is.null(start)) {
+                    ## 'end' and 'width' supplied
+                    start <- end - width + 1L
+                } else {
+                    ## 'start' and 'end' supplied
+                    width <- end - start + 1L
+                }
+            }
+            args <- list(start=start, width=width)
+        } else {
+            stopifnot(is.null(width))
+            if (is.null(start)) {
+                ## only 'end' supplied
+                width <- end - x@start + 1L
+                args <- list(width=width)
+            } else {
+                ## only 'start' supplied
+                width <- x@width - (start - x@start)
+                args <- list(start=start, width=width)
+            }
+        }
+        if (use.names) {
+            more_args <- list(check=FALSE)
+        } else {
+            more_args <- list(NAMES=NULL, check=FALSE)
+        }
+        args <- c(list(x), args, more_args)
+        do.call(BiocGenerics:::replaceSlots, args)
+    }
+)
+
+setMethod("update_ranges", "Views",
+    function(x, start=NULL, end=NULL, width=NULL, use.names=TRUE)
+    {
+        x@ranges <- update_ranges(x@ranges, start=start,
+                                            end=end,
+                                            width=width,
+                                            use.names=use.names)
+        x
+    }
+)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### shift()
 ###
 
@@ -19,13 +101,9 @@ setMethod("shift", "IntegerRanges",
                  "a NormalIRanges object")
         shift <- recycleIntegerArg(shift, "shift", length(x))
         new_start <- start(x) + shift
-        if (is(x, "IRanges")) {
-            x@start <- new_start
-        } else {
-            x <- update(x, start=new_start, width=width(x), check=FALSE)
-        }
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
+        x <- update_ranges(x, start=new_start,
+                              width=width(x),
+                              use.names=use.names)
         validObject(x)
         x
     }
@@ -57,14 +135,6 @@ setMethod("shift", "IPos",
     }
 )
 
-setMethod("shift", "Views",
-    function(x, shift=0L, use.names=TRUE)
-    {
-        new_ranges <- shift(ranges(x), shift=shift, use.names=use.names)
-        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
-    }
-)
-
 setMethod("shift", "RangesList",
     function(x, shift=0L, use.names=TRUE)
     {
@@ -91,8 +161,8 @@ setMethod("shift", "RangesList",
 ###
 
 ### The default "narrow" method calls windows() so we only need to implement
-### "windows" methods for IntegerRanges and Views objects to make narrow()
-### work on these objects.
+### a "windows" method for IntegerRanges objects to make narrow() work on
+### these objects.
 setMethod("windows", "IntegerRanges",
     function(x, start=NA, end=NA, width=NA)
     {
@@ -101,15 +171,7 @@ setMethod("windows", "IntegerRanges",
             return(x)
         ans_start <- start(x) + start(ir) - 1L
         ans_width <- width(ir)
-        update(x, start=ans_start, width=ans_width, check=FALSE)
-    }
-)
-
-setMethod("windows", "Views",
-    function(x, start=NA, end=NA, width=NA)
-    {
-        new_ranges <- windows(ranges(x), start=start, end=end, width=width)
-        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
+        update_ranges(x, start=ans_start, width=ans_width)
     }
 )
 
@@ -183,18 +245,7 @@ setMethod("resize", "IntegerRanges",
                 ans_start <- replaceROWS(ans_start, fixCenter, value)
             }
         }
-        x <- update(x, start=ans_start, width=ans_width, check=FALSE)
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
-        x
-    }
-)
-
-setMethod("resize", "Views",
-    function(x, width, fix="start", use.names=TRUE)
-    {
-        new_ranges <- resize(ranges(x), width, fix=fix, use.names=use.names)
-        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
+        update_ranges(x, start=ans_start, width=ans_width, use.names=use.names)
     }
 )
 
@@ -264,19 +315,7 @@ setMethod("flank", "IntegerRanges",
             ans_start[idx2a] <- end(x)[idx2a] + 1L
             ans_start[idx2b] <- end(x)[idx2b] + width[idx2b] + 1L
         }
-        x <- update(x, start=ans_start, width=ans_width, check=FALSE)
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
-        x
-    }
-)
-
-setMethod("flank", "Views",
-    function(x, width, start=TRUE, both=FALSE, use.names=TRUE)
-    {
-        new_ranges <- flank(ranges(x), width, start=start, both=both,
-                                       use.names=use.names)
-        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
+        update_ranges(x, start=ans_start, width=ans_width, use.names=use.names)
     }
 )
 
@@ -325,27 +364,14 @@ setMethod("promoters", "IntegerRanges",
         x_len <- length(x)
         upstream <- recycleIntegerArg(upstream, "upstream", x_len)
         downstream <- recycleIntegerArg(downstream, "downstream", x_len)
-        if (x_len > 0L) {
-            if (min(upstream) < 0L || min(downstream) < 0L)
-                stop("'upstream' and 'downstream' must be integers >= 0")
-            x_start <- start(x)
-            new_start <- x_start - upstream
-            new_end <- x_start + downstream - 1L
-            x <- update(x, start=new_start, end=new_end, check=FALSE)
-        }
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
-        x
-    }
-)
-
-setMethod("promoters", "Views",
-    function(x, upstream=2000, downstream=200, use.names=TRUE)
-    {
-        new_ranges <- promoters(ranges(x), upstream=upstream,
-                                           downstream=downstream,
-                                           use.names=use.names)
-        BiocGenerics:::replaceSlots(x, ranges=new_ranges, check=FALSE)
+        if (x_len == 0L)
+            return(update_ranges(x, use.names=use.names))
+        if (min(upstream) < 0L || min(downstream) < 0L)
+            stop("'upstream' and 'downstream' must be integers >= 0")
+        x_start <- start(x)
+        new_start <- x_start - upstream
+        new_end <- x_start + downstream - 1L
+        update_ranges(x, start=new_start, end=new_end, use.names=use.names)
     }
 )
 
@@ -397,10 +423,7 @@ setMethod("reflect", "IntegerRanges",
         if (length(x) < length(bounds))
             bounds <- head(bounds, length(x))
         ans_start <- (2L * start(bounds) + width(bounds) - 1L) - end(x)
-        x <- update(x, start=ans_start, width=width(x), check=FALSE)
-        if (!S4Vectors:::normargUseNames(use.names))
-            names(x) <- NULL
-        x
+        update_ranges(x, start=ans_start, width=width(x), use.names=use.names)
     }
 )
 
@@ -506,11 +529,11 @@ setGeneric("restrict", signature="x",
     ans_end[too_right] <- end[too_right]
 
     ans_width <- ans_end - ans_start + 1L
-    update(x, start=ans_start,
-              width=ans_width,
-              names=ans_names,
-              mcols=ans_mcols,
-              check=FALSE)
+    BiocGenerics:::replaceSlots(x, start=ans_start,
+                                   width=ans_width,
+                                   NAMES=ans_names,
+                                   mcols=ans_mcols,
+                                   check=FALSE)
 }
 
 setMethod("restrict", "IntegerRanges",
@@ -621,7 +644,7 @@ setMethod("Ops", c("IntegerRanges", "numeric"),
             r <- e1
             mid <- (start(r)+end(r))/2
             w <- width(r)/e2
-            update(r, start = ceiling(mid - w/2), width = floor(w), check = FALSE)
+            update_ranges(r, start = as.integer(ceiling(mid - w/2)), width = as.integer(floor(w)))
         } else {
             if (.Generic == "-") {
                 e2 <- -e2
@@ -630,7 +653,7 @@ setMethod("Ops", c("IntegerRanges", "numeric"),
             if (.Generic == "+") {
                 if (any(-e2*2 > width(e1)))
                     stop("adjustment would result in ranges with negative widths")
-                update(e1, start = start(e1) - e2, end = end(e1) + e2, check = FALSE)
+                update_ranges(e1, start = as.integer(start(e1) - e2), end = as.integer(end(e1) + e2))
             }
         }
     }

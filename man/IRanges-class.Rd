@@ -18,7 +18,6 @@
 \alias{ranges,IntegerRanges-method}
 
 \alias{isNormal,IRanges-method}
-\alias{update,IRanges-method}
 
 % NormalIRanges objects:
 \alias{class:NormalIRanges}
