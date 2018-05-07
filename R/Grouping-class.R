@@ -478,6 +478,27 @@ setMethod("parallelSlotNames", "Partitioning",
     function(x) c("NAMES", callNextMethod())
 )
 
+setMethod("extractROWS", "Partitioning",
+    function(x, i)
+    {
+        i <- normalizeSingleBracketSubscript(i, x)
+        if (!isStrictlySorted(i))
+            stop(wmsg("Partitioning objects only support subsetting by a ",
+                      "strictly sorted subscript that drops empty partitions"))
+        x_nobj <- nobj(x)
+        ans <- callNextMethod()
+        if (nobj(ans) != x_nobj)
+            stop(wmsg("Partitioning objects only support subsetting by a ",
+                      "strictly sorted subscript that drops empty partitions"))
+        ans
+    }
+)
+
+setMethod("concatenateObjects", "Partitioning",
+    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+        stop(wmsg("Partitioning objects don't support concatenation"))
+)
+
 ### The default methods below assume that the "length + start/end/width" API
 ### is already implemented.
 
