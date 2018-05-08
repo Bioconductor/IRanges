@@ -89,6 +89,9 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(CompressedIntegerList_is_unsorted, 3),
 	CALLMETHOD_DEF(CompressedNumericList_is_unsorted, 3),
 
+/* splitListElements.c */
+	CALLMETHOD_DEF(find_partition_overlaps, 3),
+
 	{NULL, NULL, 0}
 };
 

@@ -472,3 +472,11 @@ SEXP CompressedNumericList_is_unsorted(
   SEXP na_rm,
   SEXP strictly);
 
+/* splitListElements.c */
+
+SEXP find_partition_overlaps(
+	SEXP q_end,
+	SEXP s_end,
+	SEXP with_split_partitions
+);
+

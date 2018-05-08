@@ -58,16 +58,49 @@ INCOMPATIBLE_PARTITIONING_MSG <- c(
     "length of all the list elements in 'x'"
 )
 
+### Return a Partitioning object of the same class as 'x' (endomorphism)
+### if 'hits.only' is FALSE (the default). Otherwise, return a list of 2
+### integer vectors of the same length.
+.split_partitions <- function(x, partitioning, hits.only=FALSE,
+                              msg.if.incompatible=INCOMPATIBLE_PARTITIONING_MSG)
+{
+    if (!is(x, "Partitioning"))
+        stop(wmsg("'x' must be a Partitioning object"))
+    if (!is(partitioning, "Partitioning"))
+        stop(wmsg("'partitioning' must be a Partitioning object"))
+    if (!isTRUEorFALSE(hits.only))
+        stop(wmsg("'hits.only' must be TRUE or FALSE"))
+    if (!is.character(msg.if.incompatible))
+        stop(wmsg("'msg.if.incompatible' must be a character vector"))
+    x_end <- end(x)
+    partitioning_end <- end(partitioning)
+    if (S4Vectors:::last_or(x_end, 0L) !=
+        S4Vectors:::last_or(partitioning_end, 0L))
+        stop(wmsg(msg.if.incompatible))
+    C_ans <- .Call2("find_partition_overlaps",
+                    x_end, partitioning_end, !hits.only, PACKAGE="IRanges")
+    if (hits.only)
+        return(C_ans)
+    revmap <- C_ans[[1L]]
+    partition <- C_ans[[2L]]
+    ans <- as(PartitioningByEnd(C_ans[[3L]], names=names(x)[revmap]), class(x))
+    mcols(ans) <- DataFrame(revmap=revmap, partition=partition)
+    ans
+}
+
 ### Act as an endomorphism.
-### Will work out-of-the box on any List derivative 'x' that supports [
-### and windows() e.g. all the AtomicList derivatives, IRanges, GRanges,
-### DNAStringSet, DNAStringSetList, GAlignments, GAlignmentsList objects
-### and more...
 splitListElements <- function(x, partitioning, use.mcols=FALSE,
                               msg.if.incompatible=INCOMPATIBLE_PARTITIONING_MSG)
 {
     if (!isTRUEorFALSE(use.mcols))
         stop(wmsg("'use.mcols' must be TRUE or FALSE"))
+    if (is(x, "Partitioning")) {
+        ans <- .split_partitions(x, partitioning,
+                                 msg.if.incompatible=msg.if.incompatible)
+        if (use.mcols)
+            mcols(ans) <- mcols(x)[mcols(ans)$revmap, , drop=FALSE]
+        return(ans)
+    }
     if (!is(x, "List")) {
         if (!is.list(x))
             stop(wmsg("'x' must be a list-like object"))
@@ -75,33 +108,15 @@ splitListElements <- function(x, partitioning, use.mcols=FALSE,
             stop(wmsg("'use.mcols' must be set to TRUE ",
                       "when 'x' is an ordinary list"))
     }
-    if (!is(partitioning, "Partitioning"))
-        stop(wmsg("'partitioning' must be a Partitioning object"))
-    if (!is.character(msg.if.incompatible))
-        stop(wmsg("'msg.if.incompatible' must be a character vector"))
+    ## Will work out-of-the box on any List derivative 'x' that supports [
+    ## and windows() e.g. all the AtomicList derivatives, IRanges, GRanges,
+    ## DNAStringSet, DNAStringSetList, GAlignments, GAlignmentsList objects
+    ## and more...
     x_partitioning <- PartitioningByEnd(x)
-    if (nobj(x_partitioning) != nobj(partitioning))
-        stop(wmsg(msg.if.incompatible))
-    ## Partitioning objects are a particular type of disjoint and strictly
-    ## sorted IntegerRanges objects. Finding the overlaps between 2 such
-    ## objects is a simple business that could be solved in linear time with
-    ## dedicated code (the code would just walk along the 2 objects at the
-    ## same time). This would be slightly more efficient than using
-    ## findOverlaps() which is a little bit overkill for this (it builds a
-    ## Nested Containment List object and uses a binary search on it).
-    ## Also, in the case of disjoint and strictly sorted IntegerRanges objects,
-    ## an important property of the Hits object representing the hits between
-    ## the overlapping ranges is that it can always be sorted in such a way
-    ## that **both** queryHits() and subjectHits() end up sorted in ascending
-    ## order. However, the SortedByQueryHits object returned by findOverlaps()
-    ## is only guaranteed to have its queryHits() sorted. We need to call
-    ## sort() on it if we want to make sure that its subjectHits() is sorted
-    ## too. If we were using our dedicated code for finding the overlaps
-    ## between 2 disjoint and strictly sorted IntegerRanges objects, we
-    ## wouldn't need to do that.
-    hits <- sort(findOverlaps(x_partitioning, partitioning))
-    revmap <- queryHits(hits)       # sorted
-    partition <- subjectHits(hits)  # sorted
+    hits <- .split_partitions(x_partitioning, partitioning, hits.only=TRUE,
+                              msg.if.incompatible=msg.if.incompatible)
+    revmap <- hits[[1L]]
+    partition <- hits[[2L]]
     ans <- x[revmap]
     if (!use.mcols)
         mcols(ans) <- DataFrame(revmap=revmap, partition=partition)
