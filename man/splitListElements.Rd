@@ -1,6 +1,6 @@
 \name{splitListElements}
 
-\alias{INCOMPATIBLE_PARTITIONING_MSG}
+\alias{INCOMPATIBLE_SPLITTER_MSG}
 \alias{splitListElements}
 \alias{equisplit}
 
@@ -11,8 +11,8 @@
 }
 
 \usage{
-splitListElements(x, partitioning, use.mcols=FALSE,
-                  msg.if.incompatible=INCOMPATIBLE_PARTITIONING_MSG)
+splitListElements(x, splitter, use.mcols=FALSE,
+                  msg.if.incompatible=INCOMPATIBLE_SPLITTER_MSG)
 
 equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
@@ -28,11 +28,9 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
     Can be any \link{List} derivative that supports \code{relist()}
     for \code{equisplit}.
   }
-  \item{partitioning}{
-    The \emph{splitter}.
-
-    Must be a \link{Partitioning} derivative describing how to split the
-    list elements in \code{x}. It must be compatible with the \emph{cumulated
+  \item{splitter}{
+    A \link{Partitioning} derivative describing how to split the list
+    elements in \code{x}. It must be compatible with the \emph{cumulated
     length} of all the list elements in \code{x}.
   }
   \item{use.mcols}{
@@ -41,12 +39,12 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
     Must be \code{TRUE} or \code{FALSE} (the default).
     If set to \code{FALSE}, instead of having the metadata columns propagated
     from \code{x}, the object returned by \code{splitListElements} has metadata
-    columns \code{revmap} and \code{partition} and the object returned by
+    columns \code{revmap} and \code{revmap2} and the object returned by
     \code{equisplit} has metadata column \code{revmap}. Note that this is the
     default.
   }
   \item{msg.if.incompatible}{
-    The error message to use if \code{partitioning} is not compatible with
+    The error message to use if \code{splitter} is not compatible with
     the \emph{cumulated length} of all the list elements in \code{x}.
   }
   \item{nchunk}{
@@ -60,8 +58,7 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 
 \details{
   \code{splitListElements} is a low-level utility that splits the
-  list elements of list-like object \code{x} according to splitter
-  \code{partitioning}.
+  list elements of list-like object \code{x} according to \code{splitter}.
 
   \code{equisplit} splits list-like object \code{x} into a specified
   number of partitions with equal (total) width. This is useful for
@@ -113,9 +110,9 @@ x <- IRanges(c(1, 101, 1001, 10001), width=c(10, 5, 0, 12),
 mcols(x)$label <- LETTERS[1:4]
 x
 
-partitioning <- PartitioningByWidth(c(3, 9, 13, 0, 2))
-splitListElements(x, partitioning)
-splitListElements(x, partitioning, use.mcols=TRUE)
+splitter <- PartitioningByWidth(c(3, 9, 13, 0, 2))
+splitListElements(x, splitter)
+splitListElements(x, splitter, use.mcols=TRUE)
 
 ## equisplit() first calls breakInChunks() internally to create a
 ## PartitioningByWidth object that describes the geometry of the chunks,
@@ -129,10 +126,10 @@ equisplit(x, nchunk=2, use.mcols=TRUE)
 equisplit(x, chunksize=5)
 
 x2 <- as(x, "IntegerList")
-splitListElements(x2, partitioning)
+splitListElements(x2, splitter)
 
 x3 <- as.list(x2)
-splitListElements(x3, partitioning, use.mcols=TRUE)
+splitListElements(x3, splitter, use.mcols=TRUE)
 
 library(GenomicRanges)
 gr <- GRanges(c("chr1", "chr2"), IRanges(1, c(100, 1e5)))
@@ -148,42 +145,42 @@ equisplit(gr, nchunk=1000)
 x_nobj <- nobj(PartitioningByWidth(x))  # Equivalent to length(unlist(x))
                                         # except that it doesn't unlist
                                         # 'x' so is much more efficient.
-partitioning1 <- PartitioningByEnd(seq_len(x_nobj))
-partitioning1
+splitter1 <- PartitioningByEnd(seq_len(x_nobj))
+splitter1
 
 ## Then we use it to split 'x':
-splitListElements(x, partitioning1)
-splitListElements(x2, partitioning1)
-splitListElements(x3, partitioning1, use.mcols=TRUE)
+splitListElements(x, splitter1)
+splitListElements(x2, splitter1)
+splitListElements(x3, splitter1, use.mcols=TRUE)
 
 ## ---------------------------------------------------------------------
 ## SPLIT THE PARTITIONS REPRESENTED BY A Partitioning OBJECT
 ## ---------------------------------------------------------------------
 
 partitioning0 <- PartitioningByEnd(x2)  # same as PartitioningByEnd(x)
-splitListElements(partitioning0, partitioning)
+splitListElements(partitioning0, splitter)
 
 ## Note that when the 1st arg is a Partitioning derivative, then
-## splitListElements() returns the same partitions if we swapped the
-## 1st and 2nd arguments:
-splitListElements(partitioning, partitioning0)
+## swapping the 1st and 2nd elements in the call to splitListElements()
+## returns the same partitions:
+splitListElements(splitter, partitioning0)
 
 ## ---------------------------------------------------------------------
 ## SANITY CHECKS
 ## ---------------------------------------------------------------------
 
-## If 'partitioning' is 'PartitioningByEnd(x)' or 'PartitioningByWidth(x)'
+## If 'splitter' is 'PartitioningByEnd(x)' or 'PartitioningByWidth(x)'
 ## and 'x' has no zero-length list elements, then
-## 'splitListElements(x, partitioning, use.mcols=TRUE)' is a no-op.
+## 'splitListElements(x, splitter, use.mcols=TRUE)' is a no-op.
 check_no_ops <- function(x) {
-  partitioning <- PartitioningByEnd(x)
+  splitter <- PartitioningByEnd(x)
   stopifnot(identical(
-    splitListElements(x, partitioning, use.mcols=TRUE),
+    splitListElements(x, splitter, use.mcols=TRUE),
     x
   ))
-  partitioning <- PartitioningByWidth(x)
+  splitter <- PartitioningByWidth(x)
   stopifnot(identical(
-    splitListElements(x, partitioning, use.mcols=TRUE),
+    splitListElements(x, splitter, use.mcols=TRUE),
     x
   ))
 }
