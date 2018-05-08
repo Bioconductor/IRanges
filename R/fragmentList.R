@@ -1,5 +1,5 @@
 ### =========================================================================
-### splitListElements()
+### fragmentList()
 ### -------------------------------------------------------------------------
 
 
@@ -50,35 +50,35 @@ regroupBySupergroup <- function(x, supergroups)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### splitListElements()
+### fragmentList()
 ###
 
-INCOMPATIBLE_SPLITTER_MSG <- c(
-    "'splitter' is incompatible with the cumulated ",
+INCOMPATIBLE_FRAGMENTER_MSG <- c(
+    "'fragmenter' is incompatible with the cumulated ",
     "length of all the list elements in 'x'"
 )
 
 ### Return a Partitioning object of the same class as 'x' (endomorphism)
 ### if 'hits.only' is FALSE (the default). Otherwise, return a list of 2
 ### integer vectors of the same length.
-.split_partitions <- function(x, splitter, hits.only=FALSE,
-                              msg.if.incompatible=INCOMPATIBLE_SPLITTER_MSG)
+.fragmentPartitioning <- function(x, fragmenter, hits.only=FALSE,
+                             msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
 {
     if (!is(x, "Partitioning"))
         stop(wmsg("'x' must be a Partitioning object"))
-    if (!is(splitter, "Partitioning"))
-        stop(wmsg("'splitter' must be a Partitioning object"))
+    if (!is(fragmenter, "Partitioning"))
+        stop(wmsg("'fragmenter' must be a Partitioning object"))
     if (!isTRUEorFALSE(hits.only))
         stop(wmsg("'hits.only' must be TRUE or FALSE"))
     if (!is.character(msg.if.incompatible))
         stop(wmsg("'msg.if.incompatible' must be a character vector"))
     x_end <- end(x)
-    splitter_end <- end(splitter)
+    fragmenter_end <- end(fragmenter)
     if (S4Vectors:::last_or(x_end, 0L) !=
-        S4Vectors:::last_or(splitter_end, 0L))
+        S4Vectors:::last_or(fragmenter_end, 0L))
         stop(wmsg(msg.if.incompatible))
     C_ans <- .Call2("find_partition_overlaps",
-                    x_end, splitter_end, !hits.only, PACKAGE="IRanges")
+                    x_end, fragmenter_end, !hits.only, PACKAGE="IRanges")
     if (hits.only)
         return(C_ans)
     revmap <- C_ans[[1L]]
@@ -89,14 +89,14 @@ INCOMPATIBLE_SPLITTER_MSG <- c(
 }
 
 ### Act as an endomorphism.
-splitListElements <- function(x, splitter, use.mcols=FALSE,
-                              msg.if.incompatible=INCOMPATIBLE_SPLITTER_MSG)
+fragmentList <- function(x, fragmenter, use.mcols=FALSE,
+                         msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
 {
     if (!isTRUEorFALSE(use.mcols))
         stop(wmsg("'use.mcols' must be TRUE or FALSE"))
     if (is(x, "Partitioning")) {
-        ans <- .split_partitions(x, splitter,
-                                 msg.if.incompatible=msg.if.incompatible)
+        ans <- .fragmentPartitioning(x, fragmenter,
+                                     msg.if.incompatible=msg.if.incompatible)
         if (use.mcols)
             mcols(ans) <- mcols(x)[mcols(ans)$revmap, , drop=FALSE]
         return(ans)
@@ -113,17 +113,17 @@ splitListElements <- function(x, splitter, use.mcols=FALSE,
     ## DNAStringSet, DNAStringSetList, GAlignments, GAlignmentsList objects
     ## and more...
     x_partitioning <- PartitioningByEnd(x)
-    hits <- .split_partitions(x_partitioning, splitter, hits.only=TRUE,
-                              msg.if.incompatible=msg.if.incompatible)
+    hits <- .fragmentPartitioning(x_partitioning, fragmenter, hits.only=TRUE,
+                                  msg.if.incompatible=msg.if.incompatible)
     revmap <- hits[[1L]]
     revmap2 <- hits[[2L]]
     ans <- x[revmap]
     if (!use.mcols)
         mcols(ans) <- DataFrame(revmap=revmap, revmap2=revmap2)
-    Ltrim <- pmax(start(splitter)[revmap2] -
+    Ltrim <- pmax(start(fragmenter)[revmap2] -
                   start(x_partitioning)[revmap], 0L)
     Rtrim <- pmax(end(x_partitioning)[revmap] -
-                  end(splitter)[revmap2], 0L)
+                  end(fragmenter)[revmap2], 0L)
     windows(ans, start=1L+Ltrim, end=-1L-Rtrim)
 }
 
@@ -131,22 +131,20 @@ splitListElements <- function(x, splitter, use.mcols=FALSE,
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### equisplit()
 ###
-### A simple wrapper to splitListElements()
+### A simple wrapper to fragmentList()
 ###
 
-### Will work out-of-the box on any object 'x' that supports
-### splitListElements() **and relist()** e.g. IRanges, GRanges, DNAStringSet,
-### GAlignments objects and more... Won't work on AtomicList derivatives or
-### DNAStringSetList or GAlignmentsList objects because they don't support
-### relist().
+### Will work out-of-the box on any object 'x' that supports fragmentList()
+### **and relist()** e.g. IRanges, GRanges, DNAStringSet, GAlignments objects
+### and more... Won't work on AtomicList derivatives or DNAStringSetList or
+### GAlignmentsList objects because they don't support relist().
 equisplit <- function(x, nchunk, chunksize, use.mcols=FALSE)
 {
     if (!isTRUEorFALSE(use.mcols))
         stop(wmsg("'use.mcols' must be TRUE or FALSE"))
-    x_eltNROWS <- elementNROWS(x)
-    splitter <- breakInChunks(sum(x_eltNROWS),
-                              nchunk=nchunk, chunksize=chunksize)
-    unlisted_ans <- splitListElements(x, splitter)
+    totalsize <- nobj(PartitioningByEnd(x))
+    fragmenter <- breakInChunks(totalsize, nchunk=nchunk, chunksize=chunksize)
+    unlisted_ans <- fragmentList(x, fragmenter)
     unlisted_ans_mcols <- mcols(unlisted_ans)
     revmap <- unlisted_ans_mcols[ , "revmap"]
     revmap2 <- unlisted_ans_mcols[ , "revmap2"]
@@ -155,7 +153,7 @@ equisplit <- function(x, nchunk, chunksize, use.mcols=FALSE)
     } else {
         mcols(unlisted_ans) <- DataFrame(revmap=revmap)
     }
-    ans_partitioning <- PartitioningByEnd(revmap2, NG=length(splitter))
+    ans_partitioning <- PartitioningByEnd(revmap2, NG=length(fragmenter))
     relist(unlisted_ans, ans_partitioning)
 }
 

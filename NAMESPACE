@@ -258,7 +258,7 @@ export(
     ManyToOneGrouping, ManyToManyGrouping, regroup,
     heads, tails,
     selectNearest,
-    INCOMPATIBLE_SPLITTER_MSG, splitListElements, equisplit
+    INCOMPATIBLE_FRAGMENTER_MSG, fragmentList, equisplit
 )
 
 
