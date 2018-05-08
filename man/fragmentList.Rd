@@ -1,50 +1,50 @@
-\name{splitListElements}
+\name{fragmentList}
 
-\alias{INCOMPATIBLE_SPLITTER_MSG}
-\alias{splitListElements}
+\alias{INCOMPATIBLE_FRAGMENTER_MSG}
+\alias{fragmentList}
 \alias{equisplit}
 
-\title{Split the list elements of a list-like object}
+\title{Fragment a list-like object}
 
 \description{
-  2 utilities for splitting the list elements of a list-like object.
+  2 utilities for \emph{fragmenting} a list-like object.
 }
 
 \usage{
-splitListElements(x, splitter, use.mcols=FALSE,
-                  msg.if.incompatible=INCOMPATIBLE_SPLITTER_MSG)
+fragmentList(x, fragmenter, use.mcols=FALSE,
+             msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
 
 equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
 
 \arguments{
   \item{x}{
-    The list-like object with list elements to be split.
+    The list-like object to be fragmented.
 
-    Can be any \link{List} derivative for \code{splitListElements}.
-    Can also be an ordinary list if \code{splitListElements} is called
+    Can be any \link{List} derivative for \code{fragmentList}.
+    Can also be an ordinary list if \code{fragmentList} is called
     with \code{use.mcols=TRUE}.
 
     Can be any \link{List} derivative that supports \code{relist()}
     for \code{equisplit}.
   }
-  \item{splitter}{
-    A \link{Partitioning} derivative describing how to split the list
-    elements in \code{x}. It must be compatible with the \emph{cumulated
-    length} of all the list elements in \code{x}.
+  \item{fragmenter}{
+    A \link{Partitioning} derivative describing how to fragment \code{x}.
+    It must be compatible with the \emph{cumulated length} of all the
+    list elements in \code{x}.
   }
   \item{use.mcols}{
     Whether to propagate the metadata columns on \code{x} (if any) or not.
 
     Must be \code{TRUE} or \code{FALSE} (the default).
     If set to \code{FALSE}, instead of having the metadata columns propagated
-    from \code{x}, the object returned by \code{splitListElements} has metadata
+    from \code{x}, the object returned by \code{fragmentList} has metadata
     columns \code{revmap} and \code{revmap2} and the object returned by
     \code{equisplit} has metadata column \code{revmap}. Note that this is the
     default.
   }
   \item{msg.if.incompatible}{
-    The error message to use if \code{splitter} is not compatible with
+    The error message to use if \code{fragmenter} is not compatible with
     the \emph{cumulated length} of all the list elements in \code{x}.
   }
   \item{nchunk}{
@@ -57,12 +57,12 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
 
 \details{
-  \code{splitListElements} is a low-level utility that splits the
-  list elements of list-like object \code{x} according to \code{splitter}.
+  \code{fragmentList} is a low-level utility that fragments list-like object
+  \code{x} according to \code{fragmenter}.
 
-  \code{equisplit} splits list-like object \code{x} into a specified
-  number of partitions with equal (total) width. This is useful for
-  instance to ensure balanced loading of workers in parallel evaluation.
+  \code{equisplit} fragments and splits list-like object \code{x} into a
+  specified number of partitions with equal (total) width. This is useful
+  for instance to ensure balanced loading of workers in parallel evaluation.
   For example, if \code{x} is a \link[GenomicRanges]{GRanges} object,
   each partition is also a \link[GenomicRanges]{GRanges} object and the
   set of all partitions is returned as a \link[GenomicRanges]{GRangesList}
@@ -70,7 +70,7 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
 
 \value{
-  An object of the same class as \code{x} for \code{splitListElements}.
+  An object of the same class as \code{x} for \code{fragmentList}.
 
   An object of class \code{\link[S4Vectors]{relistToClass}(x)} for
   \code{equisplit}.
@@ -110,26 +110,26 @@ x <- IRanges(c(1, 101, 1001, 10001), width=c(10, 5, 0, 12),
 mcols(x)$label <- LETTERS[1:4]
 x
 
-splitter <- PartitioningByWidth(c(3, 9, 13, 0, 2))
-splitListElements(x, splitter)
-splitListElements(x, splitter, use.mcols=TRUE)
+fragmenter <- PartitioningByWidth(c(3, 9, 13, 0, 2))
+fragmentList(x, fragmenter)
+fragmentList(x, fragmenter, use.mcols=TRUE)
 
 ## equisplit() first calls breakInChunks() internally to create a
 ## PartitioningByWidth object that describes the geometry of the chunks,
-## then splits the ranges in 'x' by calling splitListElements() on 'x'
-## and on the splitter returned by breakInChunks(). Finally the IRanges
-## object returned by splitListElements() is split into an IRangesList
-## object where each list element corresponds to a chunk in the splitter.
+## then fragments 'x' by calling fragmentList() on it, using the object
+## returned by breakInChunks() as the fragmenter. Finally the IRanges
+## object returned by fragmentList() is split into an IRangesList object
+## where each list element corresponds to a chunk in the fragmenter.
 equisplit(x, nchunk=2)
 equisplit(x, nchunk=2, use.mcols=TRUE)
 
 equisplit(x, chunksize=5)
 
 x2 <- as(x, "IntegerList")
-splitListElements(x2, splitter)
+fragmentList(x2, fragmenter)
 
 x3 <- as.list(x2)
-splitListElements(x3, splitter, use.mcols=TRUE)
+fragmentList(x3, fragmenter, use.mcols=TRUE)
 
 library(GenomicRanges)
 gr <- GRanges(c("chr1", "chr2"), IRanges(1, c(100, 1e5)))
@@ -145,42 +145,42 @@ equisplit(gr, nchunk=1000)
 x_nobj <- nobj(PartitioningByWidth(x))  # Equivalent to length(unlist(x))
                                         # except that it doesn't unlist
                                         # 'x' so is much more efficient.
-splitter1 <- PartitioningByEnd(seq_len(x_nobj))
-splitter1
+fragmenter1 <- PartitioningByEnd(seq_len(x_nobj))
+fragmenter1
 
-## Then we use it to split 'x':
-splitListElements(x, splitter1)
-splitListElements(x2, splitter1)
-splitListElements(x3, splitter1, use.mcols=TRUE)
+## Then we use it to fragment 'x':
+fragmentList(x, fragmenter1)
+fragmentList(x2, fragmenter1)
+fragmentList(x3, fragmenter1, use.mcols=TRUE)
 
 ## ---------------------------------------------------------------------
 ## SPLIT THE PARTITIONS REPRESENTED BY A Partitioning OBJECT
 ## ---------------------------------------------------------------------
 
 partitioning0 <- PartitioningByEnd(x2)  # same as PartitioningByEnd(x)
-splitListElements(partitioning0, splitter)
+fragmentList(partitioning0, fragmenter)
 
 ## Note that when the 1st arg is a Partitioning derivative, then
-## swapping the 1st and 2nd elements in the call to splitListElements()
+## swapping the 1st and 2nd elements in the call to fragmentList()
 ## returns the same partitions:
-splitListElements(splitter, partitioning0)
+fragmentList(fragmenter, partitioning0)
 
 ## ---------------------------------------------------------------------
 ## SANITY CHECKS
 ## ---------------------------------------------------------------------
 
-## If 'splitter' is 'PartitioningByEnd(x)' or 'PartitioningByWidth(x)'
+## If 'fragmenter' is 'PartitioningByEnd(x)' or 'PartitioningByWidth(x)'
 ## and 'x' has no zero-length list elements, then
-## 'splitListElements(x, splitter, use.mcols=TRUE)' is a no-op.
+## 'fragmentList(x, fragmenter, use.mcols=TRUE)' is a no-op.
 check_no_ops <- function(x) {
-  splitter <- PartitioningByEnd(x)
+  fragmenter <- PartitioningByEnd(x)
   stopifnot(identical(
-    splitListElements(x, splitter, use.mcols=TRUE),
+    fragmentList(x, fragmenter, use.mcols=TRUE),
     x
   ))
-  splitter <- PartitioningByWidth(x)
+  fragmenter <- PartitioningByWidth(x)
   stopifnot(identical(
-    splitListElements(x, splitter, use.mcols=TRUE),
+    fragmentList(x, fragmenter, use.mcols=TRUE),
     x
   ))
 }

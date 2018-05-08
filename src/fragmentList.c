@@ -12,9 +12,9 @@
  *                          compatible Partitioning objects.
  *   with_split_partitions: TRUE or FALSE.
  * Find the overlaps between 2 Partitioning objects in linear time. Note that,
- * more generally speaking, the overlaps between 2 IntegerRanges objects that
- * are both disjoint and strictly sorted can be found in linear time. However,
- * the algorithm implemented below is only for Partitioning objects (which are
+ * more generally speaking, the overlaps between 2 IntegerRanges derivatives
+ * that are both disjoint and sorted can be found in linear time. However, the
+ * algorithm implemented below is only for Partitioning objects (which are
  * a particular type of such objects). Also note that, although findOverlaps()
  * could be used for this, it isn't as efficient as the algorithm below
  * because of the cost of building a Nested Containment List object and using
