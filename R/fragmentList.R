@@ -58,11 +58,12 @@ INCOMPATIBLE_FRAGMENTER_MSG <- c(
     "length of all the list elements in 'x'"
 )
 
-### Return a Partitioning object of the same class as 'x' (endomorphism)
-### if 'hits.only' is FALSE (the default). Otherwise, return a list of 2
+### If 'hits.only' is FALSE (the default), return a Partitioning object of
+### the same class as 'x' (endomorphism). Otherwise, return a list of 2
 ### integer vectors of the same length.
-.fragmentPartitioning <- function(x, fragmenter, hits.only=FALSE,
-                             msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
+.fragment_Partitioning_by_Partitioning <- function(x, fragmenter,
+                       hits.only=FALSE,
+                       msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
 {
     if (!is(x, "Partitioning"))
         stop(wmsg("'x' must be a Partitioning object"))
@@ -88,17 +89,17 @@ INCOMPATIBLE_FRAGMENTER_MSG <- c(
     ans
 }
 
-### Act as an endomorphism.
-fragmentList <- function(x, fragmenter, use.mcols=FALSE,
-                         msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
+.fragment_List_by_Partitioning <- function(x, fragmenter,
+               use.mcols=FALSE,
+               msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
 {
-    if (!isTRUEorFALSE(use.mcols))
-        stop(wmsg("'use.mcols' must be TRUE or FALSE"))
     if (is(x, "Partitioning")) {
-        ans <- .fragmentPartitioning(x, fragmenter,
-                                     msg.if.incompatible=msg.if.incompatible)
-        if (use.mcols)
-            mcols(ans) <- mcols(x)[mcols(ans)$revmap, , drop=FALSE]
+        ans <- .fragment_Partitioning_by_Partitioning(x, fragmenter,
+                                      msg.if.incompatible=msg.if.incompatible)
+        if (use.mcols) {
+            revmap <- mcols(ans)[ , "revmap"]
+            mcols(ans) <- mcols(x)[revmap, , drop=FALSE]
+        }
         return(ans)
     }
     if (!is(x, "List")) {
@@ -113,8 +114,9 @@ fragmentList <- function(x, fragmenter, use.mcols=FALSE,
     ## DNAStringSet, DNAStringSetList, GAlignments, GAlignmentsList objects
     ## and more...
     x_partitioning <- PartitioningByEnd(x)
-    hits <- .fragmentPartitioning(x_partitioning, fragmenter, hits.only=TRUE,
-                                  msg.if.incompatible=msg.if.incompatible)
+    hits <- .fragment_Partitioning_by_Partitioning(x_partitioning, fragmenter,
+                                   hits.only=TRUE,
+                                   msg.if.incompatible=msg.if.incompatible)
     revmap <- hits[[1L]]
     revmap2 <- hits[[2L]]
     ans <- x[revmap]
@@ -125,6 +127,67 @@ fragmentList <- function(x, fragmenter, use.mcols=FALSE,
     Rtrim <- pmax(end(x_partitioning)[revmap] -
                   end(fragmenter)[revmap2], 0L)
     windows(ans, start=1L+Ltrim, end=-1L-Rtrim)
+}
+
+### Return a PartitioningByEnd object of length 2 * length(fragmenter) + 1.
+.make_PartitioningByEnd_from_fragmenter <- function(fragmenter, x,
+                                                    msg.if.incompatible)
+{
+    if (!is(fragmenter, "IntegerRanges"))
+        stop(wmsg("'fragmenter' must be an IntegerRanges derivative ",
+                  "(e.g. an IRanges object"))
+
+    ## Check that 'fragmenter' is disjoint and sorted.
+    ## This is the case if and only if 'start_end' is sorted. If 'fragmenter'
+    ## is a NormalIRanges or Partitioning object, then it's disjoint and sorted
+    ## so we can skip this check.
+    start_end <- as.vector(
+        rbind(start(fragmenter) - 1L, end(fragmenter), deparse.level=0)
+    )
+    if (!is(fragmenter, "NormalIRanges") &&
+        !is(fragmenter, "Partitioning") &&
+        S4Vectors:::isNotSorted(start_end))
+        stop(wmsg("'fragmenter' must be disjoint and sorted"))
+
+    ## Check that 'fragmenter' is compatible with 'x'.
+    x_cumlen <- nobj(PartitioningByEnd(x))
+    start_end_len <- length(start_end)  # = 2 * length(fragmenter)
+    if (start_end_len >= 2L &&
+        (start_end[[1L]] < 0L || start_end[[start_end_len]] > x_cumlen))
+        stop(wmsg(msg.if.incompatible))
+
+    ans_end <- c(start_end, x_cumlen)
+    new2("PartitioningByEnd", end=ans_end, check=FALSE)
+}
+
+### Act as an endomorphism.
+### 'x' must be a list-like object.
+### 'fragmenter' must be an IntegerRanges object that is disjoint, sorted,
+### and compatible with the cumulated length of all the list elements in 'x'.
+fragmentList <- function(x, fragmenter, use.mcols=FALSE,
+                         msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
+{
+    if (!isTRUEorFALSE(use.mcols))
+        stop(wmsg("'use.mcols' must be TRUE or FALSE"))
+    if (is(fragmenter, "Partitioning")) {
+        ans <- .fragment_List_by_Partitioning(x, fragmenter,
+                              use.mcols=use.mcols,
+                              msg.if.incompatible=msg.if.incompatible)
+        return(ans)
+    }
+    fragmenter <- .make_PartitioningByEnd_from_fragmenter(fragmenter, x,
+                                               INCOMPATIBLE_FRAGMENTER_MSG)
+    ans <- .fragment_List_by_Partitioning(x, fragmenter,
+                          msg.if.incompatible=msg.if.incompatible)
+    revmap2 <- mcols(ans)[ , "revmap2"]
+    ans <- ans[revmap2 %% 2L == 0L]
+    if (use.mcols) {
+        revmap <- mcols(ans)[ , "revmap"]
+        mcols(ans) <- mcols(x)[revmap, , drop=FALSE]
+    } else {
+        mcols(ans)[ , "revmap2"] <- mcols(ans)[ , "revmap2"] %/% 2L
+    }
+    ans
 }
 
 
@@ -142,8 +205,8 @@ equisplit <- function(x, nchunk, chunksize, use.mcols=FALSE)
 {
     if (!isTRUEorFALSE(use.mcols))
         stop(wmsg("'use.mcols' must be TRUE or FALSE"))
-    totalsize <- nobj(PartitioningByEnd(x))
-    fragmenter <- breakInChunks(totalsize, nchunk=nchunk, chunksize=chunksize)
+    x_cumlen <- nobj(PartitioningByEnd(x))
+    fragmenter <- breakInChunks(x_cumlen, nchunk=nchunk, chunksize=chunksize)
     unlisted_ans <- fragmentList(x, fragmenter)
     unlisted_ans_mcols <- mcols(unlisted_ans)
     revmap <- unlisted_ans_mcols[ , "revmap"]

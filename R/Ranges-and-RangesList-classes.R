@@ -152,15 +152,36 @@ setMethod("as.integer", "Pos", function(x) pos(x))
 ### Methods for IntegerRanges derivatives
 ###
 
+#setGeneric("isDisjointAndSorted",
+#    function(x, ...) standardGeneric("isDisjointAndSorted")
+#)
+
+#setMethod("isDisjointAndSorted", "IntegerRanges",
+#    function(x)
+#    {
+#        x_start <- start(x)
+#        x_len <- length(x_start)
+#        if (x_len <= 1L)
+#            return(TRUE)
+#        x_end <- end(x)
+#        all(x_start[-1L] > x_end[-x_len])
+#    }
+#)
+
+### Being "normal" is stronger that being "disjoint and sorted".
 setGeneric("isNormal", function(x, ...) standardGeneric("isNormal"))
 
 setMethod("isNormal", "IntegerRanges",
     function(x)
     {
-        all_ok <- all(width(x) >= 1L)
-        if (length(x) >= 2)
-            all_ok <- all_ok && all(start(x)[-1L] - end(x)[-length(x)] >= 2L)
-        all_ok
+        x_start <- start(x)
+        x_end <- end(x)
+        if (any(x_end < x_start))
+            return(FALSE)
+        x_len <- length(x_start)
+        if (x_len <= 1L)
+            return(TRUE)
+        all(x_start[-1L] > x_end[-x_len] + 1L)
     }
 )
 
