@@ -7,7 +7,7 @@ Description: Provides efficient low-level and highly reusable S4
 	neighbors. Defines efficient list-like classes for storing,
 	transforming and aggregating large grouped data, i.e., collections
 	of atomic vectors and DataFrames.
-Version: 2.14.8
+Version: 2.14.9
 Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
@@ -76,5 +76,5 @@ Collate: range-squeezers.R
 	nearest-methods.R
 	cbind-Rle-methods.R
 	tile-methods.R
-	fragmentList.R
+	extractListFragments.R
 	zzz.R

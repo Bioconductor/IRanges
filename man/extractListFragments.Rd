@@ -1,29 +1,29 @@
-\name{fragmentList}
+\name{extractListFragments}
 
 \alias{INCOMPATIBLE_FRAGMENTER_MSG}
-\alias{fragmentList}
+\alias{extractListFragments}
 \alias{equisplit}
 
-\title{Fragment a list-like object}
+\title{Extract list fragments from a list-like object}
 
 \description{
-  Utilities for \emph{fragmenting} a list-like object.
+  Utilities for extracting list fragments from a list-like object.
 }
 
 \usage{
-fragmentList(x, fragmenter, use.mcols=FALSE,
-             msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
+extractListFragments(x, fragmenter, use.mcols=FALSE,
+                     msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
 
 equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
 
 \arguments{
   \item{x}{
-    The list-like object to fragment.
+    The list-like object from which to extract the list fragments.
 
-    Can be any \link{List} derivative for \code{fragmentList}.
-    Can also be an ordinary list if \code{fragmentList} is called
-    with \code{use.mcols=TRUE}.
+    Can be any \link{List} derivative for \code{extractListFragments}.
+    Can also be an ordinary list if \code{extractListFragments} is
+    called with \code{use.mcols=TRUE}.
 
     Can be any \link{List} derivative that supports \code{relist()}
     for \code{equisplit}.
@@ -45,10 +45,10 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 
     Must be \code{TRUE} or \code{FALSE} (the default).
     If set to \code{FALSE}, instead of having the metadata columns propagated
-    from \code{x}, the object returned by \code{fragmentList} has metadata
-    columns \code{revmap} and \code{revmap2}, and the object returned by
-    \code{equisplit} has metadata column \code{revmap}. Note that this is the
-    default.
+    from \code{x}, the object returned by \code{extractListFragments} has
+    metadata columns \code{revmap} and \code{revmap2}, and the object
+    returned by \code{equisplit} has metadata column \code{revmap}. Note that
+    this is the default.
   }
   \item{msg.if.incompatible}{
     The error message to use if \code{fragmenter} is not compatible with
@@ -64,8 +64,9 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
 
 \details{
-  \code{fragmentList} is a low-level utility that fragments list-like object
-  \code{x} according to the ranges in \code{fragmenter}.
+  \code{extractListFragments} is a low-level utility that extracts list
+  fragments from list-like object \code{x} according to the ranges in
+  \code{fragmenter}.
 
   \code{equisplit} fragments and splits list-like object \code{x} into a
   specified number of partitions with equal (total) width. This is useful
@@ -77,7 +78,7 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
 
 \value{
-  An object of the same class as \code{x} for \code{fragmentList}.
+  An object of the same class as \code{x} for \code{extractListFragments}.
 
   An object of class \code{\link[S4Vectors]{relistToClass}(x)} for
   \code{equisplit}.
@@ -109,7 +110,7 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 
 \examples{
 ## ---------------------------------------------------------------------
-## A. fragmentList()
+## A. extractListFragments()
 ## ---------------------------------------------------------------------
 
 x <- IntegerList(a=101:109, b=5:-5)
@@ -117,7 +118,7 @@ x
 
 frag <- IRanges(start=c(2, 4, 8, 17, 17), end=c(3, 6, 14, 16, 19))
 frag
-fragmentList(x, frag)
+extractListFragments(x, frag)
 
 x2 <- IRanges(c(1, 101, 1001, 10001), width=c(10, 5, 0, 12),
               names=letters[1:4])
@@ -125,18 +126,18 @@ mcols(x2)$label <- LETTERS[1:4]
 x2
 
 frag <- IRanges(start=13, end=20)
-fragmentList(x2, frag)
-fragmentList(x2, frag, use.mcols=TRUE)
+extractListFragments(x2, frag)
+extractListFragments(x2, frag, use.mcols=TRUE)
 
 frag2 <- PartitioningByWidth(c(3, 9, 13, 0, 2))
-fragmentList(x2, frag2)
-fragmentList(x2, frag2, use.mcols=TRUE)
+extractListFragments(x2, frag2)
+extractListFragments(x2, frag2, use.mcols=TRUE)
 
 x2b <- as(x2, "IntegerList")
-fragmentList(x2b, frag2)
+extractListFragments(x2b, frag2)
 
 x2c <- as.list(x2b)
-fragmentList(x2c, frag2, use.mcols=TRUE)
+extractListFragments(x2c, frag2, use.mcols=TRUE)
 
 ## ---------------------------------------------------------------------
 ## B. equisplit()
@@ -144,10 +145,11 @@ fragmentList(x2c, frag2, use.mcols=TRUE)
 
 ## equisplit() first calls breakInChunks() internally to create a
 ## PartitioningByWidth object that describes the geometry of the chunks,
-## then fragments 'x' by calling fragmentList() on it, using the object
-## returned by breakInChunks() as the fragmenter. Finally the IRanges
-## object returned by fragmentList() is split into an IRangesList object
-## where each list element corresponds to a chunk in the fragmenter.
+## then fragments 'x' by calling extractListFragments() on it, using the
+## object returned by breakInChunks() as the fragmenter. Finally the
+## IRanges object returned by extractListFragments() is split into an
+## IRangesList object where each list element corresponds to a chunk in
+## the fragmenter.
 equisplit(x2, nchunk=2)
 equisplit(x2, nchunk=2, use.mcols=TRUE)
 
@@ -159,7 +161,7 @@ equisplit(gr, nchunk=2)
 equisplit(gr, nchunk=1000)
 
 ## ---------------------------------------------------------------------
-## C. ADVANCED fragmentList() EXAMPLES
+## C. ADVANCED extractListFragments() EXAMPLES
 ## ---------------------------------------------------------------------
 
 ## === D1. Fragment list-like object into length 1 fragments ===
@@ -174,19 +176,19 @@ frag1 <- PartitioningByEnd(seq_len(x2_cumlen))
 frag1
 
 ## Then we use it to fragment 'x2':
-fragmentList(x2, frag1)
-fragmentList(x2b, frag1)
-fragmentList(x2c, frag1, use.mcols=TRUE)
+extractListFragments(x2, frag1)
+extractListFragments(x2b, frag1)
+extractListFragments(x2c, frag1, use.mcols=TRUE)
 
 ## === D2. Fragment a Partitioning object ===
 
 partitioning2 <- PartitioningByEnd(x2b)  # same as PartitioningByEnd(x2)
-fragmentList(partitioning2, frag2)
+extractListFragments(partitioning2, frag2)
 
 ## Note that when the 1st arg is a Partitioning derivative, then
-## swapping the 1st and 2nd elements in the call to fragmentList()
+## swapping the 1st and 2nd elements in the call to extractListFragments()
 ## doesn't change the returned partitioning:
-fragmentList(frag2, partitioning2)
+extractListFragments(frag2, partitioning2)
 
 ## ---------------------------------------------------------------------
 ## D. SANITY CHECKS
@@ -194,15 +196,15 @@ fragmentList(frag2, partitioning2)
 
 ## If 'fragmenter' is 'PartitioningByEnd(x)' or 'PartitioningByWidth(x)'
 ## and 'x' has no zero-length list elements, then
-## 'fragmentList(x, fragmenter, use.mcols=TRUE)' is a no-op.
+## 'extractListFragments(x, fragmenter, use.mcols=TRUE)' is a no-op.
 check_no_ops <- function(x) {
   frag <- PartitioningByEnd(x)
   stopifnot(identical(
-    fragmentList(x, frag, use.mcols=TRUE), x
+    extractListFragments(x, frag, use.mcols=TRUE), x
   ))
   frag <- PartitioningByWidth(x)
   stopifnot(identical(
-    fragmentList(x, frag, use.mcols=TRUE), x
+    extractListFragments(x, frag, use.mcols=TRUE), x
   ))
 }
 
