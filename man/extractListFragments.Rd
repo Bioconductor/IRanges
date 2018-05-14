@@ -1,18 +1,18 @@
 \name{extractListFragments}
 
-\alias{INCOMPATIBLE_FRAGMENTER_MSG}
+\alias{INCOMPATIBLE_ARANGES_MSG}
 \alias{extractListFragments}
 \alias{equisplit}
 
 \title{Extract list fragments from a list-like object}
 
 \description{
-  Utilities for extracting list fragments from a list-like object.
+  Utilities for extracting \emph{list fragments} from a list-like object.
 }
 
 \usage{
-extractListFragments(x, fragmenter, use.mcols=FALSE,
-                     msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
+extractListFragments(x, aranges, use.mcols=FALSE,
+                     msg.if.incompatible=INCOMPATIBLE_ARANGES_MSG)
 
 equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
@@ -28,13 +28,14 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
     Can be any \link{List} derivative that supports \code{relist()}
     for \code{equisplit}.
   }
-  \item{fragmenter}{
-    An \link{IntegerRanges} derivative containing ranges \emph{along
-    \code{unlist(x)}} describing the list fragments to return.
+  \item{aranges}{
+    An \link{IntegerRanges} derivative containing the \emph{absolute ranges}
+    (i.e. the ranges \emph{along \code{unlist(x)}}) of the list fragments
+    to extract.
 
-    The ranges in \code{fragmenter} must be compatible with the
+    The ranges in \code{aranges} must be compatible with the
     \emph{cumulated length} of all the list elements in \code{x},
-    that is, \code{start(fragmenter)} and \code{end(fragmenter)} must
+    that is, \code{start(aranges)} and \code{end(aranges)} must
     be >= 1 and <= \code{sum(elementNROWS(x))}, respectively.
 
     Also please note that only \link{IntegerRanges} objects that are
@@ -51,7 +52,7 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
     this is the default.
   }
   \item{msg.if.incompatible}{
-    The error message to use if \code{fragmenter} is not compatible with
+    The error message to use if \code{aranges} is not compatible with
     the \emph{cumulated length} of all the list elements in \code{x}.
   }
   \item{nchunk}{
@@ -64,9 +65,12 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 }
 
 \details{
+  A \emph{list fragment} of list-like object \code{x} is a window in one of
+  its list elements.
+
   \code{extractListFragments} is a low-level utility that extracts list
-  fragments from list-like object \code{x} according to the ranges in
-  \code{fragmenter}.
+  fragments from list-like object \code{x} according to the absolute ranges
+  in \code{aranges}.
 
   \code{equisplit} fragments and splits list-like object \code{x} into a
   specified number of partitions with equal (total) width. This is useful
@@ -116,40 +120,39 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
 x <- IntegerList(a=101:109, b=5:-5)
 x
 
-frag <- IRanges(start=c(2, 4, 8, 17, 17), end=c(3, 6, 14, 16, 19))
-frag
-extractListFragments(x, frag)
+aranges <- IRanges(start=c(2, 4, 8, 17, 17), end=c(3, 6, 14, 16, 19))
+aranges
+extractListFragments(x, aranges)
 
 x2 <- IRanges(c(1, 101, 1001, 10001), width=c(10, 5, 0, 12),
               names=letters[1:4])
 mcols(x2)$label <- LETTERS[1:4]
 x2
 
-frag <- IRanges(start=13, end=20)
-extractListFragments(x2, frag)
-extractListFragments(x2, frag, use.mcols=TRUE)
+aranges <- IRanges(start=13, end=20)
+extractListFragments(x2, aranges)
+extractListFragments(x2, aranges, use.mcols=TRUE)
 
-frag2 <- PartitioningByWidth(c(3, 9, 13, 0, 2))
-extractListFragments(x2, frag2)
-extractListFragments(x2, frag2, use.mcols=TRUE)
+aranges2 <- PartitioningByWidth(c(3, 9, 13, 0, 2))
+extractListFragments(x2, aranges2)
+extractListFragments(x2, aranges2, use.mcols=TRUE)
 
 x2b <- as(x2, "IntegerList")
-extractListFragments(x2b, frag2)
+extractListFragments(x2b, aranges2)
 
 x2c <- as.list(x2b)
-extractListFragments(x2c, frag2, use.mcols=TRUE)
+extractListFragments(x2c, aranges2, use.mcols=TRUE)
 
 ## ---------------------------------------------------------------------
 ## B. equisplit()
 ## ---------------------------------------------------------------------
 
 ## equisplit() first calls breakInChunks() internally to create a
-## PartitioningByWidth object that describes the geometry of the chunks,
-## then fragments 'x' by calling extractListFragments() on it, using the
-## object returned by breakInChunks() as the fragmenter. Finally the
-## IRanges object returned by extractListFragments() is split into an
-## IRangesList object where each list element corresponds to a chunk in
-## the fragmenter.
+## PartitioningByWidth object that contains the absolute ranges of the
+## chunks, then calls extractListFragments() on it 'x' to extract the
+## fragments of 'x' that correspond to these absolute ranges. Finally
+## the IRanges object returned by extractListFragments() is split into
+## an IRangesList object where each list element corresponds to a chunk.
 equisplit(x2, nchunk=2)
 equisplit(x2, nchunk=2, use.mcols=TRUE)
 
@@ -172,39 +175,39 @@ x2_cumlen <- nobj(PartitioningByWidth(x2))  # Equivalent to
                                             # length(unlist(x2)) except
                                             # that it doesn't unlist 'x2'
                                             # so is much more efficient.
-frag1 <- PartitioningByEnd(seq_len(x2_cumlen))
-frag1
+aranges1 <- PartitioningByEnd(seq_len(x2_cumlen))
+aranges1
 
 ## Then we use it to fragment 'x2':
-extractListFragments(x2, frag1)
-extractListFragments(x2b, frag1)
-extractListFragments(x2c, frag1, use.mcols=TRUE)
+extractListFragments(x2, aranges1)
+extractListFragments(x2b, aranges1)
+extractListFragments(x2c, aranges1, use.mcols=TRUE)
 
 ## === D2. Fragment a Partitioning object ===
 
 partitioning2 <- PartitioningByEnd(x2b)  # same as PartitioningByEnd(x2)
-extractListFragments(partitioning2, frag2)
+extractListFragments(partitioning2, aranges2)
 
 ## Note that when the 1st arg is a Partitioning derivative, then
 ## swapping the 1st and 2nd elements in the call to extractListFragments()
 ## doesn't change the returned partitioning:
-extractListFragments(frag2, partitioning2)
+extractListFragments(aranges2, partitioning2)
 
 ## ---------------------------------------------------------------------
 ## D. SANITY CHECKS
 ## ---------------------------------------------------------------------
 
-## If 'fragmenter' is 'PartitioningByEnd(x)' or 'PartitioningByWidth(x)'
+## If 'aranges' is 'PartitioningByEnd(x)' or 'PartitioningByWidth(x)'
 ## and 'x' has no zero-length list elements, then
-## 'extractListFragments(x, fragmenter, use.mcols=TRUE)' is a no-op.
+## 'extractListFragments(x, aranges, use.mcols=TRUE)' is a no-op.
 check_no_ops <- function(x) {
-  frag <- PartitioningByEnd(x)
+  aranges <- PartitioningByEnd(x)
   stopifnot(identical(
-    extractListFragments(x, frag, use.mcols=TRUE), x
+    extractListFragments(x, aranges, use.mcols=TRUE), x
   ))
-  frag <- PartitioningByWidth(x)
+  aranges <- PartitioningByWidth(x)
   stopifnot(identical(
-    extractListFragments(x, frag, use.mcols=TRUE), x
+    extractListFragments(x, aranges, use.mcols=TRUE), x
   ))
 }
 
