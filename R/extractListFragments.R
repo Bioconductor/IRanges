@@ -1,5 +1,5 @@
 ### =========================================================================
-### fragmentList()
+### extractListFragments()
 ### -------------------------------------------------------------------------
 
 
@@ -50,7 +50,7 @@ regroupBySupergroup <- function(x, supergroups)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### fragmentList()
+### extractListFragments()
 ###
 
 INCOMPATIBLE_FRAGMENTER_MSG <- c(
@@ -61,9 +61,9 @@ INCOMPATIBLE_FRAGMENTER_MSG <- c(
 ### If 'hits.only' is FALSE (the default), return a Partitioning object of
 ### the same class as 'x' (endomorphism). Otherwise, return a list of 2
 ### integer vectors of the same length.
-.fragment_Partitioning_by_Partitioning <- function(x, fragmenter,
-                       hits.only=FALSE,
-                       msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
+.extractPartitioningFragments_by_Partitioning <- function(x, fragmenter,
+                              hits.only=FALSE,
+                              msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
 {
     if (!is(x, "Partitioning"))
         stop(wmsg("'x' must be a Partitioning object"))
@@ -84,18 +84,21 @@ INCOMPATIBLE_FRAGMENTER_MSG <- c(
         return(C_ans)
     revmap <- C_ans[[1L]]
     revmap2 <- C_ans[[2L]]
-    ans <- as(PartitioningByEnd(C_ans[[3L]], names=names(x)[revmap]), class(x))
+    ans_names <- names(x)[revmap]
+    ans <- new2("PartitioningByEnd", end=C_ans[[3L]], NAMES=ans_names,
+                                     check=FALSE)
+    ans <- as(ans, class(x))
     mcols(ans) <- DataFrame(revmap=revmap, revmap2=revmap2)
     ans
 }
 
-.fragment_List_by_Partitioning <- function(x, fragmenter,
-               use.mcols=FALSE,
-               msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
+.extractListFragments_by_Partitioning <- function(x, fragmenter,
+                      use.mcols=FALSE,
+                      msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
 {
     if (is(x, "Partitioning")) {
-        ans <- .fragment_Partitioning_by_Partitioning(x, fragmenter,
-                                      msg.if.incompatible=msg.if.incompatible)
+        ans <- .extractPartitioningFragments_by_Partitioning(x, fragmenter,
+                                   msg.if.incompatible=msg.if.incompatible)
         if (use.mcols) {
             revmap <- mcols(ans)[ , "revmap"]
             mcols(ans) <- mcols(x)[revmap, , drop=FALSE]
@@ -114,7 +117,8 @@ INCOMPATIBLE_FRAGMENTER_MSG <- c(
     ## DNAStringSet, DNAStringSetList, GAlignments, GAlignmentsList objects
     ## and more...
     x_partitioning <- PartitioningByEnd(x)
-    hits <- .fragment_Partitioning_by_Partitioning(x_partitioning, fragmenter,
+    hits <- .extractPartitioningFragments_by_Partitioning(
+                                   x_partitioning, fragmenter,
                                    hits.only=TRUE,
                                    msg.if.incompatible=msg.if.incompatible)
     revmap <- hits[[1L]]
@@ -164,21 +168,22 @@ INCOMPATIBLE_FRAGMENTER_MSG <- c(
 ### 'x' must be a list-like object.
 ### 'fragmenter' must be an IntegerRanges object that is disjoint, sorted,
 ### and compatible with the cumulated length of all the list elements in 'x'.
-fragmentList <- function(x, fragmenter, use.mcols=FALSE,
-                         msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
+extractListFragments <- function(x, fragmenter,
+                            use.mcols=FALSE,
+                            msg.if.incompatible=INCOMPATIBLE_FRAGMENTER_MSG)
 {
     if (!isTRUEorFALSE(use.mcols))
         stop(wmsg("'use.mcols' must be TRUE or FALSE"))
     if (is(fragmenter, "Partitioning")) {
-        ans <- .fragment_List_by_Partitioning(x, fragmenter,
-                              use.mcols=use.mcols,
-                              msg.if.incompatible=msg.if.incompatible)
+        ans <- .extractListFragments_by_Partitioning(x, fragmenter,
+                                     use.mcols=use.mcols,
+                                     msg.if.incompatible=msg.if.incompatible)
         return(ans)
     }
     fragmenter <- .make_PartitioningByEnd_from_fragmenter(fragmenter, x,
                                                INCOMPATIBLE_FRAGMENTER_MSG)
-    ans <- .fragment_List_by_Partitioning(x, fragmenter,
-                          msg.if.incompatible=msg.if.incompatible)
+    ans <- .extractListFragments_by_Partitioning(x, fragmenter,
+                                 msg.if.incompatible=msg.if.incompatible)
     revmap2 <- mcols(ans)[ , "revmap2"]
     ans <- ans[revmap2 %% 2L == 0L]
     if (use.mcols) {
@@ -194,20 +199,21 @@ fragmentList <- function(x, fragmenter, use.mcols=FALSE,
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### equisplit()
 ###
-### A simple wrapper to fragmentList()
+### A simple wrapper to extractListFragments()
 ###
 
-### Will work out-of-the box on any object 'x' that supports fragmentList()
-### **and relist()** e.g. IRanges, GRanges, DNAStringSet, GAlignments objects
-### and more... Won't work on AtomicList derivatives or DNAStringSetList or
-### GAlignmentsList objects because they don't support relist().
+### Will work out-of-the box on any object 'x' that supports
+### extractListFragments() **and relist()** e.g. IRanges, GRanges,
+### DNAStringSet, GAlignments objects and more... Won't work on AtomicList
+### derivatives or DNAStringSetList or GAlignmentsList objects because they
+### don't support relist().
 equisplit <- function(x, nchunk, chunksize, use.mcols=FALSE)
 {
     if (!isTRUEorFALSE(use.mcols))
         stop(wmsg("'use.mcols' must be TRUE or FALSE"))
     x_cumlen <- nobj(PartitioningByEnd(x))
     fragmenter <- breakInChunks(x_cumlen, nchunk=nchunk, chunksize=chunksize)
-    unlisted_ans <- fragmentList(x, fragmenter)
+    unlisted_ans <- extractListFragments(x, fragmenter)
     unlisted_ans_mcols <- mcols(unlisted_ans)
     revmap <- unlisted_ans_mcols[ , "revmap"]
     revmap2 <- unlisted_ans_mcols[ , "revmap2"]
