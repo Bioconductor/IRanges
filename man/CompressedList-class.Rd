@@ -17,7 +17,7 @@
 \alias{coerce,ANY,CompressedList-method}
 
 % concatenation
-\alias{concatenateObjects,CompressedList-method}
+\alias{bindROWS,CompressedList-method}
 
 % looping
 \alias{lapply,CompressedList-method}

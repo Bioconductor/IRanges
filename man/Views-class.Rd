@@ -26,7 +26,7 @@
 \alias{coerce,Views,NormalIRanges-method}
 \alias{as.matrix,Views-method}
 
-\alias{concatenateObjects,Views-method}
+\alias{bindROWS,Views-method}
 
 \alias{trim}
 \alias{trim,Views-method}

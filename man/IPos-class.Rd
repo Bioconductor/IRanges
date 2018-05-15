@@ -14,7 +14,7 @@
 \alias{as.data.frame,IPos-method}
 \alias{extractROWS,IPos-method}
 \alias{show,IPos-method}
-\alias{concatenateObjects,IPos-method}
+\alias{bindROWS,IPos-method}
 
 \title{Memory-efficient representation of integer positions}
 

@@ -267,7 +267,7 @@ setMethod("show", "IPos",
 .concatenate_IPos_objects <-
     function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    objects <- S4Vectors:::prepare_objects_to_bind(x, objects)
     all_objects <- c(list(x), objects)
 
     ans_len <- suppressWarnings(sum(lengths(all_objects)))
@@ -290,12 +290,12 @@ setMethod("show", "IPos",
     ## Concatenate the "pos_runs" slots.
     pos_runs_list <- lapply(all_objects, slot, "pos_runs")
     ans_pos_runs <- stitch_IntegerRanges(
-        concatenateObjects(pos_runs_list[[1L]], pos_runs_list[-1L])
+        bindROWS(pos_runs_list[[1L]], pos_runs_list[-1L])
     )
 
     BiocGenerics:::replaceSlots(ans, pos_runs=ans_pos_runs,
                                      check=check)
 }
 
-setMethod("concatenateObjects", "IPos", .concatenate_IPos_objects)
+setMethod("bindROWS", "IPos", .concatenate_IPos_objects)
 

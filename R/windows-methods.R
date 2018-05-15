@@ -46,7 +46,7 @@ setMethod("windows", "list_OR_List",
         ## Unlist 'x' (preserving the inner names) and shift the ranges
         ## in 'ir'.
         if (is.list(x)) {
-            unlisted_x <- concatenateObjects(x[[1L]], x[-1L])
+            unlisted_x <- bindROWS(x[[1L]], x[-1L])
         } else {
             unlisted_x <- unlist(x, use.names=FALSE)
         }

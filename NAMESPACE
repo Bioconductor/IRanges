@@ -196,7 +196,7 @@ exportMethods(
     tapply,
     union, intersect, setdiff,
     updateObject,
-    concatenateObjects,
+    bindROWS,
     extractROWS, replaceROWS, getListElement,
     parallelSlotNames,
     values, "values<-",

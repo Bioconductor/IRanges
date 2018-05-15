@@ -494,7 +494,7 @@ setMethod("extractROWS", "Partitioning",
     }
 )
 
-setMethod("concatenateObjects", "Partitioning",
+setMethod("bindROWS", "Partitioning",
     function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
         stop(wmsg("Partitioning objects don't support concatenation"))
 )

@@ -230,12 +230,12 @@ setMethod("getListElement", "Views",
 .concatenate_Views_objects <-
     function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    objects <- S4Vectors:::prepare_objects_to_bind(x, objects)
     .check_that_Views_objects_are_concatenable(x, objects)
     callNextMethod()
 }
 
-setMethod("concatenateObjects", "Views", .concatenate_Views_objects)
+setMethod("bindROWS", "Views", .concatenate_Views_objects)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

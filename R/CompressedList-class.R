@@ -296,13 +296,13 @@ setMethod("getListElement", "CompressedList",
     args <- list(...)
     if (length(dim(args[[1L]])) >= 2L)
         return(rbind(...))
-    concatenateObjects(args[[1L]], args[-1L])
+    bindROWS(args[[1L]], args[-1L])
 }
 
 .concatenate_CompressedList_objects <-
     function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
-    objects <- S4Vectors:::prepare_objects_to_concatenate(x, objects)
+    objects <- S4Vectors:::prepare_objects_to_bind(x, objects)
     all_objects <- c(list(x), objects)
 
     ## 1. Take care of the parallel slots
@@ -332,9 +332,7 @@ setMethod("getListElement", "CompressedList",
                                      check=check)
 }
 
-setMethod("concatenateObjects", "CompressedList",
-    .concatenate_CompressedList_objects
-)
+setMethod("bindROWS", "CompressedList", .concatenate_CompressedList_objects)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

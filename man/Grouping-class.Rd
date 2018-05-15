@@ -95,7 +95,7 @@
 
 \alias{parallelSlotNames,Partitioning-method}
 \alias{extractROWS,Partitioning-method}
-\alias{concatenateObjects,Partitioning-method}
+\alias{bindROWS,Partitioning-method}
 
 \alias{togroup,Partitioning-method}
 \alias{names,Partitioning-method}
