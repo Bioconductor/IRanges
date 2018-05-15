@@ -86,6 +86,13 @@ setMethod("extractROWS", c("vector_OR_factor", "RangesNSBS"),
     }
 )
 
+setMethod("extractROWS", c("array", "RangesNSBS"),
+    S4Vectors:::default_extractROWS
+)
+setMethod("extractROWS", c("data.frame", "RangesNSBS"),
+    S4Vectors:::default_extractROWS
+)
+
 setMethod("extractROWS", c("Rle", "RangesNSBS"),
     function(x, i)
     {
