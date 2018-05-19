@@ -47,8 +47,11 @@ test_IRanges_concatenate <- function() {
   
   ## Concatenating multiple IRanges object with varying mcols
   mcols(ir1) <- DataFrame(gc=0.78)
-  checkException(c(ir1, ir2), silent=TRUE)
-  checkIdentical(mcols(c(ir1, ir2, ignore.mcols=TRUE)), NULL)
+  ir12 <- c(ir1, ir2, ignore.mcols=TRUE)
+  checkIdentical(mcols(ir12), NULL)
+  target_mcols <- DataFrame(gc=c(0.78, NA, NA), score=c(NA, 1:2))
+  mcols(ir12) <- target_mcols
+  checkIdentical(c(ir1, ir2), ir12)
 }
 
 test_IRanges_annotation <- function() {
