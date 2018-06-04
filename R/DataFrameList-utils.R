@@ -47,10 +47,11 @@ setMethod(S4Vectors:::`column<-`, "SDFLWrapperForTransform",
     x
 })
 
-setMethod("as.env", "SDFLWrapperForTransform", function(x, ...) {
-  env <- selectMethod(as.env, "DataTable")(x, ...)
-  S4Vectors:::addSelfRef(x@delegate, env)
-})
+setMethod("as.env", "SDFLWrapperForTransform",
+          function(x, enclos = parent.frame(2)) {
+              env <- S4Vectors:::makeEnvForNames(x, colnames(x), enclos)
+              S4Vectors:::addSelfRef(x@delegate, env)
+          })
 
 transform.SplitDataFrameList <- function(`_data`, ...) {
   illConceivedWrapper <- new("SDFLWrapperForTransform", delegate=`_data`)
