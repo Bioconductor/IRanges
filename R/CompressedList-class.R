@@ -120,7 +120,7 @@ compress_listData <- function(x, elementType = NULL) {
 }
 
 .reconcileMetadatacols <- function(x) {
-  x_mcols <- mcols(x)
+  x_mcols <- mcols(x, use.names=FALSE)
   if (is(x_mcols, "DataFrame") &&
       nrow(x_mcols) == 0L && ncol(x_mcols) == 0L)
     {

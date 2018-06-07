@@ -667,7 +667,7 @@ setAs("RleList", "RangedData",
         new2("RangedData",
              ranges = ranges, values = values,
              metadata = metadata(from),
-             elementMetadata = elementMetadata(from),
+             elementMetadata = elementMetadata(from, use.names=FALSE),
              check = FALSE)
       })
 
@@ -714,7 +714,7 @@ setAs("IntegerRangesList", "RangedData",
             stop("cannot coerce a IntegerRangesList object with no names ",
                  "or duplicated names to a RangedData object")
         unlisted_from <- unlist(from, use.names=FALSE)
-        unlisted_values <- mcols(unlisted_from)
+        unlisted_values <- mcols(unlisted_from, use.names=FALSE)
         mcols(unlisted_from) <- NULL
         ans_ranges <- relist(unlisted_from, skeleton=from)
         metadata(ans_ranges) <- metadata(from)
@@ -734,7 +734,7 @@ setAs("IntegerRangesList", "RangedData",
              ranges=ans_ranges,
              values=ans_values,
              #metadata=metadata(from),
-             elementMetadata=elementMetadata(from),
+             elementMetadata=elementMetadata(from, use.names=FALSE),
              check=FALSE)
     }
 )

@@ -66,7 +66,7 @@ setReplaceMethod("colnames", "CompressedSplitDataFrameList",
                  })
 
 setMethod("columnMetadata", "CompressedSplitDataFrameList", function(x) {
-  mcols(x@unlistData)
+  mcols(x@unlistData, use.names=FALSE)
 })
 
 setReplaceMethod("columnMetadata", "CompressedSplitDataFrameList",

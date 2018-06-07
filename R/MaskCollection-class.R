@@ -258,7 +258,7 @@ setMethod("extractROWS", "MaskCollection",
             slot(x, "NAMES", check=FALSE) <- extractROWS(names(x), i)
         if (!is.null(desc(x)))
             slot(x, "desc", check=FALSE) <- extractROWS(desc(x), i)
-        mcols(x) <- extractROWS(mcols(x), i)
+        mcols(x) <- extractROWS(mcols(x, use.names=FALSE), i)
         x
     }
 )

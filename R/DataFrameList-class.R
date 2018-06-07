@@ -131,7 +131,7 @@ setGeneric("columnMetadata", function(x, ...) standardGeneric("columnMetadata"))
 
 setMethod("columnMetadata", "SimpleSplitDataFrameList", function(x) {
   if (length(x))
-    mcols(x[[1]])
+    mcols(x[[1]], use.names=FALSE)
   else NULL
 })
 
@@ -157,9 +157,9 @@ setReplaceMethod("columnMetadata", "SimpleSplitDataFrameList",
     l <- as.list(x, use.names = FALSE)
     if (!all(sapply(l, function(df) identical(firstNames, colnames(df)))))
       return("column counts or names differ across elements")
-    firstMetaData <- mcols(x[[1L]]) # could be NULL
+    firstMetaData <- mcols(x[[1L]], use.names=FALSE) # could be NULL
     if (!all(sapply(l, function(df) {
-      identical(firstMetaData, mcols(df))
+      identical(firstMetaData, mcols(df, use.names=FALSE))
     })))
       return("metadata columns must be identical across elements")
   }

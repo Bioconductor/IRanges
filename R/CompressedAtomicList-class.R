@@ -91,7 +91,7 @@ setAs("CompressedAtomicList", "list", function(from) as.list(from))
 {
     ans <- relist(unlist_as_integer(from), from)
     metadata(ans) <- metadata(from)
-    mcols(ans) <- mcols(from)
+    mcols(ans) <- mcols(from, use.names=FALSE)
     ans
 }
 

@@ -68,7 +68,7 @@ setMethod("reverse", "NormalIRanges",
         BiocGenerics:::replaceSlots(x, start=rev(start(x)),
                                        width=rev(width(x)),
                                        NAMES=rev(names(x)),
-                                       mcols=S4Vectors:::revROWS(mcols(x)))
+                                       mcols=S4Vectors:::revROWS(mcols(x, use.names=FALSE)))
     }
 )
 

@@ -60,7 +60,7 @@ setMethod("ranges", "IntegerRanges",
         ans_start <- start(x)
         ans_width <- width(x)
         ans_names <- if (use.names) names(x) else NULL
-        ans_mcols <- if (use.mcols) mcols(x) else NULL
+        ans_mcols <- if (use.mcols) mcols(x, use.names=FALSE) else NULL
         new2("IRanges", start=ans_start,
                         width=ans_width,
                         NAMES=ans_names,
@@ -326,7 +326,7 @@ setMethod("replaceROWS", "IRanges",
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         ans_start <- replaceROWS(start(x), i, start(value))
         ans_width <- replaceROWS(width(x), i, width(value))
-        ans_mcols <- replaceROWS(mcols(x), i, mcols(value))
+        ans_mcols <- replaceROWS(mcols(x, use.names=FALSE), i, mcols(value))
         BiocGenerics:::replaceSlots(x, start=ans_start,
                                        width=ans_width,
                                        mcols=ans_mcols,

@@ -111,7 +111,7 @@ setMethod("as.data.frame", "IPosRanges", .as.data.frame.IPosRanges)
 .make_naked_matrix_from_IPosRanges <- function(x)
 {
     x_len <- length(x)
-    x_mcols <- mcols(x)
+    x_mcols <- mcols(x, use.names=FALSE)
     x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
     ans <- cbind(start=as.character(start(x)),
                  end=as.character(end(x)),
@@ -128,7 +128,7 @@ show_IPosRanges <- function(x, margin="", print.classinfo=FALSE)
 {
     x_class <- class(x)
     x_len <- length(x)
-    x_mcols <- mcols(x)
+    x_mcols <- mcols(x, use.names=FALSE)
     x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
     cat(x_class, " object with ",
         x_len, " ", ifelse(x_len == 1L, "range", "ranges"),

@@ -117,7 +117,7 @@ NCList <- function(x, circle.length=NA_integer_)
         stop("'x' must be an IntegerRanges object")
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges")
-    ans_mcols <- mcols(x)
+    ans_mcols <- mcols(x, use.names=FALSE)
     mcols(x) <- NULL
     circle.length <- .normarg_circle.length1(circle.length)
     x <- .shift_ranges_to_first_circle(x, circle.length)
@@ -248,7 +248,7 @@ setMethod("ranges", "NCLists",
         if (!use.names)
             names(ans) <- NULL
         if (use.mcols)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         ans
     }
 )
@@ -296,7 +296,7 @@ NCLists <- function(x, circle.length=NA_integer_)
         stop("'x' must be an IntegerRangesList object")
     if (!is(x, "CompressedIRangesList"))
         x <- as(x, "CompressedIRangesList")
-    ans_mcols <- mcols(x)
+    ans_mcols <- mcols(x, use.names=FALSE)
     mcols(x) <- NULL
     unlisted_x <- unlist(x, use.names=FALSE)
     x_groups <- .extract_groups_from_RangesList(x)

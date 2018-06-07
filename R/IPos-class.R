@@ -121,7 +121,7 @@ IPos <- function(pos_runs=IRanges())
                      "on the ", class(from), " object couldn't be ",
                      "propagated during its coercion to IPos"))
     ans <- IPos(from)
-    mcols(ans) <- mcols(from)
+    mcols(ans) <- mcols(from, use.names=FALSE)
     ans
 }
 setAs("IntegerRanges", "IPos", .from_IntegerRanges_to_IPos)
@@ -140,7 +140,7 @@ setMethod("as.data.frame", "IPos",
     function(x, row.names=NULL, optional=FALSE, ...)
     {
         ans <- data.frame(pos=pos(x), stringsAsFactors=FALSE)
-        x_mcols <- mcols(x)
+        x_mcols <- mcols(x, use.names=FALSE)
         if (!is.null(x_mcols))
             ans <- cbind(ans, as.data.frame(x_mcols))
         ans
@@ -199,7 +199,7 @@ setMethod("extractROWS", "IPos",
         }
         new_pos_runs <- extract_pos_runs_by_ranges(x@pos_runs, ir)
         x@pos_runs <- stitch_IntegerRanges(new_pos_runs)
-        mcols(x) <- extractROWS(mcols(x), i)
+        mcols(x) <- extractROWS(mcols(x, use.names=FALSE), i)
         x
     }
 )
@@ -212,7 +212,7 @@ setMethod("extractROWS", "IPos",
 .make_naked_matrix_from_IPos <- function(x)
 {
     x_len <- length(x)
-    x_mcols <- mcols(x)
+    x_mcols <- mcols(x, use.names=FALSE)
     x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
     ans <- cbind(pos=as.character(pos(x)))
     if (x_nmc > 0L) {
@@ -227,7 +227,7 @@ show_IPos <- function(x, margin="", print.classinfo=FALSE)
 {
     x_class <- class(x)
     x_len <- length(x)
-    x_mcols <- mcols(x)
+    x_mcols <- mcols(x, use.names=FALSE)
     x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
     cat(x_class, " object with ",
         x_len, " ", ifelse(x_len == 1L, "position", "positions"),

@@ -111,7 +111,7 @@ new_Views <- function(subject, start=NULL, end=NULL, width=NULL, names=NULL,
         ## was specified.
         if (!is.null(names))
             names(ans_ranges) <- names
-        ans_mcols <- mcols(ans_ranges)
+        ans_mcols <- mcols(ans_ranges, use.names=FALSE)
         mcols(ans_ranges) <- NULL
     } else {
         ans_ranges <- IRanges(start=start, end=end, width=width, names=names)
@@ -325,7 +325,7 @@ setMethod("viewApply", "Views",
         if (!simplify) {
             ans <- S4Vectors:::new_SimpleList_from_list("SimpleList", ans,
                                                         metadata = metadata(X),
-                                                        mcols = mcols(X))
+                                                        mcols = mcols(X, use.names=FALSE))
         }
         ans
     }

@@ -99,7 +99,7 @@ setMethod("extractROWS", c("Rle", "RangesNSBS"),
         start <- start(i@subscript)
         width <- width(i@subscript)
         ans <- S4Vectors:::extract_ranges_from_Rle(x, start, width)
-        mcols(ans) <- extractROWS(mcols(x), i)
+        mcols(ans) <- extractROWS(mcols(x, use.names=FALSE), i)
         ans
     }
 )

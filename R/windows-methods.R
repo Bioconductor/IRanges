@@ -64,7 +64,7 @@ setMethod("windows", "list_OR_List",
         ## Propagate 'metadata(x)' and 'mcols(x)'.
         if (is(x, "List")) {
             metadata(ans) <- metadata(x)
-            mcols(ans) <- mcols(x)
+            mcols(ans) <- mcols(x, use.names=FALSE)
         }
         ans
     }

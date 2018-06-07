@@ -122,7 +122,7 @@ setAs("list", "CompressedIRangesList", .from_list_to_CompressedIRangesList)
     new_CompressedList_from_list("CompressedIRangesList",
                                  .as_list_of_IRanges(from),
                                  metadata=metadata(from),
-                                 mcols=mcols(from))
+                                 mcols=mcols(from, use.names=FALSE))
 }
 
 ### IntegerRanges objects are List objects so this case is already covered
@@ -134,7 +134,7 @@ setAs("list", "CompressedIRangesList", .from_list_to_CompressedIRangesList)
         from <- as(from, "IRanges", strict=FALSE)
     ans_partitioning <- PartitioningByEnd(seq_along(from), names=names(from))
     names(from) <- NULL
-    ans_mcols <- mcols(from)
+    ans_mcols <- mcols(from, use.names=FALSE)
     mcols(from) <- NULL
     ans <- relist(from, ans_partitioning)
     mcols(ans) <- ans_mcols
@@ -169,7 +169,7 @@ setAs("CompressedRleList", "CompressedIRangesList",
         ranges <- as(unlist(from, use.names = FALSE), "IRanges")
         to <- diceRangesByList(ranges, from)
         metadata(to) <- metadata(from)
-        mcols(to) <- mcols(from)
+        mcols(to) <- mcols(from, use.names=FALSE)
         to
       })
 
@@ -272,7 +272,7 @@ setAs("LogicalList", "CompressedNormalIRangesList",
       new_CompressedList_from_list("CompressedNormalIRangesList",
                                    lapply(from, as, "NormalIRanges"),
                                    metadata = metadata(from),
-                                   mcols = mcols(from)))
+                                   mcols = mcols(from, use.names=FALSE)))
 
 ### Coercion from RleList to NormalIRangesList.
 
@@ -296,7 +296,7 @@ setAs("RleList", "CompressedNormalIRangesList",
         new_CompressedList_from_list("CompressedNormalIRangesList",
                                      lapply(from, as, "NormalIRanges"),
                                      metadata = metadata(from),
-                                     mcols = mcols(from))
+                                     mcols = mcols(from, use.names=FALSE))
       })
 
 ### Coercion from IntegerRanges to IPosList.
@@ -306,7 +306,7 @@ setAs("RleList", "CompressedNormalIRangesList",
     from <- as(from, "IRanges")
     ans <- relist(IPos(from), from)
     metadata(ans) <- metadata(from)
-    mcols(ans) <- mcols(from)
+    mcols(ans) <- mcols(from, use.names=FALSE)
     ans
 }
 

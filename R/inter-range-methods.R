@@ -8,7 +8,7 @@
 ### functionality. Once we have it, use it instead of this.
 .set_Views_ranges <- function(x, new_ranges)
 {
-    new_mcols <- mcols(new_ranges)
+    new_mcols <- mcols(new_ranges, use.names=FALSE)
     mcols(new_ranges) <- NULL
     BiocGenerics:::replaceSlots(x, ranges=new_ranges,
                                    elementMetadata=new_mcols,
@@ -453,7 +453,7 @@ setMethod("disjoin", "CompressedIRangesList",
               ## localize 'revmap'
               if (with.revmap) {
                   unlisted_ans <- unlist(ans, use.names=FALSE)
-                  global_revmap <- mcols(unlisted_ans)$revmap
+                  global_revmap <- mcols(unlisted_ans, use.names=FALSE)$revmap
                   local_revmap <- global2local_revmap(global_revmap, ans, x)
                   mcols(unlisted_ans)$revmap <- local_revmap
                   ans <- relist(unlisted_ans, ans)

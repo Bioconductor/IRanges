@@ -100,8 +100,8 @@ INCOMPATIBLE_ARANGES_MSG <- c(
         ans <- .extractPartitioningFragments_by_Partitioning(x, aranges,
                                    msg.if.incompatible=msg.if.incompatible)
         if (use.mcols) {
-            revmap <- mcols(ans)[ , "revmap"]
-            mcols(ans) <- mcols(x)[revmap, , drop=FALSE]
+            revmap <- mcols(ans, use.names=FALSE)[ , "revmap"]
+            mcols(ans) <- mcols(x, use.names=FALSE)[revmap, , drop=FALSE]
         }
         return(ans)
     }
@@ -184,13 +184,13 @@ extractListFragments <- function(x, aranges,
                                                INCOMPATIBLE_ARANGES_MSG)
     ans <- .extractListFragments_by_Partitioning(x, aranges,
                                  msg.if.incompatible=msg.if.incompatible)
-    revmap2 <- mcols(ans)[ , "revmap2"]
+    revmap2 <- mcols(ans, use.names=FALSE)[ , "revmap2"]
     ans <- ans[revmap2 %% 2L == 0L]
     if (use.mcols) {
-        revmap <- mcols(ans)[ , "revmap"]
-        mcols(ans) <- mcols(x)[revmap, , drop=FALSE]
+        revmap <- mcols(ans, use.names=FALSE)[ , "revmap"]
+        mcols(ans) <- mcols(x, use.names=FALSE)[revmap, , drop=FALSE]
     } else {
-        mcols(ans)[ , "revmap2"] <- mcols(ans)[ , "revmap2"] %/% 2L
+        mcols(ans)[ , "revmap2"] <- mcols(ans, use.names=FALSE)[ , "revmap2"] %/% 2L
     }
     ans
 }
@@ -214,11 +214,11 @@ equisplit <- function(x, nchunk, chunksize, use.mcols=FALSE)
     x_cumlen <- nobj(PartitioningByEnd(x))
     aranges <- breakInChunks(x_cumlen, nchunk=nchunk, chunksize=chunksize)
     unlisted_ans <- extractListFragments(x, aranges)
-    unlisted_ans_mcols <- mcols(unlisted_ans)
+    unlisted_ans_mcols <- mcols(unlisted_ans, use.names=FALSE)
     revmap <- unlisted_ans_mcols[ , "revmap"]
     revmap2 <- unlisted_ans_mcols[ , "revmap2"]
     if (use.mcols) {
-        mcols(unlisted_ans) <- mcols(x)[revmap, , drop=FALSE]
+        mcols(unlisted_ans) <- mcols(x, use.names=FALSE)[revmap, , drop=FALSE]
     } else {
         mcols(unlisted_ans) <- DataFrame(revmap=revmap)
     }

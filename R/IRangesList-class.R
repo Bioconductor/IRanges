@@ -85,7 +85,7 @@ setAs("list", "IRangesList", .from_list_to_SimpleIRangesList)
     S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
                                  .as_list_of_IRanges(from),
                                  metadata=metadata(from),
-                                 mcols=mcols(from))
+                                 mcols=mcols(from, use.names=FALSE))
 }
 
 setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
@@ -168,7 +168,7 @@ setMethod("unlist", "SimpleNormalIRangesList",
 {
     S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
         lapply(from, as, "NormalIRanges"),
-        mcols=mcols(from),
+        mcols=mcols(from, use.names=FALSE),
         metadata=metadata(from))
 }
 
@@ -185,7 +185,7 @@ setAs("LogicalList", "SimpleNormalIRangesList",
       S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
                                            lapply(from, as, "NormalIRanges"),
                                            metadata = metadata(from),
-                                           mcols = mcols(from)))
+                                           mcols = mcols(from, use.names=FALSE)))
 
 ### Coercion from RleList to NormalIRangesList.
 
@@ -200,7 +200,7 @@ setAs("RleList", "SimpleNormalIRangesList",
         S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
                                              lapply(from, as, "NormalIRanges"),
                                              metadata = metadata(from),
-                                             mcols = mcols(from))
+                                             mcols = mcols(from, use.names=FALSE))
       })
 
 

@@ -480,7 +480,7 @@ setGeneric("restrict", signature="x",
     ans_start <- start(x)
     ans_end <- end(x)
     if (use.names) ans_names <- names(x) else ans_names <- NULL
-    ans_mcols <- mcols(x)
+    ans_mcols <- mcols(x, use.names=FALSE)
 
     ## Compare ranges in 'x' with 'start'.
     if (drop.ranges.mode == 0L)

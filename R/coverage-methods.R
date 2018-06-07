@@ -202,7 +202,7 @@ coverage_CompressedIRangesList <- function(x,
     names(ans_listData) <- names(x)
     S4Vectors:::new_SimpleList_from_list("SimpleRleList", ans_listData,
                                          metadata=metadata(x),
-                                         mcols=mcols(x))
+                                         mcols=mcols(x, use.names=FALSE))
 }
 
 
@@ -220,7 +220,7 @@ replace_with_mcol_if_single_string <- function(arg, x)
 {
     if (!isSingleString(arg))
         return(arg)
-    x_mcols <- mcols(x)
+    x_mcols <- mcols(x, use.names=FALSE)
     j <- which(colnames(x_mcols) == arg)
     if (length(j) == 0L)
         stop(wmsg("'mcols(x)' has no \"", arg, "\" column"))
@@ -275,7 +275,7 @@ setMethod("coverage", "IntegerRangesList",
     function(x, shift=0L, width=NULL, weight=1L,
                 method=c("auto", "sort", "hash"))
     {
-        x_mcols <- mcols(x)
+        x_mcols <- mcols(x, use.names=FALSE)
         x_mcolnames <- colnames(x_mcols)
         if (isSingleString(shift)) {
             if (!(shift %in% x_mcolnames))
