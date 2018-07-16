@@ -59,11 +59,12 @@ a particular problem domain will provide vignettes with relevant, realistic
 examples.
 
 The \Biocpkg{IRanges} package is available at bioconductor.org and can be
-downloaded via \Rfunction{biocLite}:
+downloaded via \Rfunction{BiocManager::install}:
 
-<<biocLite, eval=FALSE>>=
-source("http://bioconductor.org/biocLite.R")
-biocLite("IRanges")
+<<install, eval=FALSE>>=
+if (!require("BiocManager")
+    install.pacakges("BiocManager")
+BiocManager::install("IRanges")
 @
 <<initialize, results=hide>>=
 library(IRanges)
