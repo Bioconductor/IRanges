@@ -33,6 +33,7 @@
 \alias{as.matrix,IPosRanges-method}
 \alias{as.data.frame,IPosRanges-method}
 \alias{show,IPosRanges-method}
+\alias{getListElement,IPosRanges-method}
 \alias{tile}
 \alias{tile,IPosRanges-method}
 \alias{slidingWindows}

@@ -169,3 +169,20 @@ setMethod("show", "IPosRanges",
         show_IPosRanges(object, margin="  ", print.classinfo=TRUE)
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Subsetting
+###
+
+### Avoid infinite recursion that we would otherwise get:
+###   IRanges(1:4, 8)[[1]]
+###   # Error: C stack usage  7969636 is too close to the limit
+setMethod("getListElement", "IPosRanges",
+    function(x, i, exact=TRUE)
+    {
+        ## A temporary situation
+        stop(wmsg(class(x), " objects don't support [[, as.list(), ",
+                  "or lapply() at the moment"))
+    }
+)
+
