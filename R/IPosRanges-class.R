@@ -182,7 +182,7 @@ setMethod("getListElement", "IPosRanges",
     {
         ## A temporary situation
         stop(wmsg(class(x), " objects don't support [[, as.list(), ",
-                  "or lapply() at the moment"))
+                  "lapply(), or unlist() at the moment"))
     }
 )
 
