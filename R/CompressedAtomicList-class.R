@@ -382,7 +382,8 @@ setCompressedListSummaryMethod("max")
 setMethods("range",
            list("CompressedLogicalList",
                 "CompressedIntegerList",
-                "CompressedNumericList"),
+                "CompressedNumericList",
+                "CompressedRleList"),
            function(x, na.rm=FALSE) {
                stopifnot(isTRUEorFALSE(na.rm))
                cbind(min(x, na.rm=na.rm), max(x, na.rm=na.rm))
@@ -395,7 +396,8 @@ setMethod("Summary", "CompressedRleList",
               ans <- viewFun(as(x, "RleViews"), na.rm = na.rm)
               names(ans) <- names(x)
               ans
-            }
+            } else if (.Generic %in% c("any", "all"))
+                callNextMethod()
             else sapply(x, .Generic, na.rm = na.rm)
           })
 
