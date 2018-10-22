@@ -15,9 +15,7 @@ setMethod(".replaceSEW", "IntegerRangesList",
     function(x, FUN, ..., value)
     {
         if (extends(class(value), "IntegerList")) {
-            if (!identical(lapply(x, names), lapply(value, names)) &&
-                !all(elementNROWS(x) == elementNROWS(value)))
-                stop("'value' must have same length and names as current 'ranges'")
+            value <- S4Vectors:::VH_recycle(value, x, ".replaceSEW", "x")
         } else if (is.numeric(value)) {
             lelts <- sum(elementNROWS(x))
             if (lelts != length(value))
@@ -29,6 +27,11 @@ setMethod(".replaceSEW", "IntegerRangesList",
             stop("'value' must extend class IntegerList or integer")
         }
         FUN <- match.fun(FUN)
+        if (is(x, "CompressedRangesList")) {
+            unlist_ans <- FUN(unlist(x, use.names=FALSE), ...,
+                              unlist(value, use.names=FALSE))
+            return(relist(unlist_ans, x))
+        }
         for (i in seq_len(length(x)))
             x[[i]] <- FUN(x[[i]], ..., value = value[[i]])
         x
