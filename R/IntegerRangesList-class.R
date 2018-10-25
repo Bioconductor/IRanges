@@ -29,7 +29,7 @@ setMethod(".replaceSEW", "IntegerRangesList",
         FUN <- match.fun(FUN)
         if (is(x, "CompressedRangesList")) {
             unlist_ans <- FUN(unlist(x, use.names=FALSE), ...,
-                              unlist(value, use.names=FALSE))
+                              value=unlist(value, use.names=FALSE))
             return(relist(unlist_ans, x))
         }
         for (i in seq_len(length(x)))
