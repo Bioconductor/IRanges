@@ -1,3 +1,38 @@
+CHANGES IN VERSION 2.16.0
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Optimize unlist() on Views objects.
+
+    o Optimize range(), any() and all() on CompressedRleList objects.
+
+    o Optimize start(), end(), width() setters on CompressedRangesList objects.
+
+DEPRECATED AND DEFUNCT
+
+    o Deprecate several RangedData methods:
+      - score, score<-, lapply, within, countOverlaps;
+      - coercions from list, data.frame, DataTable, Rle, RleList, RleViewsList,
+        IntegerRanges, or IntegerRangesList to RangedData.
+      RangedData objects will be deprecated in BioC 3.9 (their use has been
+      discouraged since BioC 2.12, that is, since 2014). Package developers
+      that are still using RangedData objects need to migrate their code to
+      use GRanges or GRangesList objects instead.
+
+    o The RangesList() constructor is now defunct (after being deprecated in
+      BioC 3.7).
+
+BUG FIXES
+
+    o Fix DF[IRanges(...), ] on a DataFrame with data.frame columns.
+
+    o Make [[, as.list(), lapply(), and unlist() fail more graciously on
+      a IRanges object.
+
+    o NCList objects now properly support c().
+
+
 CHANGES IN VERSION 2.14.0
 -------------------------
 
