@@ -73,7 +73,7 @@
 
 \title{Data on ranges}
 \description{
-  IMPORTANT NOTE: \code{RangedData} objects will be deprecated in BioC 3.9!
+  IMPORTANT NOTE: \code{RangedData} objects are deprecated in BioC 3.9!
   The use of \code{RangedData} objects has been discouraged in favor
   of \link[GenomicRanges]{GRanges} or \link[GenomicRanges]{GRangesList}
   objects since BioC 2.12, that is, since 2014.
@@ -414,6 +414,7 @@
 }
 
 \examples{
+\dontrun{
   ranges <- IRanges(c(1,2,3),c(4,5,6))
   filter <- c(1L, 0L, 1L)
   score <- c(10L, 2L, NA)
@@ -511,6 +512,7 @@
   rd <- RangedData(ranges, score, space = c(1, 2, 1))
   c(rd[1], rd[2]) # equal to 'rd'
   rd2 <- RangedData(ranges, score)
+}
 }
 
 \keyword{methods}
