@@ -157,8 +157,11 @@ newNormalIRangesFromIRanges <- function(x, check=TRUE)
     if (!isTRUEorFALSE(check))
         stop("'check' must be TRUE or FALSE")
     ## Check only what needs to be checked.
-    if (check)
-        S4Vectors:::stopIfProblems(.valid.NormalIRanges(x))
+    if (check) {
+        msg <- .valid.NormalIRanges(x)
+        if (!is.null(msg))
+            stop(wmsg(msg))
+    }
     class(x) <- "NormalIRanges"
     x
 }
