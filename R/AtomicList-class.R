@@ -263,6 +263,8 @@ setMethod("unlist", "SimpleRleList",
         if (!identical(recursive, TRUE))
             stop("\"unlist\" method for SimpleRleList objects ",
                  "does not support the 'recursive' argument")
+        if (length(x) == 0L)
+            return(Rle())
         ans_values <- unlist(lapply(x@listData, slot, "values"),
                              use.names=FALSE)
         ans_lengths <- unlist(lapply(x@listData, slot, "lengths"),
