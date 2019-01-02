@@ -70,12 +70,10 @@ setMethod("as.list", "CompressedAtomicList",
               if (is(x, "CompressedRleList")) {
                   callNextMethod(x, use.names = use.names)
               } else {
-                  codes <- seq_len(length(x))
-                  ans <-
-                    split(x@unlistData,
-                          structure(rep.int(codes, elementNROWS(x)),
-                                    levels = as.character(codes),
-                                    class = "factor"))
+                  f <- S4Vectors:::map_inner_ROWS_to_list_elements(
+                                       elementNROWS(x),
+                                       as.factor=TRUE)
+                  ans <- split(x@unlistData, f)
                   if (use.names) {
                       names(ans) <- names(x)
                   } else {
