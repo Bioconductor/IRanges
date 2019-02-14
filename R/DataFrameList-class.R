@@ -228,7 +228,6 @@ setMethod("normalizeSingleBracketReplacementValue", "SplitDataFrameList",
     function(value, x)
     {
         value <- callNextMethod()  # call default method
-        rownames(value) <- NULL
         if (length(x) != 0L && ncol(x)[[1L]] == ncol(value)[[1L]])
             colnames(value)[[1L]] <- colnames(x)[[1L]]
         value
