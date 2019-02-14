@@ -227,3 +227,12 @@ test_DataFrameList_transform <- function() {
   
   checkIdentical(ANS, DataFrame(df))
 }
+
+test_SplitDataFrameList_rownames <- function() {
+  csdfl <- SplitDataFrameList(DataFrame(one = c(1,2,3,4), row.names = seq_len(4)),
+                              DataFrame(one = c(11,12,13,14), row.names = c("a","b","c","d")))
+  csdfl[[1]] <- DataFrame(one = c(4,3,2,1), row.names = rev(seq_len(4)))
+  csdfl2 <- SplitDataFrameList(DataFrame(one = c(1,2,3,4), row.names = rev(seq_len(4))), 
+                               DataFrame(one = c(11,12,13,14), row.names = c("a","b","c","d")))
+  checkIdentical(rownames(csdfl), rownames(csdfl2))
+}
