@@ -14,6 +14,48 @@ test_IRanges_intersect <- function() {
   checkIdentical(ans, ans0)  
 }
 
+test_NormalIRanges_IRanges_intersect <- function() {
+    
+    x <- as(object = IRanges(c(1, 4, 9), c(5, 7, 10)),
+            Class = 'NormalIRanges')
+    mcols(x)$test1 <- c('a', 'b')
+    
+    y <- IRanges(c(2, 2, 10), c(2, 3, 12))
+    
+    ans0 <- IRanges(c(2,10),c(3,10))
+    
+    checkIdentical(intersect(x, y), ans0)
+    
+    mcols(ans0) <- DataFrame(test1 = c('a', 'b'))
+    checkIdentical(intersect(x, y, propagate.mcols = TRUE), ans0)
+    
+}
+
+test_NormalIRanges_NormalIRanges_intersect <- function() {
+    
+    x <- as(object = IRanges(c(1, 9), c(7, 14)),
+            Class = 'NormalIRanges')
+    mcols(x)$test1 <- c('a', 'b')
+    
+    y <- as(object = IRanges(c(2, 2, 10), c(2, 3, 12)),
+            Class = 'NormalIRanges')
+    mcols(y)$test2 = c('c', 'd')
+    
+    ans0 <- IRanges(c(2,10),c(3,12))
+    
+    checkIdentical(intersect(x, y), ans0)
+
+    mcols(ans0) <- DataFrame(test1 = c('a', 'b'))
+    checkIdentical(intersect(x, y, propagate.mcols = 'x'), ans0)
+
+    mcols(ans0) <- DataFrame(test2 = c('c', 'd'))
+    checkIdentical(intersect(x, y, propagate.mcols = 'y'), ans0)
+
+    mcols(ans0) <- DataFrame(test1 = c('a', 'b'), test2 = c('c', 'd'))
+    checkIdentical(intersect(x, y, propagate.mcols = 'both'), ans0)
+
+}
+
 test_IRanges_setdiff <- function() {
   x <- IRanges(c(1, 4, 9), c(5, 7, 10))
   y <- IRanges(c(2, 2, 10), c(2, 3, 12))

@@ -64,6 +64,70 @@ setMethod("union", c("Pairs", "missing"), function(x, y, ...) {
 ### intersect()
 ###
 
+
+### If both inputs are NormalIRanges, return a NormalIRanges
+### with mcols() of both inputs propagated
+setMethod(
+    f = "intersect",
+    signature = c("NormalIRanges", "NormalIRanges"),
+    definition = function(
+        x, 
+        y, 
+        propagate.mcols = c('none', 'both', 'x', 'y')) {
+        
+        propagate.mcols <- match.arg(arg = propagate.mcols)
+        
+        # demote x and y, intersect, then promote answer
+        ans <- intersect(as(x, "IntegerRanges"), as(y, "IntegerRanges"))
+        as(object = ans, Class = 'NormalIRanges')
+        
+        if (propagate.mcols == 'both') {
+            
+            xidx <- subjectHits(findOverlaps(query = ans, subject = x))
+            yidx <- subjectHits(findOverlaps(query = ans, subject = y))
+            mcols(ans) <- cbind(mcols(x)[xidx,,drop=FALSE],
+                                mcols(y)[yidx,,drop=FALSE])
+            
+        } else if (propagate.mcols == 'x') {
+            
+            idx <- subjectHits(findOverlaps(query = ans, subject = x))
+            mcols(ans) <- mcols(x)[idx,,drop=FALSE]
+            
+        } else if (propagate.mcols == 'y') {
+            
+            idx <- subjectHits(findOverlaps(query = ans, subject = y))
+            mcols(ans) <- mcols(y)[idx,,drop=FALSE]
+            
+        }
+        
+        ans
+    }
+)
+
+
+### If x input is NormalIRanges and y is IntegerRanges, return a NormalIRanges
+### optionally propagate mcols(x) to result
+### can't propagate mcols(y), bc y may be non-normal
+### (mapping from y -> ans may be many-to-one)
+setMethod(
+    f = "intersect",
+    signature = c("NormalIRanges", "IntegerRanges"),
+    definition = function(x, y, propagate.mcols = FALSE) {
+        
+        # demote x, intersect, then promote answer
+        ans <- intersect(as(x, "IntegerRanges"), y)
+        as(object = ans, Class = 'NormalIRanges')
+        
+        if (propagate.mcols) {
+            idx <- subjectHits(findOverlaps(query = ans, subject = x))
+            mcols(ans) <- mcols(x)[idx,,drop=FALSE]
+        }
+        
+        ans
+    }
+)
+
+
 ### Always return an IRanges *instance* whatever IntegerRanges derivatives
 ### are passed to it (e.g. IPos, NCList or NormalIRanges), so does NOT act
 ### like an endomorphism in general.
