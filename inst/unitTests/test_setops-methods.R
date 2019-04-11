@@ -67,6 +67,24 @@ test_IRanges_setdiff <- function() {
   checkIdentical(ans, ans0)
 }
 
+
+test_NormalIRanges_IRanges_setdiff <- function() {
+    
+    x <- as(IRanges(c(1, 4, 9), c(5, 7, 10)), 'NormalIRanges')
+    mcols(x)$test1 <- c('a', 'b')
+    
+    y <- IRanges(c(2, 2, 10), c(2, 3, 12))
+    
+    ans0 <- IRanges(c(1,4,9), c(1,7,9))
+    checkIdentical(setdiff(x, y), ans0)
+    
+    
+    mcols(ans0)$test1 <- c('a', 'a', 'b')
+    checkIdentical(setdiff(x, y, propagate.mcols = TRUE), ans0)
+}
+
+
+
 test_IRanges_punion <- function() {
   x <- IRanges(start=c(1,11,21,31,41,51,61,71), end=c(5,10,25,35,40,55,65,75))
   y <- IRanges(start=c(1, 8,18,35,43,48,63,78), end=c(4,15,22,36,45,50,62,79))

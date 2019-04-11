@@ -178,6 +178,27 @@ setMethod("intersect", c("CompressedAtomicList", "CompressedAtomicList"),
 ### setdiff()
 ###
 
+### if input x is NormalIRanges, and y is an IntegerRanges,
+### return a NormalIRanges and optionally propagate mcols(x)
+setMethod(
+    f = "setdiff",
+    signature = c("NormalIRanges", "IntegerRanges"),
+    definition = function(x, y, propagate.mcols = FALSE) {
+        
+        # demote, setdiff, then promote to NormalIRanges
+        ans <- setdiff(x = as(object = x, Class = "IntegerRanges"), y = y)
+        ans <- as(x, "NormalIRanges")
+
+        if (propagate.mcols) {
+            idx <- subjectHits(findOverlaps(query = ans, subject = x))
+            mcols(ans) <- mcols(x)[idx,,drop=FALSE]
+        }
+
+        ans
+    }
+)
+
+
 ### Always return an IRanges *instance* whatever IntegerRanges derivatives
 ### are passed to it (e.g. IPos, NCList or NormalIRanges), so does NOT act
 ### like an endomorphism in general.
