@@ -67,39 +67,32 @@ setMethod("union", c("Pairs", "missing"), function(x, y, ...) {
 
 ### If both inputs are NormalIRanges, return a NormalIRanges
 ### with mcols() of both inputs propagated
-setMethod(
-    f = "intersect",
-    signature = c("NormalIRanges", "NormalIRanges"),
-    definition = function(
-        x, 
-        y, 
-        propagate.mcols = c('none', 'both', 'x', 'y')) {
+setMethod("intersect", c("NormalIRanges", "NormalIRanges"),
+    function(x, y, use.x.mcols = FALSE, use.y.mcols = FALSE)
+    {
         
-        propagate.mcols <- match.arg(arg = propagate.mcols)
+        # browser()
+        if (!isTRUEorFALSE(use.x.mcols))
+            stop("'use.x.mcols' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(use.y.mcols))
+            stop("'use.y.mcols' must be TRUE or FALSE")
         
-        # demote x and y, intersect, then promote answer
-        ans <- intersect(as(x, "IntegerRanges"), as(y, "IntegerRanges"))
-        as(object = ans, Class = 'NormalIRanges')
+        ans <- as(object = callNextMethod(), Class = "NormalIRanges")
         
-        if (propagate.mcols == 'both') {
-            
+        if (use.x.mcols & !use.y.mcols) {
+            xidx <- subjectHits(findOverlaps(query = ans, subject = x))
+            mcols(ans) <- mcols(x)[xidx,,drop=FALSE]
+        }
+        if (use.y.mcols & !use.x.mcols) {
+            yidx <- subjectHits(findOverlaps(query = ans, subject = y))
+            mcols(ans) <- mcols(y)[yidx,,drop=FALSE]
+        }
+        if (use.x.mcols & use.y.mcols) {
             xidx <- subjectHits(findOverlaps(query = ans, subject = x))
             yidx <- subjectHits(findOverlaps(query = ans, subject = y))
             mcols(ans) <- cbind(mcols(x)[xidx,,drop=FALSE],
                                 mcols(y)[yidx,,drop=FALSE])
-            
-        } else if (propagate.mcols == 'x') {
-            
-            idx <- subjectHits(findOverlaps(query = ans, subject = x))
-            mcols(ans) <- mcols(x)[idx,,drop=FALSE]
-            
-        } else if (propagate.mcols == 'y') {
-            
-            idx <- subjectHits(findOverlaps(query = ans, subject = y))
-            mcols(ans) <- mcols(y)[idx,,drop=FALSE]
-            
         }
-        
         ans
     }
 )
@@ -109,16 +102,17 @@ setMethod(
 ### optionally propagate mcols(x) to result
 ### can't propagate mcols(y), bc y may be non-normal
 ### (mapping from y -> ans may be many-to-one)
-setMethod(
-    f = "intersect",
-    signature = c("NormalIRanges", "IntegerRanges"),
-    definition = function(x, y, propagate.mcols = FALSE) {
+setMethod("intersect", c("NormalIRanges", "IntegerRanges"),
+    function(x, y, use.mcols = FALSE)
+    {
         
-        # demote x, intersect, then promote answer
-        ans <- intersect(as(x, "IntegerRanges"), y)
-        as(object = ans, Class = 'NormalIRanges')
+        # browser()
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
         
-        if (propagate.mcols) {
+        ans <- as(object = callNextMethod(x = x, y = y), Class = "NormalIRanges")
+        
+        if (use.mcols) {
             idx <- subjectHits(findOverlaps(query = ans, subject = x))
             mcols(ans) <- mcols(x)[idx,,drop=FALSE]
         }
@@ -180,20 +174,16 @@ setMethod("intersect", c("CompressedAtomicList", "CompressedAtomicList"),
 
 ### if input x is NormalIRanges, and y is an IntegerRanges,
 ### return a NormalIRanges and optionally propagate mcols(x)
-setMethod(
-    f = "setdiff",
-    signature = c("NormalIRanges", "IntegerRanges"),
-    definition = function(x, y, propagate.mcols = FALSE) {
-        
-        # demote, setdiff, then promote to NormalIRanges
-        ans <- setdiff(x = as(object = x, Class = "IntegerRanges"), y = y)
-        ans <- as(x, "NormalIRanges")
+setMethod("setdiff", c("NormalIRanges", "IRanges"),
+    function(x, y, use.mcols = FALSE)
+    {
+        ans <- as(callNextMethod(), "NormalIRanges")
 
-        if (propagate.mcols) {
+        if (use.mcols) {
             idx <- subjectHits(findOverlaps(query = ans, subject = x))
             mcols(ans) <- mcols(x)[idx,,drop=FALSE]
         }
-
+        
         ans
     }
 )
