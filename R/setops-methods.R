@@ -77,19 +77,19 @@ setMethod("intersect", c("NormalIRanges", "NormalIRanges"),
         if (!isTRUEorFALSE(use.y.mcols))
             stop("'use.y.mcols' must be TRUE or FALSE")
         
-        ans <- as(object = callNextMethod(), Class = "NormalIRanges")
+        ans <- as(callNextMethod(), "NormalIRanges")
         
         if (use.x.mcols & !use.y.mcols) {
-            xidx <- subjectHits(findOverlaps(query = ans, subject = x))
+            xidx <- subjectHits(findOverlaps(ans, x))
             mcols(ans) <- mcols(x)[xidx,,drop=FALSE]
         }
         if (use.y.mcols & !use.x.mcols) {
-            yidx <- subjectHits(findOverlaps(query = ans, subject = y))
+            yidx <- subjectHits(findOverlaps(ans, y))
             mcols(ans) <- mcols(y)[yidx,,drop=FALSE]
         }
         if (use.x.mcols & use.y.mcols) {
-            xidx <- subjectHits(findOverlaps(query = ans, subject = x))
-            yidx <- subjectHits(findOverlaps(query = ans, subject = y))
+            xidx <- subjectHits(findOverlaps(ans, x))
+            yidx <- subjectHits(findOverlaps(ans, y))
             mcols(ans) <- cbind(mcols(x)[xidx,,drop=FALSE],
                                 mcols(y)[yidx,,drop=FALSE])
         }
@@ -110,10 +110,10 @@ setMethod("intersect", c("NormalIRanges", "IntegerRanges"),
         if (!isTRUEorFALSE(use.mcols))
             stop("'use.mcols' must be TRUE or FALSE")
         
-        ans <- as(object = callNextMethod(x = x, y = y), Class = "NormalIRanges")
+        ans <- as(callNextMethod(x, y), "NormalIRanges")
         
         if (use.mcols) {
-            idx <- subjectHits(findOverlaps(query = ans, subject = x))
+            idx <- subjectHits(findOverlaps(ans, x))
             mcols(ans) <- mcols(x)[idx,,drop=FALSE]
         }
         
@@ -180,7 +180,7 @@ setMethod("setdiff", c("NormalIRanges", "IRanges"),
         ans <- as(callNextMethod(), "NormalIRanges")
 
         if (use.mcols) {
-            idx <- subjectHits(findOverlaps(query = ans, subject = x))
+            idx <- subjectHits(findOverlaps(ans, x))
             mcols(ans) <- mcols(x)[idx,,drop=FALSE]
         }
         
