@@ -27,7 +27,7 @@
   The IFWRanges class is a container for storing a set of \emph{fixed-width}
   ranges. The IFWRanges class extends the \link{IntegerRanges} virtual class.
   Note that even though an \link{IRanges} object can be used for storing
-  fixed-width ranges, using an IFWRanges object will be much more
+  fixed-width ranges, using an IFWRanges object will be more
   memory-efficient (roughly half the size in-memory).
 }
 
