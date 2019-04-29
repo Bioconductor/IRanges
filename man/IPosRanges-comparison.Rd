@@ -17,7 +17,8 @@
 
 \description{
   Methods for comparing and/or ordering the ranges in \link{IPosRanges}
-  derivatives (e.g. \link{IRanges}, \link{IPos}, or \link{NCList} objects).
+  derivatives (e.g. \link{IRanges}, \link{IPos}, \link{IFWRanges} or
+  \link{NCList} objects).
 }
 
 \usage{
@@ -47,8 +48,8 @@ rangeComparisonCodeToLetter(code)
 
 \arguments{
   \item{x, table, y}{
-    \link{IPosRanges} derivatives e.g. \link{IRanges}, \link{IPos}, or
-    \link{NCList} objects.
+    \link{IPosRanges} derivatives e.g. \link{IRanges}, \link{IPos},
+    \link{IFWRanges} or \link{NCList} objects.
   }
   \item{nomatch}{
     The value to be returned in the case when no match is found.

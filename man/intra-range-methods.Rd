@@ -9,6 +9,7 @@
 \alias{shift}
 \alias{shift,Ranges-method}
 \alias{shift,IPos-method}
+\alias{shift,IFWRanges-method}
 \alias{shift,RangesList-method}
 
 \alias{narrow}
@@ -44,8 +45,8 @@
 \alias{Ops,CompressedRangesList,numeric-method}
 
 
-\title{Intra range transformations of an IRanges, IPos, Views, RangesList,
-       or MaskCollection object}
+\title{Intra range transformations of an IRanges, IPos, IFWRanges, Views,
+       RangesList, or MaskCollection object}
 
 \description{
   Range-based transformations are grouped in 2 categories:
@@ -91,8 +92,8 @@ threebands(x, start=NA, end=NA, width=NA)
 
 \arguments{
   \item{x}{
-    An \link{IRanges}, \link{IPos}, \link{Views}, \link{RangesList}, or
-    \link{MaskCollection} object.
+    An \link{IRanges}, \link{IPos}, \link{IFWRanges}, \link{Views},
+    \link{RangesList}, or \link{MaskCollection} object.
   }
   \item{shift}{
     An integer vector containing the shift information. Recycled as
@@ -105,7 +106,8 @@ threebands(x, start=NA, end=NA, width=NA)
     \code{TRUE} or \code{FALSE}. Should names be preserved?
   }
   \item{start, end}{
-    If \code{x} is an \link{IRanges}, \link{IPos} or \link{Views} object:
+    If \code{x} is an \link{IRanges}, \link{IPos}, \link{IFWRanges} or
+    \link{Views} object:
     A vector of integers for all functions except for \code{flank}.
     For \code{restrict}, the supplied \code{start} and \code{end}
     arguments must be vectors of integers, eventually with NAs, that
@@ -123,7 +125,8 @@ threebands(x, start=NA, end=NA, width=NA)
     if \code{x} is a \link{RangesList} object.
   }
   \item{width}{
-    If \code{x} is an \link{IRanges}, \link{IPos} or \link{Views} object:
+    If \code{x} is an \link{IRanges}, \link{IPos}, \link{IFWRanges}
+    or \link{Views} object:
     For \code{narrow} and \code{threebands}, a vector of integers,
     eventually with NAs. See the SEW (Start/End/Width) interface for
     the details (\code{?solveUserSEW}).
@@ -136,7 +139,8 @@ threebands(x, start=NA, end=NA, width=NA)
     if \code{x} is a \link{RangesList} object.
   }
   \item{fix}{
-    If \code{x} is an \link{IRanges}, \link{IPos} or \link{Views} object:
+    If \code{x} is an \link{IRanges}, \link{IPos}, \link{IFWRanges}
+    or \link{Views} object:
     A character vector or character-Rle of length 1 or \code{length(x)}
     containing the values \code{"start"}, \code{"end"}, and
     \code{"center"} denoting what to use as an anchor for each
@@ -294,8 +298,8 @@ threebands(x, start=NA, end=NA, width=NA)
   \itemize{
     \item \link{inter-range-methods} for inter range transformations.
 
-    \item The \link{IRanges}, \link{IPos}, \link{Views}, \link{RangesList},
-          and \link{MaskCollection} classes.
+    \item The \link{IRanges}, \link{IPos}, \link{IFWRanges}, \link{Views},
+    \link{RangesList}, and \link{MaskCollection} classes.
 
     \item The \link[GenomicRanges]{intra-range-methods} man page in the
           \pkg{GenomicRanges} package for \emph{intra range transformations}

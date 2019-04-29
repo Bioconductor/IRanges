@@ -17,6 +17,7 @@
 \alias{width,Pos-method}
 \alias{names,Pos-method}
 \alias{names<-,Pos-method}
+\alias{end,FWRanges-method}
 \alias{elementNROWS,Ranges-method}
 \alias{mid}
 \alias{mid,Ranges-method}
@@ -83,8 +84,8 @@
   which can be subsetted by row and by column).
 
   The IPosRanges class itself is a virtual class. The following classes
-  derive directly from it: \link{IRanges}, \link{IPos}, \link{NCList},
-  and \link{GroupingRanges}.
+  derive directly from it: \link{IRanges}, \link{IPos}, \link{IFWRanges},
+  \link{NCList}, and \link{GroupingRanges}.
 }
 
 \section{Methods}{
@@ -133,8 +134,8 @@
     \item{}{
       \code{tile(x, n, width, ...)}:
       Splits each range in \code{x} into subranges as specified by \code{n}
-      (number of ranges) or \code{width}. Only one of \code{n} or \code{width} 
-      can be specified. The return value is a \code{IRangesList} the same 
+      (number of ranges) or \code{width}. Only one of \code{n} or \code{width}
+      can be specified. The return value is a \code{IRangesList} the same
       length as \code{x}. IPosRanges with a width less than the \code{width}
       argument are returned unchanged.
     }
@@ -219,8 +220,8 @@
       \code{show(x)}:
       By default the \code{show} method displays 5 head and 5 tail
       lines. The number of lines can be altered by setting the global
-      options \code{showHeadLines} and \code{showTailLines}. If the 
-      object length is less than the sum of the options, the full object 
+      options \code{showHeadLines} and \code{showTailLines}. If the
+      object length is less than the sum of the options, the full object
       is displayed. These options affect display of \link{IRanges},
       \link{IPos}, \link[S4Vectors]{Hits}, \link[GenomicRanges]{GRanges},
       \link[GenomicRanges]{GPos}, \link[GenomicAlignments]{GAlignments},
@@ -288,6 +289,10 @@
     \item The \link{IPos} class, a memory-efficient IPosRanges derivative
           for representing \emph{integer positions} (i.e. integer
           ranges of width 1).
+
+    \item The \link{IFWRanges} class, a memory-efficient IPosRanges
+          derivative for representing fixed-width ranges on the space of
+          integers.
 
     \item \link{IPosRanges-comparison} for comparing and ordering ranges.
 
