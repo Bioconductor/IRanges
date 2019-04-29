@@ -13,6 +13,11 @@ setClass("CompressedPosList",
     representation("VIRTUAL")
 )
 
+setClass("CompressedFWRangesList",
+    contains=c("FWRangesList", "CompressedRangesList"),
+    representation("VIRTUAL")
+)
+
 setClass("CompressedIntegerRangesList",
     contains=c("IntegerRangesList", "CompressedRangesList"),
     representation("VIRTUAL")
@@ -38,6 +43,11 @@ setClass("CompressedNormalIRangesList",
 setClass("CompressedIPosList",
     contains=c("IPosList", "CompressedPosList", "CompressedIntegerRangesList"),
     prototype=prototype(unlistData=new("IPos"))
+)
+
+setClass("CompressedIFWRangesList",
+    contains=c("IFWRangesList", "CompressedFWRangesList", "CompressedIntegerRangesList"),
+    prototype=prototype(unlistData=new("IFWRanges"))
 )
 
 
@@ -320,5 +330,28 @@ setAs("IntegerRanges", "IPosList",
 
 setAs("IRanges", "IPosList",
     .from_IntegerRanges_to_CompressedIPosList
+)
+
+### Coercion from IntegerRanges to IFWRangesList.
+
+.from_IntegerRanges_to_CompressedIFWRangesList <- function(from)
+{
+  from <- as(from, "IRanges")
+  ans <- relist(IFWRanges(from), from)
+  metadata(ans) <- metadata(from)
+  mcols(ans) <- mcols(from, use.names=FALSE)
+  ans
+}
+
+setAs("IntegerRanges", "CompressedIFWRangesList",
+      .from_IntegerRanges_to_CompressedIFWRangesList
+)
+
+setAs("IntegerRanges", "IFWRangesList",
+      .from_IntegerRanges_to_CompressedIFWRangesList
+)
+
+setAs("IRanges", "IFWRangesList",
+      .from_IntegerRanges_to_CompressedIFWRangesList
 )
 

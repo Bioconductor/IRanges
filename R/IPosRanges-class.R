@@ -6,7 +6,7 @@
 ### intervals with integer end points and on the domain of integers.
 ###
 ### The direct IPosRanges subclasses defined in the IRanges package are:
-### IRanges, IPos, NCList, and GroupingRanges.
+### IRanges, IPos, IFWRanges, NCList, and GroupingRanges.
 
 
 setClass("IPosRanges",

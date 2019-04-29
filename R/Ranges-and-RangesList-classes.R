@@ -12,31 +12,37 @@
 ###   (2) all(start(x) + width(x) - 1L == end(x)) is TRUE
 ###
 ### The direct Ranges subclasses defined in the IRanges and GenomicRanges
-### packages are: Pos, IntegerRanges, and GenomicRanges.
+### packages are: Pos, FWRanges, IntegerRanges, and GenomicRanges.
 ###
 ### The Ranges hierarchy:
 ### - showing the top-level classes only;
 ### - showing only classes defined in the IRanges package;
 ### - all classes showed in the diagram are virtual except IRanges, NCList,
-###   and IPos (marked with an asterisk).
+###   IPos and IFWRanges (marked with an asterisk).
 ###
-###                               Ranges
-###                              ^      ^
-###                             /        \
-###                 IntegerRanges        Pos
-###                 ^           ^         ^
-###                 |           |         |
-###               Views     IPosRanges    |
-###                ^        ^ ^    ^ ^    |
-###               /        /  |    |  \   |
-###              .        /   |    |   \  |
-###                      /    |    |    IPos*
-###                     /     |    |
-###              IRanges*     |    |
-###                 ^     NCList*  |
-###                 |             GroupingRanges
-###                 |                   ^
-###                 .                   |
+###                              Ranges
+###                              ^  ^  ^
+###                              |  |  |
+###                              |  |   \-------------------|
+###                             /    \------------|         |
+###                 IntegerRanges                Pos     FWRanges
+###                 ^           ^                 ^         ^
+###                 |           |                 |         |
+###                 |           |                 |         |
+###               Views     IPosRanges            |         |
+###                ^       ^ ^     ^^ ^           |         |
+###               /       /  |     | \ \          |         |
+###              .       /   |     |  \ \---------|         |
+###                     /    |     |   \        IPos*       |
+###                    /     |     |    \-------------------|
+###                   /      |     |                    IFWRanges*
+###                  /       |     |
+###                 /        |     |
+###             IRanges*     |     |
+###                ^      NCList*  |
+###                |              GroupingRanges
+###                |                    ^
+###                .                    |
 ###                                     .
 ###
 
@@ -45,6 +51,9 @@ setClass("Ranges", contains="List", representation("VIRTUAL"))
 
 ### Positions (i.e. ranges of with 1).
 setClass("Pos", contains="Ranges", representation("VIRTUAL"))
+
+### Fixed-width ranges.
+setClass("FWRanges", contains="Ranges", representation("VIRTUAL"))
 
 ### All ranges are on a single space.
 ### Direct IntegerRanges subclasses: Views, IPosRanges.
@@ -70,6 +79,17 @@ setClass("PosList",
 
 setClass("SimplePosList",
     contains=c("PosList", "SimpleRangesList"),
+    representation("VIRTUAL")
+)
+
+setClass("FWRangesList",
+    contains="RangesList",
+    representation("VIRTUAL"),
+    prototype(elementType="FWRanges")
+)
+
+setClass("SimpleFWRangesList",
+    contains=c("FWRangesList", "SimpleRangesList"),
     representation("VIRTUAL")
 )
 
@@ -147,6 +167,21 @@ setReplaceMethod("names", "Pos",
 
 setMethod("as.integer", "Pos", function(x) pos(x))
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Methods for FWRanges derivatives
+###
+
+### Overwrite default method with optimized method for FWRanges objects
+### storing width 1 ranges.
+setMethod("end", "FWRanges",
+    function(x, ...)
+    {
+        if (x@width == 1L)
+            return(start(x))
+        callNextMethod()
+    }
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Methods for IntegerRanges derivatives
@@ -256,6 +291,16 @@ validate_Pos <- function(x)
     x_pos <- pos(x)
     x_start <- start(x)
     if (!all(x_pos == x_start))
+        return(wmsg())
+    NULL
+}
+
+validate_FWRanges <- function(x)
+{
+    x_width <- width(x)
+    # TODO: validate_FWRanges(IFWRanges()) must pass this validity check. At
+    #       present, it will error because integer(0)[[1L]] is an error.
+    if (!all(x_width == x_width[[1L]]))
         return(wmsg())
     NULL
 }

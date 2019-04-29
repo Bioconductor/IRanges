@@ -135,6 +135,32 @@ setMethod("shift", "IPos",
     }
 )
 
+### Overwrite above method with optimized method for IFWRanges objects.
+### An IPos object cannot hold names so the 'use.names' arg has no effect.
+### NOTE: We only support shifting by a single value at the moment!
+setMethod("shift", "IFWRanges",
+    function(x, shift=0L, use.names=TRUE)
+    {
+        if (!is.numeric(shift))
+            stop("'shift' must be a numeric vector")
+        if (!is.integer(shift))
+            shift <- as.integer(shift)
+        if (length(shift) != 1L) {
+            if (length(shift) != length(x))
+                stop("'shift' must be a single number or have the ",
+                     "length of 'x' when shifting an IFWRanges object")
+            if (length(shift) != 0L) {
+                if (!isConstant(shift))
+                    stop("'shift' must be constant when shifting ",
+                         "an IFWRanges object")
+                shift <- shift[[1L]]
+            }
+        }
+        new_start <- start(x) + shift
+        BiocGenerics:::replaceSlots(x, start=new_start, check=FALSE)
+    }
+)
+
 setMethod("shift", "RangesList",
     function(x, shift=0L, use.names=TRUE)
     {

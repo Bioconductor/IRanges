@@ -32,10 +32,11 @@ exportClasses(
     FactorList, SimpleFactorList,
 
     ## Ranges-and-RangesList-classes.R:
-    Ranges, IntegerRanges, Pos,
+    Ranges, IntegerRanges, Pos, FWRanges,
     RangesList, SimpleRangesList,
     IntegerRangesList, SimpleIntegerRangesList,
     PosList, SimplePosList,
+    FWRangesList, SimpleFWRangesList,
 
     ## IPosRanges-class.R:
     IPosRanges,
@@ -48,6 +49,9 @@ exportClasses(
 
     ## IPos-class.R:
     IPos,
+
+    ## IFWRanges-class.R:
+    IFWRanges,
 
     ## Grouping-class.R:
     Grouping, ManyToOneGrouping, ManyToManyGrouping,
@@ -73,6 +77,9 @@ exportClasses(
 
     ## IPosList-class.R:
     IPosList, SimpleIPosList,
+
+    ## IFWRangesList-class.R:
+    IFWRangesList, SimpleIFWRangesList,
 
     ## ViewsList-class.R:
     ViewsList, SimpleViewsList,
@@ -230,6 +237,7 @@ export(
     asNormalIRanges,
     rangeComparisonCodeToLetter,
     IPos,
+    IFWRanges,
     NCList, NCLists,
     H2LGrouping, Dups,
     PartitioningByEnd, PartitioningByWidth, PartitioningMap,
