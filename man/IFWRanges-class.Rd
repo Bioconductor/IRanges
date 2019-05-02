@@ -135,7 +135,7 @@ IFWRanges(start=NULL, end=NULL, width=NULL, names=NULL)
 
 \examples{
 ## ---------------------------------------------------------------------
-## A. USING THE IFWRanges() CONSTRUCTOR
+## USING THE IFWRanges() CONSTRUCTOR
 ## ---------------------------------------------------------------------
 
 ## Three ways to construct the same IFWRanges object.
@@ -149,9 +149,9 @@ IFWRanges()  # IFWRanges instance of length zero
 IFWRanges(names=character())
 
 ## ---------------------------------------------------------------------
-## A. MANIPULATING IFWRanges OBJECTS
+## MANIPULATING IFWRanges OBJECTS
 ## ---------------------------------------------------------------------
-## All the methods defined for IntegerRanges objects work on IRanges
+## All the methods defined for IntegerRanges objects work on IFWRanges
 ## objects.
 ## See ?IntegerRanges for some examples.
 
