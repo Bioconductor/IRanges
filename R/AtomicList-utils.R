@@ -270,7 +270,7 @@ setMethod("runq", "RleList",
 ### Character
 ###
 
-### TODO: grep, grepl
+### TODO: grep, paste, ...
 
 setMethod("unstrsplit", "CharacterList",
     function(x, sep="") unstrsplit(as.list(x), sep=sep)
@@ -281,6 +281,64 @@ setMethod("unstrsplit", "RleList",
                                          sep=sep)
           )
 
+setMethods("nchar", c("CharacterList", "RleList"),
+           function(x) {
+               relist(nchar(unlist(x, use.names=FALSE)), x)
+           })
+
+setMethods("substring", c("CharacterList", "RleList"),
+           function(text, first, last = 1000000L) {
+               relist(substring(unlist(text, use.names=FALSE), first, last),
+                      text)
+           })
+
+setMethods("substr", c("CharacterList", "RleList"),
+           function(x, start, stop) {
+               relist(substr(unlist(x, use.names=FALSE), start, stop), x)
+           })
+
+setMethods("chartr", list(c(old = "ANY", new = "ANY", x = "CharacterList"),
+                          c(old = "ANY", new = "ANY", x = "RleList")),
+           function(old, new, x) {
+               relist(chartr(old, new, unlist(x, use.names=FALSE)), x)
+           })
+
+setMethods("toupper", c("CharacterList", "RleList"),
+           function(x) {
+               relist(toupper(unlist(x, use.names=FALSE)), x)
+           })
+
+setMethods("tolower", c("CharacterList", "RleList"),
+           function(x) {
+               relist(tolower(unlist(x, use.names=FALSE)), x)
+           })
+
+setMethods("sub", list(c("ANY", "ANY", "CharacterList"),
+                       c("ANY", "ANY", "RleList")),
+           function(pattern, replacement, x, ignore.case = FALSE,
+                    perl = FALSE, fixed = FALSE, useBytes = FALSE) {
+               relist(sub(pattern, replacement, unlist(x, use.names=FALSE),
+                          ignore.case, perl, fixed, useBytes),
+                      x)
+           })
+
+setMethods("gsub", list(c("ANY", "ANY", "CharacterList"),
+                        c("ANY", "ANY", "RleList")),
+           function(pattern, replacement, x, ignore.case = FALSE,
+                    perl = FALSE, fixed = FALSE, useBytes = FALSE) {
+               relist(gsub(pattern, replacement, unlist(x, use.names=FALSE),
+                           ignore.case, perl, fixed, useBytes),
+                      x)
+           })
+
+setMethods("grepl", list(c("ANY", "CharacterList"),
+                         c("ANY", "RleList")),
+           function(pattern, x, ignore.case = FALSE, perl = FALSE,
+                    fixed = FALSE, useBytes = FALSE) {
+               relist(grepl(pattern, unlist(x, use.names=FALSE),
+                            ignore.case, perl, fixed, useBytes),
+                      x)
+           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Set/comparison methods

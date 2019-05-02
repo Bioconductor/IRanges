@@ -183,7 +183,12 @@ setMethod("drop", "AtomicList", function(x) {
   if (any(x_eltNROWS > 1))
     stop("All element lengths must be <= 1")
   x_dropped <- rep.int(NA, sum(x_eltNROWS))
-  x_dropped[x_eltNROWS > 0] <- unlist(x, use.names = FALSE)
+  x_unlisted <- unlist(x, use.names = FALSE)
+  x_dropped[x_eltNROWS > 0L] <- x_unlisted
+  if (is.factor(x_unlisted)) {
+      x_dropped <- structure(as.integer(x_dropped), levels=levels(x_unlisted),
+                             class="factor")
+  }
   names(x_dropped) <- names(x)
   x_dropped
 })

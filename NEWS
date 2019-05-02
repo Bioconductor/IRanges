@@ -1,3 +1,35 @@
+CHANGES IN VERSION 2.18.0
+-------------------------
+
+NEW FEATURES
+
+    o Add some methods for CharacterList derivatives (nchar, substring,
+      substr, chartr, toupper, tolower, sub, gsub, grepl).
+
+BUG FIXES
+
+    o Fix unlist() on a SimpleRleList object of length 0
+
+    o Fix drop() for FactorList derivatives
+
+    o Fix removed rownames upon replacing in a SplitDataFrameList
+
+DEPRECATED AND DEFUNCT
+
+    o Deprecate RangedData objects.
+      The use of RangedData objects has been discouraged in favor of GRanges
+      or GRangesList objects since BioC 2.12, that is, since 2014. Developers
+      are required to migrate their code to use GRanges or GRangesList instead
+      of RangedData objects (the GRanges and GRangesList classes are defined
+      in the GenomicRanges package).
+
+    o Several RangedData methods are now defunct (after being deprecated in
+      BioC 3.8):
+      - score, score<-, lapply, within, countOverlaps;
+      - coercions from list, data.frame, DataTable, Rle, RleList, RleViewsList,
+        IntegerRanges, or IntegerRangesList to RangedData.
+
+
 CHANGES IN VERSION 2.16.0
 -------------------------
 
