@@ -17,7 +17,9 @@
 \alias{width,Pos-method}
 \alias{names,Pos-method}
 \alias{names<-,Pos-method}
+\alias{start,FWRanges-method}
 \alias{end,FWRanges-method}
+\alias{width,FWRanges-method}
 \alias{elementNROWS,Ranges-method}
 \alias{mid}
 \alias{mid,Ranges-method}
@@ -337,7 +339,7 @@ width(x) <- width(x) * 2 + 1
 x
 end(x) <- start(x)            # equivalent to width(x) <- 0
 x
-width(x) <- c(2, 0, 4) 
+width(x) <- c(2, 0, 4)
 x
 start(x)[3] <- end(x)[3] - 2  # resize the 3rd range
 x

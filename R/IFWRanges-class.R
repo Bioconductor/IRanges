@@ -10,7 +10,7 @@ setClass("IFWRanges",
     contains=c("FWRanges", "IPosRanges"),
     representation(
         start="integer",
-        width="integer",
+        fixed_width="integer",
         NAMES="character_OR_NULL"  # R doesn't like @names !!
     )
 )
@@ -19,6 +19,17 @@ setClass("IFWRanges",
 #       IFWRanges objects?
 ### Expensive! (and not needed)
 #setValidity2("IFWRanges", validate_FWRanges)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Getters
+###
+
+setMethod("fixed_width", "IFWRanges", function(x) x@fixed_width)
+
+setMethod("start", "IFWRanges", function(x, ...) x@start)
+
+setMethod("names", "IFWRanges", function(x) x@NAMES)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33,49 +44,27 @@ setMethod("parallelSlotNames", "IFWRanges",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Getters
-###
-
-setMethod("start", "IFWRanges", function(x, ...) x@start)
-
-setMethod("width", "IFWRanges", function(x) rep.int(x@width, length(x)))
-
-setMethod("names", "IFWRanges", function(x) x@NAMES)
-
-setMethod("ranges", "IntegerRanges",
-    function(x, use.names=TRUE, use.mcols=FALSE)
-    {
-        if (!isTRUEorFALSE(use.names))
-            stop("'use.names' must be TRUE or FALSE")
-        if (!isTRUEorFALSE(use.mcols))
-            stop("'use.mcols' must be TRUE or FALSE")
-        ans_start <- start(x)
-        ans_width <- width(x)
-        ans_names <- if (use.names) names(x) else NULL
-        ans_mcols <- if (use.mcols) mcols(x, use.names=FALSE) else NULL
-        new2("IRanges", start=ans_start,
-             width=ans_width,
-             NAMES=ans_names,
-             elementMetadata=ans_mcols,
-             check=FALSE)
-    }
-)
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
 ###
 
-.normarg_fixed_width <- function(width)
+
+.normarg_fixed_width <- function(width, funname = NULL)
 {
     width <- .normargSEW0(width, "width")
     if (identical(width, integer()))
         return(width)
-    width0 <- unique(width)
-    if (length(width0) > 1)
-        stop("'width' must not have more than 1 unique value")
-    if (width0 < 0)
+    fixed_width <- unique(width)
+    if (length(fixed_width) > 1)
+        if (funname == "bindROWS") {
+            stop("all the objects to concatenate must have the same width")
+        } else if (funname =="replaceROWS") {
+            stop("replacement value must have the same width as x")
+        } else {
+            stop("'width' must not have more than 1 unique value")
+        }
+    if (fixed_width < 0)
         stop("negative widths are not allowed")
-    width0
+    fixed_width
 }
 
 IFWRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
@@ -84,27 +73,31 @@ IFWRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
         if (!is.null(end) || !is.null(width))
             stop("'end' and 'width' must be NULLs ",
                  "when 'start' is an IntegerRanges object")
-        width <- .normarg_fixed_width(width(start))
-        ans <- new2("IFWRanges", start=start(start), width=width,
-                    NAMES=names, check=FALSE)
+        fixed_width <- .normarg_fixed_width(width(start))
+        ans_names <- S4Vectors:::normalize_names_replacement_value(names, start)
+        ans <- new2("IFWRanges", start=start(start), fixed_width=fixed_width,
+                    NAMES=ans_names, check=FALSE)
         return(ans)
     }
     start <- .normargSEW0(start, "start")
     end <- .normargSEW0(end, "end")
-    width <- .normarg_fixed_width(width)
+    fixed_width <- .normarg_fixed_width(width)
     ## Shortcut if user supplied 'width' and one of 'start' or 'end'.
-    if (length(width) && xor(length(start), length(end))) {
+    if (length(fixed_width) && xor(length(start), length(end))) {
         if (length(start) == 0L)
-            start <- end - width + 1L
-        return(new2("IFWRanges", start=start, width=width, NAMES=names,
-                    check=FALSE))
+            start <- end - fixed_width + 1L
+        ans_names <- S4Vectors:::normalize_names_replacement_value(names, start)
+        ans <- new2("IFWRanges", start=start, fixed_width=fixed_width,
+                    NAMES=ans_names, check=FALSE)
+        return(ans)
     }
     ## Otherwise construct an IRanges object and coerce to a IFWRanges
     ## instance.
-    ans <- solveUserSEW0(start, end, width)
+    ans <- solveUserSEW0(start, end, fixed_width)
     names(ans) <- names
     as(ans, "IFWRanges")
 }
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
@@ -118,7 +111,7 @@ IFWRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
     if (!all(from_width == from_width[[1L]]))
         stop(wmsg("all the ranges in the ", class(from), " object to ",
                   "coerce to IFWRanges must have the same width"))
-    ans <- IFWRanges(start=start(from), width=width(from), names=names(from))
+    ans <- IFWRanges(start=start(from), width=from_width, names=names(from))
     mcols(ans) <- mcols(from, use.names=FALSE)
     ans
 }
@@ -139,8 +132,8 @@ setAs("ANY", "IFWRanges",
     objects <- S4Vectors:::prepare_objects_to_bind(x, objects)
     all_objects <- c(list(x), objects)
 
-    # TODO: Is this necessary? Why doesn't bindROWS,IRanges-method have
-    #       something similar?
+    # TODO: Is this necessary (comes from IPos)?
+    #       Why doesn't bindROWS,IRanges-method have something similar?
     ans_len <- suppressWarnings(sum(lengths(all_objects)))
     if (is.na(ans_len))
         stop("too many integer positions to concatenate")
@@ -150,8 +143,10 @@ setAs("ANY", "IFWRanges",
     ## Concatenate the "width" slots.
     ## Note that we use direct slot access to avoid materializing the width
     ## vector (which could be large).
-    width_list <- lapply(all_objects, slot, "width")
-    ans_width <- .normarg_fixed_width(unlist(width_list, use.names=FALSE))
+    fixed_width_list <- lapply(all_objects, slot, "fixed_width")
+    ans_fixed_width <- .normarg_fixed_width(unlist(fixed_width_list,
+                                                   use.names=FALSE),
+                                            "bindROWS")
 
     ## 2. Take care of the parallel slots
 
@@ -164,11 +159,11 @@ setAs("ANY", "IFWRanges",
     ans <- callNextMethod(x, objects, use.names=use.names,
                           ignore.mcols=ignore.mcols, check=check)
 
-    # TODO: Replacing the "width" slot is redundant because by this point
-    #       it will have inherited the correct width from x@width or
+    # TODO: Replacing the "fixed_width" slot is redundant because by this point
+    #       it will have inherited the correct width from x@fixed_width or
     #       errored due to .normarg_fixed_width() detecting incompatible
     #       widths.
-    BiocGenerics:::replaceSlots(ans, width=ans_width,
+    BiocGenerics:::replaceSlots(ans, fixed_width=ans_fixed_width,
                                 check=check)
 }
 
@@ -176,7 +171,7 @@ setMethod("bindROWS", "IFWRanges", .concatenate_IFWRanges_objects)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Low-level setters for IRanges objects.
+### Low-level setters for IFWRanges objects.
 ###
 ### All these low-level setters preserve the length of the object.
 ### The choice was made to implement a "resizing" semantic:
@@ -185,19 +180,19 @@ setMethod("bindROWS", "IFWRanges", .concatenate_IFWRanges_objects)
 ###   (3) changing the width preserves the start (so it changes the end)
 ###
 
-.set_IFWRanges_width <- function(x, value, check=TRUE)
+.set_IFWRanges_fixed_width <- function(x, value, check=TRUE)
 {
     if (!isTRUEorFALSE(check))
         stop("'check' must be TRUE or FALSE")
     value <- .normarg_fixed_width(value)
-    x@width <- value
+    x@fixed_width <- value
     if (check)
         validObject(x)
     x
 }
 
 setReplaceMethod("width", "IFWRanges",
-    function(x, ..., value) .set_IFWRanges_width(x, value)
+    function(x, ..., value) .set_IFWRanges_fixed_width(x, value)
 )
 
 
@@ -221,11 +216,13 @@ setMethod("replaceROWS", "IFWRanges",
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         ans_start <- replaceROWS(start(x), i, start(value))
-        ans_width <- .normarg_fixed_width(c(x@width, value@width))
+        ans_fixed_width <- .normarg_fixed_width(c(x@fixed_width,
+                                                  value@fixed_width),
+                                                "replaceROWS")
         ans_mcols <- replaceROWS(mcols(x, use.names=FALSE), i,
                                  mcols(value, use.names=FALSE))
         BiocGenerics:::replaceSlots(x, start=ans_start,
-                                    width=ans_width,
+                                    fixed_width=ans_fixed_width,
                                     mcols=ans_mcols,
                                     check=FALSE)
     }

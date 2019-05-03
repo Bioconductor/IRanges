@@ -71,6 +71,10 @@ setMethod("pos", "CompressedPosList",
     function(x) relist(pos(unlist(x, use.names=FALSE)), x)
 )
 
+setMethod("fixed_width", "CompressedFWRangesList",
+          function(x) fixed_width(unlist(x, use.names=FALSE))
+)
+
 setMethod(".replaceSEW", "CompressedRangesList",
     function(x, FUN, ..., value)
     {

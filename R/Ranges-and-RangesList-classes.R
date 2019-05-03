@@ -172,16 +172,32 @@ setMethod("as.integer", "Pos", function(x) pos(x))
 ### Methods for FWRanges derivatives
 ###
 
-### Overwrite default method with optimized method for FWRanges objects
-### storing width 1 ranges.
-setMethod("end", "FWRanges",
-    function(x, ...)
-    {
-        if (x@width == 1L)
-            return(start(x))
-        callNextMethod()
-    }
+### No fixed_width() setter for now.
+setGeneric("fixed_width", function(x) standardGeneric("fixed_width"))
+
+### FWRanges subclasses must implement a "fixed_width" method as well as one
+### of a "start" or "end" method.
+### Note that the default start() and end() methods below implement a
+### circular relationship. So FWRanges subclasses must overwrite at least 1 of
+### them!
+setMethod("start", "FWRanges",
+          function(x, ...)
+          {
+              if (isTRUE(length(fixed_width(x)) && fixed_width(x) == 1L))
+                  return(end(x))
+              callNextMethod()
+          }
 )
+setMethod("end", "FWRanges",
+          function(x, ...)
+          {
+              if (isTRUE(length(fixed_width(x)) && fixed_width(x) == 1L))
+                  return(start(x))
+              callNextMethod()
+          }
+)
+setMethod("width", "FWRanges", function(x) rep.int(fixed_width(x), length(x)))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Methods for IntegerRanges derivatives
@@ -260,6 +276,18 @@ setMethod("pos", "PosList",
     function(x) as(lapply(x, pos), "SimpleIntegerList")
 )
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Methods for FWRangesList derivatives
+###
+
+setMethod("fixed_width", "FWRangesList",
+          function(x) {
+              if (length(x))
+                  return(fixed_width(x[[1L]]))
+              integer(0L)
+          }
+)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity

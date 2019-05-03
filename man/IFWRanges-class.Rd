@@ -10,7 +10,6 @@
 
 % Accessors
 \alias{start,IFWRanges-method}
-\alias{width,IFWRanges-method}
 \alias{names,IFWRanges-method}
 \alias{width<-,IFWRanges-method}
 \alias{names<-,IFWRanges-method}
