@@ -47,7 +47,6 @@ setMethod("parallelSlotNames", "IFWRanges",
 ### Constructor
 ###
 
-
 .normarg_fixed_width <- function(width, funname = NULL)
 {
     width <- .normargSEW0(width, "width")
