@@ -181,7 +181,7 @@ exportMethods(
     Ops, Math, Math2, Summary, Complex,
     summary,
     drop,
-    start, "start<-", end, "end<-", width, "width<-", pos,
+    start, "start<-", end, "end<-", width, "width<-", pos, fixed_width,
     min, max, range, which.max, which.min,
     diff,
     mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
@@ -283,6 +283,7 @@ export(
     ## Ranges-and-RangesList-classes.R:
     mid,
     isNormal, whichFirstNotNormal,
+    fixed_width,
 
     ## Views-class.R:
     subject,
