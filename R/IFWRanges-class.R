@@ -218,8 +218,8 @@ setMethod("replaceROWS", "IFWRanges",
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         ans_start <- replaceROWS(start(x), i, start(value))
-        ans_fixed_width <- .normarg_fixed_width(c(x@fixed_width,
-                                                  value@fixed_width),
+        ans_fixed_width <- .normarg_fixed_width(c(fixed_width(x),
+                                                  fixed_width(value)),
                                                 "replaceROWS")
         ans_mcols <- replaceROWS(mcols(x, use.names=FALSE), i,
                                  mcols(value, use.names=FALSE))
