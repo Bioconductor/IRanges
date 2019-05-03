@@ -136,7 +136,8 @@ setMethod("shift", "IPos",
 )
 
 ### Overwrite above method with optimized method for IFWRanges objects.
-### An IPos object cannot hold names so the 'use.names' arg has no effect.
+### TODO: An IFWRanges object can hold names but 'use.names' arg currently
+###       has no effect.
 ### NOTE: We only support shifting by a single value at the moment!
 setMethod("shift", "IFWRanges",
     function(x, shift=0L, use.names=TRUE)
