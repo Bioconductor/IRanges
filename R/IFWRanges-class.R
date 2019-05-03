@@ -55,12 +55,14 @@ setMethod("parallelSlotNames", "IFWRanges",
         return(width)
     fixed_width <- unique(width)
     if (length(fixed_width) > 1)
-        if (funname == "bindROWS") {
+        if (is.null(funname)) {
+            stop("'width' must not have more than 1 unique value")
+        } else if (funname == "bindROWS") {
             stop("all the objects to concatenate must have the same width")
-        } else if (funname =="replaceROWS") {
+        } else if (funname == "replaceROWS") {
             stop("replacement value must have the same width as x")
         } else {
-            stop("'width' must not have more than 1 unique value")
+            stop("")
         }
     if (fixed_width < 0)
         stop("negative widths are not allowed")
