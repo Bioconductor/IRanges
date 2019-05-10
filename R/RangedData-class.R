@@ -171,28 +171,6 @@ setReplaceMethod("universe", "RangedData",
                    x
                  })
 
-setMethod("score", "RangedData",
-          function(x) {
-              what <- "score() getter for RangedData objects"
-              .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-              score <- x[["score"]]
-              ## if (is.null(score) && ncol(x) > 0 && is.numeric(x[[1L]]))
-              ##     score <- x[[1L]]
-              score
-          })
-
-setReplaceMethod("score", "RangedData",
-                 function(x, value) {
-                     what <- "score() setter for RangedData objects"
-                     .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-                     if (!is.numeric(value))
-                         stop("score must be numeric")
-                     if (length(value) != nrow(x))
-                         stop("number of scores must equal the number of rows")
-                     x[["score"]] <- value
-                     x
-                 })
-
 ## values delegates
 setMethod("nrow", "RangedData",
           function(x) {
@@ -692,118 +670,6 @@ setAs("RangedData", "DataFrame",
                   unlist(values(from), use.names=FALSE))
       })
 
-setAs("Rle", "RangedData",
-      function(from)
-      {
-        what <- "coercion method from Rle to RangedData"
-        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-        new2("RangedData",
-             ranges = IRangesList("1" = successiveIRanges(runLength(from))),
-             values =
-             SplitDataFrameList("1" = DataFrame(score = runValue(from))),
-             metadata = metadata(from),
-             check = FALSE)
-      })
-
-setAs("RleList", "RangedData",
-      function(from)
-      {
-        what <- "coercion method from RleList to RangedData"
-        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-        ranges <-
-          IRangesList(lapply(from, function(x)
-                             successiveIRanges(runLength(x))))
-        values <-
-          SplitDataFrameList(lapply(from, function(x)
-                                    DataFrame(score = runValue(x))))
-        if (is.null(names(from))) {
-          nms <- as.character(seq_len(length(from)))
-          names(ranges) <- nms
-          names(values) <- nms
-        }
-        new2("RangedData",
-             ranges = ranges, values = values,
-             metadata = metadata(from),
-             elementMetadata = elementMetadata(from, use.names=FALSE),
-             check = FALSE)
-      })
-
-setAs("RleViewsList", "RangedData", function(from) {
-  what <- "coercion method from RleViewsList to RangedData"
-  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-  subject <- subject(from)
-  from_ranges <- restrict(ranges(from), 1L, elementNROWS(subject),
-                          keep.all.ranges = TRUE)
-### FIXME: do we want to insert NAs for out of bounds views?
-  score <- subject[from_ranges]
-  score_part <- as(lapply(width(from_ranges), PartitioningByWidth),
-                   "IntegerRangesList")
-  score_ranges <- ranges(score)
-  ol <- findOverlaps(score_ranges, score_part)
-  offind <- as(lapply(ol, subjectHits), "IntegerList")
-  offset <- (start(from_ranges) - start(score_part))[offind]
-  ranges <- shift(ranges(ol, score_ranges, score_part), offset)
-  viewNames <- lapply(from_ranges, function(x) {
-    if (is.null(names(x)))
-      seq_len(length(x))
-    else names(x)
-  })
-  RangedData(ranges,
-             score = unlist(runValue(score), use.names = FALSE)[queryHits(ol)],
-             view = unlist(viewNames, use.names = FALSE)[subjectHits(ol)])
-})
-
-setAs("IntegerRanges", "RangedData",
-      function(from)
-      {
-        what <- "coercion method from IntegerRanges to RangedData"
-        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-        RangedData(from)
-      })
-
-setAs("IntegerRangesList", "RangedData",
-    function(from)
-    {
-        what <- "coercion method from IntegerRangesList to RangedData"
-        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-        from_names <- names(from)
-        if (is.null(from_names) || anyDuplicated(from_names))
-            stop("cannot coerce a IntegerRangesList object with no names ",
-                 "or duplicated names to a RangedData object")
-        unlisted_from <- unlist(from, use.names=FALSE)
-        unlisted_values <- mcols(unlisted_from, use.names=FALSE)
-        mcols(unlisted_from) <- NULL
-        ans_ranges <- relist(unlisted_from, skeleton=from)
-        metadata(ans_ranges) <- metadata(from)
-        if (!is(unlisted_values, "DataFrame")) {
-            if (!is.null(unlisted_values))
-                warning("could not propagate the inner metadata columns of ",
-                        "'from' (accessed with 'mcols(unlist(from))') ",
-                        "to the data columns (aka values) of the returned ",
-                        "RangedData object")
-            unlisted_values <-
-                S4Vectors:::make_zero_col_DataFrame(length(unlisted_from))
-        }
-        ans_values <- newCompressedList0("CompressedSplitDataFrameList",
-                                         unlisted_values,
-                                         PartitioningByEnd(ans_ranges))
-        new2("RangedData",
-             ranges=ans_ranges,
-             values=ans_values,
-             #metadata=metadata(from),
-             elementMetadata=elementMetadata(from, use.names=FALSE),
-             check=FALSE)
-    }
-)
-
-setAs("list", "RangedData",
-  function(from) {
-    what <- "coercion method from list to RangedData"
-    .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-    do.call(c, unname(from))
-  }
-)
-
 .fromRangedDataToCompressedIRangesList <- function(from)
 {
     .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
@@ -838,19 +704,6 @@ setMethod("as.env", "RangedData", function(x, enclos = parent.frame(2)) {
   env
 })
 
-.RangedData_fromDataFrame <- function(from) {
-  what <- "coercion method from data.frame or DataTable to RangedData"
-  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-  required <- c("start", "end")
-  if (!all(required %in% colnames(from)))
-    stop("'from' must at least include a 'start' and 'end' column")
-  datacols <- setdiff(colnames(from), c(required, "space", "width"))
-  RangedData(IRanges(from$start, from$end), from[,datacols,drop=FALSE],
-             space = from$space)
-}
-
-setAs("data.frame", "RangedData", .RangedData_fromDataFrame)
-setAs("DataTable", "RangedData", .RangedData_fromDataFrame)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show

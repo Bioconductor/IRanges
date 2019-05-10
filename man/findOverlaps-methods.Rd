@@ -21,9 +21,6 @@
 \alias{countOverlaps,Vector,missing-method}
 \alias{countOverlaps,IntegerRanges,IntegerRanges-method}
 \alias{countOverlaps,IntegerRangesList,IntegerRangesList-method}
-\alias{countOverlaps,RangedData,RangedData-method}
-\alias{countOverlaps,RangedData,IntegerRangesList-method}
-\alias{countOverlaps,IntegerRangesList,RangedData-method}
 
 \alias{overlapsAny}
 \alias{overlapsAny,Vector,Vector-method}

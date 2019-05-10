@@ -185,7 +185,6 @@ exportMethods(
     append,
     "!", which,
     merge,
-    with, within,
     is.na,
     by,
     cbind, rbind,
@@ -306,9 +305,6 @@ export(
     maskedwidth, maskedratio,
     collapse,
 
-    ## RangedData-class.R:
-    score, "score<-",
-
     ## findOverlaps-methods.R:
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     overlapsRanges,
@@ -373,7 +369,6 @@ exportMethods(
     desc, "desc<-",
     maskedwidth, maskedratio,
     collapse,
-    score, "score<-",
     findOverlaps, countOverlaps, overlapsAny, subsetByOverlaps,
     overlapsRanges,
     poverlaps,

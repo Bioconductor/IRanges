@@ -30,8 +30,6 @@
 \alias{universe,RangedData-method}
 \alias{universe<-}
 \alias{universe<-,RangedData-method}
-\alias{score,RangedData-method}
-\alias{score<-,RangedData-method}
 \alias{columnMetadata,RangedData-method}
 \alias{columnMetadata<-,RangedData-method}
 
@@ -41,17 +39,9 @@
 % Coercion:
 \alias{as.data.frame,RangedData-method}
 \alias{coerce,RangedData,DataFrame-method}
-\alias{coerce,Rle,RangedData-method}
-\alias{coerce,RleList,RangedData-method}
-\alias{coerce,RleViewsList,RangedData-method}
-\alias{coerce,IntegerRanges,RangedData-method}
-\alias{coerce,IntegerRangesList,RangedData-method}
-\alias{coerce,list,RangedData-method}
 \alias{coerce,RangedData,CompressedIRangesList-method}
 \alias{coerce,RangedData,IRangesList-method}
 \alias{as.env,RangedData-method}
-\alias{coerce,data.frame,RangedData-method}
-\alias{coerce,DataTable,RangedData-method}
 
 % Combining and splitting
 \alias{c,RangedData-method}
@@ -61,12 +51,6 @@
 \alias{[,RangedData-method}
 \alias{[[,RangedData-method}
 \alias{[[<-,RangedData-method}
-
-% Utilities:
-\alias{within,RangedData-method}
-
-% Applying:
-\alias{lapply,RangedData-method}
 
 % Show:
 \alias{show,RangedData-method}
@@ -164,15 +148,6 @@
         }
         \item{}{\code{columnMetadata(x) <- value}: Set the \code{DataFrame}
           of metadata for the columns.
-        }
-        \item{}{\code{within(data, expr, ...)}: Evaluates \code{expr}
-          within \code{data}, a \code{RangedData}. Any values assigned
-          in \code{expr} will be stored as value columns in \code{data},
-          unless they match one of the reserved names: \code{ranges},
-          \code{start}, \code{end}, \code{width} and
-          \code{space}. Behavior is undefined if any of the range
-          symbols are modified inconsistently. Modifications
-          to \code{space} are ignored.
         }
       }
     }
@@ -282,39 +257,6 @@
       except the result is an \code{\linkS4class{DataFrame}} and it
       probably involves less copying, especially if there is only a
       single space.
-    }
-    \item{}{
-      \code{as(from, "RangedData")}: Coerce \code{from} to
-      a \code{RangedData}, according to the type of \code{from}:
-      \describe{
-        \item{\code{\linkS4class{Rle}}, \code{\linkS4class{RleList}}}{
-          Converts each run to a range and stores the run values in a
-          column named "score".
-        }
-        \item{\code{\linkS4class{RleViewsList}}}{
-          Creates a \code{RangedData} using the ranges given by the runs
-          of \code{subject(from)} in each of the windows, with a value column
-          \code{score} taken as the corresponding subject values.
-        }
-        \item{\code{\linkS4class{IntegerRanges}}}{
-          Creates a \code{RangedData} with only the ranges in \code{from};
-          no data columns.
-        }
-        \item{\code{\linkS4class{IntegerRangesList}}}{
-          Creates a \code{RangedData} with the ranges in \code{from}.
-          Also propagates the \emph{inner} metadata columns of the
-          \code{IntegerRangesList} (accessed with \code{mcols(unlist(from))})
-          to the data columns (aka values) of the \code{RangedData}.
-          This makes it a \emph{lossless} coercion and the exact reverse of the
-          coercion from \code{RangedData} to \code{IntegerRangesList}.
-        }
-        \item{\code{data.frame} or \code{DataTable}}{Constructs a
-          \code{RangedData}, using the columns \dQuote{start},
-          \dQuote{end}, and, optionally, \dQuote{space} columns in
-          \code{from}. The other columns become data columns in the
-          result. Any \dQuote{width} column is ignored.
-        }
-      }
     }
     \item{}{
       \code{as(from, "IntegerRangesList")}:

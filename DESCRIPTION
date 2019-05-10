@@ -7,7 +7,7 @@ Description: Provides efficient low-level and highly reusable S4
 	neighbors. Defines efficient list-like classes for storing,
 	transforming and aggregating large grouped data, i.e., collections
 	of atomic vectors and DataFrames.
-Version: 2.19.0
+Version: 2.19.1
 Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
@@ -61,7 +61,6 @@ Collate: range-squeezers.R
 	CompressedGrouping-class.R
 	CompressedRangesList-class.R
 	RangedData-class.R
-	RangedData-utils.R
 	Hits-class-leftovers.R
 	NCList-class.R
 	findOverlaps-methods.R
