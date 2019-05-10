@@ -162,13 +162,20 @@ setMethod("findOverlaps", c("IntegerRangesList", "IntegerRangesList"),
             ans
           })
 
+.findOverlaps_RangedData_defunct_msg <- c(
+    "RangedData objects are deprecated and the \"findOverlaps\" methods ",
+    "for RangedData objects are now defunct. ",
+    "Please migrate your code to use GRanges or GRangesList objects instead. ",
+    "See IMPORTANT NOTE in ?RangedData"
+)
+
 setMethod("findOverlaps", c("RangedData", "RangedData"),
           function(query, subject, maxgap = -1L, minoverlap = 0L,
                    type = c("any", "start", "end", "within", "equal"),
                    select = c("all", "first", "last", "arbitrary"),
                    drop = FALSE)
           {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            .Defunct(msg=wmsg(.findOverlaps_RangedData_defunct_msg))
             findOverlaps(ranges(query), ranges(subject),
                          maxgap = maxgap, minoverlap = minoverlap,
                          type = match.arg(type), select = match.arg(select),
@@ -181,7 +188,7 @@ setMethod("findOverlaps", c("RangedData", "IntegerRangesList"),
                    select = c("all", "first", "last", "arbitrary"),
                    drop = FALSE)
           {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            .Defunct(msg=wmsg(.findOverlaps_RangedData_defunct_msg))
             findOverlaps(ranges(query), subject,
                          maxgap = maxgap, minoverlap = minoverlap,
                          type = match.arg(type), select = match.arg(select),
@@ -194,7 +201,7 @@ setMethod("findOverlaps", c("IntegerRangesList", "RangedData"),
                    select = c("all", "first", "last", "arbitrary"),
                    drop = FALSE)
           {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            .Defunct(msg=wmsg(.findOverlaps_RangedData_defunct_msg))
             findOverlaps(query, ranges(subject),
                          maxgap = maxgap, minoverlap = minoverlap,
                          type = match.arg(type), select = match.arg(select),

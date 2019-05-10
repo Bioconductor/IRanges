@@ -146,7 +146,8 @@ setReplaceMethod("names", "RangedData",
                  })
 setMethod("elementNROWS", "RangedData",
     function(x) {
-        .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+        what <- "elementNROWS() method for RangedData objects"
+        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
         elementNROWS(ranges(x))
     })
 
@@ -202,7 +203,8 @@ setMethod("colnames", "RangedData",
           })
 setReplaceMethod("rownames", "RangedData",
                  function(x, value) {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "rownames setter for RangedData objects"
+                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    if (!is.null(value)) {
                      if (length(value) != nrow(x)) {
                        stop("invalid 'row.names' length")
@@ -226,18 +228,21 @@ setReplaceMethod("rownames", "RangedData",
                  })
 setReplaceMethod("colnames", "RangedData",
                  function(x, value) {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "colnames setter for RangedData objects"
+                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    colnames(x@values) <- value
                    x
                  })
 
 setMethod("columnMetadata", "RangedData", function(x) {
-  .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+  what <- "columnMetadata getter for RangedData objects"
+  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
   columnMetadata(values(x))
 })
 
 setReplaceMethod("columnMetadata", "RangedData", function(x, value) {
-  .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+  what <- "columnMetadata setter for RangedData objects"
+  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
   columnMetadata(values(x)) <- value
   x
 })
@@ -554,7 +559,8 @@ setMethod("[", "RangedData",
 ###
 
 setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
-  .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+  what <- "c() method for RangedData objects"
+  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
   if (!identical(recursive, FALSE))
     stop("\"c\" method for RangedData objects ",
          "does not support the 'recursive' argument")
@@ -579,7 +585,8 @@ setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
 })
 
 setMethod("rbind", "RangedData", function(..., deparse.level=1) {
-  .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+  what <- "rbind() method for RangedData objects"
+  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
   args <- unname(list(...))
   rls <- lapply(args, ranges)
   nms <- unique(unlist(lapply(args, names), use.names=FALSE))
@@ -651,7 +658,8 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
 
 .as.data.frame.RangedData <- function(x, row.names=NULL, optional=FALSE, ...)
 {
-    .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+    what <- "as.data.frame() method for RangedData objects"
+    .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
     if (!(is.null(row.names) || is.character(row.names)))
         stop("'row.names'  must be NULL or a character vector")
     if (!missing(optional) || length(list(...)))
@@ -666,6 +674,8 @@ setMethod("as.data.frame", "RangedData", .as.data.frame.RangedData)
 setAs("RangedData", "DataFrame",
       function(from)
       {
+        what <- "coercion method from RangedData to DataFrame"
+        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
         DataFrame(as.data.frame(ranges(from)),
                   unlist(values(from), use.names=FALSE))
       })
@@ -686,7 +696,8 @@ setAs("RangedData", "CompressedIRangesList",
 setAs("RangedData", "IRangesList", .fromRangedDataToCompressedIRangesList)
 
 setMethod("as.env", "RangedData", function(x, enclos = parent.frame(2)) {
-  .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+  what <- "as.env() method for RangedData objects"
+  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
   env <- S4Vectors:::makeEnvForNames(x, colnames(x), enclos)
   makeAccessorBinding <- function(fun, name = deparse(substitute(fun))) {
     makeActiveBinding(name, function() {
