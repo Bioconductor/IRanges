@@ -104,30 +104,31 @@ show_IntegerRangesList <- function(x, with.header=TRUE)
 {
     x_len <- length(x)
     if (with.header)
-        cat(classNameForDisplay(x), " of length ", x_len, "\n",
-            sep = "")
-    if (x_len == 0L)
-        return(invisible(NULL))
+        cat(classNameForDisplay(x), " object of length ", x_len,
+            if (x_len != 0L) ":" else "", "\n", sep="")
     cumsumN <- end(PartitioningByEnd(x))
     N <- tail(cumsumN, 1)
-    if (x_len <= 5L && N <= 20L) {
+    if (x_len == 0L) {
+        ## Display nothing.
+    } else if (x_len <= 3L || (x_len <= 5L && N <= 20L)) {
+        ## Display full object.
         show(as.list(x))
-        return(invisible(NULL))
-    }
-    if (x_len >= 3L && cumsumN[3L] <= 20L) {
-        showK <- 3L
-    } else if (x_len >= 2L && cumsumN[2L] <= 20L) {
-        showK <- 2L
     } else {
-        showK <- 1L
-    }
-    show(as.list(x[seq_len(showK)]))
-    diffK <- x_len - showK
-    if (diffK > 0L)
-        cat("...\n<", x_len - showK,
-            ifelse(diffK == 1L,
-                   " more element>\n", " more elements>\n"),
+        ## Display truncated object.
+        if (cumsumN[[3L]] <= 20L) {
+            showK <- 3L
+        } else if (cumsumN[[2L]] <= 20L) {
+            showK <- 2L
+        } else {
+            showK <- 1L
+        }
+        show(as.list(x[seq_len(showK)]))
+        diffK <- x_len - showK
+        cat("...\n",
+            "<", diffK, " more element",
+            ifelse(diffK == 1L, "", "s"), ">\n",
             sep="")
+    }
 }
 
 setMethod("show", "IntegerRangesList",

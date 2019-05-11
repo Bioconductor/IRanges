@@ -1,13 +1,17 @@
 \name{IntegerRangesList-class}
 \docType{class}
-\alias{class:IntegerRangesList-class}
-\alias{class:SimpleIntegerRangesList-class}
+
+% Classes
+
+\alias{class:IntegerRangesList}
 \alias{IntegerRangesList-class}
-\alias{SimpleIntegerRangesList-class}
 \alias{IntegerRangesList}
+
+\alias{class:SimpleIntegerRangesList}
+\alias{SimpleIntegerRangesList-class}
 \alias{SimpleIntegerRangesList}
 
-% accessors
+% Accessors
 \alias{start,RangesList-method}
 \alias{start<-,IntegerRangesList-method}
 \alias{end,RangesList-method}
@@ -21,10 +25,10 @@
 \alias{isNormal,IntegerRangesList-method}
 \alias{whichFirstNotNormal,IntegerRangesList-method}
 
-% show
+% Show
 \alias{show,IntegerRangesList-method}
 
-% merge
+% Merge
 \alias{merge,IntegerRangesList,missing-method}
 \alias{merge,missing,IntegerRangesList-method}
 \alias{merge,IntegerRangesList,IntegerRangesList-method}
@@ -34,6 +38,44 @@
 \description{
   The IntegerRangesList \emph{virtual} class is a general container for
   storing a list of \link{IntegerRanges} objects.
+
+  Most users are probably more interested in the \link{IRangesList}
+  container, an IntegerRangesList derivative for storing a list of
+  \link{IRanges} objects.
+}
+
+\details{
+  The place of IntegerRangesList in the \emph{Vector class hierarchy}:
+  \preformatted{
+                               Vector
+                                 ^
+                                 |
+                                List
+                                 ^
+                                 |
+                             RangesList
+                              ^     ^
+                             /       \
+                            /         \
+                           /           \
+                          /             \
+                         /               \
+                        /                 \
+         IntegerRangesList               GenomicRangesList
+                ^                                 ^
+                |                                 |
+           IRangesList                       GRangesList
+             ^     ^                           ^     ^
+            /       \                         /       \
+           /         \                       /         \
+          /           \                     /           \
+   SimpleIRangesList   \             SimpleGRangesList   \
+            CompressedIRangesList             CompressedGRangesList
+  }
+  Note that the \emph{Vector class hierarchy} has many more classes.
+  In particular \link[S4Vectors]{Vector}, \link[S4Vectors]{List},
+  \link[IRanges]{RangesList}, and \link[IRanges]{IntegerRangesList}
+  have other subclasses not shown here.
 }
 
 \section{Accessors}{
@@ -90,11 +132,16 @@
   operator, which zooms the ranges by a numeric factor.
 }
 
-\author{ Michael Lawrence }
+\author{M. Lawrence & H. Pagès}
+
 \seealso{
-  \code{\linkS4class{List}}, the parent of this class, for more
-  functionality.
+  \itemize{
+    \item \link{IRangesList} objects.
+
+    \item \link{IntegerRanges} and \link{IRanges} objects.
+  }
 }
+
 \examples{
 ## ---------------------------------------------------------------------
 ## Basic manipulation

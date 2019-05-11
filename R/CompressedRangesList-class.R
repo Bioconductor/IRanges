@@ -20,7 +20,7 @@ setClass("CompressedIntegerRangesList",
 
 setClass("CompressedIRangesList",
     contains=c("IRangesList", "CompressedIntegerRangesList"),
-    prototype=prototype(unlistData=new("IRanges"))
+    representation(unlistData="IRanges")
 )
 
 ### CompressedNormalIRangesList cannot hold NormalIRanges as its elements,
