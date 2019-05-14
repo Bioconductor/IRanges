@@ -144,10 +144,11 @@ setReplaceMethod("names", "RangedData",
                    names(x@values) <- value
                    x
                  })
+### Used in [ and indirectly in .show_RangedData() (via [) so making this
+### Defunct breaks [ and show(RangedData).
 setMethod("elementNROWS", "RangedData",
     function(x) {
-        what <- "elementNROWS() method for RangedData objects"
-        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
+        .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
         elementNROWS(ranges(x))
     })
 
