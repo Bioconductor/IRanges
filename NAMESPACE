@@ -47,7 +47,7 @@ exportClasses(
     IRanges, NormalIRanges,
 
     ## IPos-class.R:
-    IPos,
+    IPos, UnstitchedIPos, StitchedIPos,
 
     ## Grouping-class.R:
     Grouping, ManyToOneGrouping, ManyToManyGrouping,

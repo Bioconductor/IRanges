@@ -27,8 +27,14 @@ setMethod("NSBS", "IntegerRanges",
             return(callGeneric())
         }
         x_NROW <- NROW(x)
-        if (is(i, "IPos"))
-            i <- i@pos_runs  # TODO: Use collapse() when it's available
+        if (is(i, "UnstitchedIPos")) {
+            ## Return a NativeNSBS object.
+            i <- i@pos
+            return(callGeneric())
+        }
+        if (is(i, "StitchedIPos"))
+            i <- i@pos_runs  # TODO: Use collapse() (or stitch()?) when
+                             # it's available
         i_start <- start(i)
         i_end <- end(i)
         if (min(i_start) < 1L || strict.upper.bound && max(i_end) > x_NROW)

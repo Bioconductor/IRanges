@@ -241,18 +241,18 @@ setMethod("coverage", "IntegerRanges",
     }
 )
 
-### Overwrite above method with optimized method for IPos objects.
-setMethod("coverage", "IPos",
+### Overwrite above method with optimized method for StitchedIPos objects.
+setMethod("coverage", "StitchedIPos",
     function(x, shift=0L, width=NULL, weight=1L,
                 method=c("auto", "sort", "hash"))
     {
         CAN_ONLY_ETC <- c(" can only be a single number when ",
-                          "calling coverage() on an IPos object")
+                          "calling coverage() on a StitchedIPos object")
         if (!isSingleNumber(shift))
             stop(wmsg("'shift'", CAN_ONLY_ETC))
         if (!isSingleNumber(weight))
             stop(wmsg("'weight'", CAN_ONLY_ETC))
-        x <- stitch_IPos(x)
+        x <- x@pos_runs
         callGeneric()
     }
 )

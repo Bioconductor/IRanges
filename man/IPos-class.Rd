@@ -1,49 +1,117 @@
 \name{IPos-class}
 \docType{class}
 
+% Classes
+
 \alias{class:IPos}
 \alias{IPos-class}
 \alias{IPos}
 
-\alias{pos}
-\alias{pos,IPos-method}
-\alias{length,IPos-method}
+\alias{class:UnstitchedIPos}
+\alias{UnstitchedIPos-class}
+\alias{UnstitchedIPos}
 
+\alias{parallelSlotNames,UnstitchedIPos-method}
+
+\alias{class:StitchedIPos}
+\alias{StitchedIPos-class}
+\alias{StitchedIPos}
+
+% Accessors
+
+\alias{pos}
+\alias{pos,UnstitchedIPos-method}
+\alias{pos,StitchedIPos-method}
+\alias{length,UnstitchedIPos-method}
+\alias{length,StitchedIPos-method}
+
+% Coercion
+
+\alias{coerce,UnstitchedIPos,StitchedIPos-method}
+\alias{coerce,StitchedIPos,UnstitchedIPos-method}
+\alias{coerce,IntegerRanges,UnstitchedIPos-method}
+\alias{coerce,IntegerRanges,StitchedIPos-method}
 \alias{coerce,IntegerRanges,IPos-method}
 \alias{coerce,ANY,IPos-method}
 \alias{as.data.frame,IPos-method}
-\alias{extractROWS,IPos-method}
-\alias{show,IPos-method}
-\alias{bindROWS,IPos-method}
 
-\title{Memory-efficient representation of integer positions}
+% Other
+
+\alias{extractROWS,StitchedIPos-method}
+\alias{show,IPos-method}
+\alias{bindROWS,StitchedIPos-method}
+
+\title{IPos objects}
 
 \description{
-  The IPos class is a container for storing a set of \emph{integer positions}
-  where most of the positions are typically (but not necessarily) adjacent.
-  Because integer positions can be seen as integer ranges of width 1, the IPos
-  class extends the \link{IntegerRanges} virtual class. Note that even though
-  an \link{IRanges} object can be used for storing integer positions, using an
-  IPos object will be much more memory-efficient, especially when the object
-  contains long runs of adjacent positions in \emph{ascending order}.
+  The IPos class is a container for storing a set of \emph{integer positions}.
+  It exists in 2 flavors: UnstitchedIPos and StitchedIPos. Each flavor uses
+  a particular internal representation:
+  \itemize{
+    \item In an UnstitchedIPos instance the positions are stored as an
+          integer vector.
+    \item In a StitchedIPos instance the positions are stored as an
+          \link{IRanges} object where each range represents a run of
+          \emph{consecutive positions} (i.e. a run of positions that
+          are adjacent and in \emph{ascending order}). This storage is
+          particularly memory-efficient when the vector of positions
+          contains long runs of consecutive positions.
+  }
+  Because integer positions can be seen as integer ranges of width 1, the
+  IPos class extends the \link{IntegerRanges} virtual class.
 }
 
 \usage{
-IPos(pos_runs)  # constructor function
+IPos(pos=integer(0), stitch=NA)  # constructor function
 }
 
 \arguments{
-  \item{pos_runs}{
-    An \link{IRanges} object (or any other \link{IntegerRanges} derivative)
-    where each range is interpreted as a run of adjacent ascending positions.
-    If \code{pos_runs} is not an \link{IntegerRanges} derivative,
-    \code{IPos()} first tries to coerce it to one with
-    \code{as(pos_runs, "IntegerRanges", strict=FALSE)}.
+  \item{pos}{
+    An integer or numeric vector, or an \link{IRanges} object (or other
+    \link{IntegerRanges} derivative). If \code{pos} is anything else,
+    \code{IPos()} will first try to coerce it to an IRanges object with
+    \code{as(pos, "IRanges")}.
+
+    When \code{pos} is an \link{IRanges} object (or other \link{IntegerRanges}
+    derivative), each range in it is interpreted as a run of
+    consecutive positions.
+  }
+  \item{stitch}{
+    \code{TRUE}, \code{FALSE}, or \code{NA} (the default).
+
+    Controls which internal representation should be used: StitchedIPos
+    (when \code{stitch} is \code{TRUE}) or UnstitchedIPos (when \code{stitch}
+    is \code{FALSE}).
+
+    When \code{stitch} is \code{NA} (the default), which internal
+    representation will be used depends on the type of \code{pos}:
+    UnstitchedIPos if \code{pos} is an integer or numeric vector,
+    and StitchedIPos otherwise.
   }
 }
 
+\details{
+  Even though an \link{IRanges} object can be used for storing integer
+  positions, using an IPos object is more efficient. In particular the
+  memory footprint of an UnstitchedIPos object is half that of an
+  \link{IRanges} object.
+
+  OTOH the memory footprint of a StitchedIPos object can vary a lot but
+  will never be worse than that of an \link{IRanges} object. However it
+  will reduce dramatically if the vector of positions contains long runs
+  of consecutive positions. In the worst case scenario (i.e. when the
+  object contains no consecutive positions) its memory footprint will
+  be the same as that of an \link{IRanges} object.
+
+  Like for any \link[S4Vectors]{Vector} derivative, the length of an
+  IPos object cannot exceed \code{.Machine$integer.max} (i.e. 2^31 on
+  most platforms). \code{IPos()} will return an error if \code{pos}
+  contains too many integer positions.
+}
+
 \value{
-  An IPos object.
+  An UnstitchedIPos or StitchedIPos object. If the input object \code{pos}
+  is itself an IPos object, its metadata columns are propagated.
 }
 
 \section{Accessors}{
@@ -55,8 +123,8 @@ IPos(pos_runs)  # constructor function
     or \code{end()}. See \code{?\link{IntegerRanges}} for the list of getters
     supported by \link{IntegerRanges} derivatives.
 
-    IMPORTANT NOTE: An IPos object cannot hold names i.e. \code{names()}
-    always returns \code{NULL} on it.
+    IMPORTANT NOTE: An IPos object cannot hold names at the moment i.e.
+    \code{names()} always returns \code{NULL} on it.
   }
 
   \subsection{Setters}{
@@ -66,16 +134,22 @@ IPos(pos_runs)  # constructor function
 }
 
 \section{Coercion}{
-  From \link{IntegerRanges} to IPos:
+  From UnstitchedIPos to StitchedIPos and vice-versa: coercion back and forth
+  between UnstitchedIPos and StitchedIPos is supported.
+
+  From \link{IntegerRanges} to UnstitchedIPos, StitchedIPos, or IPos:
   An \link{IntegerRanges} derivative \code{x} in which all the ranges have
-  a width of 1 can be coerced to an IPos object with \code{as(x, "IPos")}.
+  a width of 1 can be coerced to an UnstitchedIPos or StitchedIPos object
+  with \code{as(x, "UnstitchedIPos")} or \code{as(x, "StitchedIPos")}.
   The names on \code{x} are not propagated (a warning is issued if \code{x}
-  has names on it).
+  has names on it). For convenience \code{as(x, "IPos")} is supported and
+  is equivalent to \code{as(x, "UnstitchedIPos")}.
 
   From IPos to \link{IRanges}:
   An IPos object \code{x} can be coerced to an \link{IRanges} object
-  with \code{as(x, "IRanges")}. However be aware that the resulting object
-  can use thousands times (or more) memory than \code{x}!
+  with \code{as(x, "IRanges")}. However be aware that if \code{x} is a
+  StitchedIPos instance, the memory footprint of the resulting object
+  can be thousands times (or more) than that of \code{x}!
   See "MEMORY USAGE" in the Examples section below.
 
   From IPos to ordinary R objects:
@@ -102,13 +176,6 @@ IPos(pos_runs)  # constructor function
   on an IPos object.
 }
 
-\note{
-  Like for any \link[S4Vectors]{Vector} derivative, the length of an
-  IPos object cannot exceed \code{.Machine$integer.max} (i.e. 2^31 on
-  most platforms). \code{IPos()} will return an error if \code{pos_runs}
-  contains too many integer positions.
-}
-
 \author{
   Hervé Pagès; based on ideas borrowed from Georg Stricker
   \email{georg.stricker@in.tum.de} and Julien Gagneur
@@ -118,8 +185,8 @@ IPos(pos_runs)  # constructor function
 \seealso{
   \itemize{
     \item The \link[GenomicRanges]{GPos} class in the \pkg{GenomicRanges}
-          package for a memory-efficient representation of \emph{genomic
-          positions} (i.e. genomic ranges of width 1).
+          package for storing a set of \emph{genomic positions} (i.e.
+          genomic ranges of width 1, a.k.a. \emph{genomic loci}).
 
     \item \link{IntegerRanges} and \link{IRanges} objects.
 
@@ -140,21 +207,31 @@ IPos(pos_runs)  # constructor function
 ## ---------------------------------------------------------------------
 
 ## Example 1:
-ipos1 <- IPos(c("44-53", "5-10", "2-5"))
-ipos1
+ipos1a <- IPos(c(44:53, 5:10, 2:5))
+ipos1a  # unstitched
 
-length(ipos1)
-pos(ipos1)  # same as 'start(ipos1)' and 'end(ipos1)'
-as.character(ipos1)
-as.data.frame(ipos1)
-as(ipos1, "IRanges")
-as.data.frame(as(ipos1, "IRanges"))
-ipos1[9:17]
+length(ipos1a)
+pos(ipos1a)  # same as 'start(ipos1a)' and 'end(ipos1a)'
+as.character(ipos1a)
+as.data.frame(ipos1a)
+as(ipos1a, "IRanges")
+as.data.frame(as(ipos1a, "IRanges"))
+ipos1a[9:17]
+
+ipos1b <- IPos(c(44:53, 5:10, 2:5), stitch=TRUE)
+ipos1b  # stitched
+
+all(ipos1a == ipos1b)
+
+ipos1c <- IPos(c("44-53", "5-10", "2-5"))
+ipos1c  # stitched
+
+identical(ipos1b, ipos1c)
 
 ## Example 2:
-pos_runs <- IRanges(c(1, 6, 12, 17), c(5, 10, 16, 20))
-ipos2 <- IPos(pos_runs)
-ipos2
+my_pos <- IRanges(c(1, 6, 12, 17), c(5, 10, 16, 20))
+ipos2 <- IPos(my_pos)
+ipos2  # stitched
 
 ## Example 3:
 ipos3A <- ipos3B <- IPos(c("1-15000", "15400-88700"))
@@ -175,7 +252,7 @@ ipos3
 ## MEMORY USAGE
 ## ---------------------------------------------------------------------
 
-## Coercion to IRanges works...
+## Coercion to IRanges works on a StitchedIPos object...
 ipos4 <- IPos(c("1-125000", "135000-575000"))
 ir4 <- as(ipos4, "IRanges")
 ir4
@@ -187,8 +264,8 @@ object.size(ir4)  # 1739 times bigger than the IPos object!
 ipos4s <- sample(ipos4)
 object.size(ipos4s)
 
-## AN IMPORTANT NOTE: In the worst situations, IPos still performs as
-## good as an IRanges object.
+## AN IMPORTANT NOTE: In the worst situations, IPos still performs
+## as good as an IRanges object.
 object.size(as(ipos4s, "IRanges"))  # same size as 'ipos4s'
 
 ## Best case scenario is when the object is strictly sorted (i.e.

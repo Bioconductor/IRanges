@@ -4,7 +4,7 @@
 
 \alias{coverage}
 \alias{coverage,IntegerRanges-method}
-\alias{coverage,IPos-method}
+\alias{coverage,StitchedIPos-method}
 \alias{coverage,Views-method}
 \alias{coverage,IntegerRangesList-method}
 

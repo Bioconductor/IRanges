@@ -133,7 +133,7 @@ cvg_IntegerRanges <- function(x, from=NA, to=NA, weight=1L,
     if (collapse) {
         var <- runValue(cvg0)
     } else {
-        ans <- IPos(ans)
+        ans <- new_StitchedIPos(ans)
         var <- cvg0
     }
     mcols(ans) <- S4Vectors:::new_DataFrame(setNames(list(var), varname))
@@ -170,7 +170,7 @@ cvg_IntegerRangesList <- function(x, from=NA, to=NA, weight=1L,
     if (collapse) {
         var <- unlist(runValue(cvg0), use.names=FALSE)
     } else {
-        unlisted_ans <- IPos(unlisted_ans)
+        unlisted_ans <- new_StitchedIPos(unlisted_ans)
         if (length(cvg0) == 0L) {
             ## 'weight' determines the type of Rle.
             var <- Rle(weight * 0L, 0L)

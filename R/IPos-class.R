@@ -6,22 +6,48 @@
 
 setClass("IPos",
     contains=c("Pos", "IPosRanges"),
+    representation("VIRTUAL")
+)
+
+### Too expensive! (and not needed)
+#setValidity2("IPos", validate_Pos)
+
+### UnstitchedIPos and StitchedIPos objects cannot hold names at the moment.
+
+setClass("UnstitchedIPos",
+    contains="IPos",
     representation(
-        pos_runs="IRanges"
+        pos="integer"
     )
 )
 
-### Expensive! (and not needed)
-#setValidity2("IPos", validate_Pos)
+### Combine the new parallel slots with those of the parent class. Make sure
+### to put the new parallel slots *first*.
+setMethod("parallelSlotNames", "UnstitchedIPos",
+    function(x) c("pos", callNextMethod())
+)
+
+setClass("StitchedIPos",
+    contains="IPos",
+    representation(
+        pos_runs="IRanges"  # An unnamed IRanges instance that has
+                            # been "stitched" (see below).
+    )
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters
 ###
+### No setters (names<-, pos<-) at the moment for IPos objects!
+### Should we have them?
+###
 
-setMethod("pos", "IPos", function(x) unlist_as_integer(x@pos_runs))
+setMethod("pos", "UnstitchedIPos", function(x) x@pos)
+setMethod("pos", "StitchedIPos", function(x) unlist_as_integer(x@pos_runs))
 
-setMethod("length", "IPos", function(x) sum(width(x@pos_runs)))
+setMethod("length", "UnstitchedIPos", function(x) length(x@pos))
+setMethod("length", "StitchedIPos", function(x) sum(width(x@pos_runs)))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -75,9 +101,6 @@ stitch_IntegerRanges <- function(x)
     IRanges(x_start[run_from], x_end[run_to])
 }
 
-### The runs of positions in an IPos object are guaranteed to be stitched.
-stitch_IPos <- function(x) x@pos_runs
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity
@@ -90,20 +113,115 @@ stitch_IPos <- function(x) x@pos_runs
 ### Constructor
 ###
 
-### Does not propagate the metadata or metadata columns, except when 'pos_runs'
-### is an IPos object, in which case the object is returned as-is (no-op).
-IPos <- function(pos_runs=IRanges())
+### 'pos' must be an integer vector with no NAs.
+.make_StitchedIPos_from_pos <- function(pos)
 {
-    if (is(pos_runs, "IPos"))
-        return(pos_runs)
-    if (!is(pos_runs, "IntegerRanges"))
-        pos_runs <- as(pos_runs, "IntegerRanges", strict=FALSE)
-    suppressWarnings(ans_len <- sum(width(pos_runs)))
+    pos_runs <- as(pos, "IRanges")
+    new2("StitchedIPos", pos_runs=pos_runs, check=FALSE)
+}
+
+.from_UnstitchedIPos_to_StitchedIPos <- function(from)
+{
+    ans <- .make_StitchedIPos_from_pos(from@pos)
+    mcols(ans) <- mcols(from, use.names=FALSE)
+    ans
+}
+
+### 'pos_runs' must be an IRanges object.
+.make_UnstitchedIPos_from_pos_runs <- function(pos_runs)
+{
+    pos <- unlist_as_integer(pos_runs)
+    new2("UnstitchedIPos", pos=pos, check=FALSE)
+}
+
+.from_StitchedIPos_to_UnstitchedIPos <- function(from)
+{
+    ans <- .make_UnstitchedIPos_from_pos_runs(from@pos_runs)
+    mcols(ans) <- mcols(from, use.names=FALSE)
+    ans
+}
+
+### 'pos' must be an integer vector with no NAs or an IntegerRanges derivative.
+### This is NOT checked!
+new_UnstitchedIPos <- function(pos=integer(0))
+{
+    if (is(pos, "UnstitchedIPos"))
+        return(pos)
+    if (is(pos, "StitchedIPos"))
+        return(.from_StitchedIPos_to_UnstitchedIPos(pos))
+    if (is.integer(pos)) {
+        ## Treat 'pos' as a vector of single positions.
+        return(new2("UnstitchedIPos", pos=pos, check=FALSE))
+    }
+    ## 'pos' is an IntegerRanges derivative. Treat its ranges as runs of
+    ## consecutive positions.
+    suppressWarnings(ans_len <- sum(width(pos)))
     if (is.na(ans_len))
-        stop("too many positions in 'pos_runs'")
-    pos_runs <- stitch_IntegerRanges(pos_runs)
+        stop("too many positions in 'pos'")
+    .make_UnstitchedIPos_from_pos_runs(pos)
+}
+
+### 'pos' must be an integer vector with no NAs or an IntegerRanges derivative.
+### This is NOT checked!
+new_StitchedIPos <- function(pos=integer(0))
+{
+    if (is(pos, "StitchedIPos"))
+        return(pos)
+    if (is(pos, "UnstitchedIPos"))
+        return(.from_UnstitchedIPos_to_StitchedIPos(pos))
+    if (is.integer(pos)) {
+        ## Treat 'pos' as a vector of single positions.
+        return(.make_StitchedIPos_from_pos(pos))
+    }
+    ## 'pos' is an IntegerRanges derivative. Treat its ranges as runs of
+    ## consecutive positions.
+    suppressWarnings(ans_len <- sum(width(pos)))
+    if (is.na(ans_len))
+        stop("too many positions in 'pos'")
+    pos_runs <- stitch_IntegerRanges(pos)
     pos_runs <- pos_runs[width(pos_runs) != 0L]
-    new2("IPos", pos_runs=pos_runs, check=FALSE)
+    new2("StitchedIPos", pos_runs=pos_runs, check=FALSE)
+}
+
+### Returns an integer vector with no NAs or an IntegerRanges derivative.
+.normarg_pos <- function(pos)
+{
+    if (is(pos, "IntegerRanges"))
+        return(pos)
+    if (is.numeric(pos)) {
+        if (!is.integer(pos))
+            pos <- as.integer(pos)
+        if (anyNA(pos))
+            stop("'pos' cannot contain NAs")
+        return(pos)
+    }
+    ans <- try(as(pos, "IRanges"), silent=TRUE)
+    if (inherits(ans, "try-error"))
+        stop("'pos' must represent positions")
+    ans
+}
+
+.normarg_stitch <- function(stitch, pos)
+{
+    if (!(is.logical(stitch) && length(stitch) == 1L))
+        stop("'stitch' must be TRUE, FALSE, or NA")
+    if (!is.na(stitch))
+        return(stitch)
+    is(pos, "IntegerRanges") && !is(pos, "UnstitchedIPos")
+}
+
+### If the input object 'pos' is itself an IPos object, its metadata columns
+### are propagated.
+IPos <- function(pos=integer(0), stitch=NA)
+{
+    pos <- .normarg_pos(pos)
+    stitch <- .normarg_stitch(stitch, pos)
+    if (stitch) {
+        ans <- new_StitchedIPos(pos)
+    } else {
+        ans <- new_UnstitchedIPos(pos)
+    }
+    ans
 }
 
 
@@ -111,7 +229,11 @@ IPos <- function(pos_runs=IRanges())
 ### Coercion
 ###
 
-.from_IntegerRanges_to_IPos <- function(from)
+setAs("UnstitchedIPos", "StitchedIPos", .from_UnstitchedIPos_to_StitchedIPos)
+
+setAs("StitchedIPos", "UnstitchedIPos", .from_StitchedIPos_to_UnstitchedIPos)
+
+.check_IntegerRanges_for_coercion_to_IPos <- function(from)
 {
     if (!all(width(from) == 1L))
         stop(wmsg("all the ranges in the ", class(from), " object to ",
@@ -120,15 +242,27 @@ IPos <- function(pos_runs=IRanges())
         warning(wmsg("because an IPos object cannot hold them, the names ",
                      "on the ", class(from), " object couldn't be ",
                      "propagated during its coercion to IPos"))
-    ans <- IPos(from)
+}
+
+.from_IntegerRanges_to_UnstitchedIPos <- function(from)
+{
+    .check_IntegerRanges_for_coercion_to_IPos(from)
+    ans <- new_UnstitchedIPos(from)
     mcols(ans) <- mcols(from, use.names=FALSE)
     ans
 }
-setAs("IntegerRanges", "IPos", .from_IntegerRanges_to_IPos)
+.from_IntegerRanges_to_StitchedIPos <- function(from)
+{
+    .check_IntegerRanges_for_coercion_to_IPos(from)
+    ans <- new_StitchedIPos(from)
+    mcols(ans) <- mcols(from, use.names=FALSE)
+    ans
+}
+setAs("IntegerRanges", "UnstitchedIPos", .from_IntegerRanges_to_UnstitchedIPos)
+setAs("IntegerRanges", "StitchedIPos", .from_IntegerRanges_to_StitchedIPos)
+setAs("IntegerRanges", "IPos", .from_IntegerRanges_to_UnstitchedIPos)
 
-setAs("ANY", "IPos",
-    function(from) .from_IntegerRanges_to_IPos(as(from, "IntegerRanges"))
-)
+setAs("ANY", "IPos", function(from) IPos(from))
 
 ### The "as.data.frame" method for IntegerRanges objects works on an IPos
 ### object but returns a data.frame with identical "start" and "end" columns,
@@ -185,7 +319,7 @@ extract_pos_runs_by_ranges <- function(pos_runs, i)
     pos_runs
 }
 
-setMethod("extractROWS", "IPos",
+setMethod("extractROWS", "StitchedIPos",
     function(x, i)
     {
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
@@ -225,11 +359,10 @@ setMethod("extractROWS", "IPos",
 
 show_IPos <- function(x, margin="", print.classinfo=FALSE)
 {
-    x_class <- class(x)
     x_len <- length(x)
     x_mcols <- mcols(x, use.names=FALSE)
     x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
-    cat(x_class, " object with ",
+    cat(classNameForDisplay(x), " object with ",
         x_len, " ", ifelse(x_len == 1L, "position", "positions"),
         " and ",
         x_nmc, " metadata ", ifelse(x_nmc == 1L, "column", "columns"),
@@ -264,7 +397,7 @@ setMethod("show", "IPos",
 ### Concatenation
 ###
 
-.concatenate_IPos_objects <-
+.concatenate_StitchedIPos_objects <-
     function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
     objects <- S4Vectors:::prepare_objects_to_bind(x, objects)
@@ -297,5 +430,5 @@ setMethod("show", "IPos",
                                      check=check)
 }
 
-setMethod("bindROWS", "IPos", .concatenate_IPos_objects)
+setMethod("bindROWS", "StitchedIPos", .concatenate_StitchedIPos_objects)
 

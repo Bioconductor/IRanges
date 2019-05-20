@@ -4,7 +4,7 @@
 
 \alias{range}
 \alias{range,IntegerRanges-method}
-\alias{range,IPos-method}
+\alias{range,StitchedIPos-method}
 \alias{range,IntegerRangesList-method}
 \alias{range,CompressedIRangesList-method}
 
@@ -29,7 +29,7 @@
 
 \alias{isDisjoint}
 \alias{isDisjoint,IntegerRanges-method}
-\alias{isDisjoint,IPos-method}
+\alias{isDisjoint,StitchedIPos-method}
 \alias{isDisjoint,NormalIRanges-method}
 \alias{isDisjoint,IntegerRangesList-method}
 

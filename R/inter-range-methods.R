@@ -63,13 +63,14 @@ setMethod("range", "IntegerRanges",
     }
 )
 
-### Overwrite above method with optimized method for IPos objects.
+### Overwrite above method with optimized method for StitchedIPos objects.
 ### Like the above method, return an IRanges instance.
-setMethod("range", "IPos",
+setMethod("range", "StitchedIPos",
     function(x, ..., with.revmap=FALSE, ignore.strand=FALSE, na.rm=FALSE)
-        callGeneric(stitch_IPos(x), ...,
-                    with.revmap=with.revmap, ignore.strand=ignore.strand,
-                    na.rm=na.rm)
+    {
+        x <- x@pos_runs
+        callGeneric()
+    }
 )
 
 setMethod("range", "IntegerRangesList",
@@ -485,8 +486,8 @@ setMethod("isDisjoint", "IntegerRanges",
     }
 )
 
-### Overwrite above method with optimized method for IPos objects.
-setMethod("isDisjoint", "IPos", function(x) callGeneric(stitch_IPos(x)))
+### Overwrite above method with optimized method for StitchedIPos objects.
+setMethod("isDisjoint", "StitchedIPos", function(x) callGeneric(x@pos_runs))
 
 setMethod("isDisjoint", "NormalIRanges", function(x) TRUE)
 

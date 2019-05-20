@@ -93,13 +93,44 @@ setGeneric("shift", signature="x",
     function(x, shift=0L, use.names=TRUE) standardGeneric("shift")
 )
 
+### Returns an NA-free integer vector of length 1 or 'x_len'.
+### If the user-supplied 'shift' vector is constant then the returned vector
+### is guaranteed to be of length <= 1.
+.normarg_shift <- function(shift, x_len)
+{
+    if (!is.numeric(shift))
+        stop("'shift' must be a numeric vector")
+    if (!is.integer(shift))
+        shift <- as.integer(shift)
+    shift_len <- length(shift)
+    if (shift_len == 0L) {
+        if (x_len != 0L)
+            stop(wmsg("'length(shift)' is 0 but 'length(x)' is not"))
+        return(shift)
+    }
+    if (shift_len == 1L) {
+        if (is.na(shift))
+            stop(wmsg("'shift' cannot be NA"))
+        return(shift)
+    }
+    if (shift_len > x_len)
+        stop(wmsg("'length(shift)' is greater than 'length(x)'"))
+    if (x_len %% length(shift) != 0L)
+        warning(wmsg("'length(x)' is not a multiple of 'length(shift)'"))
+    if (anyNA(shift))
+        stop(wmsg("'shift' cannot contain NAs"))
+    if (isConstant(shift))
+        return(shift[[1L]])
+    suppressWarnings(S4Vectors:::recycleVector(shift, x_len))
+}
+
 setMethod("shift", "Ranges",
     function(x, shift=0L, use.names=TRUE)
     {
-        if (is(x, "NormalIRanges") && !isSingleNumber(shift))
+        shift <- .normarg_shift(shift, length(x))
+        if (is(x, "NormalIRanges") && length(shift) >= 2L)
             stop("'shift' must be a single number when shifting ",
                  "a NormalIRanges object")
-        shift <- recycleIntegerArg(shift, "shift", length(x))
         new_start <- start(x) + shift
         x <- update_ranges(x, start=new_start,
                               width=width(x),
@@ -115,21 +146,15 @@ setMethod("shift", "Ranges",
 setMethod("shift", "IPos",
     function(x, shift=0L, use.names=TRUE)
     {
-        if (!is.numeric(shift))
-            stop("'shift' must be a numeric vector")
-        if (!is.integer(shift))
-            shift <- as.integer(shift)
-        if (length(shift) != 1L) {
-            if (length(shift) != length(x))
-                stop("'shift' must be a single number or have the ",
-                     "length of 'x' when shifting an IPos object")
-            if (length(shift) != 0L) {
-                if (!isConstant(shift))
-                    stop("'shift' must be constant when shifting ",
-                         "an IPos object")
-                shift <- shift[[1L]]
-            }
+        shift <- .normarg_shift(shift, length(x))
+        if (is(x, "UnstitchedIPos")) {
+            new_pos <- pos(x) + shift
+            ans <- BiocGenerics:::replaceSlots(x, pos=new_pos, check=FALSE)
+            return(ans)
         }
+        if (length(shift) >= 2L)
+            stop("'shift' must be a single number when shifting ",
+                 "a StitchedIPos object")
         new_pos_runs <- callGeneric(x@pos_runs, shift=shift)
         BiocGenerics:::replaceSlots(x, pos_runs=new_pos_runs, check=FALSE)
     }

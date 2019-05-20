@@ -29,7 +29,7 @@ setValidity2("IPosRanges", validate_Ranges)
 ###
 ### Value of elementType slot has changed from "integer" to "ANY" for
 ### IPosRanges objects in IRanges 2.13.22 (Bioc 3.7). It will soon change
-### again to "IPos".
+### again to "StitchedIPos".
 ###
 
 setMethod("updateObject", "IPosRanges",

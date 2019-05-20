@@ -37,7 +37,7 @@ setClass("CompressedNormalIRangesList",
 
 setClass("CompressedIPosList",
     contains=c("IPosList", "CompressedPosList", "CompressedIntegerRangesList"),
-    prototype=prototype(unlistData=new("IPos"))
+    prototype=prototype(unlistData=new("StitchedIPos"))
 )
 
 
@@ -304,7 +304,7 @@ setAs("RleList", "CompressedNormalIRangesList",
 .from_IntegerRanges_to_CompressedIPosList <- function(from)
 {
     from <- as(from, "IRanges")
-    ans <- relist(IPos(from), from)
+    ans <- relist(new_StitchedIPos(from), from)
     metadata(ans) <- metadata(from)
     mcols(ans) <- mcols(from, use.names=FALSE)
     ans

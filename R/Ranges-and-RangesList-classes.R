@@ -18,20 +18,20 @@
 ### - showing the top-level classes only;
 ### - showing only classes defined in the IRanges package;
 ### - all classes showed in the diagram are virtual except IRanges, NCList,
-###   and IPos (marked with an asterisk).
+###   UnstitchedIPos, and StitchedIPos (marked with an asterisk).
 ###
 ###                               Ranges
 ###                              ^      ^
 ###                             /        \
-###                 IntegerRanges        Pos
-###                 ^           ^         ^
-###                 |           |         |
-###               Views     IPosRanges    |
-###                ^        ^ ^    ^ ^    |
-###               /        /  |    |  \   |
-###              .        /   |    |   \  |
-###                      /    |    |    IPos*
-###                     /     |    |
+###                 IntegerRanges         Pos
+###                 ^           ^            ^
+###                 |           |             \
+###               Views     IPosRanges <----- IPos
+###                ^        ^ ^    ^           ^  ^
+###               /        /  |    |           |   \
+###              .        /   |    |           |    \
+###                      /    |    | UnstitchedIPos* \
+###                     /     |    |          StitchedIPos*
 ###              IRanges*     |    |
 ###                 ^     NCList*  |
 ###                 |             GroupingRanges
