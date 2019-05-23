@@ -108,7 +108,7 @@ equisplit(x, nchunk, chunksize, use.mcols=FALSE)
           package.
 
     \item \link{intra-range-methods} and \link{inter-range-methods}
-          for intra range and inter range transformations.
+          for \emph{intra range} and \emph{inter range} transformations.
   }
 }
 

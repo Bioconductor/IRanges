@@ -155,8 +155,8 @@ new_UnstitchedIPos <- function(pos=integer(0))
     }
     ## 'pos' is an IntegerRanges derivative. Treat its ranges as runs of
     ## consecutive positions.
-    suppressWarnings(ans_len <- sum(width(pos)))
-    if (is.na(ans_len))
+    ans_len <- sum(width(pos))  # no more integer overflow in R >= 3.5
+    if (ans_len > .Machine$integer.max)
         stop("too many positions in 'pos'")
     .make_UnstitchedIPos_from_pos_runs(pos)
 }
@@ -175,8 +175,8 @@ new_StitchedIPos <- function(pos=integer(0))
     }
     ## 'pos' is an IntegerRanges derivative. Treat its ranges as runs of
     ## consecutive positions.
-    suppressWarnings(ans_len <- sum(width(pos)))
-    if (is.na(ans_len))
+    ans_len <- sum(width(pos))  # no more integer overflow in R >= 3.5
+    if (ans_len > .Machine$integer.max)
         stop("too many positions in 'pos'")
     pos_runs <- stitch_IntegerRanges(pos)
     pos_runs <- pos_runs[width(pos_runs) != 0L]
@@ -233,27 +233,26 @@ setAs("UnstitchedIPos", "StitchedIPos", .from_UnstitchedIPos_to_StitchedIPos)
 
 setAs("StitchedIPos", "UnstitchedIPos", .from_StitchedIPos_to_UnstitchedIPos)
 
-.check_IntegerRanges_for_coercion_to_IPos <- function(from)
+.check_IntegerRanges_for_coercion_to_IPos <- function(from, to)
 {
     if (!all(width(from) == 1L))
         stop(wmsg("all the ranges in the ", class(from), " object to ",
-                  "coerce to IPos must have a width of 1"))
+                  "coerce to ", to, " must have a width of 1"))
     if (!is.null(names(from)))
-        warning(wmsg("because an IPos object cannot hold them, the names ",
-                     "on the ", class(from), " object couldn't be ",
-                     "propagated during its coercion to IPos"))
+        warning(wmsg("because an IPos derivative cannot hold them, the ",
+                     "names on the ", class(from), " object couldn't be ",
+                     "propagated during its coercion to ", to))
 }
-
 .from_IntegerRanges_to_UnstitchedIPos <- function(from)
 {
-    .check_IntegerRanges_for_coercion_to_IPos(from)
+    .check_IntegerRanges_for_coercion_to_IPos(from, "UnstitchedIPos")
     ans <- new_UnstitchedIPos(from)
     mcols(ans) <- mcols(from, use.names=FALSE)
     ans
 }
 .from_IntegerRanges_to_StitchedIPos <- function(from)
 {
-    .check_IntegerRanges_for_coercion_to_IPos(from)
+    .check_IntegerRanges_for_coercion_to_IPos(from, "StitchedIPos")
     ans <- new_StitchedIPos(from)
     mcols(ans) <- mcols(from, use.names=FALSE)
     ans
@@ -262,24 +261,29 @@ setAs("IntegerRanges", "UnstitchedIPos", .from_IntegerRanges_to_UnstitchedIPos)
 setAs("IntegerRanges", "StitchedIPos", .from_IntegerRanges_to_StitchedIPos)
 setAs("IntegerRanges", "IPos", .from_IntegerRanges_to_UnstitchedIPos)
 
+setAs("ANY", "UnstitchedIPos", function(from) IPos(from, stitch=FALSE))
+setAs("ANY", "StitchedIPos", function(from) IPos(from, stitch=TRUE))
 setAs("ANY", "IPos", function(from) IPos(from))
 
+### S3/S4 combo for as.data.frame.IPos
 ### The "as.data.frame" method for IntegerRanges objects works on an IPos
 ### object but returns a data.frame with identical "start" and "end" columns,
 ### and a "width" column filled with 1. We overwrite it to return a data.frame
 ### with a "pos" column instead of the "start" and "end" columns, and no
 ### "width" column.
-### TODO: Turn this into an S3/S4 combo for as.data.frame.IPos
-setMethod("as.data.frame", "IPos",
-    function(x, row.names=NULL, optional=FALSE, ...)
-    {
-        ans <- data.frame(pos=pos(x), stringsAsFactors=FALSE)
-        x_mcols <- mcols(x, use.names=FALSE)
-        if (!is.null(x_mcols))
-            ans <- cbind(ans, as.data.frame(x_mcols))
-        ans
-    }
-)
+.as.data.frame.IPos <- function(x, row.names=NULL, optional=FALSE)
+{
+    if (!identical(optional, FALSE))
+        warning(wmsg("'optional' argument was ignored"))
+    ans <- data.frame(pos=pos(x), row.names=row.names, stringsAsFactors=FALSE)
+    x_mcols <- mcols(x, use.names=FALSE)  # can be NULL!
+    if (!is.null(x_mcols))
+        ans <- cbind(ans, as.data.frame(x_mcols))
+    ans
+}
+as.data.frame.IPos <- function(x, row.names=NULL, optional=FALSE, ...)
+    .as.data.frame.IPos(x, row.names=NULL, optional=FALSE, ...)
+setMethod("as.data.frame", "IPos", .as.data.frame.IPos)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -312,8 +316,8 @@ extract_pos_runs_by_ranges <- function(pos_runs, i)
         trimmed_end <- end(pos_runs)[Rtrim_idx] - mapped_range_Rtrim
         start(pos_runs)[Ltrim_idx] <- trimmed_start
         end(pos_runs)[Rtrim_idx] <- trimmed_end
-        suppressWarnings(new_len <- sum(width(pos_runs)))
-        if (is.na(new_len))
+        new_len <- sum(width(pos_runs))  # no more integer overflow in R >= 3.5
+        if (new_len > .Machine$integer.max)
             stop("subscript is too big")
     }
     pos_runs
@@ -343,15 +347,14 @@ setMethod("extractROWS", "StitchedIPos",
 ### Show
 ###
 
-.make_naked_matrix_from_IPos <- function(x)
+.from_IPos_to_naked_character_matrix_for_display <- function(x)
 {
     x_len <- length(x)
     x_mcols <- mcols(x, use.names=FALSE)
     x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
     ans <- cbind(pos=as.character(pos(x)))
     if (x_nmc > 0L) {
-        tmp <- do.call(data.frame, c(lapply(x_mcols, showAsCell),
-                                     list(check.names=FALSE)))
+        tmp <- as.data.frame(lapply(x_mcols, showAsCell), optional=TRUE)
         ans <- cbind(ans, `|`=rep.int("|", x_len), as.matrix(tmp))
     }
     ans
@@ -371,7 +374,7 @@ show_IPos <- function(x, margin="", print.classinfo=FALSE)
     ## and tail() work on 'xx'.
     xx <- as(x, "IPos")
     out <- S4Vectors:::makePrettyMatrixForCompactPrinting(xx,
-                .make_naked_matrix_from_IPos)
+                .from_IPos_to_naked_character_matrix_for_display)
     if (print.classinfo) {
         .COL2CLASS <- c(pos="integer")
         classinfo <-
@@ -403,8 +406,9 @@ setMethod("show", "IPos",
     objects <- S4Vectors:::prepare_objects_to_bind(x, objects)
     all_objects <- c(list(x), objects)
 
-    ans_len <- suppressWarnings(sum(lengths(all_objects)))
-    if (is.na(ans_len))
+    ans_len <- sum(lengths(all_objects))  # no more integer overflow
+                                          # in R >= 3.5
+    if (ans_len > .Machine$integer.max)
         stop("too many integer positions to concatenate")
 
     ## 1. Take care of the parallel slots

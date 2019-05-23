@@ -108,7 +108,7 @@ setMethod("as.data.frame", "IPosRanges", .as.data.frame.IPosRanges)
 ### show()
 ###
 
-.make_naked_matrix_from_IPosRanges <- function(x)
+.from_IPosRanges_to_naked_character_matrix_for_display <- function(x)
 {
     x_len <- length(x)
     x_mcols <- mcols(x, use.names=FALSE)
@@ -117,8 +117,7 @@ setMethod("as.data.frame", "IPosRanges", .as.data.frame.IPosRanges)
                  end=as.character(end(x)),
                  width=as.character(width(x)))
     if (x_nmc > 0L) {
-        tmp <- do.call(data.frame, c(lapply(x_mcols, showAsCell),
-                                     list(check.names=FALSE)))
+        tmp <- as.data.frame(lapply(x_mcols, showAsCell), optional=TRUE)
         ans <- cbind(ans, `|`=rep.int("|", x_len), as.matrix(tmp))
     }
     ans
@@ -143,7 +142,7 @@ show_IPosRanges <- function(x, margin="", print.classinfo=FALSE)
     if (!is(x, "IRanges"))
         x <- as(x, "IRanges", strict=FALSE)
     out <- S4Vectors:::makePrettyMatrixForCompactPrinting(x,
-               .make_naked_matrix_from_IPosRanges)
+               .from_IPosRanges_to_naked_character_matrix_for_display)
     if (print.classinfo) {
         .COL2CLASS <- c(
             start="integer",

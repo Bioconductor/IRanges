@@ -32,7 +32,10 @@
 \alias{coerce,IntegerRanges,UnstitchedIPos-method}
 \alias{coerce,IntegerRanges,StitchedIPos-method}
 \alias{coerce,IntegerRanges,IPos-method}
+\alias{coerce,ANY,UnstitchedIPos-method}
+\alias{coerce,ANY,StitchedIPos-method}
 \alias{coerce,ANY,IPos-method}
+\alias{as.data.frame.IPos}
 \alias{as.data.frame,IPos-method}
 
 % Other
@@ -106,12 +109,12 @@ IPos(pos=integer(0), stitch=NA)  # constructor function
   Like for any \link[S4Vectors]{Vector} derivative, the length of an
   IPos object cannot exceed \code{.Machine$integer.max} (i.e. 2^31 on
   most platforms). \code{IPos()} will return an error if \code{pos}
-  contains too many integer positions.
+  contains too many positions.
 }
 
 \value{
   An UnstitchedIPos or StitchedIPos object. If the input object \code{pos}
-  is itself an IPos object, its metadata columns are propagated.
+  is itself an IPos derivative, its metadata columns are propagated.
 }
 
 \section{Accessors}{
@@ -128,25 +131,35 @@ IPos(pos=integer(0), stitch=NA)  # constructor function
   }
 
   \subsection{Setters}{
-    IPos objects support the \code{mcols()} and \code{metadata()} setters
+    IPos derivatives support the \code{mcols()} and \code{metadata()} setters
     only.
+
+    In particular there is no \code{pos()} setter for IPos derivatives at the
+    moment (although one might be added in the future).
   }
 }
 
 \section{Coercion}{
-  From UnstitchedIPos to StitchedIPos and vice-versa: coercion back and forth
-  between UnstitchedIPos and StitchedIPos is supported.
+  From UnstitchedIPos to StitchedIPos and vice-versa: coercion back and
+  forth between UnstitchedIPos and StitchedIPos is supported via
+  \code{as(x, "StitchedIPos")} and \code{as(x, "UnstitchedIPos")}.
+  This is the most efficient and recommended way to switch between the
+  2 internal representations. Note that this switch can have dramatic
+  consequences on memory usage so is for advanced users only.
+  End users should almost never need to do this switch when following
+  a typical workflow.
 
   From \link{IntegerRanges} to UnstitchedIPos, StitchedIPos, or IPos:
   An \link{IntegerRanges} derivative \code{x} in which all the ranges have
   a width of 1 can be coerced to an UnstitchedIPos or StitchedIPos object
-  with \code{as(x, "UnstitchedIPos")} or \code{as(x, "StitchedIPos")}.
+  with \code{as(x, "UnstitchedIPos")} or \code{as(x, "StitchedIPos")},
+  respectively.
   The names on \code{x} are not propagated (a warning is issued if \code{x}
   has names on it). For convenience \code{as(x, "IPos")} is supported and
   is equivalent to \code{as(x, "UnstitchedIPos")}.
 
   From IPos to \link{IRanges}:
-  An IPos object \code{x} can be coerced to an \link{IRanges} object
+  An IPos derivative \code{x} can be coerced to an \link{IRanges} object
   with \code{as(x, "IRanges")}. However be aware that if \code{x} is a
   StitchedIPos instance, the memory footprint of the resulting object
   can be thousands times (or more) than that of \code{x}!
@@ -154,7 +167,7 @@ IPos(pos=integer(0), stitch=NA)  # constructor function
 
   From IPos to ordinary R objects:
   Like with any other \link{IntegerRanges} derivative, \code{as.character()},
-  \code{as.factor()}, and \code{as.data.frame()} work on an IPos object
+  \code{as.factor()}, and \code{as.data.frame()} work on an IPos derivative
   \code{x}. Note however that \code{as.data.frame(x)} returns a data frame
   with a \code{pos} column (containing \code{pos(x)}) instead of the
   \code{start}, \code{end}, and \code{width} columns that one gets with other
@@ -162,18 +175,18 @@ IPos(pos=integer(0), stitch=NA)  # constructor function
 }
 
 \section{Subsetting}{
-  An IPos object can be subsetted exactly like an \link{IRanges} object.
+  An IPos derivative can be subsetted exactly like an \link{IRanges} object.
 }
 
 \section{Concatenation}{
-  IPos objects can be concatenated with \code{c()} or \code{append()}.
+  IPos derivatives can be concatenated with \code{c()} or \code{append()}.
   See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package for
   more information about concatenating Vector derivatives.
 }
 
 \section{Splitting and Relisting}{
   Like with an \link{IRanges} object, \code{split()} and \code{relist()} work
-  on an IPos object.
+  on an IPos derivative.
 }
 
 \author{
@@ -185,10 +198,11 @@ IPos(pos=integer(0), stitch=NA)  # constructor function
 \seealso{
   \itemize{
     \item The \link[GenomicRanges]{GPos} class in the \pkg{GenomicRanges}
-          package for storing a set of \emph{genomic positions} (i.e.
+          package for representing a set of \emph{genomic positions} (i.e.
           genomic ranges of width 1, a.k.a. \emph{genomic loci}).
 
-    \item \link{IntegerRanges} and \link{IRanges} objects.
+    \item The \link{IRanges} class for storing a set of \emph{integer ranges}
+          of arbitrary width.
 
     \item \link{IPosRanges-comparison} for comparing and ordering integer
           ranges and/or positions.
@@ -196,12 +210,20 @@ IPos(pos=integer(0), stitch=NA)  # constructor function
     \item \link{findOverlaps-methods} for finding overlapping
           integer ranges and/or positions.
 
-    \item \link{nearest-methods} for finding the nearest integer range
-          and/or position.
+    \item \link{intra-range-methods} and \link{inter-range-methods}
+          for \emph{intra range} and \emph{inter range} transformations.
+
+    \item \link{coverage-methods} for computing the coverage
+          of a set of ranges and/or positions.
+
+    \item \link{nearest-methods} for finding the nearest integer
+          range/position neighbor.
   }
 }
 
 \examples{
+showClass("IPos")  # shows the known subclasses
+
 ## ---------------------------------------------------------------------
 ## BASIC EXAMPLES
 ## ---------------------------------------------------------------------
@@ -221,6 +243,8 @@ ipos1a[9:17]
 ipos1b <- IPos(c(44:53, 5:10, 2:5), stitch=TRUE)
 ipos1b  # stitched
 
+## 'ipos1a' and 'ipos1b' are semantically equivalent, only their
+## internal representations differ:
 all(ipos1a == ipos1b)
 
 ipos1c <- IPos(c("44-53", "5-10", "2-5"))
@@ -258,14 +282,24 @@ ir4 <- as(ipos4, "IRanges")
 ir4
 ## ... but is generally not a good idea:
 object.size(ipos4)
-object.size(ir4)  # 1739 times bigger than the IPos object!
+object.size(ir4)  # 1652 times bigger than the StitchedIPos object!
 
 ## Shuffling the order of the positions impacts memory usage:
+ipos4r <- rev(ipos4)
+object.size(ipos4r)
 ipos4s <- sample(ipos4)
 object.size(ipos4s)
 
+## If one anticipates a lot of shuffling of the positions,
+## then an UnstitchedIPos object should be used instead:
+ipos4b <- as(ipos4, "UnstitchedIPos")
+object.size(ipos4b)  # initial size is bigger than stitched version
+object.size(rev(ipos4b))  # size didn't change
+object.size(sample(ipos4b))  # size didn't change
+
 ## AN IMPORTANT NOTE: In the worst situations, IPos still performs
 ## as good as an IRanges object.
+object.size(as(ipos4r, "IRanges"))  # same size as 'ipos4r'
 object.size(as(ipos4s, "IRanges"))  # same size as 'ipos4s'
 
 ## Best case scenario is when the object is strictly sorted (i.e.
@@ -291,16 +325,16 @@ bamfile1 <- BamFile(untreated1_chr4())
 bamfile2 <- BamFile(untreated3_chr4())
 ipos5 <- IPos(IRanges(1, seqlengths(bamfile1)[["chr4"]]))
 library(GenomicAlignments)  # for "coverage" method for BamFile objects
-cov1 <- coverage(bamfile1)$chr4
-cov2 <- coverage(bamfile2)$chr4
-mcols(ipos5) <- DataFrame(cov1, cov2)
+cvg1 <- coverage(bamfile1)$chr4
+cvg2 <- coverage(bamfile2)$chr4
+mcols(ipos5) <- DataFrame(cvg1, cvg2)
 ipos5
 
 object.size(ipos5)  # lightweight
 
 ## Keep only the positions where coverage is at least 10 in one of the
 ## 2 samples:
-ipos5[mcols(ipos5)$cov1 >= 10 | mcols(ipos5)$cov2 >= 10]
+ipos5[mcols(ipos5)$cvg1 >= 10 | mcols(ipos5)$cvg2 >= 10]
 }
 \keyword{methods}
 \keyword{classes}

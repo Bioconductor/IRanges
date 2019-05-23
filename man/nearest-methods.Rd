@@ -19,7 +19,7 @@
 \alias{distance,Pairs,missing-method}
 \alias{distanceToNearest,IntegerRanges,IntegerRanges_OR_missing-method}
 
-\title{Finding the nearest range neighbor}
+\title{Finding the nearest range/position neighbor}
 
 \description{
   The \code{nearest}, \code{precede}, \code{follow}, \code{distance}

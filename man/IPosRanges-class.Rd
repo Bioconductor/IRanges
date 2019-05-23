@@ -282,20 +282,20 @@
 
 \seealso{
   \itemize{
-    \item \link{IRanges} objects (\link{NormalIRanges} objects are documented
-          in the same man page).
+    \item The \link{IRanges} class, a concrete IPosRanges direct subclass for
+          storing a set of \emph{integer ranges}.
 
-    \item The \link{IPos} class, a memory-efficient IPosRanges derivative
-          for representing \emph{integer positions} (i.e. integer
-          ranges of width 1).
+    \item The \link{IPos} class, an IPosRanges direct subclass for representing
+          a set of \emph{integer positions} (i.e. \emph{integer ranges} of
+          width 1).
 
     \item \link{IPosRanges-comparison} for comparing and ordering ranges.
 
     \item \link{findOverlaps-methods} for finding/counting overlapping ranges.
 
-    \item \link{intra-range-methods} and
-          \link{inter-range-methods} for intra range and
-          inter range transformations of \link{IntegerRanges} derivatives.
+    \item \link{intra-range-methods} and \link{inter-range-methods}
+          for \emph{intra range} and \emph{inter range} transformations
+          of \link{IntegerRanges} derivatives.
 
     \item \link{coverage-methods} for computing the coverage
           of a set of ranges.

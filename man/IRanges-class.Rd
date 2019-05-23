@@ -116,20 +116,37 @@
 \author{Hervé Pagès}
 
 \seealso{
-  \link{IntegerRanges-class},
+  \itemize{
+    \item The \link[GenomicRanges]{GRanges} class in the \pkg{GenomicRanges}
+          package for storing a set of \emph{genomic ranges}.
 
-  \link{IRanges-constructor},
-  \link{IRanges-utils},
+    \item The \link{IPos} class for representing a set of \emph{integer
+          positions} (i.e. \emph{integer ranges} of width 1).
 
-  \link{intra-range-methods} for intra range transformations,
+    \item \link{IPosRanges-comparison} for comparing and ordering integer
+          ranges and/or positions.
 
-  \link{inter-range-methods} for inter range transformations,
+    \item \link{IRanges-utils} for some utility functions for creating
+          or modifying IRanges objects.
 
-  \link{setops-methods}
+    \item \link{findOverlaps-methods} for finding overlapping
+          integer ranges and/or positions.
+
+    \item \link{intra-range-methods} and \link{inter-range-methods}
+          for \emph{intra range} and \emph{inter range} transformations.
+
+    \item \link{coverage-methods} for computing the coverage
+          of a set of ranges and/or positions.
+
+    \item \link{setops-methods} for set operations on IRanges objects.
+
+    \item \link{nearest-methods} for finding the nearest integer
+          range/position neighbor.
+  }
 }
 
 \examples{
-showClass("IRanges")  # shows (some of) the known subclasses
+showClass("IRanges")  # shows the known subclasses
 
 ## ---------------------------------------------------------------------
 ## A. MANIPULATING IRanges OBJECTS
@@ -174,6 +191,5 @@ system.time(y16 <- y[c(TRUE, rep.int(FALSE, 15)), ])
 object.size(x16)
 object.size(y16)
 }
-
 \keyword{methods}
 \keyword{classes}

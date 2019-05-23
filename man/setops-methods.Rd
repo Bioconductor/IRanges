@@ -155,9 +155,8 @@
 
     \item \link{findOverlaps-methods} for finding/counting overlapping ranges.
 
-    \item \link{intra-range-methods} and
-          \link{inter-range-methods} for intra range and
-          inter range transformations.
+    \item \link{intra-range-methods} and \link{inter-range-methods}
+          for \emph{intra range} and \emph{inter range} transformations.
 
     \item \link{IntegerRanges} and \link{IntegerRangesList} objects.
           In particular, \emph{normality} of an \link{IntegerRanges} object

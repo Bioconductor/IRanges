@@ -148,16 +148,20 @@
   }
 }
 
-\author{ Michael Lawrence }
+\author{Michael Lawrence and Hervé Pagès}
+
 \seealso{
-  \code{\linkS4class{IntegerRangesList}}, the parent of this class, for more
-  functionality.
+  \itemize{
+    \item \code{\link{IntegerRangesList}}, the parent of this class,
+          for more functionality.
 
-  \link{intra-range-methods} and \link{inter-range-methods} for
-  intra and inter range transformations of IRangesList objects.
+    \item \link{intra-range-methods} and \link{inter-range-methods}
+          for \emph{intra range} and \emph{inter range} transformations.
 
-  \link{setops-methods} for set operations on IRangesList objects.
+    \item \link{setops-methods} for set operations on IRangesList objects.
+  }
 }
+
 \examples{
 range1 <- IRanges(start=c(1,2,3), end=c(5,2,8))
 range2 <- IRanges(start=c(15,45,20,1), end=c(15,100,80,5))

@@ -256,8 +256,8 @@ rangeComparisonCodeToLetter(code)
 
     \item \code{\link{findOverlaps}} for finding overlapping ranges.
 
-    \item \link{intra-range-methods} and \link{inter-range-methods} for
-          intra and inter range transformations.
+    \item \link{intra-range-methods} and \link{inter-range-methods}
+          for \emph{intra range} and \emph{inter range} transformations.
 
     \item \link{setops-methods} for set operations on \link{IRanges}
           objects.
