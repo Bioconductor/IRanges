@@ -266,7 +266,7 @@ setReplaceMethod("start", "IRanges",
     ## Fix elementType slot on-the-fly.
     x <- updateObject(x, check=FALSE)
     ## Use 'x@width[]' instead of 'x@width' so the right value is recycled.
-    x@width[] <- width(x) + S4Vectors:::numeric2integer(value) - end(x)
+    x@width[] <- width(x) - end(x) + S4Vectors:::numeric2integer(value)
     if (check)
         validObject(x)
     x
