@@ -77,7 +77,7 @@ setMethod("relist", c("Vector", "list"),
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### splitAsList()
+### default_splitAsList()
 ###
 
 ### 'f' is assumed to be an integer vector with no NAs.
@@ -191,10 +191,6 @@ setMethod("relist", c("Vector", "list"),
     relist(x, f)
 }
 
-setGeneric("splitAsList", signature=c("x", "f"),
-    function(x, f, drop=FALSE, ...) standardGeneric("splitAsList")
-)
-
 toFactor <- function(x) {
     if (is(x, "Rle")) {
         runValue(x) <- as.factor(runValue(x))
@@ -287,7 +283,8 @@ as.factor2 <- function(x) {
     structure(f, levels=levs, class="factor")
 }
 
-splitAsList_default <- function(x, f, drop=FALSE)
+### Called by the splitAsList,ANY,ANY method defined in the S4Vectors package.
+default_splitAsList <- function(x, f, drop=FALSE)
 {
     if (!isTRUEorFALSE(drop))
         stop("'drop' must be TRUE or FALSE")
@@ -313,10 +310,6 @@ splitAsList_default <- function(x, f, drop=FALSE)
         return(.splitAsList_by_integer_Rle(x, f, drop))
     return(.splitAsList_by_Rle(x, f, drop))
 }
-
-setMethod("splitAsList", c("ANY", "ANY"),
-    function(x, f, drop=FALSE) splitAsList_default(x, f, drop=drop)
-)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1,6 +1,6 @@
 ### =========================================================================
 ### The stuff in this file should go somewhere else, probably close to
-### splitAsList() (currently extractList.R)
+### splitAsList() (currently defined in S4Vector/R/split-methods.R)
 ### -------------------------------------------------------------------------
 ###
 

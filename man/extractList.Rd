@@ -5,9 +5,6 @@
 \alias{relist,Vector,list-method}
 \alias{relist,ANY,PartitioningByEnd-method}
 
-\alias{splitAsList}
-\alias{splitAsList,ANY,ANY}
-
 \alias{extractList}
 \alias{extractList,ANY,ANY-method}
 \alias{extractList,ANY-method}
@@ -21,9 +18,6 @@
   of a vector-like object into a list-like object. The \pkg{IRanges} and
   \pkg{S4Vectors} packages define \code{relist} and \code{split} methods
   that operate on a \link{Vector} object and return a \link{List} object.
-  Note that the \code{\link[S4Vectors]{split}} methods defined in
-  \pkg{S4Vectors} delegate to the \code{splitAsList} function defined in
-  \pkg{IRanges} and documented below.
 
   Because \code{relist} and \code{split} both impose restrictions on
   the kind of grouping that they support (e.g. every element in the input
@@ -39,11 +33,6 @@
 \S4method{relist}{ANY,List}(flesh, skeleton)
 
 \S4method{relist}{Vector,list}(flesh, skeleton)
-
-## splitAsList()
-## -------------
-
-splitAsList(x, f, drop=FALSE, ...)
 
 ## extractList()
 ## -------------
@@ -67,10 +56,6 @@ regroup(x, g)
   \item{f}{
     An atomic vector or a factor (possibly in \link{Rle} form).
   }
-  \item{drop}{
-    Logical indicating if levels that do not occur should be dropped (if
-    \code{f} is a factor).
-  }
   \item{i}{
     A list-like object. Unlike for \code{skeleton}, the content here matters
     (see Details section below).
@@ -82,18 +67,15 @@ regroup(x, g)
     A \linkS4class{Grouping} or an object coercible to one. For
     \code{regroup}, \code{g} groups the elements of \code{x}.
   }
-  \item{...}{
-    Arguments to pass to methods.
-  }
 }
 
 \details{
-  \code{relist}, \code{split}, and \code{extractList} have in common that
-  they return a list-like object where each list element has the same class
-  as the original vector-like object. Thus they need to be able to select
-  the appropriate \link{List} concrete subclass to use for this returned
-  value. This selection is performed by \code{\link[S4Vectors]{relistToClass}}
-  and is based only on the class of the original object.
+  Like \code{split}, \code{relist} and \code{extractList} have in common
+  that they return a list-like object where all the list elements have the
+  same class as the original vector-like object.
+
+  Methods that return a \link{List} derivative return an object of class
+  \code{\link[S4Vectors]{relistToClass}(x)}.
 
   By default, \code{extractList(x, i)} is equivalent to:
 \preformatted{    relist(x[unlist(i)], i)
@@ -106,8 +88,8 @@ regroup(x, g)
   This is more or less how the default method is implemented, except for
   some optimizations when \code{i} is a \link{IntegerRanges} object.
 
-  \code{relist} and \code{split} (or \code{splitAsList}) can be seen as
-  special cases of \code{extractList}:
+  \code{relist} and \code{split} can be seen as special cases of
+  \code{extractList}:
 \preformatted{    relist(flesh, skeleton) is equivalent to
     extractList(flesh, PartitioningByEnd(skeleton))
 
@@ -137,9 +119,6 @@ regroup(x, g)
   The \code{relist} methods behave like \code{utils::relist} except that they
   return a \link{List} object. If \code{skeleton} has names, then they are
   propagated to the returned value.
-
-  \code{splitAsList} behaves like \code{base::split} except that the
-  former returns a \link{List} object instead of an ordinary list.
 
   \code{extractList} returns a list-like object parallel to \code{i} and with
   the same "shape" as \code{i} (i.e. same element lengths).

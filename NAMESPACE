@@ -223,7 +223,6 @@ exportMethods(
 ###
 
 export(
-    splitAsList,
     multisplit,
     solveUserSEW0, IRanges, solveUserSEW,
     successiveIRanges,
