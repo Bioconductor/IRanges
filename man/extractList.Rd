@@ -1,5 +1,6 @@
 \name{extractList}
 
+\alias{relist}
 \alias{relist,ANY,PartitioningByEnd-method}
 \alias{relist,ANY,List-method}
 \alias{relist,Vector,list-method}
