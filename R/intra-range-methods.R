@@ -93,15 +93,18 @@ setGeneric("shift", signature="x",
     function(x, shift=0L, use.names=TRUE) standardGeneric("shift")
 )
 
-### Returns an NA-free integer vector of length 1 or 'x_len'.
+### Returns an NA-free unnamed integer vector of length 1 or length 'x_len'.
 ### If the user-supplied 'shift' vector is constant then the returned vector
 ### is guaranteed to be of length <= 1.
 .normarg_shift <- function(shift, x_len)
 {
     if (!is.numeric(shift))
         stop("'shift' must be a numeric vector")
-    if (!is.integer(shift))
+    if (!is.integer(shift)) {
         shift <- as.integer(shift)
+    } else if (!is.null(names(shift))) {
+        names(shift) <- NULL
+    }
     shift_len <- length(shift)
     if (shift_len == 0L) {
         if (x_len != 0L)
