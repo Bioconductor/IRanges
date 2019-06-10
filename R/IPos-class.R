@@ -152,13 +152,13 @@ setMethod("updateObject", "IPos", .updateObject_IPos)
 ###
 
 setMethod("pos", "UnstitchedIPos", function(x) x@pos)
-## This really is the method for StitchedIPos objects but we make it the
-## method for IPos objects for backward compatibility with old IPos instances.
+### This really should be the method for StitchedIPos objects but we define a
+### method for IPos objects for backward compatibility with old IPos instances.
 setMethod("pos", "IPos", function(x) unlist_as_integer(x@pos_runs))
 
 setMethod("length", "UnstitchedIPos", function(x) length(x@pos))
-## This really is the method for StitchedIPos objects but we make it the
-## method for IPos objects for backward compatibility with old IPos instances.
+### This really should be the method for StitchedIPos objects but we define a
+### method for IPos objects for backward compatibility with old IPos instances.
 setMethod("length", "IPos", function(x) sum(width(x@pos_runs)))
 
 setMethod("names", "IPos", function(x) x@NAMES)
@@ -435,9 +435,14 @@ extract_pos_runs_by_ranges <- function(pos_runs, i)
     pos_runs
 }
 
-setMethod("extractROWS", "StitchedIPos",
+### This really should be the method for StitchedIPos objects but we define a
+### method for IPos objects for backward compatibility with old IPos instances.
+setMethod("extractROWS", "IPos",
     function(x, i)
     {
+        if (is(x, "UnstitchedIPos"))
+            return(callNextMethod())
+        x <- updateObject(x, check=FALSE)
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         ## TODO: Maybe make this the coercion method from NSBS to
         ## IntegerRanges.
@@ -554,5 +559,16 @@ setMethod("show", "IPos",
                                      check=check)
 }
 
-setMethod("bindROWS", "StitchedIPos", .concatenate_StitchedIPos_objects)
+### This really should be the method for StitchedIPos objects but we define a
+### method for IPos objects for backward compatibility with old IPos instances.
+setMethod("bindROWS", "IPos",
+    function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
+    {
+        if (is(x, "UnstitchedIPos"))
+            return(callNextMethod())
+        x <- updateObject(x, check=FALSE)
+        .concatenate_StitchedIPos_objects(x, objects, use.names, ignore.mcols,
+                                          check)
+    }
+)
 

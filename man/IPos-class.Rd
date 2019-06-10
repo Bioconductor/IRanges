@@ -46,9 +46,9 @@
 
 % Other
 
-\alias{extractROWS,StitchedIPos-method}
+\alias{extractROWS,IPos-method}
 \alias{show,IPos-method}
-\alias{bindROWS,StitchedIPos-method}
+\alias{bindROWS,IPos-method}
 
 \title{IPos objects}
 
