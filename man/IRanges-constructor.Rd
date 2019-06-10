@@ -18,7 +18,7 @@
 
 \usage{
 ## IRanges constructor:
-IRanges(start=NULL, end=NULL, width=NULL, names=NULL)
+IRanges(start=NULL, end=NULL, width=NULL, names=NULL, ...)
 
 ## Supporting functions (not for the end user):
 solveUserSEW0(start=NULL, end=NULL, width=NULL)
@@ -38,6 +38,10 @@ solveUserSEW(refwidths, start=NA, end=NA, width=NA,
   }
   \item{names}{
     A character vector or \code{NULL}.
+  }
+  \item{...}{
+    Metadata columns to set on the IRanges object. All the metadata columns
+    must be vector-like objects of the same length as the object to construct.
   }
   \item{refwidths}{
     Vector of non-NA non-negative integers containing the
@@ -144,46 +148,52 @@ solveUserSEW(refwidths, start=NA, end=NA, width=NA,
 \author{Hervé Pagès}
 
 \seealso{
-  \link{IRanges-class},
-  \code{\link{narrow}}
+  \itemize{
+    \item \link{IRanges-class} for the IRanges class.
+
+    \item \code{\link{narrow}}
+  }
 }
 
 \examples{
-  ## ---------------------------------------------------------------------
-  ## A. USING THE IRanges() CONSTRUCTOR
-  ## ---------------------------------------------------------------------
-  IRanges(start=11, end=rep.int(20, 5))
-  IRanges(start=11, width=rep.int(20, 5))
-  IRanges(-2, 20)  # only one range
-  IRanges(start=c(2, 0, NA), end=c(NA, NA, 14), width=11:0)
-  IRanges()  # IRanges instance of length zero
-  IRanges(names=character())
+## ---------------------------------------------------------------------
+## A. USING THE IRanges() CONSTRUCTOR
+## ---------------------------------------------------------------------
+IRanges(start=11, end=rep.int(20, 5))
+IRanges(start=11, width=rep.int(20, 5))
+IRanges(-2, 20)  # only one range
+IRanges(start=c(2, 0, NA), end=c(NA, NA, 14), width=11:0)
+IRanges()  # IRanges instance of length zero
+IRanges(names=character())
 
-  ## With logical input:
-  x <- IRanges(c(FALSE, TRUE, TRUE, FALSE, TRUE))  # logical vector input
-  isNormal(x)  # TRUE
-  x <- IRanges(Rle(1:30) \%\% 5 <= 2)  # logical Rle input
-  isNormal(x)  # TRUE
+## With ranges specified as strings:
+IRanges(c("11-20", "15-14", "-4--2"))
 
-  ## ---------------------------------------------------------------------
-  ## B. USING solveUserSEW()
-  ## ---------------------------------------------------------------------
-  refwidths <- c(5:3, 6:7)
-  refwidths
+## With logical input:
+x <- IRanges(c(FALSE, TRUE, TRUE, FALSE, TRUE))  # logical vector input
+isNormal(x)  # TRUE
+x <- IRanges(Rle(1:30) \%\% 5 <= 2)  # logical Rle input
+isNormal(x)  # TRUE
 
-  solveUserSEW(refwidths)
-  solveUserSEW(refwidths, start=4)
-  solveUserSEW(refwidths, end=3, width=2)
-  solveUserSEW(refwidths, start=-3)
-  solveUserSEW(refwidths, start=-3, width=2)
-  solveUserSEW(refwidths, end=-4)
+## ---------------------------------------------------------------------
+## B. USING solveUserSEW()
+## ---------------------------------------------------------------------
+refwidths <- c(5:3, 6:7)
+refwidths
 
-  ## The start/end/width arguments are recycled:
-  solveUserSEW(refwidths, start=c(3, -4, NA), end=c(-2, NA))
+solveUserSEW(refwidths)
+solveUserSEW(refwidths, start=4)
+solveUserSEW(refwidths, end=3, width=2)
+solveUserSEW(refwidths, start=-3)
+solveUserSEW(refwidths, start=-3, width=2)
+solveUserSEW(refwidths, end=-4)
 
-  ## Using 'rep.refwidths=TRUE':
-  solveUserSEW(10, start=-(1:6), rep.refwidths=TRUE)
-  solveUserSEW(10, end=-(1:6), width=3, rep.refwidths=TRUE)
+## The start/end/width arguments are recycled:
+solveUserSEW(refwidths, start=c(3, -4, NA), end=c(-2, NA))
+
+## Using 'rep.refwidths=TRUE':
+solveUserSEW(10, start=-(1:6), rep.refwidths=TRUE)
+solveUserSEW(10, end=-(1:6), width=3, rep.refwidths=TRUE)
 }
 
 \keyword{utilities}

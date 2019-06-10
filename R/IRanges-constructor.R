@@ -63,30 +63,20 @@ solveUserSEW0 <- function(start=NULL, end=NULL, width=NULL)
 ### The safe and user-friendly "IRanges" constructor.
 ###
 
-IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL)
+IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL, ...)
 {
-    if (is(start, "IntegerRanges")) {
-        if (!is.null(end) || !is.null(width))
-            stop("'end' and 'width' must be NULLs ",
-                 "when 'start' is an IntegerRanges object")
-        ans <- new2("IRanges", start=start(start), width=width(start),
-                    NAMES=names, check=FALSE)
-        return(ans)
-    }
-    if ((is.logical(start) && !all(is.na(start))) || is(start, "Rle")) {
-        if (is(start, "Rle") && !is.logical(runValue(start)))
-            stop("'start' is an Rle, but not a logical Rle object")
-        if (!is.null(end) || !is.null(width))
-            stop("'end' and 'width' must be NULLs when 'start' is a logical ",
-                 "vector or logical Rle")
-        ## The returned IRanges instance is guaranteed to be normal.
+    mcols <- DataFrame(..., check.names=FALSE)
+
+    if (!is.null(start) && is.null(end) && is.null(width)) {
         ans <- as(start, "IRanges")
-        names(ans) <- names
-        return(ans)
+    } else {
+        ans <- solveUserSEW0(start=start, end=end, width=width)
     }
-    ans <- solveUserSEW0(start=start, end=end, width=width)
-    names(ans) <- names
-    return(ans)
+    if (!is.null(names))
+        names(ans) <- names
+    if (length(mcols) != 0L)
+        mcols(ans) <- mcols
+    ans
 }
 
 
