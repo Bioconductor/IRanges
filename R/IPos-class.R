@@ -6,13 +6,15 @@
 
 setClass("IPos",
     contains=c("Pos", "IPosRanges"),
-    representation("VIRTUAL")
+    representation(
+        "VIRTUAL",
+        NAMES="character_OR_NULL"  # R doesn't like @names !!
+    )
 )
 
-### Too expensive! (and not needed)
-#setValidity2("IPos", validate_Pos)
-
-### UnstitchedIPos and StitchedIPos objects cannot hold names at the moment.
+setMethod("parallelSlotNames", "IPos",
+    function(x) c("NAMES", callNextMethod())
+)
 
 setClass("UnstitchedIPos",
     contains="IPos",
@@ -37,17 +39,108 @@ setClass("StitchedIPos",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Getters
+### updateObject()
 ###
-### No setters (names<-, pos<-) at the moment for IPos objects!
-### Should we have them?
+
+.get_IPos_version <- function(object)
+{
+    if (.hasSlot(object, "NAMES"))
+        return("current")
+
+    if (class(object) != "IPos")
+        return(">= 2.19.4 and < 2.19.9")
+
+    return("< 2.19.4")
+}
+
+.updateObject_IPos <- function(object, ..., verbose=FALSE)
+{
+    if (.hasSlot(object, "NAMES")) {
+        ## 'object' was made with IRanges >= 2.19.9.
+        if (verbose)
+            message("[updateObject] ", class(object), " object is current.\n",
+                    "[updateObject] Nothing to update.")
+        return(object)
+    }
+
+    if (verbose)
+        message("[updateObject] ", class(object), " object uses ",
+                "internal representation\n",
+                "[updateObject] from IRanges ", .get_IPos_version(object), ". ",
+                "Updating it ... ", appendLF=FALSE)
+
+    if (class(object) == "UnstitchedIPos") {
+        ## 'object' is an UnstitchedIPos instance that was made with
+        ## IRanges >= 2.19.4 and < 2.19.9.
+        ans <- .unsafe_new_UnstitchedIPos(object@pos,
+                                          object@elementMetadata,
+                                          object@metadata)
+    } else {
+        ## 'object' is either an IPos instance that was made with
+        ## IRanges < 2.19.4 or a StitchedIPos instance that was made with
+        ## IRanges >= 2.19.4 and < 2.19.9.
+        ans <- .unsafe_new_StitchedIPos(object@pos_runs,
+                                        object@elementMetadata,
+                                        object@metadata)
+    }
+
+    if (verbose)
+        message("OK")
+    ans
+}
+
+setMethod("updateObject", "IPos", .updateObject_IPos)
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity
+###
+
+.OLD_IPOS_INSTANCE_MSG <- c(
+    "Starting with BioC 3.10, the class attribute of all ",
+    "IPos **instances** needs to be set to \"StitchedIPos\". ",
+    "Please update this object with 'updateObject(object, verbose=TRUE)' ",
+    "and re-serialize it."
+)
+
+.validate_IPos <- function(x)
+{
+    if (class(x) == "IPos")
+        return(paste(.OLD_IPOS_INSTANCE_MSG, collapse=""))
+
+    NULL
+}
+
+setValidity2("IPos", .validate_IPos)
+
+### TODO: Add validity methods for UnstitchedIPos and StitchedIPos objects.
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Accessors
 ###
 
 setMethod("pos", "UnstitchedIPos", function(x) x@pos)
-setMethod("pos", "StitchedIPos", function(x) unlist_as_integer(x@pos_runs))
+## This really is the method for StitchedIPos objects but we make it the
+## method for IPos objects for backward compatibility with old IPos instances.
+setMethod("pos", "IPos", function(x) unlist_as_integer(x@pos_runs))
 
 setMethod("length", "UnstitchedIPos", function(x) length(x@pos))
-setMethod("length", "StitchedIPos", function(x) sum(width(x@pos_runs)))
+## This really is the method for StitchedIPos objects but we make it the
+## method for IPos objects for backward compatibility with old IPos instances.
+setMethod("length", "IPos", function(x) sum(width(x@pos_runs)))
+
+setMethod("names", "IPos", function(x) x@NAMES)
+
+setReplaceMethod("names", "IPos",
+    function(x, value)
+    {
+        x@NAMES <- S4Vectors:::normarg_names(value, "IPos", length(x))
+        x
+    }
+)
+
+### No `pos<-` setter at the moment for IPos objects! Should we have it?
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -103,42 +196,59 @@ stitch_IntegerRanges <- function(x)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Validity
-###
-
-### TODO
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
 ###
 
+### Trusts all supplied arguments and does not validate the object.
+.unsafe_new_UnstitchedIPos <- function(pos, names=NULL, mcols=NULL,
+                                            metadata=list())
+{
+    new2("UnstitchedIPos", pos=pos,
+                           NAMES=names,
+                           elementMetadata=mcols,
+                           metadata=metadata,
+                           check=FALSE)
+}
+
+### Trusts all supplied arguments and does not validate the object.
+.unsafe_new_StitchedIPos <- function(pos_runs, names=NULL, mcols=NULL,
+                                               metadata=list())
+{
+    new2("StitchedIPos", pos_runs=pos_runs,
+                         NAMES=names,
+                         elementMetadata=mcols,
+                         metadata=metadata,
+                         check=FALSE)
+}
+
 ### 'pos' must be an integer vector with no NAs.
-.make_StitchedIPos_from_pos <- function(pos)
+.make_StitchedIPos_from_pos <- function(pos, names=NULL, mcols=NULL,
+                                             metadata=list())
 {
     pos_runs <- as(pos, "IRanges")
-    new2("StitchedIPos", pos_runs=pos_runs, check=FALSE)
+    .unsafe_new_StitchedIPos(pos_runs, names, mcols, metadata)
 }
 
 .from_UnstitchedIPos_to_StitchedIPos <- function(from)
 {
-    ans <- .make_StitchedIPos_from_pos(from@pos)
-    mcols(ans) <- mcols(from, use.names=FALSE)
-    ans
+    .make_StitchedIPos_from_pos(from@pos, from@NAMES,
+                                          from@elementMetadata,
+                                          from@metadata)
 }
 
 ### 'pos_runs' must be an IRanges object.
-.make_UnstitchedIPos_from_pos_runs <- function(pos_runs)
+.make_UnstitchedIPos_from_pos_runs <- function(pos_runs, names=NULL, mcols=NULL,
+                                                         metadata=list())
 {
     pos <- unlist_as_integer(pos_runs)
-    new2("UnstitchedIPos", pos=pos, check=FALSE)
+    .unsafe_new_UnstitchedIPos(pos, names, mcols, metadata)
 }
 
 .from_StitchedIPos_to_UnstitchedIPos <- function(from)
 {
-    ans <- .make_UnstitchedIPos_from_pos_runs(from@pos_runs)
-    mcols(ans) <- mcols(from, use.names=FALSE)
-    ans
+    .make_UnstitchedIPos_from_pos_runs(from@pos_runs, from@NAMES,
+                                                      from@elementMetadata,
+                                                      from@metadata)
 }
 
 ### 'pos' must be an integer vector with no NAs or an IntegerRanges derivative.
@@ -151,14 +261,15 @@ new_UnstitchedIPos <- function(pos=integer(0))
         return(.from_StitchedIPos_to_UnstitchedIPos(pos))
     if (is.integer(pos)) {
         ## Treat 'pos' as a vector of single positions.
-        return(new2("UnstitchedIPos", pos=pos, check=FALSE))
+        return(.unsafe_new_UnstitchedIPos(pos=pos))
     }
     ## 'pos' is an IntegerRanges derivative. Treat its ranges as runs of
     ## consecutive positions.
     ans_len <- sum(width(pos))  # no more integer overflow in R >= 3.5
     if (ans_len > .Machine$integer.max)
         stop("too many positions in 'pos'")
-    .make_UnstitchedIPos_from_pos_runs(pos)
+    .make_UnstitchedIPos_from_pos_runs(pos, names(pos), mcols(pos),
+                                            metadata(pos))
 }
 
 ### 'pos' must be an integer vector with no NAs or an IntegerRanges derivative.
@@ -180,7 +291,7 @@ new_StitchedIPos <- function(pos=integer(0))
         stop("too many positions in 'pos'")
     pos_runs <- stitch_IntegerRanges(pos)
     pos_runs <- pos_runs[width(pos_runs) != 0L]
-    new2("StitchedIPos", pos_runs=pos_runs, check=FALSE)
+    .unsafe_new_StitchedIPos(pos_runs, names(pos), mcols(pos), metadata(pos))
 }
 
 ### Returns an integer vector with no NAs or an IntegerRanges derivative.
@@ -238,24 +349,16 @@ setAs("StitchedIPos", "UnstitchedIPos", .from_StitchedIPos_to_UnstitchedIPos)
     if (!all(width(from) == 1L))
         stop(wmsg("all the ranges in the ", class(from), " object to ",
                   "coerce to ", to, " must have a width of 1"))
-    if (!is.null(names(from)))
-        warning(wmsg("because an IPos derivative cannot hold them, the ",
-                     "names on the ", class(from), " object couldn't be ",
-                     "propagated during its coercion to ", to))
 }
 .from_IntegerRanges_to_UnstitchedIPos <- function(from)
 {
     .check_IntegerRanges_for_coercion_to_IPos(from, "UnstitchedIPos")
-    ans <- new_UnstitchedIPos(from)
-    mcols(ans) <- mcols(from, use.names=FALSE)
-    ans
+    new_UnstitchedIPos(from)
 }
 .from_IntegerRanges_to_StitchedIPos <- function(from)
 {
     .check_IntegerRanges_for_coercion_to_IPos(from, "StitchedIPos")
-    ans <- new_StitchedIPos(from)
-    mcols(ans) <- mcols(from, use.names=FALSE)
-    ans
+    new_StitchedIPos(from)
 }
 setAs("IntegerRanges", "UnstitchedIPos", .from_IntegerRanges_to_UnstitchedIPos)
 setAs("IntegerRanges", "StitchedIPos", .from_IntegerRanges_to_StitchedIPos)
@@ -362,6 +465,14 @@ setMethod("extractROWS", "StitchedIPos",
 
 show_IPos <- function(x, margin="", print.classinfo=FALSE)
 {
+    version <- .get_IPos_version(x)
+    if (version != "current")
+        stop(c(wmsg("This ", class(x), " object uses internal representation ",
+                    "from IRanges ", version, ", and so needs to be updated ",
+                    "before it can be displayed or used. ",
+                    "Please update it with:"),
+               "\n\n    object <- updateObject(object, verbose=TRUE)",
+               "\n\n  and re-serialize it."))
     x_len <- length(x)
     x_mcols <- mcols(x, use.names=FALSE)
     x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)

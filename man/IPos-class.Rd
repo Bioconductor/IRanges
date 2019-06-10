@@ -7,6 +7,8 @@
 \alias{IPos-class}
 \alias{IPos}
 
+\alias{parallelSlotNames,IPos-method}
+
 \alias{class:UnstitchedIPos}
 \alias{UnstitchedIPos-class}
 \alias{UnstitchedIPos}
@@ -17,13 +19,17 @@
 \alias{StitchedIPos-class}
 \alias{StitchedIPos}
 
+\alias{updateObject,IPos-method}
+
 % Accessors
 
 \alias{pos}
 \alias{pos,UnstitchedIPos-method}
-\alias{pos,StitchedIPos-method}
+\alias{pos,IPos-method}
 \alias{length,UnstitchedIPos-method}
-\alias{length,StitchedIPos-method}
+\alias{length,IPos-method}
+\alias{names,IPos-method}
+\alias{names<-,IPos-method}
 
 % Coercion
 
@@ -121,21 +127,19 @@ IPos(pos=integer(0), stitch=NA)  # constructor function
 
   \subsection{Getters}{
     IPos objects support the same set of getters as other \link{IntegerRanges}
-    derivatives (i.e. \code{start()}, \code{end()}, \code{mcols()}, etc...),
-    plus the \code{pos()} getter which is equivalent to \code{start()}
-    or \code{end()}. See \code{?\link{IntegerRanges}} for the list of getters
-    supported by \link{IntegerRanges} derivatives.
-
-    IMPORTANT NOTE: An IPos object cannot hold names at the moment i.e.
-    \code{names()} always returns \code{NULL} on it.
+    derivatives (i.e. \code{length()}, \code{start()}, \code{end()},
+    \code{names()}, \code{mcols()}, etc...), plus the \code{pos()} getter
+    which is equivalent to \code{start()} and \code{end()}.
+    See \code{?\link{IntegerRanges}} for the list of getters supported by
+    \link{IntegerRanges} derivatives.
   }
 
   \subsection{Setters}{
-    IPos derivatives support the \code{mcols()} and \code{metadata()} setters
-    only.
+    IPos derivatives support the \code{names()}, \code{mcols()} and
+    \code{metadata()} setters only.
 
-    In particular there is no \code{pos()} setter for IPos derivatives at the
-    moment (although one might be added in the future).
+    In particular there is no \code{pos()} setter for IPos derivatives
+    at the moment (although one might be added in the future).
   }
 }
 
@@ -153,10 +157,8 @@ IPos(pos=integer(0), stitch=NA)  # constructor function
   An \link{IntegerRanges} derivative \code{x} in which all the ranges have
   a width of 1 can be coerced to an UnstitchedIPos or StitchedIPos object
   with \code{as(x, "UnstitchedIPos")} or \code{as(x, "StitchedIPos")},
-  respectively.
-  The names on \code{x} are not propagated (a warning is issued if \code{x}
-  has names on it). For convenience \code{as(x, "IPos")} is supported and
-  is equivalent to \code{as(x, "UnstitchedIPos")}.
+  respectively. For convenience \code{as(x, "IPos")} is supported and is
+  equivalent to \code{as(x, "UnstitchedIPos")}.
 
   From IPos to \link{IRanges}:
   An IPos derivative \code{x} can be coerced to an \link{IRanges} object

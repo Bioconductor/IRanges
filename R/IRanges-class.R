@@ -297,9 +297,9 @@ set_IRanges_names <- function(x, value)
 {
     ## Fix elementType slot on-the-fly.
     x <- updateObject(x, check=FALSE)
-    x@NAMES <- S4Vectors:::normalize_names_replacement_value(value, x)
-    ## No need to validate an IRanges object after setting its names so this
-    ## should be safe.
+    x@NAMES <- S4Vectors:::normarg_names(value, class(x), length(x))
+    ## No need to validate an IRanges object after setting its names so
+    ## this should be safe.
     x
 }
 

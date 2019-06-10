@@ -15,8 +15,6 @@
 \alias{start,Pos-method}
 \alias{end,Pos-method}
 \alias{width,Pos-method}
-\alias{names,Pos-method}
-\alias{names<-,Pos-method}
 \alias{elementNROWS,Ranges-method}
 \alias{mid}
 \alias{mid,Ranges-method}

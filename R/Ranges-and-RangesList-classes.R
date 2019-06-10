@@ -133,18 +133,6 @@ setMethod("start", "Pos", function(x) pos(x))
 setMethod("end", "Pos", function(x) pos(x))
 setMethod("width", "Pos", function(x) rep.int(1L, length(x)))
 
-### Pos derivatives don't accept names.
-setMethod("names", "Pos", function(x) NULL)
-
-setReplaceMethod("names", "Pos",
-    function(x, value)
-    {
-        if (!is.null(value))
-            stop(class(x), " objects don't accept names")
-        x
-    }
-)
-
 setMethod("as.integer", "Pos", function(x) pos(x))
 
 
