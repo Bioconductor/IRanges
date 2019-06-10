@@ -39,6 +39,59 @@ setClass("StitchedIPos",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Validity
+###
+
+.OLD_IPOS_INSTANCE_MSG <- c(
+    "Starting with BioC 3.10, the class attribute of all ",
+    "IPos **instances** needs to be set to \"StitchedIPos\". ",
+    "Please update this object with 'updateObject(object, verbose=TRUE)' ",
+    "and re-serialize it."
+)
+
+.validate_IPos <- function(x)
+{
+    if (class(x) == "IPos")
+        return(paste(.OLD_IPOS_INSTANCE_MSG, collapse=""))
+
+    NULL
+}
+
+setValidity2("IPos", .validate_IPos)
+
+### TODO: Add validity methods for UnstitchedIPos and StitchedIPos objects.
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Very low-level UnstitchedIPos and StitchedIPos constructors
+###
+### For maximum efficiency, these constructors trust all the supplied
+### arguments and do not validate the object.
+###
+
+.unsafe_new_UnstitchedIPos <- function(pos, names=NULL, mcols=NULL,
+                                            metadata=list())
+{
+    new2("UnstitchedIPos", pos=pos,
+                           NAMES=names,
+                           elementMetadata=mcols,
+                           metadata=metadata,
+                           check=FALSE)
+}
+
+### Trusts all supplied arguments and does not validate the object.
+.unsafe_new_StitchedIPos <- function(pos_runs, names=NULL, mcols=NULL,
+                                               metadata=list())
+{
+    new2("StitchedIPos", pos_runs=pos_runs,
+                         NAMES=names,
+                         elementMetadata=mcols,
+                         metadata=metadata,
+                         check=FALSE)
+}
+
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### updateObject()
 ###
 
@@ -73,6 +126,7 @@ setClass("StitchedIPos",
         ## 'object' is an UnstitchedIPos instance that was made with
         ## IRanges >= 2.19.4 and < 2.19.9.
         ans <- .unsafe_new_UnstitchedIPos(object@pos,
+                                          object@NAMES,
                                           object@elementMetadata,
                                           object@metadata)
     } else {
@@ -80,6 +134,7 @@ setClass("StitchedIPos",
         ## IRanges < 2.19.4 or a StitchedIPos instance that was made with
         ## IRanges >= 2.19.4 and < 2.19.9.
         ans <- .unsafe_new_StitchedIPos(object@pos_runs,
+                                        object@NAMES,
                                         object@elementMetadata,
                                         object@metadata)
     }
@@ -90,30 +145,6 @@ setClass("StitchedIPos",
 }
 
 setMethod("updateObject", "IPos", .updateObject_IPos)
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Validity
-###
-
-.OLD_IPOS_INSTANCE_MSG <- c(
-    "Starting with BioC 3.10, the class attribute of all ",
-    "IPos **instances** needs to be set to \"StitchedIPos\". ",
-    "Please update this object with 'updateObject(object, verbose=TRUE)' ",
-    "and re-serialize it."
-)
-
-.validate_IPos <- function(x)
-{
-    if (class(x) == "IPos")
-        return(paste(.OLD_IPOS_INSTANCE_MSG, collapse=""))
-
-    NULL
-}
-
-setValidity2("IPos", .validate_IPos)
-
-### TODO: Add validity methods for UnstitchedIPos and StitchedIPos objects.
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -198,28 +229,6 @@ stitch_IntegerRanges <- function(x)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Constructor
 ###
-
-### Trusts all supplied arguments and does not validate the object.
-.unsafe_new_UnstitchedIPos <- function(pos, names=NULL, mcols=NULL,
-                                            metadata=list())
-{
-    new2("UnstitchedIPos", pos=pos,
-                           NAMES=names,
-                           elementMetadata=mcols,
-                           metadata=metadata,
-                           check=FALSE)
-}
-
-### Trusts all supplied arguments and does not validate the object.
-.unsafe_new_StitchedIPos <- function(pos_runs, names=NULL, mcols=NULL,
-                                               metadata=list())
-{
-    new2("StitchedIPos", pos_runs=pos_runs,
-                         NAMES=names,
-                         elementMetadata=mcols,
-                         metadata=metadata,
-                         check=FALSE)
-}
 
 ### 'pos' must be an integer vector with no NAs.
 .make_StitchedIPos_from_pos <- function(pos, names=NULL, mcols=NULL,
