@@ -95,7 +95,8 @@ setValidity2("IPos", .validate_IPos)
 ### updateObject()
 ###
 
-.get_IPos_version <- function(object)
+### NOT exported but used in the GenomicRanges package.
+get_IPos_version <- function(object)
 {
     if (.hasSlot(object, "NAMES"))
         return("current")
@@ -119,7 +120,7 @@ setValidity2("IPos", .validate_IPos)
     if (verbose)
         message("[updateObject] ", class(object), " object uses ",
                 "internal representation\n",
-                "[updateObject] from IRanges ", .get_IPos_version(object), ". ",
+                "[updateObject] from IRanges ", get_IPos_version(object), ". ",
                 "Updating it ... ", appendLF=FALSE)
 
     if (class(object) == "UnstitchedIPos") {
@@ -479,7 +480,7 @@ setMethod("extractROWS", "IPos",
 
 show_IPos <- function(x, margin="", print.classinfo=FALSE)
 {
-    version <- .get_IPos_version(x)
+    version <- get_IPos_version(x)
     if (version != "current")
         stop(c(wmsg("This ", class(x), " object uses internal representation ",
                     "from IRanges ", version, ", and so needs to be updated ",
