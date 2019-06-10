@@ -126,7 +126,7 @@ setValidity2("IPos", .validate_IPos)
         ## 'object' is an UnstitchedIPos instance that was made with
         ## IRanges >= 2.19.4 and < 2.19.9.
         ans <- .unsafe_new_UnstitchedIPos(object@pos,
-                                          object@NAMES,
+                                          NULL,
                                           object@elementMetadata,
                                           object@metadata)
     } else {
@@ -134,7 +134,7 @@ setValidity2("IPos", .validate_IPos)
         ## IRanges < 2.19.4 or a StitchedIPos instance that was made with
         ## IRanges >= 2.19.4 and < 2.19.9.
         ans <- .unsafe_new_StitchedIPos(object@pos_runs,
-                                        object@NAMES,
+                                        NULL,
                                         object@elementMetadata,
                                         object@metadata)
     }
