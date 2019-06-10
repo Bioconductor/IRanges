@@ -271,15 +271,14 @@ new_UnstitchedIPos <- function(pos=integer(0))
         return(.from_StitchedIPos_to_UnstitchedIPos(pos))
     if (is.integer(pos)) {
         ## Treat 'pos' as a vector of single positions.
-        return(.unsafe_new_UnstitchedIPos(pos=pos))
+        return(.unsafe_new_UnstitchedIPos(pos))
     }
     ## 'pos' is an IntegerRanges derivative. Treat its ranges as runs of
     ## consecutive positions.
     ans_len <- sum(width(pos))  # no more integer overflow in R >= 3.5
     if (ans_len > .Machine$integer.max)
         stop("too many positions in 'pos'")
-    .make_UnstitchedIPos_from_pos_runs(pos, names(pos), mcols(pos),
-                                            metadata(pos))
+    .make_UnstitchedIPos_from_pos_runs(pos)
 }
 
 ### 'pos' must be an integer vector with no NAs or an IntegerRanges derivative.
@@ -301,7 +300,7 @@ new_StitchedIPos <- function(pos=integer(0))
         stop("too many positions in 'pos'")
     pos_runs <- stitch_IntegerRanges(pos)
     pos_runs <- pos_runs[width(pos_runs) != 0L]
-    .unsafe_new_StitchedIPos(pos_runs, names(pos), mcols(pos), metadata(pos))
+    .unsafe_new_StitchedIPos(pos_runs)
 }
 
 ### Returns an integer vector with no NAs or an IntegerRanges derivative.
@@ -363,12 +362,18 @@ setAs("StitchedIPos", "UnstitchedIPos", .from_StitchedIPos_to_UnstitchedIPos)
 .from_IntegerRanges_to_UnstitchedIPos <- function(from)
 {
     .check_IntegerRanges_for_coercion_to_IPos(from, "UnstitchedIPos")
-    new_UnstitchedIPos(from)
+    ans <- new_UnstitchedIPos(from)
+    names(ans) <- names(from)
+    mcols(ans) <- mcols(from, use.names=FALSE)
+    ans
 }
 .from_IntegerRanges_to_StitchedIPos <- function(from)
 {
     .check_IntegerRanges_for_coercion_to_IPos(from, "StitchedIPos")
-    new_StitchedIPos(from)
+    ans <- new_StitchedIPos(from)
+    names(ans) <- names(from)
+    mcols(ans) <- mcols(from, use.names=FALSE)
+    ans
 }
 setAs("IntegerRanges", "UnstitchedIPos", .from_IntegerRanges_to_UnstitchedIPos)
 setAs("IntegerRanges", "StitchedIPos", .from_IntegerRanges_to_StitchedIPos)
