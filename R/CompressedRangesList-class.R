@@ -305,8 +305,8 @@ setAs("RleList", "CompressedNormalIRangesList",
 {
     from <- as(from, "IRanges")
     ans <- relist(new_StitchedIPos(from), from)
-    metadata(ans) <- metadata(from)
     mcols(ans) <- mcols(from, use.names=FALSE)
+    metadata(ans) <- metadata(from)
     ans
 }
 

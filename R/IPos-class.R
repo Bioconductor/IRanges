@@ -271,7 +271,10 @@ new_UnstitchedIPos <- function(pos=integer(0))
         return(.from_StitchedIPos_to_UnstitchedIPos(pos))
     if (is.integer(pos)) {
         ## Treat 'pos' as a vector of single positions.
-        return(.unsafe_new_UnstitchedIPos(pos))
+        names <- names(pos)
+        if (!is.null(names))
+            names(pos) <- NULL
+        return(.unsafe_new_UnstitchedIPos(pos, names))
     }
     ## 'pos' is an IntegerRanges derivative. Treat its ranges as runs of
     ## consecutive positions.
@@ -291,7 +294,10 @@ new_StitchedIPos <- function(pos=integer(0))
         return(.from_UnstitchedIPos_to_StitchedIPos(pos))
     if (is.integer(pos)) {
         ## Treat 'pos' as a vector of single positions.
-        return(.make_StitchedIPos_from_pos(pos))
+        names <- names(pos)
+        if (!is.null(names))
+            names(pos) <- NULL
+        return(.make_StitchedIPos_from_pos(pos, names))
     }
     ## 'pos' is an IntegerRanges derivative. Treat its ranges as runs of
     ## consecutive positions.
@@ -310,7 +316,7 @@ new_StitchedIPos <- function(pos=integer(0))
         return(pos)
     if (is.numeric(pos)) {
         if (!is.integer(pos))
-            pos <- as.integer(pos)
+            storage.mode(pos) <- "integer"  # preserve the names
         if (anyNA(pos))
             stop("'pos' cannot contain NAs")
         return(pos)
@@ -332,8 +338,10 @@ new_StitchedIPos <- function(pos=integer(0))
 
 ### If the input object 'pos' is itself an IPos object, its metadata columns
 ### are propagated.
-IPos <- function(pos=integer(0), stitch=NA)
+IPos <- function(pos=integer(0), names=NULL, ..., stitch=NA)
 {
+    mcols <- DataFrame(..., check.names=FALSE)
+
     pos <- .normarg_pos(pos)
     stitch <- .normarg_stitch(stitch, pos)
     if (stitch) {
@@ -341,6 +349,11 @@ IPos <- function(pos=integer(0), stitch=NA)
     } else {
         ans <- new_UnstitchedIPos(pos)
     }
+
+    if (!is.null(names))
+        names(ans) <- names
+    if (length(mcols) != 0L)
+        mcols(ans) <- mcols
     ans
 }
 
@@ -365,6 +378,7 @@ setAs("StitchedIPos", "UnstitchedIPos", .from_StitchedIPos_to_UnstitchedIPos)
     ans <- new_UnstitchedIPos(from)
     names(ans) <- names(from)
     mcols(ans) <- mcols(from, use.names=FALSE)
+    metadata(ans) <- metadata(from)
     ans
 }
 .from_IntegerRanges_to_StitchedIPos <- function(from)
@@ -373,6 +387,7 @@ setAs("StitchedIPos", "UnstitchedIPos", .from_StitchedIPos_to_UnstitchedIPos)
     ans <- new_StitchedIPos(from)
     names(ans) <- names(from)
     mcols(ans) <- mcols(from, use.names=FALSE)
+    metadata(ans) <- metadata(from)
     ans
 }
 setAs("IntegerRanges", "UnstitchedIPos", .from_IntegerRanges_to_UnstitchedIPos)
@@ -446,9 +461,9 @@ extract_pos_runs_by_ranges <- function(pos_runs, i)
 setMethod("extractROWS", "IPos",
     function(x, i)
     {
+        ans <- callNextMethod()
         if (is(x, "UnstitchedIPos"))
-            return(callNextMethod())
-        x <- updateObject(x, check=FALSE)
+            return(ans)
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         ## TODO: Maybe make this the coercion method from NSBS to
         ## IntegerRanges.
@@ -459,9 +474,8 @@ setMethod("extractROWS", "IPos",
             ir <- as(as.integer(i), "IRanges")
         }
         new_pos_runs <- extract_pos_runs_by_ranges(x@pos_runs, ir)
-        x@pos_runs <- stitch_IntegerRanges(new_pos_runs)
-        mcols(x) <- extractROWS(mcols(x, use.names=FALSE), i)
-        x
+        new_pos_runs <- stitch_IntegerRanges(new_pos_runs)
+        BiocGenerics:::replaceSlots(ans, pos_runs=new_pos_runs, check=FALSE)
     }
 )
 

@@ -71,7 +71,7 @@
 }
 
 \usage{
-IPos(pos=integer(0), stitch=NA)  # constructor function
+IPos(pos=integer(0), names=NULL, ..., stitch=NA)  # constructor function
 }
 
 \arguments{
@@ -84,6 +84,13 @@ IPos(pos=integer(0), stitch=NA)  # constructor function
     When \code{pos} is an \link{IRanges} object (or other \link{IntegerRanges}
     derivative), each range in it is interpreted as a run of
     consecutive positions.
+  }
+  \item{names}{
+    A character vector or \code{NULL}.
+  }
+  \item{...}{
+    Metadata columns to set on the IPos object. All the metadata columns
+    must be vector-like objects of the same length as the object to construct.
   }
   \item{stitch}{
     \code{TRUE}, \code{FALSE}, or \code{NA} (the default).

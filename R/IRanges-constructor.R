@@ -72,6 +72,7 @@ IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL, ...)
     } else {
         ans <- solveUserSEW0(start=start, end=end, width=width)
     }
+
     if (!is.null(names))
         names(ans) <- names
     if (length(mcols) != 0L)
