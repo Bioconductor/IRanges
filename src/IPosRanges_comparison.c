@@ -49,7 +49,7 @@
  *     equal ("=").
  *   o Long codes are designed to be user-friendly whereas numeric and
  *     1-letter codes are designed to be more compact and memory efficient.
- *     Typically the formers will be exposed to the end-user and translated
+ *     Typically the formers will be exposed to the end user and translated
  *     internally into the latters.
  *   o Swapping x and y changes the sign of the corresponding numeric code and
  *     substitutes "x" by "y" and "y" by "x" in the corresponding long code.

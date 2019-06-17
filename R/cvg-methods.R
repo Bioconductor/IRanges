@@ -17,7 +17,7 @@ setGeneric("cvg", signature="x",
 ### this file) need to support the 'circle.length' argument.
 ### TODO: Implement method for GenomicRanges objects (in GenomicRanges package).
 ### Should it support the 'ignore.strand' argument?
-### TODO: The end-user should be able to switch between collapsed and expanded
+### TODO: The end user should be able to switch between collapsed and expanded
 ### representation by calling collapse() and expand() on the returned object.
 
 
