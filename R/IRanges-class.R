@@ -205,10 +205,10 @@ setAs("numeric", "NormalIRanges",
         "digit group separators in form of a space or a comma. ",
         "For example: \"2501-2900\", \"2,501..2,900\", or \"740\"."
     )
-    ## We want to split on the first occurence of  "-" that is preceeded by
-    ## a digit (ignoring and removing the spaces in between if any).
     from <- gsub("[,[:space:]]", "", from)
-    from <- sub("([[:digit:]])[[:space:]]*-", "\\1..", from)
+    ## We want to split on the first occurence of "-" that is preceeded by
+    ## a digit.
+    from <- sub("([[:digit:]])-", "\\1..", from)
     split2 <- CharacterList(strsplit(from, "..", fixed=TRUE))
     split2_eltNROWS <- elementNROWS(split2)
     if (!all(split2_eltNROWS <= 2L))
