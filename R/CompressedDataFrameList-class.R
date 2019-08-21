@@ -3,7 +3,7 @@
 ### -------------------------------------------------------------------------
 
 setClass("CompressedDataFrameList",
-         prototype = prototype(unlistData = new("DataFrame")),
+         prototype = prototype(unlistData = new("DFrame")),
          contains = c("DataFrameList", "CompressedList"))
 
 setClass("CompressedSplitDataFrameList",
@@ -106,7 +106,7 @@ setMethod("commonColnames", "CompressedSplitDataFrameList",
 
 setAs("ANY", "CompressedSplitDataFrameList",
       function(from) {
-        coerceToCompressedList(from, "DataFrame")
+        coerceToCompressedList(from, "DFrame")
       })
 
 setAs("ANY", "SplitDataFrameList",

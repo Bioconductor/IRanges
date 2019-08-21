@@ -672,10 +672,10 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
 }
 setMethod("as.data.frame", "RangedData", .as.data.frame.RangedData)
 
-setAs("RangedData", "DataFrame",
+setAs("RangedData", "DFrame",
       function(from)
       {
-        what <- "coercion method from RangedData to DataFrame"
+        what <- "coercion method from RangedData to DFrame"
         .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
         DataFrame(as.data.frame(ranges(from)),
                   unlist(values(from), use.names=FALSE))

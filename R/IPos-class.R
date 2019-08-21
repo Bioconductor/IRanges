@@ -114,35 +114,36 @@ get_IPos_version <- function(object)
         if (verbose)
             message("[updateObject] ", class(object), " object is current.\n",
                     "[updateObject] Nothing to update.")
-        return(object)
+        return(callNextMethod())
     }
 
     if (verbose)
-        message("[updateObject] ", class(object), " object uses ",
-                "internal representation\n",
-                "[updateObject] from IRanges ", get_IPos_version(object), ". ",
+        message("[updateObject] ", class(object), " object ",
+                "uses internal representation from\n",
+                "[updateObject] IRanges ", get_IPos_version(object), ". ",
                 "Updating it ... ", appendLF=FALSE)
 
     if (class(object) == "UnstitchedIPos") {
         ## 'object' is an UnstitchedIPos instance that was made with
         ## IRanges >= 2.19.4 and < 2.19.9.
-        ans <- .unsafe_new_UnstitchedIPos(object@pos,
-                                          NULL,
-                                          object@elementMetadata,
-                                          object@metadata)
+        object <- .unsafe_new_UnstitchedIPos(object@pos,
+                                             NULL,
+                                             object@elementMetadata,
+                                             object@metadata)
     } else {
         ## 'object' is either an IPos instance that was made with
         ## IRanges < 2.19.4 or a StitchedIPos instance that was made with
         ## IRanges >= 2.19.4 and < 2.19.9.
-        ans <- .unsafe_new_StitchedIPos(object@pos_runs,
-                                        NULL,
-                                        object@elementMetadata,
-                                        object@metadata)
+        object <- .unsafe_new_StitchedIPos(object@pos_runs,
+                                           NULL,
+                                           object@elementMetadata,
+                                           object@metadata)
     }
 
     if (verbose)
         message("OK")
-    ans
+
+    callNextMethod()
 }
 
 setMethod("updateObject", "IPos", .updateObject_IPos)

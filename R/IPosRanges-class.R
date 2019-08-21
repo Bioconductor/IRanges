@@ -42,14 +42,18 @@ setMethod("updateObject", "IPosRanges",
                 message("[updateObject] Internal representation of ",
                         class(object), " object is current.\n",
                         "[updateObject] Nothing to update.")
-            return(object)
+        } else {
+            if (verbose)
+                message("[updateObject] elementType slot of ", class(object),
+                        " object should be set to \"", target, "\",\n",
+                        "[updateObject] not to \"", current, "\".\n",
+                        "[updateObject] Updating it ... ", appendLF=FALSE)
+            object@elementType <- target
+            if (verbose)
+                message("OK")
         }
-        if (verbose)
-            message("[updateObject] elementType slot of ", class(object),
-                    " object should be set to \"", target, "\",\n",
-                    "[updateObject] not \"", current, "\". Updating it ...")
-        object@elementType <- target
-        object
+
+        callNextMethod()
     }
 )
 

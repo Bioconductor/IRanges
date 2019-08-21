@@ -58,7 +58,8 @@ setMethod("updateObject", "CompressedList",
         ## information.
         object@partitioning <- updateObject(object@partitioning,
                                             ..., verbose=verbose)
-        object
+
+        callNextMethod()
     }
 )
 

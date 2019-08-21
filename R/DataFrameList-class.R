@@ -297,9 +297,9 @@ setReplaceMethod("[", "SplitDataFrameList",
 ### Coercion
 ###
 
-## Casting DataFrameList -> DataFrame implies cast to SplitDataFrameList
-setAs("DataFrameList", "DataFrame", function(from) {
-  as(as(from, "SplitDataFrameList"), "DataFrame")
+## Casting DataFrameList -> DFrame implies cast to SplitDataFrameList
+setAs("DataFrameList", "DFrame", function(from) {
+  as(as(from, "SplitDataFrameList"), "DFrame")
 })
 
 setGeneric("commonColnames", function(x) standardGeneric("commonColnames"))
@@ -307,7 +307,7 @@ setGeneric("commonColnames", function(x) standardGeneric("commonColnames"))
 setMethod("commonColnames", "SplitDataFrameList",
           function(x) colnames(head(x, 1L))[[1L]])
 
-setAs("SplitDataFrameList", "DataFrame",
+setAs("SplitDataFrameList", "DFrame",
     function(from) {
       cols <- sapply(commonColnames(from), function(j) from[,j],
                      simplify=FALSE)
