@@ -50,7 +50,7 @@ ManyToManyGrouping <- function(..., nobj, compress=TRUE) {
 ### ----------------------------
 ###
 
-setOldClass("grouping")
+setOldClass(c("grouping", "integer"))
 
 ## utils::relist dipatches only on 'skeleton' so this is here instead of in R
 setMethod("relist", c("grouping", "missing"), function(flesh, skeleton) {
