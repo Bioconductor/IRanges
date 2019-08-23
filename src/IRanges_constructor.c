@@ -13,6 +13,8 @@ static char errmsg_buf[200];
  * solve_user_SEW0()
  */
 
+/* Return -1 if the range specified by 'start', 'end', and 'width' is
+   invalid, and 0 otherwise. */
 static int solve_range(int start, int end, int width,
 		int *solved_start, int *solved_width)
 {
@@ -101,27 +103,81 @@ static int solve_range(int start, int end, int width,
 	return 0;
 }
 
+/* --- .Call ENTRY POINT ---
+  'start' and 'width' can be used **as-is** to construct the IRanges object
+  to return if they satisfy at least both criteria:
+    (a) They don't have names on them.
+    (b) They don't contain NAs.
+  Note that this just reflects what validObject() expects to see in the
+  "start" and "width" slots of an IRanges object.
+  If they can't be used **as-is** then they need to be modified (i.e. the
+  names need to be removed and/or the NAs in them need to be resolved).
+  This requires duplicating them first.
+  Of course they also must define valid ranges, that is, after resolution
+  of the NAs, the width must be >= 0 and < 2^31, the start must be > -2^31
+  and < 2^31, and the implicit end must be > -2^31 and < 2^31. This is
+  checked early and an error is raised on the first invalid range (see 1st
+  pass below).
+*/
 SEXP solve_user_SEW0(SEXP start, SEXP end, SEXP width)
 {
+	int ans_len, use_start_as_is, use_width_as_is,
+	    i, solved_start, solved_width;
+	const int *start_p, *end_p, *width_p;
 	SEXP ans, ans_start, ans_width;
-	int ans_len, i;
 
 	ans_len = LENGTH(start);
-	PROTECT(ans_start = NEW_INTEGER(ans_len));
-	PROTECT(ans_width = NEW_INTEGER(ans_len));
+
+	use_start_as_is = GET_NAMES(start) == R_NilValue;
+	use_width_as_is = GET_NAMES(width) == R_NilValue;
+
+	/* 1st pass: Solve and check the supplied ranges and determine
+           whether 'start' and/or 'width' can be used as-is or not. */
+	start_p = INTEGER(start);
+	end_p = INTEGER(end);
+	width_p = INTEGER(width);
 	for (i = 0; i < ans_len; i++) {
-		if (solve_range(INTEGER(start)[i],
-				INTEGER(end)[i],
-				INTEGER(width)[i],
-				INTEGER(ans_start) + i,
-				INTEGER(ans_width) + i) != 0)
-		{
-			UNPROTECT(2);
+		if (solve_range(*start_p, *end_p, *width_p,
+				&solved_start, &solved_width) != 0)
 			error("In range %d: %s.", i + 1, errmsg_buf);
+		if (use_start_as_is && *start_p == NA_INTEGER)
+			use_start_as_is = 0;
+		if (use_width_as_is && *width_p == NA_INTEGER)
+			use_width_as_is = 0;
+		start_p++;
+		end_p++;
+		width_p++;
+	}
+
+	ans_start = start;
+	ans_width = width;
+	if (!(use_start_as_is && use_width_as_is)) {
+		/* 2nd pass: Allocate and populate 'ans_start'
+                   and/or 'ans_width'. */
+		if (!use_start_as_is)
+			PROTECT(ans_start = NEW_INTEGER(ans_len));
+		if (!use_width_as_is)
+			PROTECT(ans_width = NEW_INTEGER(ans_len));
+		start_p = INTEGER(start);
+		end_p = INTEGER(end);
+		width_p = INTEGER(width);
+		for (i = 0; i < ans_len; i++) {
+			/* All ranges got validated during the 1st pass so
+			   we don't need to check the returned value again. */
+			solve_range(*start_p, *end_p, *width_p,
+				    &solved_start, &solved_width);
+			if (!use_start_as_is)
+				INTEGER(ans_start)[i] = solved_start;
+			if (!use_width_as_is)
+				INTEGER(ans_width)[i] = solved_width;
+			start_p++;
+			end_p++;
+			width_p++;
 		}
 	}
-	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, R_NilValue));
-	UNPROTECT(3);
+	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width,
+					      R_NilValue));
+	UNPROTECT(1 + !use_start_as_is + !use_width_as_is);
 	return ans;
 }
 
@@ -253,9 +309,9 @@ SEXP solve_user_SEW(SEXP refwidths, SEXP start, SEXP end, SEXP width,
 	PROTECT(ans_width = NEW_INTEGER(ans_len));
 	for (i0 = i1 = i2 = i3 = 0; i0 < ans_len; i0++, i1++, i2++, i3++) {
 		/* recycling */
-		if (i1 >= LENGTH(start)) i1 = 0; 
-		if (i2 >= LENGTH(end)) i2 = 0; 
-		if (i3 >= LENGTH(width)) i3 = 0; 
+		if (i1 >= LENGTH(start)) i1 = 0;
+		if (i2 >= LENGTH(end)) i2 = 0;
+		if (i3 >= LENGTH(width)) i3 = 0;
 		if (solve_user_SEW_row(INTEGER(refwidths)[i0],
 				       INTEGER(start)[i1],
 				       INTEGER(end)[i2],
