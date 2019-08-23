@@ -104,12 +104,12 @@ static int solve_range(int start, int end, int width,
 SEXP solve_user_SEW0(SEXP start, SEXP end, SEXP width)
 {
 	SEXP ans, ans_start, ans_width;
-	int ans_length, i;
+	int ans_len, i;
 
-	ans_length = LENGTH(start);
-	PROTECT(ans_start = NEW_INTEGER(ans_length));
-	PROTECT(ans_width = NEW_INTEGER(ans_length));
-	for (i = 0; i < ans_length; i++) {
+	ans_len = LENGTH(start);
+	PROTECT(ans_start = NEW_INTEGER(ans_len));
+	PROTECT(ans_width = NEW_INTEGER(ans_len));
+	for (i = 0; i < ans_len; i++) {
 		if (solve_range(INTEGER(start)[i],
 				INTEGER(end)[i],
 				INTEGER(width)[i],
@@ -244,14 +244,14 @@ SEXP solve_user_SEW(SEXP refwidths, SEXP start, SEXP end, SEXP width,
 		SEXP translate_negative_coord, SEXP allow_nonnarrowing)
 {
 	SEXP ans, ans_start, ans_width;
-	int ans_length, i0, i1, i2, i3;
+	int ans_len, i0, i1, i2, i3;
 
 	translate_negative_coord0 = LOGICAL(translate_negative_coord)[0];
 	nonnarrowing_is_OK = LOGICAL(allow_nonnarrowing)[0];
-	ans_length = LENGTH(refwidths);
-	PROTECT(ans_start = NEW_INTEGER(ans_length));
-	PROTECT(ans_width = NEW_INTEGER(ans_length));
-	for (i0 = i1 = i2 = i3 = 0; i0 < ans_length; i0++, i1++, i2++, i3++) {
+	ans_len = LENGTH(refwidths);
+	PROTECT(ans_start = NEW_INTEGER(ans_len));
+	PROTECT(ans_width = NEW_INTEGER(ans_len));
+	for (i0 = i1 = i2 = i3 = 0; i0 < ans_len; i0++, i1++, i2++, i3++) {
 		/* recycling */
 		if (i1 >= LENGTH(start)) i1 = 0; 
 		if (i2 >= LENGTH(end)) i2 = 0; 
