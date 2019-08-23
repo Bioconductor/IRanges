@@ -17,8 +17,10 @@ importFrom(stats4, summary)
 
 exportClasses(
     ## DataFrameList-class.R:
-    DataFrameList, SimpleDataFrameList,
-    SplitDataFrameList, SimpleSplitDataFrameList,
+    DataFrameList, DFrameList,
+    SimpleDataFrameList, SimpleDFrameList,
+    SplitDataFrameList, SplitDFrameList,
+    SimpleSplitDataFrameList, SimpleSplitDFrameList,
 
     ## AtomicList-class.R:
     AtomicList, SimpleAtomicList,
@@ -90,7 +92,8 @@ exportClasses(
     CompressedList,
 
     ## CompressedDataFrameList-class.R:
-    CompressedDataFrameList, CompressedSplitDataFrameList,
+    CompressedDataFrameList, CompressedDFrameList,
+    CompressedSplitDataFrameList, CompressedSplitDFrameList,
 
     ## CompressedAtomicList-class.R:
     CompressedAtomicList,
