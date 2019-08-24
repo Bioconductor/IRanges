@@ -106,7 +106,7 @@ static int solve_range(int start, int end, int width,
 /* --- .Call ENTRY POINT ---
   'start' and 'width' can be used **as-is** to construct the IRanges object
   to return if they satisfy at least both criteria:
-    (a) They don't have names on them.
+    (a) They don't have a "dim" or "names" attribute on them.
     (b) They don't contain NAs.
   Note that this just reflects what validObject() expects to see in the
   "start" and "width" slots of an IRanges object.
@@ -126,10 +126,17 @@ SEXP solve_user_SEW0(SEXP start, SEXP end, SEXP width)
 	const int *start_p, *end_p, *width_p;
 	SEXP ans, ans_start, ans_width;
 
+	if (!(IS_INTEGER(start) && IS_INTEGER(end) && IS_INTEGER(width)))
+		error("the supplied 'start', 'end', and 'width', "
+                      "must be integer vectors");
 	ans_len = LENGTH(start);
+	if (LENGTH(end) != ans_len || LENGTH(width) != ans_len)
+		error("'start', 'end', and 'width' must have the same length");
 
-	use_start_as_is = GET_NAMES(start) == R_NilValue;
-	use_width_as_is = GET_NAMES(width) == R_NilValue;
+	use_start_as_is = GET_DIM(start) == R_NilValue &&
+			  GET_NAMES(start) == R_NilValue;
+	use_width_as_is = GET_DIM(width) == R_NilValue &&
+			  GET_NAMES(width) == R_NilValue;
 
 	/* 1st pass: Solve and check the supplied ranges and determine
            whether 'start' and/or 'width' can be used as-is or not. */
