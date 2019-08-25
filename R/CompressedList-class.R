@@ -120,7 +120,7 @@ compress_listData <- function(x, elementType = NULL) {
     x
 }
 
-.reconcileMetadatacols <- function(x) {
+.reconcile_mcols <- function(x) {
   x_mcols <- mcols(x, use.names=FALSE)
   if (is(x_mcols, "DataFrame") &&
       nrow(x_mcols) == 0L && ncol(x_mcols) == 0L)
@@ -134,9 +134,20 @@ compress_listData <- function(x, elementType = NULL) {
 ### Low-level. NOT exported.
 newCompressedList0 <- function(Class, unlistData, partitioning)
 {
+    ## Note that 'unlistData_target_class' could also be obtained
+    ## with 'getClassDef(Class)@slots[["unlistData"]]', in which
+    ## case the class name would be returned with the "package" attribute.
+    unlistData_target_class <- getSlots(Class)[["unlistData"]]
+
+    ## 'unlistData' must derive from the class expected by the "unlistData"
+    ## slot. If it doesn't (e.g. if 'Class' is "CompressedSplitDFrameList"
+    ## and 'unlistData' is an ordinary data.frame), then we coerce it. Note
+    ## that this coercion could fail.
+    if (!is(unlistData, unlistData_target_class))
+        unlistData <- as(unlistData, unlistData_target_class)
     ans <- new2(Class, unlistData=unlistData,
-                partitioning=partitioning, check=FALSE)
-    .reconcileMetadatacols(ans)
+                       partitioning=partitioning, check=FALSE)
+    .reconcile_mcols(ans)
 }
 
 ### Low-level. NOT exported.
@@ -172,7 +183,7 @@ new_CompressedList_from_list <- function(Class, x, ..., mcols)
                            elementMetadata=mcols,
                            check=FALSE)
     }
-    .reconcileMetadatacols(ans)
+    .reconcile_mcols(ans)
 }
 
 
