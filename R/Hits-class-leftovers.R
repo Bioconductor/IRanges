@@ -12,7 +12,7 @@
 ### Coercion
 ###
 
-setAs("Hits", "DataFrame", function(from) {
+setAs("Hits", "DFrame", function(from) {
   from_mcols <- mcols(from, use.names=FALSE)
   DataFrame(as.matrix(from),
             if (!is.null(from_mcols)) from_mcols

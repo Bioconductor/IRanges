@@ -7,11 +7,11 @@
 ###
 
 setMethod("relistToClass", "data.frame",
-    function(x) "CompressedSplitDataFrameList"
+    function(x) "CompressedSplitDFrameList"
 )
 
 setMethod("relistToClass", "DataFrame",
-    function(x) "CompressedSplitDataFrameList"
+    function(x) "CompressedSplitDFrameList"
 )
 
 setMethod("mstack", "DataFrame", function(..., .index.var = "name") {

@@ -2,18 +2,46 @@
 ### DataFrameList objects
 ### -------------------------------------------------------------------------
 
-setClass("DataFrameList", representation("VIRTUAL"),
-         prototype = prototype(elementType = "DataFrame"),
-         contains = "List")
+
+setClass("DataFrameList",
+    contains="List",
+    representation("VIRTUAL"),
+    prototype(elementType="DataFrame")
+)
+
+setClass("DFrameList",
+    contains="DataFrameList",
+    representation("VIRTUAL"),
+    prototype(elementType="DFrame")
+)
 
 setClass("SimpleDataFrameList",
-         contains = c("DataFrameList", "SimpleList"))
+    contains=c("DataFrameList", "SimpleList")
+)
 
-setClass("SplitDataFrameList", representation("VIRTUAL"),
-         contains = "DataFrameList")
+setClass("SimpleDFrameList",
+    contains=c("DFrameList", "SimpleDataFrameList")
+)
+
+setClass("SplitDataFrameList",
+    contains="DataFrameList",
+    representation("VIRTUAL")
+)
+
+setClass("SplitDFrameList",
+    contains=c("DFrameList", "SplitDataFrameList"),
+    representation("VIRTUAL")
+)
 
 setClass("SimpleSplitDataFrameList",
-         contains = c("SplitDataFrameList", "SimpleDataFrameList"))
+    contains=c("SplitDataFrameList", "SimpleDataFrameList")
+)
+
+setClass("SimpleSplitDFrameList",
+    contains=c("SplitDFrameList", "SimpleDFrameList",
+               "SimpleSplitDataFrameList")
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -127,6 +155,11 @@ setReplaceMethod("dimnames", "DataFrameList",
                    x
                  })
 
+setGeneric("commonColnames", function(x) standardGeneric("commonColnames"))
+
+setMethod("commonColnames", "SplitDataFrameList",
+          function(x) colnames(head(x, 1L))[[1L]])
+
 setGeneric("columnMetadata", function(x, ...) standardGeneric("columnMetadata"))
 
 setMethod("columnMetadata", "SimpleSplitDataFrameList", function(x) {
@@ -178,9 +211,9 @@ DataFrameList <- function(...)
   if (length(listData) == 1 && is.list(listData[[1L]]) &&
       !is.data.frame(listData[[1L]]))
     listData <- listData[[1L]]
-  if (length(listData) > 0 && !is(listData[[1L]], "DataFrame"))
-    listData <- lapply(listData, as, "DataFrame")
-  S4Vectors:::new_SimpleList_from_list("SimpleDataFrameList", listData)
+  if (length(listData) > 0 && !is(listData[[1L]], "DFrame"))
+    listData <- lapply(listData, as, "DFrame")
+  S4Vectors:::new_SimpleList_from_list("SimpleDFrameList", listData)
 }
 
 SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
@@ -190,7 +223,7 @@ SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
   listData <- list(...)
   if (length(listData) == 1 &&
       (is.list(listData[[1L]]) || is(listData[[1L]], "List")) &&
-      !(is.data.frame(listData[[1L]]) || is(listData[[1L]], "DataFrame")))
+      !(is.data.frame(listData[[1L]]) || is(listData[[1L]], "DFrame")))
     listData <- listData[[1L]]
   if (cbindArgs) {
     if (is.null(names(listData)))
@@ -199,8 +232,8 @@ SplitDataFrameList <- function(..., compress = TRUE, cbindArgs = FALSE)
   }
 
   as(listData,
-     if (compress) "CompressedSplitDataFrameList"
-     else "SimpleSplitDataFrameList")
+     if (compress) "CompressedSplitDFrameList"
+     else "SimpleSplitDFrameList")
 }
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -297,17 +330,25 @@ setReplaceMethod("[", "SplitDataFrameList",
 ### Coercion
 ###
 
-## Casting DataFrameList -> DataFrame implies cast to SplitDataFrameList
-setAs("DataFrameList", "DataFrame", function(from) {
-  as(as(from, "SplitDataFrameList"), "DataFrame")
+setAs("ANY", "DataFrameList",
+    function(from) as(from, "DFrameList")
+)
+setAs("ANY", "SimpleDataFrameList",
+    function(from) as(from, "SimpleDFrameList")
+)
+setAs("ANY", "SplitDataFrameList",
+    function(from) as(from, "SplitDFrameList")
+)
+setAs("ANY", "SimpleSplitDataFrameList",
+    function(from) as(from, "SimpleSplitDFrameList")
+)
+
+## Casting DataFrameList -> DFrame implies cast to SplitDataFrameList
+setAs("DataFrameList", "DFrame", function(from) {
+  as(as(from, "SplitDFrameList"), "DFrame")
 })
 
-setGeneric("commonColnames", function(x) standardGeneric("commonColnames"))
-
-setMethod("commonColnames", "SplitDataFrameList",
-          function(x) colnames(head(x, 1L))[[1L]])
-
-setAs("SplitDataFrameList", "DataFrame",
+setAs("SplitDataFrameList", "DFrame",
     function(from) {
       cols <- sapply(commonColnames(from), function(j) from[,j],
                      simplify=FALSE)
@@ -315,20 +356,24 @@ setAs("SplitDataFrameList", "DataFrame",
     }
 )
 
-setAs("list", "SplitDataFrameList",
-      function(from) as(from, "SimpleSplitDataFrameList"))
+setAs("list", "SplitDFrameList",
+      function(from) as(from, "SimpleSplitDFrameList"))
 
-setAs("SimpleList", "SplitDataFrameList",
-      function(from) as(from, "SimpleSplitDataFrameList"))
+setAs("SimpleList", "SplitDFrameList",
+      function(from) as(from, "SimpleSplitDFrameList"))
 
-setAs("ANY", "SimpleSplitDataFrameList",
+setAs("ANY", "SimpleSplitDFrameList",
       function(from) {
-        new("SimpleSplitDataFrameList", as(from, "SimpleDataFrameList"))
+        new("SimpleSplitDFrameList", as(from, "SimpleDFrameList"))
       })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Show
+### Display
 ###
+
+setMethod("classNameForDisplay", "SimpleDFrameList",
+    function(x) sub("^Simple", "", sub("DFrame", "DataFrame", class(x)))
+)
 
 setMethod("show", "SplitDataFrameList", function(object)
           {

@@ -38,7 +38,7 @@
 
 % Coercion:
 \alias{as.data.frame,RangedData-method}
-\alias{coerce,RangedData,DataFrame-method}
+\alias{coerce,RangedData,DFrame-method}
 \alias{coerce,RangedData,CompressedIRangesList-method}
 \alias{coerce,RangedData,IRangesList-method}
 \alias{as.env,RangedData-method}

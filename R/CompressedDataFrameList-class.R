@@ -2,12 +2,26 @@
 ### CompressedDataFrameList objects
 ### -------------------------------------------------------------------------
 
+
 setClass("CompressedDataFrameList",
-         prototype = prototype(unlistData = new("DataFrame")),
-         contains = c("DataFrameList", "CompressedList"))
+    contains=c("DataFrameList", "CompressedList"),
+    representation(unlistData="DataFrame")
+)
+
+setClass("CompressedDFrameList",
+    contains=c("DFrameList", "CompressedDataFrameList"),
+    representation(unlistData="DFrame")
+)
 
 setClass("CompressedSplitDataFrameList",
-         contains = c("SplitDataFrameList", "CompressedDataFrameList"))
+    contains=c("SplitDataFrameList", "CompressedDataFrameList")
+)
+
+setClass("CompressedSplitDFrameList",
+    contains=c("SplitDFrameList", "CompressedDFrameList",
+               "CompressedSplitDataFrameList")
+)
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Accessor methods.
@@ -65,6 +79,9 @@ setReplaceMethod("colnames", "CompressedSplitDataFrameList",
                    x
                  })
 
+setMethod("commonColnames", "CompressedSplitDataFrameList",
+          function(x) colnames(unlist(x, use.names=FALSE)))
+
 setMethod("columnMetadata", "CompressedSplitDataFrameList", function(x) {
   mcols(x@unlistData, use.names=FALSE)
 })
@@ -99,19 +116,31 @@ setMethod("[", "CompressedSplitDataFrameList",
 ### Coercion
 ###
 
-setListCoercions("DataFrame")
-
-setMethod("commonColnames", "CompressedSplitDataFrameList",
-          function(x) colnames(unlist(x, use.names=FALSE)))
-
+setAs("ANY", "CompressedDataFrameList",
+    function(from) as(from, "CompressedDFrameList")
+)
 setAs("ANY", "CompressedSplitDataFrameList",
+    function(from) as(from, "CompressedSplitDFrameList")
+)
+
+setListCoercions("DFrame")
+
+setAs("ANY", "CompressedSplitDFrameList",
       function(from) {
-        coerceToCompressedList(from, "DataFrame")
+        coerceToCompressedList(from, "DFrame")
       })
 
-setAs("ANY", "SplitDataFrameList",
-      function(from) as(from, "CompressedSplitDataFrameList"))
+setAs("ANY", "SplitDFrameList",
+      function(from) as(from, "CompressedSplitDFrameList"))
 
-setAs("DataFrame", "SplitDataFrameList",
-      function(from) as(from, "CompressedSplitDataFrameList"))
+setAs("DataFrame", "SplitDFrameList",
+      function(from) as(from, "CompressedSplitDFrameList"))
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Display
+###
+
+setMethod("classNameForDisplay", "CompressedDFrameList",
+    function(x) sub("^Compressed", "", sub("DFrame", "DataFrame", class(x)))
+)
 

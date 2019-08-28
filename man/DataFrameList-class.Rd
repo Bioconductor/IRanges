@@ -1,10 +1,53 @@
 \name{DataFrameList-class}
 \docType{class}
+
+\alias{class:DataFrameList}
 \alias{DataFrameList-class}
+\alias{DataFrameList}
+
+\alias{class:DFrameList}
+\alias{DFrameList-class}
+\alias{DFrameList}
+
+\alias{class:SimpleDataFrameList}
 \alias{SimpleDataFrameList-class}
+\alias{SimpleDataFrameList}
+
+\alias{class:SimpleDFrameList}
+\alias{SimpleDFrameList-class}
+\alias{SimpleDFrameList}
+
+\alias{class:SplitDataFrameList}
 \alias{SplitDataFrameList-class}
-\alias{CompressedSplitDataFrameList-class}
+\alias{SplitDataFrameList}
+
+\alias{class:SplitDFrameList}
+\alias{SplitDFrameList-class}
+\alias{SplitDFrameList}
+
+\alias{class:SimpleSplitDataFrameList}
 \alias{SimpleSplitDataFrameList-class}
+\alias{SimpleSplitDataFrameList}
+
+\alias{class:SimpleSplitDFrameList}
+\alias{SimpleSplitDFrameList-class}
+\alias{SimpleSplitDFrameList}
+
+\alias{class:CompressedDataFrameList}
+\alias{CompressedDataFrameList-class}
+\alias{CompressedDataFrameList}
+
+\alias{class:CompressedDFrameList}
+\alias{CompressedDFrameList-class}
+\alias{CompressedDFrameList}
+
+\alias{class:CompressedSplitDataFrameList}
+\alias{CompressedSplitDataFrameList-class}
+\alias{CompressedSplitDataFrameList}
+
+\alias{class:CompressedSplitDFrameList}
+\alias{CompressedSplitDFrameList-class}
+\alias{CompressedSplitDFrameList}
 
 % accessors
 \alias{nrow,DataFrameList-method}
@@ -14,8 +57,8 @@
 \alias{dim,DataFrameList-method}
 \alias{rownames,DataFrameList-method}
 \alias{colnames,DataFrameList-method}
+\alias{colnames,SplitDataFrameList-method}
 \alias{colnames,CompressedSplitDataFrameList-method}
-\alias{colnames,SimpleSplitDataFrameList-method}
 \alias{dimnames,DataFrameList-method}
 \alias{rownames<-,CompressedSplitDataFrameList-method}
 \alias{rownames<-,SimpleDataFrameList-method}
@@ -29,10 +72,6 @@
 \alias{columnMetadata,CompressedSplitDataFrameList-method}
 \alias{columnMetadata<-,CompressedSplitDataFrameList-method}
 
-% constructor
-\alias{DataFrameList}
-\alias{SplitDataFrameList}
-
 % subsetting
 \alias{[,SimpleSplitDataFrameList-method}
 \alias{[,CompressedSplitDataFrameList-method}
@@ -42,17 +81,25 @@
 \alias{transform,SplitDataFrameList-method}
 
 % coercion
-\alias{coerce,DataFrameList,DataFrame-method}
-\alias{coerce,SplitDataFrameList,DataFrame-method}
-\alias{coerce,ANY,CompressedSplitDataFrameList-method}
-\alias{coerce,ANY,SimpleSplitDataFrameList-method}
-\alias{coerce,List,CompressedSplitDataFrameList-method}
-\alias{coerce,list,SplitDataFrameList-method}
-\alias{coerce,List,SimpleSplitDataFrameList-method}
+\alias{coerce,ANY,DataFrameList-method}
+\alias{coerce,ANY,SimpleDataFrameList-method}
 \alias{coerce,ANY,SplitDataFrameList-method}
-\alias{coerce,SimpleList,SplitDataFrameList-method}
-\alias{coerce,list,SplitDataFrameList-method}
-\alias{coerce,DataFrame,SplitDataFrameList-method}
+\alias{coerce,ANY,SimpleSplitDataFrameList-method}
+\alias{coerce,ANY,CompressedDataFrameList-method}
+\alias{coerce,ANY,CompressedSplitDataFrameList-method}
+
+\alias{coerce,DataFrameList,DFrame-method}
+\alias{coerce,SplitDataFrameList,DFrame-method}
+
+\alias{coerce,ANY,CompressedSplitDFrameList-method}
+\alias{coerce,ANY,SimpleSplitDFrameList-method}
+\alias{coerce,List,CompressedSplitDFrameList-method}
+\alias{coerce,list,SplitDFrameList-method}
+\alias{coerce,List,SimpleSplitDFrameList-method}
+\alias{coerce,ANY,SplitDFrameList-method}
+\alias{coerce,SimpleList,SplitDFrameList-method}
+\alias{coerce,list,SplitDFrameList-method}
+\alias{coerce,DataFrame,SplitDFrameList-method}
 \alias{stack,DataFrameList-method}
 
 % splitting and combining
@@ -60,9 +107,12 @@
 \alias{rbind,DataFrameList-method}
 
 % show
+\alias{classNameForDisplay,SimpleDFrameList-method}
+\alias{classNameForDisplay,CompressedDFrameList-method}
 \alias{show,SplitDataFrameList-method}
 
 % SDFLWrapperForTransform (internal)
+\alias{colnames,SDFLWrapperForTransform-method}
 \alias{[[,SDFLWrapperForTransform-method}
 \alias{[[<-,SDFLWrapperForTransform-method}
 \alias{as.env,SDFLWrapperForTransform-method}

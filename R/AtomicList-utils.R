@@ -270,7 +270,7 @@ setMethod("runq", "RleList",
 ### Character
 ###
 
-### TODO: grep, paste, ...
+### TODO: paste, ...
 
 setMethod("unstrsplit", "CharacterList",
     function(x, sep="") unstrsplit(as.list(x), sep=sep)
@@ -338,6 +338,33 @@ setMethods("grepl", list(c("ANY", "CharacterList"),
                relist(grepl(pattern, unlist(x, use.names=FALSE),
                             ignore.case, perl, fixed, useBytes),
                       x)
+           })
+
+setMethods("grep", list(c("ANY", "CharacterList"),
+                        c("ANY", "RleList")),
+           function(pattern, x, ignore.case = FALSE, perl = FALSE,
+                    value = FALSE,  fixed = FALSE, useBytes = FALSE,
+                    invert = FALSE) {
+               stopifnot(isTRUEorFALSE(invert), isTRUEorFALSE(value))
+               g <- grepl(pattern, x, ignore.case, perl, fixed, useBytes)
+               if (invert) {
+                   g <- !g
+               }
+               if (value) {
+                   x[g]
+               } else {
+                   which(g)
+               }
+           })
+
+setMethods("startsWith", list(c("CharacterList", "ANY"), c("RleList", "ANY")),
+           function(x, prefix) {
+               relist(startsWith(unlist(x, use.names = FALSE), prefix), x)
+           })
+
+setMethods("endsWith", list(c("CharacterList", "ANY"), c("RleList", "ANY")),
+           function(x, suffix) {
+               relist(endsWith(unlist(x, use.names = FALSE), suffix), x)
            })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

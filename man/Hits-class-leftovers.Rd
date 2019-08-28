@@ -4,7 +4,7 @@
 \alias{Hits-examples}
 
 % coercion
-\alias{coerce,Hits,DataFrame-method}
+\alias{coerce,Hits,DFrame-method}
 \alias{as.data.frame,Hits-method}
 
 \alias{coerce,SortedByQueryHits,PartitioningByEnd-method}
