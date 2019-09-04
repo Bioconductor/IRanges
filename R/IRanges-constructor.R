@@ -48,13 +48,26 @@ solveUserSEW0 <- function(start=NULL, end=NULL, width=NULL)
             end <- rep.int(NA_integer_, max123)
         else
             end <- S4Vectors:::recycleVector(end, max123)
-    }
+    } 
     if (L3 < max123) {
         if (L3 == 0L)
             width <- rep.int(NA_integer_, max123)
         else
             width <- S4Vectors:::recycleVector(width, max123)
     }
+    
+    ## Check whether 'start' and/or 'width' can be used as-is or not.
+    ## 'start' and 'width' can be used **as-is** to construct the IRanges object
+    ## to return if they satisfy at least both criteria:
+    ##     (a) They don't have a "dim" or "names" attribute on them.
+    ##     (b) They don't contain NAs.
+    # use_start_as_is = is.null(dim(start)) &&
+    #     is.null(names(start)) &&
+    #     !anyNA(start)
+    # use_width_as_is = is.null(dim(width)) &&
+    #     is.null(names(width)) &&
+    #     !anyNA(width);
+    # 
     .Call2("solve_user_SEW0", start, end, width, PACKAGE="IRanges")
 }
 
