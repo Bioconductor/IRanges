@@ -156,7 +156,14 @@ SEXP solve_user_SEW0(SEXP start, SEXP end, SEXP width)
 			PROTECT(ans_start = duplicate(start));
 		if (!use_width_as_is)
 			PROTECT(ans_width = duplicate(width));
-		
+
+		/* Remove NAMES and DIM attribute(duplicate will preserve them)*/
+		SET_NAMES(ans_start, R_NilValue);
+		SET_NAMES(ans_width, R_NilValue);
+		SET_DIM(ans_start, R_NilValue);
+		SET_DIM(ans_width, R_NilValue);
+
+
 		for (i = 0; i < ans_len; i++) {
 			start_value = INTEGER_ELT(start, i);
 			end_value = INTEGER_ELT(end, i);
