@@ -3,10 +3,6 @@
 ### -------------------------------------------------------------------------
 
 
-.ATOMIC_TYPES <- c("logical", "integer", "numeric", "complex",
-                   "character", "raw")
-setClassUnion("atomic", .ATOMIC_TYPES)
-
 ## A list that holds atomic objects
 
 setClass("AtomicList", representation("VIRTUAL"),
@@ -131,7 +127,7 @@ FactorList <- AtomicListConstructor("factor")
 setMethod("as.vector", "AtomicList",
     function(x, mode="any")
     {
-        valid_modes <- c("any", .ATOMIC_TYPES, "double", "list")
+        valid_modes <- c("any", S4Vectors:::ATOMIC_TYPES, "double", "list")
         mode <- match.arg(mode, valid_modes)
         if (mode %in% c("any", "list"))
             return(as.list(x))
