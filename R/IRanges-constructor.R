@@ -178,6 +178,7 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
         }
     }
 
+    
     .Call2("solve_user_SEW",
           refwidths, start, end, width,
           translate.negative.coord, allow.nonnarrowing,
