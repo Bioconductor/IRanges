@@ -176,7 +176,7 @@ exportMethods(
     coerce,
     c,
     show,
-    match, duplicated, unique, anyDuplicated, "%in%",
+    match, duplicated, unique, anyDuplicated,
     is.unsorted, order,
     Ops, Math, Math2, Summary, Complex,
     summary,
