@@ -104,23 +104,25 @@ setMethod("summary", "CompressedIRangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion from list-like object to IRangesList object
+### Coercion from list-like object to CompressedIRangesList
 ###
+
+### From ordinary list to CompressedIRangesList
 
 .from_list_to_CompressedIRangesList <- function(from)
 {
-    from <- .as_list_of_IRanges(from)
+    from <- as_list_of_IRanges(from)
     new_CompressedList_from_list("CompressedIRangesList", from)
 }
 
 setAs("list", "CompressedIRangesList", .from_list_to_CompressedIRangesList)
 
-### From List to IRangesList
+### From List derivative to CompressedIRangesList
 
 .from_List_to_CompressedIRangesList <- function(from)
 {
     new_CompressedList_from_list("CompressedIRangesList",
-                                 .as_list_of_IRanges(from),
+                                 as_list_of_IRanges(from),
                                  metadata=metadata(from),
                                  mcols=mcols(from, use.names=FALSE))
 }
@@ -141,10 +143,11 @@ setAs("list", "CompressedIRangesList", .from_list_to_CompressedIRangesList)
     ans
 }
 
-setAs("List", "CompressedIRangesList", .from_List_to_CompressedIRangesList)
+setAs("List", "CompressedIRangesList",
+      .from_List_to_CompressedIRangesList)
+
 setAs("IntegerRanges", "CompressedIRangesList",
-    .from_IntegerRanges_to_CompressedIRangesList
-)
+      .from_IntegerRanges_to_CompressedIRangesList)
 
 setAs("List", "IRangesList",
     function(from)

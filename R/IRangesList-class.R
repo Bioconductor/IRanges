@@ -48,12 +48,12 @@ setValidity2("NormalIRangesList", .valid.NormalIRangesList)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Coercion from list-like object to IRangesList object
+### Coercion from list-like object to SimpleIRangesList
 ###
 
 ### Try to turn an arbitrary list-like object into an ordinary list of
 ### IRanges objects.
-.as_list_of_IRanges <- function(from)
+as_list_of_IRanges <- function(from)
 {
     if (is(from, "IntegerRanges")) {
         if (!is(from, "IRanges"))
@@ -67,25 +67,25 @@ setValidity2("NormalIRangesList", .valid.NormalIRangesList)
     }
 }
 
-### From ordinary list to IRangesList
+### From ordinary list to SimpleIRangesList
 
 .from_list_to_SimpleIRangesList <- function(from)
 {
-    from <- .as_list_of_IRanges(from)
+    from <- as_list_of_IRanges(from)
     S4Vectors:::new_SimpleList_from_list("SimpleIRangesList", from)
 }
 
 setAs("list", "SimpleIRangesList", .from_list_to_SimpleIRangesList)
 setAs("list", "IRangesList", .from_list_to_SimpleIRangesList)
 
-### From List to IRangesList
+### From List derivative to SimpleIRangesList
 
 .from_List_to_SimpleIRangesList <- function(from)
 {
     S4Vectors:::new_SimpleList_from_list("SimpleIRangesList",
-                                 .as_list_of_IRanges(from),
-                                 metadata=metadata(from),
-                                 mcols=mcols(from, use.names=FALSE))
+                               as_list_of_IRanges(from),
+                               metadata=metadata(from),
+                               mcols=mcols(from, use.names=FALSE))
 }
 
 setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
@@ -94,9 +94,12 @@ setAs("List", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
 ### SimpleIntegerRangesList to SimpleIRangesList silently return a broken
 ### object (unfortunately these dummy automatic coercion methods don't bother
 ### to validate the object they return). So we overwrite them.
-setAs("SimpleList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
-setAs("IntegerRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
-setAs("SimpleIntegerRangesList", "SimpleIRangesList", .from_List_to_SimpleIRangesList)
+setAs("SimpleList", "SimpleIRangesList",
+      .from_List_to_SimpleIRangesList)
+setAs("IntegerRangesList", "SimpleIRangesList",
+      .from_List_to_SimpleIRangesList)
+setAs("SimpleIntegerRangesList", "SimpleIRangesList",
+      .from_List_to_SimpleIRangesList)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -111,42 +114,41 @@ setMethod("isNormal", "SimpleIRangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Constructor.
+### Constructor
 ###
 
 IRangesList <- function(..., compress=TRUE)
 {
     if (!isTRUEorFALSE(compress))
         stop("'compress' must be TRUE or FALSE")
-    args <- list(...)
-    if (length(args) == 2L &&
-        setequal(names(args), c("start", "end")) &&
-        !is(args[[1L]], "IntegerRanges") && !is(args[[2L]], "IntegerRanges"))
+    objects <- list(...)
+    if (length(objects) == 2L &&
+        setequal(names(objects), c("start", "end")) &&
+        !is(objects[[1L]], "IntegerRanges") &&
+        !is(objects[[2L]], "IntegerRanges"))
     {
         if (!compress)
             stop(wmsg("'compress' must be TRUE when passing the 'start' ",
                       "and 'end' arguments"))
-        ans_start <- IntegerList(args[["start"]], compress=TRUE)
-        ans_end <- IntegerList(args[["end"]], compress=TRUE)
+        ans_start <- IntegerList(objects[["start"]], compress=TRUE)
+        ans_end <- IntegerList(objects[["end"]], compress=TRUE)
         ans_partitioning <- PartitioningByEnd(ans_start)
         if (!identical(ans_partitioning, PartitioningByEnd(ans_end)))
             stop("'start' and 'end' are not compatible")
         unlisted_start <- unlist(ans_start, use.names=FALSE)
         unlisted_end <- unlist(ans_end, use.names=FALSE)
         unlisted_ans <- IRanges(start=unlisted_start, end=unlisted_end)
-        ans <- relist(unlisted_ans, ans_partitioning)
-    } else {
-        if (length(args) == 1L) {
-            x1 <- args[[1L]]
-            if (is.list(x1) || (is(x1, "List") && !is(x1, "IntegerRanges")))
-                args <- x1
-        }
-        if (compress)
-            ans <- as(args, "CompressedIRangesList")
-        else
-            ans <- as(args, "SimpleIRangesList")
+        return(relist(unlisted_ans, ans_partitioning))
     }
-    ans
+    if (length(objects) == 1L) {
+        tmp <- objects[[1L]]
+        if (is.list(tmp) || (is(tmp, "List") && !is(tmp, "IntegerRanges")))
+            objects <- tmp
+    }
+    if (compress)
+        as(objects, "CompressedIRangesList")
+    else
+        as(objects, "SimpleIRangesList")
 }
 
 
@@ -167,9 +169,9 @@ setMethod("unlist", "SimpleNormalIRangesList",
 .from_IntegerRangesList_to_SimpleNormalIRangesList <- function(from)
 {
     S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
-        lapply(from, as, "NormalIRanges"),
-        mcols=mcols(from, use.names=FALSE),
-        metadata=metadata(from))
+                               lapply(from, as, "NormalIRanges"),
+                               mcols=mcols(from, use.names=FALSE),
+                               metadata=metadata(from))
 }
 
 setAs("IntegerRangesList", "SimpleNormalIRangesList",
@@ -183,9 +185,9 @@ setAs("SimpleIRangesList", "SimpleNormalIRangesList",
 setAs("LogicalList", "SimpleNormalIRangesList",
       function(from)
       S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
-                                           lapply(from, as, "NormalIRanges"),
-                                           metadata = metadata(from),
-                                           mcols = mcols(from, use.names=FALSE)))
+                                 lapply(from, as, "NormalIRanges"),
+                                 metadata = metadata(from),
+                                 mcols = mcols(from, use.names=FALSE)))
 
 ### Coercion from RleList to NormalIRangesList.
 
@@ -198,9 +200,9 @@ setAs("RleList", "SimpleNormalIRangesList",
           stop("cannot coerce a non-logical 'RleList' or a logical 'RleList' ",
                "with NAs to a SimpleNormalIRangesList object")
         S4Vectors:::new_SimpleList_from_list("SimpleNormalIRangesList",
-                                             lapply(from, as, "NormalIRanges"),
-                                             metadata = metadata(from),
-                                             mcols = mcols(from, use.names=FALSE))
+                                   lapply(from, as, "NormalIRanges"),
+                                   metadata = metadata(from),
+                                   mcols = mcols(from, use.names=FALSE))
       })
 
 
