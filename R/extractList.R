@@ -335,13 +335,12 @@ setMethod("extractList", c("ANY", "ANY"),
             return(relist(extractROWS(x, i), i))
         if (is.list(i)) {
             unlisted_i <- unlist(i, recursive=FALSE, use.names=FALSE)
-        } else if (is(i, "List")) {
+        } else {
+            i <- as(i, "List", strict=FALSE)
             ## The various "unlist" methods for List derivatives don't know
             ## how to operate recursively and don't support the 'recursive'
             ## arg.
             unlisted_i <- unlist(i, use.names=FALSE)
-        } else {
-            stop("'i' must be a list-like object")
         }
         relist(extractROWS(x, unlisted_i), i)
     }
