@@ -68,6 +68,13 @@ setMethod("relist", c("ANY", "List"),
     }
 )
 
+setMethod("relist", c("ANY", "Vector"),
+    function(flesh, skeleton)
+    {
+        relist(flesh, as(skeleton, "List"))
+    }
+)
+
 setMethod("relist", c("Vector", "list"),
     function(flesh, skeleton)
     {

@@ -3,6 +3,7 @@
 \alias{relist}
 \alias{relist,ANY,PartitioningByEnd-method}
 \alias{relist,ANY,List-method}
+\alias{relist,ANY,Vector-method}
 \alias{relist,Vector,list-method}
 \alias{relist,ANY,PartitioningByEnd-method}
 
@@ -51,8 +52,9 @@ regroup(x, g)
     A vector-like object.
   }
   \item{skeleton}{
-    A list-like object. Only the "shape" (i.e. element lengths) of
-    \code{skeleton} matters. Its exact content is ignored.
+    An object that implies a list-like structure. Only the "shape"
+    (i.e. element lengths) of \code{skeleton} matters. Its exact content
+    is ignored.
   }
   \item{f}{
     An atomic vector or a factor (possibly in \link{Rle} form).
