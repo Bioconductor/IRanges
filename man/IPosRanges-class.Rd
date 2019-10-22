@@ -29,6 +29,7 @@
 \alias{as.character,IPosRanges-method}
 \alias{as.factor,IPosRanges-method}
 \alias{as.matrix,IPosRanges-method}
+\alias{as.data.frame.IPosRanges}
 \alias{as.data.frame,IPosRanges-method}
 \alias{show,IPosRanges-method}
 \alias{getListElement,IPosRanges-method}
@@ -156,11 +157,10 @@
       Extra arguments (\code{...}) are ignored.
     }
     \item{}{
-      \code{as.data.frame(x, row.names=NULL, optional=FALSE, ...)}:
+      \code{as.data.frame(x, row.names=NULL, optional=FALSE)}:
       Convert \code{x} into a standard R data frame object.
       \code{row.names} must be \code{NULL} or a character vector giving
-      the row names for the data frame, and \code{optional} and any
-      additional argument (\code{...}) is ignored.
+      the row names for the data frame, and \code{optional} is ignored.
       See \code{?\link{as.data.frame}} for more information about these
       arguments.
     }

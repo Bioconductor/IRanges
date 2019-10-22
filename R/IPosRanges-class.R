@@ -91,20 +91,25 @@ setMethod("as.matrix", "IPosRanges",
                dimnames=list(names(x), NULL))
 )
 
-.as.data.frame.IPosRanges <- function(x, row.names=NULL, optional=FALSE, ...)
+### S3/S4 combo for as.data.frame.IPosRanges
+.as.data.frame.IPosRanges <- function(x, row.names=NULL, optional=FALSE)
 {
-    if (!(is.null(row.names) || is.character(row.names)))
-        stop("'row.names' must be NULL or a character vector")
+    if (!identical(optional, FALSE))
+        warning(wmsg("'optional' argument was ignored"))
     ans <- data.frame(start=start(x),
                       end=end(x),
                       width=width(x),
                       row.names=row.names,
-                      check.rows=TRUE,
                       check.names=FALSE,
                       stringsAsFactors=FALSE)
     ans$names <- names(x)
+    x_mcols <- mcols(x, use.names=FALSE)  # can be NULL!
+    if (!is.null(x_mcols))
+        ans <- cbind(ans, as.data.frame(x_mcols, optional=TRUE))
     ans
 }
+as.data.frame.IPosRanges <- function(x, row.names=NULL, optional=FALSE, ...)
+    .as.data.frame.IPosRanges(x, row.names=NULL, optional=FALSE, ...)
 setMethod("as.data.frame", "IPosRanges", .as.data.frame.IPosRanges)
 
 

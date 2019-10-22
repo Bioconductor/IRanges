@@ -412,7 +412,7 @@ setAs("ANY", "IPos", function(from) IPos(from))
     ans <- data.frame(pos=pos(x), row.names=row.names, stringsAsFactors=FALSE)
     x_mcols <- mcols(x, use.names=FALSE)  # can be NULL!
     if (!is.null(x_mcols))
-        ans <- cbind(ans, as.data.frame(x_mcols))
+        ans <- cbind(ans, as.data.frame(x_mcols, optional=TRUE))
     ans
 }
 as.data.frame.IPos <- function(x, row.names=NULL, optional=FALSE, ...)

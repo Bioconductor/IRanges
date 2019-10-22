@@ -130,6 +130,7 @@ exportClasses(
 ### Export S3 methods
 ###
 
+S3method(as.data.frame, IPosRanges)
 S3method(as.data.frame, IPos)
 
 S3method(diff, AtomicList)
@@ -142,6 +143,7 @@ S3method(`window<-`, factor)
 ### called directly, (b) tab-completion on the name of the generic shows them,
 ### and (c) methods() doesn't asterisk them.
 export(
+    as.data.frame.IPosRanges,
     as.data.frame.IPos,
 
     diff.AtomicList,
