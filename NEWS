@@ -1,3 +1,56 @@
+CHANGES IN VERSION 2.20.0
+-------------------------
+
+NEW FEATURES
+
+    o IPos objects now exist in 2 flavors: UnstitchedIPos and StitchedIPos
+
+      IPos is now a virtual class with 2 concrete subclasses: UnstitchedIPos
+      and StitchedIPos. In an UnstitchedIPos instance the positions are stored
+      as an integer vector. In a StitchedIPos instance, like with old IPos
+      instances, the positions are stored as an IRanges object where each range
+      represents a run of consecutive positions. See ?IPos for more information.
+
+      Old serialized IPos instances need to be converted to StitchedIPos
+      instances with updateObject().
+
+    o IPos objects now can hold names
+
+    o The IRanges() and IPos() constructors now accept user-supplied metadata
+      columns
+
+    o Add grep(), startsWith() and endsWith() methods for CharacterList
+      objects
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o as.data.frame(IRanges) now propagates the metadata columns
+
+    o Move splitAsList() to the S4Vector package
+
+    o Move S4 class "atomic" from the S4Vector package
+
+    o No longer export %in% (was a leftover from an older time when the
+      package was defining an %in% method)
+
+DEPRECATED AND DEFUNCT
+
+    o After being deprecated in BioC 3.9, the following RangedData methods
+      are now defunct: findOverlaps, rownames<-, colnames<-, columnMetadata,
+      columnMetadata<-, c, rbind, as.env, as.data.frame, and coercion from
+      RangedData to DataFrame.
+
+    o Remove the following RangedData methods:
+      - score, score<-, lapply, within, countOverlaps;
+      - coercions from list, data.frame, DataTable, Rle, RleList, RleViewsList,
+        IntegerRanges, or IntegerRangesList to RangedData.
+      These methods were deprecated in BioC 3.8 and defunct in BioC 3.9.
+
+BUG FIXES
+
+    o Fix integer overflow issue in end() setter for IRanges objects.
+
+
 CHANGES IN VERSION 2.18.0
 -------------------------
 
@@ -5,14 +58,6 @@ NEW FEATURES
 
     o Add some methods for CharacterList derivatives (nchar, substring,
       substr, chartr, toupper, tolower, sub, gsub, grepl).
-
-BUG FIXES
-
-    o Fix unlist() on a SimpleRleList object of length 0
-
-    o Fix drop() for FactorList derivatives
-
-    o Fix removed rownames upon replacing in a SplitDataFrameList
 
 DEPRECATED AND DEFUNCT
 
@@ -28,6 +73,14 @@ DEPRECATED AND DEFUNCT
       - score, score<-, lapply, within, countOverlaps;
       - coercions from list, data.frame, DataTable, Rle, RleList, RleViewsList,
         IntegerRanges, or IntegerRangesList to RangedData.
+
+BUG FIXES
+
+    o Fix unlist() on a SimpleRleList object of length 0
+
+    o Fix drop() for FactorList derivatives
+
+    o Fix removed rownames upon replacing in a SplitDataFrameList
 
 
 CHANGES IN VERSION 2.16.0
@@ -78,7 +131,7 @@ NEW FEATURES
       They do 'mendoapply(head, x, n)' and 'mendoapply(tail, x, n)',
       respectively, but use a fast implementation. They're replacements for
       S4Vectors::phead() and S4Vectors::ptail() which are now deprecated.
-    
+
     o Add equisplit() to split a vector-like object into a specified number
       of partitions with equal (total) width. This is useful for instance to
       ensure balanced loading of workers in parallel evaluation.
@@ -331,7 +384,7 @@ DEPRECATED AND DEFUNCT
       - The 'ignoreSelf' and/or 'ignoreRedundant' arguments of the
         findOverlaps,Vector,missing method (a.k.a. "self findOverlaps" method).
       - grouplength()
-      - GappedRanges objects. 
+      - GappedRanges objects.
 
 BUG FIXES
 
@@ -398,7 +451,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
       columns when the object to coerce is already normal.
 
     o Don't export CompressedHitsList anymore from the IRanges package. This
-      doesn't seem to be used at all and it's not clear that we need it.    
+      doesn't seem to be used at all and it's not clear that we need it.
 
 DEPRECATED AND DEFUNCT
 
@@ -890,7 +943,7 @@ NEW FEATURES
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o "distanceToNearest" methods now return a Hits instead of
-      a DataFrame object. 
+      a DataFrame object.
 
     o The behavior of distance() has changed. Adjacent and overlapping ranges
       now return a distance of 0L. See ?distance man page for details.
@@ -1099,7 +1152,7 @@ NEW FEATURES
       objects.
 
 SIGNIFICANT USER-VISIBLE CHANGES
- 
+
     o Splitting / relisting a Hits object now returns a HitsList instead of
       an ordinary list.
 
@@ -1189,7 +1242,7 @@ BUG FIXES
     o Fix a bunch of subsetting methods that were not subsetting the metadata
       columns: "[", "subseq", and "seqselect" methods for XVector objects,
       "seqselect" and "window" methods for XVectorList objects, and "[" method
-      for MaskCollection objects.         
+      for MaskCollection objects.
 
     o Fix empty replacement with [<-,Vector
 
@@ -1247,7 +1300,7 @@ NEW FEATURES
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o RangesMatching has been renamed to Hits and extends Vector, so
-      that it supports metadata columns and other features. 
+      that it supports metadata columns and other features.
 
     o RangesMatchingList has been renamed to HitsList.
 
@@ -1283,7 +1336,7 @@ BUG FIXES
 
     o "[", "c", "rep.int" and "seqselect" methods for Rle objects are now
       safer and will raise an error if the object to be returned has a
-      length > .Machine$integer.max 
+      length > .Machine$integer.max
 
     o Avoid blowing up memory by not expanding 'logical' Rle's into logical
       vectors internally in "slice" method for RleList objects.
