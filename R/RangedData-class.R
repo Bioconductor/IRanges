@@ -26,17 +26,13 @@ setClass("RangedData", contains = c("DataTable", "List"),
          prototype = prototype(ranges = new("SimpleIRangesList"),
                                values = new("CompressedSplitDataFrameList")))
 
-wmsg2 <- function(...)
-    paste0("  ",
-           paste0(strwrap(paste0(c(...), collapse="")), collapse="\n  "))
-
-RangedData_is_deprecated_msg <-
-  c("RangedData objects are deprecated. ",
+.RangedData_is_defunct_msg <-
+  c("RangedData objects are defunct. ",
     "Please migrate your code to use GRanges or GRangesList objects instead. ",
     "See IMPORTANT NOTE in ?RangedData")
 
 RangedData_method_is_defunct_msg <- function(what)
-  c("RangedData objects are deprecated and the ", what, " is now defunct. ",
+  c("RangedData objects are defunct and so is the ", what, ". ",
     "Please migrate your code to use GRanges or GRangesList objects instead. ",
     "See IMPORTANT NOTE in ?RangedData")
 
@@ -46,13 +42,15 @@ RangedData_method_is_defunct_msg <- function(what)
 
 setMethod("values", "RangedData",
     function(x) {
-        .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+        what <- "values() getter for RangedData objects"
+        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
         x@values
     })
 
 setReplaceMethod("values", "RangedData",
                  function(x, value) {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "values() setter for RangedData objects"
+                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    if (extends(class(value), "SplitDataFrameList")) {
                      if (!identical(elementNROWS(values(x)),
                                     elementNROWS(value)))
@@ -78,7 +76,8 @@ setMethod("ranges", "RangedData",
 
 setReplaceMethod("ranges", "RangedData",
                  function(x, value) {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "ranges() setter for RangedData objects"
+                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    if (extends(class(value), "IntegerRangesList")) {
                      if (!identical(lapply(ranges(x), names), lapply(value, names)))
                        stop("'value' must have same length and names as current 'ranges'")
@@ -94,81 +93,92 @@ setReplaceMethod("ranges", "RangedData",
 ## range delegates
 setMethod("start", "RangedData",
           function(x) {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            what <- "start() getter for RangedData objects"
+            .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
             start(unlist(ranges(x), use.names=FALSE))
           })
 setMethod("end", "RangedData",
           function(x) {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            what <- "end() getter for RangedData objects"
+            .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
             end(unlist(ranges(x), use.names=FALSE))
           })
 setMethod("width", "RangedData",
           function(x) {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            what <- "width() getter for RangedData objects"
+            .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
             width(unlist(ranges(x), use.names=FALSE))
           })
 setReplaceMethod("start", "RangedData",
                  function(x, ..., value) {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "start() setter for RangedData objects"
+                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    start(ranges(x), ...) <- value
                    x
                  })
 setReplaceMethod("end", "RangedData",
                  function(x, ..., value) {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "end() setter for RangedData objects"
+                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    end(ranges(x), ...) <- value
                    x
                  })
 setReplaceMethod("width", "RangedData",
                  function(x, ..., value) {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "width() setter for RangedData objects"
+                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    width(ranges(x), ...) <- value
                    x
                  })
 setMethod("length", "RangedData",
     function(x) {
-        .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+        what <- "length() method for RangedData objects"
+        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
         length(ranges(x))
     })
 setMethod("names", "RangedData",
     function(x) {
-        .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+        what <- "names() getter for RangedData objects"
+        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
         names(ranges(x))
     })
 setReplaceMethod("names", "RangedData",
                  function(x, value) {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "names() setter for RangedData objects"
+                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    if (!is.null(value) && !is.character(value))
                      stop("'value' must be NULL or a character vector")
                    names(x@ranges) <- value
                    names(x@values) <- value
                    x
                  })
-### Used in [ and indirectly in .show_RangedData() (via [) so making this
-### Defunct breaks [ and show(RangedData).
 setMethod("elementNROWS", "RangedData",
     function(x) {
-        .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+        what <- "elementNROWS() method for RangedData objects"
+        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
         elementNROWS(ranges(x))
     })
 
 setMethod("space", "RangedData",
     function(x) {
-        .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+        what <- "space() getter for RangedData objects"
+        Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
         space(ranges(x))
     })
 
 setGeneric("universe", function(x) standardGeneric("universe"))
 setMethod("universe", "RangedData",
     function(x) {
-        .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+        what <- "universe() getter for RangedData objects"
+        Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
         universe(ranges(x))
     })
 
 setGeneric("universe<-", function(x, value) standardGeneric("universe<-"))
 setReplaceMethod("universe", "RangedData",
                  function(x, value) {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "universe() setter for RangedData objects"
+                   Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    universe(x@ranges) <- value
                    x
                  })
@@ -176,17 +186,20 @@ setReplaceMethod("universe", "RangedData",
 ## values delegates
 setMethod("nrow", "RangedData",
           function(x) {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            what <- "nrow() getter for RangedData objects"
+            Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
             sum(nrow(values(x)))
           })
 setMethod("ncol", "RangedData",
           function(x) {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            what <- "ncol() getter for RangedData objects"
+            Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
             ncol(values(x))[[1L]]
           })
 setMethod("rownames", "RangedData",
           function(x, do.NULL = TRUE, prefix = "row") {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            what <- "rownames() getter for RangedData objects"
+            Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
             rn <-
               unlist(rownames(values(x), do.NULL = do.NULL, prefix = prefix),
                      use.names=FALSE)
@@ -196,7 +209,8 @@ setMethod("rownames", "RangedData",
           })
 setMethod("colnames", "RangedData",
           function(x, do.NULL = TRUE, prefix = "col") {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            what <- "colnames() getter for RangedData objects"
+            Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
             if (length(x) == 0)
               character()
             else
@@ -227,7 +241,7 @@ setMethod("colnames", "RangedData",
 }
 
 .valid.RangedData <- function(x) {
-  .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+  .Defunct(msg=wmsg(.RangedData_is_defunct_msg))
   c(.valid.RangedData.ranges(x), .valid.RangedData.names(x))
 }
 
@@ -241,7 +255,7 @@ setValidity2("RangedData", .valid.RangedData)
 
 RangedData <- function(ranges = IRanges(), ..., space = NULL)
 {
-  .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+  .Defunct(msg=wmsg(.RangedData_is_defunct_msg))
   hasDots <- (((nargs() - !missing(space))) > 1)
   if (is(ranges, "IntegerRangesList") && !is(ranges, "IntegerRanges")) {
     if (!is.null(space))
@@ -322,7 +336,8 @@ RangedData <- function(ranges = IRanges(), ..., space = NULL)
 setMethod("[[", "RangedData",
           function(x, i, j, ...)
           {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            what <- "[[ method for RangedData objects"
+            Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
             dotArgs <- list(...)
             if (length(dotArgs) > 0)
                 dotArgs <- dotArgs[names(dotArgs) != "exact"]
@@ -352,7 +367,8 @@ setMethod("[[", "RangedData",
 setReplaceMethod("[[", "RangedData",
                  function(x, i, j,..., value)
                  {
-                   .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+                   what <- "[[<- method for RangedData objects"
+                   Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
                    if (!missing(j) || length(list(...)) > 0)
                      stop("invalid subsetting")
                    if (missing(i))
@@ -397,7 +413,8 @@ setReplaceMethod("[[", "RangedData",
 setMethod("[", "RangedData",
           function(x, i, j, ..., drop=FALSE)
           {
-            .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+            what <- "[ method for RangedData objects"
+            .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
             if (length(list(...)) > 0)
               stop("parameters in '...' not supported")
             if (missing(i) && missing(j))
@@ -560,7 +577,8 @@ setMethod("[", "RangedData",
 
 .fromRangedDataToCompressedIRangesList <- function(from)
 {
-    .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+    what <- "coercion from RangedData to IRangesList"
+    .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
     ans <- ranges(from)
     ## Propagate 'values(from)'.
     ans_unlisted_values <- unlist(values(from), use.names=FALSE)
@@ -652,7 +670,7 @@ setAs("RangedData", "IRangesList", .fromRangedDataToCompressedIRangesList)
 
 setMethod("show", "RangedData",
     function(object) {
-        .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
+         .Defunct(msg=wmsg(.RangedData_is_defunct_msg))
          suppressWarnings(.show_RangedData(object))
     })
 

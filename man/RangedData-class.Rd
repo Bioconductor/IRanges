@@ -57,10 +57,11 @@
 
 \title{Data on ranges}
 \description{
-  IMPORTANT NOTE: \code{RangedData} objects are deprecated in BioC 3.9!
-  The use of \code{RangedData} objects has been discouraged in favor
-  of \link[GenomicRanges]{GRanges} or \link[GenomicRanges]{GRangesList}
-  objects since BioC 2.12, that is, since 2014.
+  IMPORTANT NOTE: \code{RangedData} objects are defunct in BioC 3.11!
+  They were deprecated in BioC 3.9 and, before that, their used has been
+  discouraged in favor of \link[GenomicRanges]{GRanges} or
+  \link[GenomicRanges]{GRangesList} objects since BioC 2.12, that is,
+  since 2014.
   The \link[GenomicRanges]{GRanges} and \link[GenomicRanges]{GRangesList}
   classes are defined in the \pkg{GenomicRanges} package.
   See \code{?GRanges} and \code{?GenomicRanges} (after loading the
