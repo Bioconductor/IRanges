@@ -202,51 +202,6 @@ setMethod("colnames", "RangedData",
             else
               colnames(values(x), do.NULL = do.NULL, prefix = prefix)[[1L]]
           })
-setReplaceMethod("rownames", "RangedData",
-                 function(x, value) {
-                   what <- "rownames setter for RangedData objects"
-                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-                   if (!is.null(value)) {
-                     if (length(value) != nrow(x)) {
-                       stop("invalid 'row.names' length")
-                     } else {
-                       if (!is.character(value))
-                         value <- as.character(value)
-                       ends <- cumsum(elementNROWS(x))
-                       value <-
-                         new("CompressedCharacterList",
-                             unlistData = value,
-                             partitioning = PartitioningByEnd(ends))
-                     }
-                   }
-                   ranges <- ranges(x)
-                   for(i in seq_len(length(ranges))) {
-                     names(ranges[[i]]) <- value[[i]]
-                   }
-                   x@ranges <- ranges
-                   rownames(x@values) <- value
-                   x
-                 })
-setReplaceMethod("colnames", "RangedData",
-                 function(x, value) {
-                   what <- "colnames setter for RangedData objects"
-                   .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-                   colnames(x@values) <- value
-                   x
-                 })
-
-setMethod("columnMetadata", "RangedData", function(x) {
-  what <- "columnMetadata getter for RangedData objects"
-  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-  columnMetadata(values(x))
-})
-
-setReplaceMethod("columnMetadata", "RangedData", function(x, value) {
-  what <- "columnMetadata setter for RangedData objects"
-  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-  columnMetadata(values(x)) <- value
-  x
-})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
@@ -556,60 +511,6 @@ setMethod("[", "RangedData",
           })
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Combining and splitting.
-###
-
-setMethod("c", "RangedData", function(x, ..., recursive = FALSE) {
-  what <- "c() method for RangedData objects"
-  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-  if (!identical(recursive, FALSE))
-    stop("\"c\" method for RangedData objects ",
-         "does not support the 'recursive' argument")
-  if (missing(x))
-    rds <- unname(list(...))
-  else
-    rds <- unname(list(x, ...))
-  rd <- rds[[1L]]
-  if (!all(sapply(rds, is, "RangedData")))
-    stop("all arguments in '...' must be RangedData objects")
-  nms <- lapply(rds, ## figure out names like 'c' on an ordinary vector
-                function(rd) structure(logical(length(rd)), names = names(rd)))
-  nms <- names(do.call(c, nms))
-  names(rds) <- NULL # critical for dispatch to work
-  ranges <- do.call(c, lapply(rds, ranges))
-  values <- do.call(c, lapply(rds, values))
-  names(ranges) <- nms
-  rd@ranges <- ranges
-  names(values) <- nms
-  rd@values <- values
-  rd
-})
-
-setMethod("rbind", "RangedData", function(..., deparse.level=1) {
-  what <- "rbind() method for RangedData objects"
-  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-  args <- unname(list(...))
-  rls <- lapply(args, ranges)
-  nms <- unique(unlist(lapply(args, names), use.names=FALSE))
-  rls <- lapply(rls, function(x) {y <- as.list(x)[nms];names(y) <- nms;y})
-  dfs <-
-    lapply(args, function(x) {y <- as.list(values(x))[nms];names(y) <- nms;y})
-  safe.c <- function(...) {
-    x <- list(...)
-    do.call(c, x[!sapply(x, is.null)])
-  }
-  rls <- IRangesList(do.call(Map, c(list(safe.c), rls)))
-  safe.rbind <- function(...) {
-    x <- list(...)
-    do.call(rbind, x[!sapply(x, is.null)])
-  }
-  dfs <- SplitDataFrameList(do.call(Map, c(list(safe.rbind), dfs)))
-  for (i in seq_len(length(rls)))
-    names(rls[[i]]) <- rownames(dfs[[i]])
-  initialize(args[[1L]], ranges = rls, values = dfs)
-})
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Coercion
 ###
 
@@ -657,30 +558,6 @@ setMethod("rbind", "RangedData", function(..., deparse.level=1) {
     as.data.frame(stacked, row.names = row.names, optional = optional)
 }
 
-.as.data.frame.RangedData <- function(x, row.names=NULL, optional=FALSE, ...)
-{
-    what <- "as.data.frame() method for RangedData objects"
-    .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-    if (!(is.null(row.names) || is.character(row.names)))
-        stop("'row.names'  must be NULL or a character vector")
-    if (!missing(optional) || length(list(...)))
-        warning("'optional' and arguments in '...' ignored")
-    data.frame(.as.data.frame.IntegerRangesList(ranges(x)),
-               .as.data.frame.DataFrameList(values(x))[-1L],
-               row.names = row.names,
-               stringsAsFactors = FALSE)
-}
-setMethod("as.data.frame", "RangedData", .as.data.frame.RangedData)
-
-setAs("RangedData", "DFrame",
-      function(from)
-      {
-        what <- "coercion method from RangedData to DFrame"
-        .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-        DataFrame(as.data.frame(ranges(from)),
-                  unlist(values(from), use.names=FALSE))
-      })
-
 .fromRangedDataToCompressedIRangesList <- function(from)
 {
     .Deprecated(msg=wmsg2(RangedData_is_deprecated_msg))
@@ -695,27 +572,6 @@ setAs("RangedData", "CompressedIRangesList",
     .fromRangedDataToCompressedIRangesList
 )
 setAs("RangedData", "IRangesList", .fromRangedDataToCompressedIRangesList)
-
-setMethod("as.env", "RangedData", function(x, enclos = parent.frame(2)) {
-  what <- "as.env() method for RangedData objects"
-  .Defunct(msg=wmsg(RangedData_method_is_defunct_msg(what)))
-  env <- S4Vectors:::makeEnvForNames(x, colnames(x), enclos)
-  makeAccessorBinding <- function(fun, name = deparse(substitute(fun))) {
-    makeActiveBinding(name, function() {
-      val <- fun(x)
-      rm(list=name, envir=env)
-      assign(name, val, env) ## cache for further use
-      val
-    }, env)
-  }
-  makeAccessorBinding(ranges)
-  makeAccessorBinding(space)
-  makeAccessorBinding(start)
-  makeAccessorBinding(width)
-  makeAccessorBinding(end)
-  env
-})
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Show

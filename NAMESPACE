@@ -176,7 +176,6 @@ exportMethods(
     as.data.frame,
     as.list,
     coerce,
-    c,
     show,
     match, duplicated, unique, anyDuplicated,
     is.unsorted, order,

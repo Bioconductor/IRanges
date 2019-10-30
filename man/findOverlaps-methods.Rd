@@ -7,9 +7,6 @@
 \alias{findOverlaps,integer,IntegerRanges-method}
 \alias{findOverlaps,Vector,missing-method}
 \alias{findOverlaps,IntegerRangesList,IntegerRangesList-method}
-\alias{findOverlaps,RangedData,RangedData-method}
-\alias{findOverlaps,RangedData,IntegerRangesList-method}
-\alias{findOverlaps,IntegerRangesList,RangedData-method}
 \alias{findOverlaps,Pairs,missing-method}
 \alias{findOverlaps,Pairs,ANY-method}
 \alias{findOverlaps,ANY,Pairs-method}
