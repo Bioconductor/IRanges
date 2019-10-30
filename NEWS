@@ -26,9 +26,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o as.data.frame(IRanges) now propagates the metadata columns
 
-    o Move splitAsList() to the S4Vector package
+    o Move splitAsList() to the S4Vectors package
 
-    o Move S4 class "atomic" from the S4Vector package
+    o Move S4 class "atomic" from the S4Vectors package
 
     o No longer export %in% (was a leftover from an older time when the
       package was defining an %in% method)
