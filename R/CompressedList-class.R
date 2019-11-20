@@ -49,10 +49,19 @@ setValidity2("CompressedList", .valid.CompressedList)
 ### updateObject()
 ###
 
+### This just implements the generic updateObject strategy that consists
+### in calling updateObject() on each **proper** CompressedList slot i.e.
+### on the slots added by the CompressedList class, or, said otherwise, on
+### the slots that are not inherited.
 setMethod("updateObject", "CompressedList",
     function(object, ..., verbose=FALSE)
     {
-        ## The partitioning slot is a PartitioningByEnd object which derives
+        ## The 'unlistData' slot could be an Rle, DataFrame, IRanges or
+        ## GRanges object, or any vector-like object that needs an update.
+        object@unlistData <- updateObject(object@unlistData,
+                                          ..., verbose=verbose)
+
+        ## The 'partitioning' slot is a PartitioningByEnd object which derives
         ## from IPosRanges so its elementType slot might need to be updated.
         ## See "updateObject" method for IPosRanges objects for more
         ## information.
