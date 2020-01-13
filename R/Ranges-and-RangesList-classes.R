@@ -106,6 +106,8 @@ setMethod("mid", "Ranges",
 ### A Ranges object is considered empty iff all its ranges are empty.
 setMethod("isEmpty", "Ranges", function(x) all(width(x) == 0L))
 
+setMethod("showAsCell", "Ranges", function(object) as.character(object))
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Ranges extends List
