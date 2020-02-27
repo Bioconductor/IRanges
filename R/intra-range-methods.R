@@ -607,15 +607,23 @@ setMethod("restrict", "RangesList",
             end <- as(end, "List")
         end <- S4Vectors:::VH_recycle(end, x, "end", "x")
 
-        if (is(x, "CompressedRangesList") && keep.all.ranges) {
+        if (is(x, "CompressedRangesList")) {
+            if (!keep.all.ranges) {
+                drop <- start(x) > end + 1L | end(x) < start - 1L
+            }
             unlisted_start <- unlist(start, use.names=FALSE)
             unlisted_end <- unlist(end, use.names=FALSE)
             new_unlistData <- restrict(x@unlistData, start=unlisted_start,
                                                      end=unlisted_end,
                                                      keep.all.ranges=TRUE,
-                                                     use.names=use.names)
-            ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
-                                                  check=FALSE)
+                                       use.names=use.names)
+            if (keep.all.ranges) {
+                ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
+                                                   check=FALSE)
+            } else {
+                ans <- relist(new_unlistData,
+                              PartitioningByWidth(lengths(x) - sum(drop)))
+            }
             return(ans)
         }
         mendoapply(restrict, x, start, end,
