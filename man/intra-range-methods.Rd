@@ -416,6 +416,7 @@ restrict(ir1, start=21, keep.all.ranges=TRUE)
 
 ## On an IRangesList object:
 restrict(collection, start=2, end=8)
+restrict(collection, start=2, end=8, keep.all.ranges=TRUE)
 
 ## ---------------------------------------------------------------------
 ## threebands()

@@ -613,9 +613,10 @@ setMethod("restrict", "RangesList",
             }
             unlisted_start <- unlist(start, use.names=FALSE)
             unlisted_end <- unlist(end, use.names=FALSE)
-            new_unlistData <- restrict(x@unlistData, start=unlisted_start,
-                                                     end=unlisted_end,
-                                                     keep.all.ranges=TRUE,
+            new_unlistData <- restrict(x@unlistData,
+                                       start=unlisted_start,
+                                       end=unlisted_end,
+                                       keep.all.ranges=keep.all.ranges,
                                        use.names=use.names)
             if (keep.all.ranges) {
                 ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
