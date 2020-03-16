@@ -656,8 +656,7 @@ setMethod("diff", "CompressedAtomicList",
 ###
 
 .setAtomicListMethod("smoothEnds", inputBaseClass = "IntegerList",
-                     outputBaseClass = "NumericList",
-                     addRleList = FALSE)
+                     endoapply = TRUE)
 
 .setAtomicListMethod("smoothEnds", inputBaseClass = "NumericList",
                      endoapply = TRUE)
