@@ -609,7 +609,8 @@ setMethod("restrict", "RangesList",
 
         if (is(x, "CompressedRangesList")) {
             if (!keep.all.ranges) {
-                drop <- start(x) > end + 1L | end(x) < start - 1L
+                drop <- (!is.na(end) & start(x) > end + 1L) |
+                    (!is.na(start) & end(x) < start - 1L)
             }
             unlisted_start <- unlist(start, use.names=FALSE)
             unlisted_end <- unlist(end, use.names=FALSE)
