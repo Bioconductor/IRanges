@@ -7,13 +7,13 @@
 \alias{IPos-class}
 \alias{IPos}
 
-\alias{parallelSlotNames,IPos-method}
+\alias{vertical_slot_names,IPos-method}
 
 \alias{class:UnstitchedIPos}
 \alias{UnstitchedIPos-class}
 \alias{UnstitchedIPos}
 
-\alias{parallelSlotNames,UnstitchedIPos-method}
+\alias{vertical_slot_names,UnstitchedIPos-method}
 
 \alias{class:StitchedIPos}
 \alias{StitchedIPos-class}

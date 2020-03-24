@@ -474,7 +474,7 @@ setClass("Partitioning",
     )
 )
 
-setMethod("parallelSlotNames", "Partitioning",
+setMethod("vertical_slot_names", "Partitioning",
     function(x) c("NAMES", callNextMethod())
 )
 
@@ -559,7 +559,7 @@ setClass("PartitioningByEnd",
     )
 )
 
-setMethod("parallelSlotNames", "PartitioningByEnd",
+setMethod("vertical_slot_names", "PartitioningByEnd",
     function(x) c("end", callNextMethod())
 )
 
@@ -722,7 +722,7 @@ setClass("PartitioningByWidth",
     )
 )
 
-setMethod("parallelSlotNames", "PartitioningByWidth",
+setMethod("vertical_slot_names", "PartitioningByWidth",
     function(x) c("width", callNextMethod())
 )
 

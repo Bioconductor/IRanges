@@ -20,7 +20,7 @@
 \alias{NCLists-class}
 \alias{NCLists}
 
-\alias{parallelSlotNames,NCLists-method}
+\alias{vertical_slot_names,NCLists-method}
 
 \alias{ranges,NCLists-method}
 \alias{length,NCLists-method}
