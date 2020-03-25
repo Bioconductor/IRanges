@@ -312,14 +312,6 @@ setMethod("getListElement", "CompressedList",
 ### Concatenation
 ###
 
-.bindROWS <- function(...)
-{
-    args <- list(...)
-    if (length(dim(args[[1L]])) >= 2L)
-        return(rbind(...))
-    bindROWS(args[[1L]], args[-1L])
-}
-
 .concatenate_CompressedList_objects <-
     function(x, objects=list(), use.names=TRUE, ignore.mcols=FALSE, check=TRUE)
 {
@@ -341,13 +333,17 @@ setMethod("getListElement", "CompressedList",
 
     ## Concatenate the "unlistData" slots.
     unlistData_list <- lapply(all_objects, slot, "unlistData")
-    ans_unlistData <- do.call(.bindROWS, unlistData_list)
+    ## Skip validation here too (we'll validate the final object).
+    ans_unlistData <- bindROWS(unlistData_list[[1L]],
+                               objects=unlistData_list[-1L],
+                               check=FALSE)
 
     ## Concatenate the "partitioning" slots.
     ans_breakpoints <- cumsum(unlist(lapply(all_objects, elementNROWS),
                                      use.names=use.names))
     ans_partitioning <- PartitioningByEnd(ans_breakpoints)
 
+    ## Update 'ans' and validate it (if the caller has set 'check' to TRUE).
     BiocGenerics:::replaceSlots(ans, unlistData=ans_unlistData,
                                      partitioning=ans_partitioning,
                                      check=check)
