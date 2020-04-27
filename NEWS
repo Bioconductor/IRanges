@@ -13,7 +13,7 @@ DEPRECATED AND DEFUNCT
 
     o RangedData objects are now defunct.
       RangedData objects are defunct in BioC 3.11. They were deprecated in BioC
-      3.9 and, before that, their used has been discouraged in favor of GRanges
+      3.9 and, before that, their use has been discouraged in favor of GRanges
       or GRangesList objects since BioC 2.12, that is, since 2014.
 
 BUG FIXES
