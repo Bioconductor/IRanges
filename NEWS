@@ -1,3 +1,26 @@
+CHANGES IN VERSION 2.22.0
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Resync with change to smoothEnds() in R 4.0.
+      In R 4.0, stats::smoothEnds() always returns an integer vector
+      when the input is an integer vector. smoothEnds() on an IntegerList now
+      reflects this: it returns an IntegerList object instead of a NumericList
+      object.
+
+DEPRECATED AND DEFUNCT
+
+    o RangedData objects are now defunct.
+      RangedData objects are defunct in BioC 3.11. They were deprecated in BioC
+      3.9 and, before that, their used has been discouraged in favor of GRanges
+      or GRangesList objects since BioC 2.12, that is, since 2014.
+
+BUG FIXES
+
+    o Fix restrict() method for RangesList objects for when ranges are dropped.
+
+
 CHANGES IN VERSION 2.20.0
 -------------------------
 
