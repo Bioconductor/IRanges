@@ -115,9 +115,6 @@ exportClasses(
     CompressedIntegerRangesList,
     CompressedIRangesList, CompressedNormalIRangesList, CompressedIPosList,
 
-    ## RangedData-class.R:
-    RangedData,
-
     ## NCList-class.R:
     NCList, NCLists,
 
@@ -239,7 +236,6 @@ export(
     NCList, NCLists,
     H2LGrouping, Dups,
     PartitioningByEnd, PartitioningByWidth, PartitioningMap,
-    RangedData,
     RangedSelection,
     RangesList,
     IRangesList,
@@ -304,7 +300,7 @@ export(
     columnMetadata, "columnMetadata<-",
 
     ## IntegerRangesList-class.R:
-    universe, "universe<-", space,
+    space,
 
     ## MaskCollection-class.R:
     nir_list,
@@ -371,7 +367,7 @@ exportMethods(
     findRange, splitRanges,
     extractList,
     columnMetadata, "columnMetadata<-",
-    universe, "universe<-", space,
+    space,
     nir_list,
     desc, "desc<-",
     maskedwidth, maskedratio,
