@@ -155,6 +155,13 @@ setReplaceMethod("dimnames", "DataFrameList",
                    x
                  })
 
+### NROW(x) and ROWNAMES(x) need to retun length(x) and names(x),
+### respectively, on a DataFrameList object, but the default methods
+### return dim(x)[1L] and rownames(x), which is not what we want.
+### So we need to override them.
+setMethod("NROW", "DataFrameList", function(x) length(x))
+setMethod("ROWNAMES", "DataFrameList", function(x) names(x))
+
 setGeneric("commonColnames", function(x) standardGeneric("commonColnames"))
 
 setMethod("commonColnames", "SplitDataFrameList",

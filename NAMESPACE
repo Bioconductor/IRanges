@@ -161,7 +161,7 @@ exportMethods(
     nrow, NROW,
     ncol, NCOL,
     dim,
-    rownames, "rownames<-",
+    rownames, ROWNAMES, "rownames<-",
     colnames, "colnames<-",
     dimnames, "dimnames<-",
     "[", "[<-", "[[", "[[<-",

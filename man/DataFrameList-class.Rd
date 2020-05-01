@@ -65,6 +65,8 @@
 \alias{colnames<-,CompressedSplitDataFrameList-method}
 \alias{colnames<-,SimpleDataFrameList-method}
 \alias{dimnames<-,DataFrameList-method}
+\alias{NROW,DataFrameList-method}
+\alias{ROWNAMES,DataFrameList-method}
 \alias{columnMetadata}
 \alias{columnMetadata<-}
 \alias{columnMetadata,SimpleSplitDataFrameList-method}
