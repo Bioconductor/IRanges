@@ -16,7 +16,7 @@ setAs("Hits", "DFrame", function(from) {
   from_mcols <- mcols(from, use.names=FALSE)
   DataFrame(as.matrix(from),
             if (!is.null(from_mcols)) from_mcols
-            else S4Vectors:::make_zero_col_DataFrame(length(from)))
+            else make_zero_col_DFrame(length(from)))
 })
 
 .as.data.frame.Hits <- function(x, row.names=NULL, optional=FALSE, ...)

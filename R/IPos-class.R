@@ -491,18 +491,30 @@ setMethod("extractROWS", "IPos",
 ### Show
 ###
 
+.IPos_summary <- function(object)
+{
+    object_class <- classNameForDisplay(object)
+    object_len <- length(object)
+    object_mcols <- mcols(object, use.names=FALSE)
+    object_nmc <- if (is.null(object_mcols)) 0L else ncol(object_mcols)
+    paste0(object_class, " object with ", object_len, " ",
+           ifelse(object_len == 1L, "position", "positions"),
+           " and ", object_nmc, " metadata ",
+           ifelse(object_nmc == 1L, "column", "columns"))
+}
+
+### S3/S4 combo for summary.IPos
+summary.IPos <- function(object, ...) .IPos_summary(object, ...)
+setMethod("summary", "IPos", summary.IPos)
+
 .from_IPos_to_naked_character_matrix_for_display <- function(x)
 {
-    x_len <- length(x)
-    x_mcols <- mcols(x, use.names=FALSE)
-    x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
-    ans <- cbind(pos=as.character(pos(x)))
-    if (x_nmc > 0L) {
-        tmp <- as.data.frame(lapply(x_mcols, showAsCell), optional=TRUE)
-        ans <- cbind(ans, `|`=rep.int("|", x_len), as.matrix(tmp))
-    }
-    ans
+    m <- cbind(pos=showAsCell(pos(x)))
+    cbind_mcols_for_display(m, x)
 }
+setMethod("makeNakedCharacterMatrixForDisplay", "IPos",
+    .from_IPos_to_naked_character_matrix_for_display
+)
 
 show_IPos <- function(x, margin="", print.classinfo=FALSE)
 {
@@ -514,29 +526,20 @@ show_IPos <- function(x, margin="", print.classinfo=FALSE)
                     "Please update it with:"),
                "\n\n    object <- updateObject(object, verbose=TRUE)",
                "\n\n  and re-serialize it."))
-    x_len <- length(x)
-    x_mcols <- mcols(x, use.names=FALSE)
-    x_nmc <- if (is.null(x_mcols)) 0L else ncol(x_mcols)
-    cat(classNameForDisplay(x), " object with ",
-        x_len, " ", ifelse(x_len == 1L, "position", "positions"),
-        " and ",
-        x_nmc, " metadata ", ifelse(x_nmc == 1L, "column", "columns"),
-        ":\n", sep="")
-    ## S4Vectors:::makePrettyMatrixForCompactPrinting() assumes that head()
-    ## and tail() work on 'xx'.
+    cat(margin, summary(x), ":\n", sep="")
+    ## makePrettyMatrixForCompactPrinting() assumes that head() and tail()
+    ## work on 'xx'.
     xx <- as(x, "IPos")
-    out <- S4Vectors:::makePrettyMatrixForCompactPrinting(xx,
-                .from_IPos_to_naked_character_matrix_for_display)
+    out <- makePrettyMatrixForCompactPrinting(xx)
     if (print.classinfo) {
         .COL2CLASS <- c(pos="integer")
-        classinfo <-
-            S4Vectors:::makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
+        classinfo <- makeClassinfoRowForCompactPrinting(x, .COL2CLASS)
         ## A sanity check, but this should never happen!
         stopifnot(identical(colnames(classinfo), colnames(out)))
         out <- rbind(classinfo, out)
     }
     if (nrow(out) != 0L)
-        rownames(out) <- paste0(margin, rownames(out))
+        rownames(out) <- paste0(margin, "  ", rownames(out))
     ## We set 'max' to 'length(out)' to avoid the getOption("max.print")
     ## limit that would typically be reached when 'showHeadLines' global
     ## option is set to Inf.
@@ -544,7 +547,7 @@ show_IPos <- function(x, margin="", print.classinfo=FALSE)
 }
 
 setMethod("show", "IPos",
-    function(object) show_IPos(object, margin="  ", print.classinfo=TRUE)
+    function(object) show_IPos(object, print.classinfo=TRUE)
 )
 
 

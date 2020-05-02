@@ -47,6 +47,8 @@
 % Other
 
 \alias{extractROWS,IPos-method}
+\alias{summary.IPos}
+\alias{summary,IPos-method}
 \alias{show,IPos-method}
 \alias{bindROWS,IPos-method}
 

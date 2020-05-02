@@ -132,6 +132,9 @@ S3method(as.data.frame, IPos)
 
 S3method(diff, AtomicList)
 
+S3method(summary, IPosRanges)
+S3method(summary, IPos)
+
 S3method(`window<-`, Vector)
 S3method(`window<-`, vector)
 S3method(`window<-`, factor)
@@ -144,6 +147,9 @@ export(
     as.data.frame.IPos,
 
     diff.AtomicList,
+
+    summary.IPosRanges,
+    summary.IPos,
 
     "window<-.Vector",
     "window<-.vector",
