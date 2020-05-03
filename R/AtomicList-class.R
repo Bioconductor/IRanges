@@ -89,7 +89,7 @@ setClass("SimpleFactorList",
       if (is.list(arg1) || is(arg1, "List"))
         listData <- arg1
       else if (type == "integer" && class(arg1) == "character")
-        listData <- strsplitAsListOfIntegerVectors(arg1) # weird special case
+        listData <- toListOfIntegerVectors(arg1) # weird special case
   }
   listData
 }

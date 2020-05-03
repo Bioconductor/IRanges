@@ -57,40 +57,6 @@ setReplaceMethod("window", "factor", `window<-.factor`)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### mstack()
-###
-
-setGeneric("mstack", function(..., .index.var = "name")
-           standardGeneric("mstack"), signature = "...")
-BiocGenerics:::apply_hotfix73465(getGeneric("mstack"))
-
-setMethod("mstack", "Vector", function(..., .index.var = "name") {
-  if (!isSingleString(.index.var))
-    stop("'.index.var' must be a single, non-NA string")
-  args <- list(...)
-  combined <- compress_listData(args)
-  df <- .stack.ind(args, .index.var)
-  if (!is.null(mcols(combined, use.names=FALSE)))
-    df <- cbind(df, mcols(combined, use.names=FALSE))
-  mcols(combined) <- df
-  combined
-})
-
-setMethod("mstack", "vector",
-          function(..., .index.var = "name")
-          {
-            if (!isSingleString(.index.var))
-              stop("'.index.var' must be a single, non-NA string")
-            args <- list(...)
-            combined <- compress_listData(args)
-            df <- DataFrame(.stack.ind(args, .index.var), combined)
-            if (ncol(df) == 2L)
-              colnames(df)[2] <- "value"
-            df
-          })
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Looping methods
 ###
 

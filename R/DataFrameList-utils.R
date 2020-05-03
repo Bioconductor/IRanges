@@ -15,7 +15,8 @@ setMethod("rbind", "DataFrameList",
 setMethod("stack", "DataFrameList",
           function(x, index.var = "name")
           {
-            DataFrame(.stack.ind(x, index.var), unlist(x, use.names=FALSE),
+            DataFrame(S4Vectors:::stack_index(x, index.var),
+                      unlist(x, use.names=FALSE),
                       row.names = unlist(lapply(x, rownames)))
           })
 
@@ -55,7 +56,7 @@ setMethod("as.env", "SDFLWrapperForTransform",
 
 transform.SplitDataFrameList <- function(`_data`, ...) {
   illConceivedWrapper <- new("SDFLWrapperForTransform", delegate=`_data`)
-  S4Vectors:::transform.DataTable(illConceivedWrapper, ...)@delegate
+  transform.DataFrame(illConceivedWrapper, ...)@delegate
 }
 
 setMethod("transform", "SplitDataFrameList", transform.SplitDataFrameList)

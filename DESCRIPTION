@@ -7,13 +7,13 @@ Description: Provides efficient low-level and highly reusable S4
 	neighbors. Defines efficient list-like classes for storing,
 	transforming and aggregating large grouped data, i.e., collections
 	of atomic vectors and DataFrames.
-Version: 2.23.3
+Version: 2.23.4
 Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 3.1.0), methods, utils, stats,
-	BiocGenerics (>= 0.25.3), S4Vectors (>= 0.27.3)
+	BiocGenerics (>= 0.25.3), S4Vectors (>= 0.27.4)
 Imports: stats4
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, Rsamtools, GenomicAlignments, GenomicFeatures,
@@ -21,8 +21,6 @@ Suggests: XVector, GenomicRanges, Rsamtools, GenomicAlignments, GenomicFeatures,
 License: Artistic-2.0
 Collate: range-squeezers.R
 	Vector-class-leftovers.R
-	List-class-leftovers.R
-	DataFrame-utils.R
 	DataFrameList-class.R
 	DataFrameList-utils.R
 	AtomicList-class.R

@@ -8,10 +8,6 @@
 \alias{window<-,factor-method}
 \alias{window<-.factor}
 
-\alias{mstack}
-\alias{mstack,Vector-method}
-\alias{mstack,vector-method}
-
 \alias{tapply,ANY,Vector-method}
 \alias{tapply,Vector,ANY-method}
 \alias{tapply,Vector,Vector-method}
@@ -65,18 +61,6 @@
       The elements of \code{value} are repeated to create a Vector with the
       same number of elements as the width of the subsequence window it is
       replacing.
-    }
-  }
-}
-
-\section{Combining}{
-  In the code snippets below, \code{x} is a Vector object.
-
-  \describe{
-    \item{}{\code{mstack(..., .index.var = "name")}: A variant of
-      \code{\link{stack}}, where the list is taken as the list of
-      arguments in \code{...}, each of which should be a \code{Vector}
-      or \code{vector} (mixing the two will not work).
     }
   }
 }

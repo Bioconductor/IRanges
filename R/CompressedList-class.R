@@ -108,27 +108,6 @@ setReplaceMethod("names", "CompressedList",
 ### when calling this from another package.
 ###
 
-### Hackery to avoid R CMD check warning for using an internal...
-islistfactor <- function(x) {
-    eval(as.call(list(quote(.Internal),
-                      substitute(islistfactor(x, FALSE), list(x=x)))))
-}
-
-compress_listData <- function(x, elementType = NULL) {
-    if (length(x) > 0L) {
-        if (islistfactor(x)) {
-            x <- unlist(x, recursive=FALSE, use.names=FALSE)
-        } else if (length(dim(x[[1L]])) < 2L) {
-            x <- do.call(c, unname(x))
-        } else {
-            x <- do.call(rbind, unname(x))
-        }
-    } else {
-        x <- vector()
-    }
-    x
-}
-
 .reconcile_mcols <- function(x) {
   x_mcols <- mcols(x, use.names=FALSE)
   if (is(x_mcols, "DataFrame") &&
@@ -181,7 +160,7 @@ new_CompressedList_from_list <- function(Class, x, ..., mcols)
         return(new2(Class, partitioning=ans_partitioning, ...,
                            elementMetadata=mcols, check=FALSE))
     }
-    ans_unlistData <- compress_listData(x, ans_elementType)
+    ans_unlistData <- S4Vectors:::compress_listData(x, ans_elementType)
     if (missing(mcols)) {
         ans <- new2(Class, unlistData=ans_unlistData,
                            partitioning=ans_partitioning, ...,
@@ -224,7 +203,7 @@ coerceToCompressedList <- function(from, element.type = NULL, ...) {
     return(from)
   if (is.list(from) || (is(from, "List") && !is(from, "DataFrame"))) {
     if (is.list(from)) {
-      v <- compress_listData(from, element.type)
+      v <- S4Vectors:::compress_listData(from, element.type)
     } else {
       v <- unlist(from, use.names = FALSE)
     }
