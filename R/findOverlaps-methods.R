@@ -206,7 +206,7 @@ setGeneric("countOverlaps", signature=c("query", "subject"),
         standardGeneric("countOverlaps")
 )
 
-.countOverlaps_default <-
+.default_countOverlaps <-
     function(query, subject, maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "equal"),
              ...)
@@ -230,9 +230,9 @@ setGeneric("countOverlaps", signature=c("query", "subject"),
     ans
 }
 
-setMethod("countOverlaps", c("Vector", "Vector"), .countOverlaps_default)
-setMethod("countOverlaps", c("integer", "Vector"), .countOverlaps_default)
-setMethod("countOverlaps", c("Vector", "missing"), .countOverlaps_default)
+setMethod("countOverlaps", c("Vector", "Vector"), .default_countOverlaps)
+setMethod("countOverlaps", c("integer", "Vector"), .default_countOverlaps)
+setMethod("countOverlaps", c("Vector", "missing"), .default_countOverlaps)
 
 countOverlaps_IntegerRanges <- function(query, subject,
               maxgap=-1L, minoverlap=0L,
@@ -274,7 +274,8 @@ setGeneric("overlapsAny", signature=c("query", "subject"),
         standardGeneric("overlapsAny")
 )
 
-.overlapsAny_default <-
+### NOT exported but used in the bsseq package.
+default_overlapsAny <-
     function(query, subject, maxgap=-1L, minoverlap=0L,
              type=c("any", "start", "end", "within", "equal"),
              ...)
@@ -296,9 +297,9 @@ setGeneric("overlapsAny", signature=c("query", "subject"),
     !is.na(ahit)
 }
 
-setMethod("overlapsAny", c("Vector", "Vector"), .overlapsAny_default)
-setMethod("overlapsAny", c("integer", "Vector"), .overlapsAny_default)
-setMethod("overlapsAny", c("Vector", "missing"), .overlapsAny_default)
+setMethod("overlapsAny", c("Vector", "Vector"), default_overlapsAny)
+setMethod("overlapsAny", c("integer", "Vector"), default_overlapsAny)
+setMethod("overlapsAny", c("Vector", "missing"), default_overlapsAny)
 
 setMethod("overlapsAny", c("IntegerRangesList", "IntegerRangesList"),
     function(query, subject, maxgap=-1L, minoverlap=0L,
@@ -349,20 +350,22 @@ setGeneric("subsetByOverlaps", signature=c("x", "ranges"),
         standardGeneric("subsetByOverlaps")
 )
 
-setMethod("subsetByOverlaps", c("Vector", "Vector"),
+### NOT exported but used in the bsseq package.
+default_subsetByOverlaps <-
     function(x, ranges, maxgap=-1L, minoverlap=0L,
-             type=c("any", "start", "end", "within", "equal"), invert=FALSE,
-             ...)
-    {
-        ov_any <- overlapsAny(x, ranges,
-                              maxgap=maxgap, minoverlap=minoverlap,
-                              type=match.arg(type),
-                              ...)
-        if (invert)
-            ov_any <- !ov_any
-        x[ov_any]
-    }
-)
+             type=c("any", "start", "end", "within", "equal"),
+             invert=FALSE, ...)
+{
+    ov_any <- overlapsAny(x, ranges,
+                          maxgap=maxgap, minoverlap=minoverlap,
+                          type=match.arg(type),
+                          ...)
+    if (invert)
+        ov_any <- !ov_any
+    x[ov_any]
+}
+
+setMethod("subsetByOverlaps", c("Vector", "Vector"), default_subsetByOverlaps)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
