@@ -4,8 +4,6 @@
 \alias{Hits-examples}
 
 % coercion
-\alias{coerce,Hits,DFrame-method}
-\alias{as.data.frame,Hits-method}
 
 \alias{coerce,SortedByQueryHits,PartitioningByEnd-method}
 \alias{coerce,SortedByQueryHits,Partitioning-method}
@@ -44,14 +42,6 @@
   object.
   
   \describe{
-    \item{}{
-      \code{as(x, "DataFrame")}: Creates a \code{DataFrame} by
-      combining the result of \code{as.matrix(x)}
-      with \code{mcols(from)}.
-    }
-    \item{}{\code{as.data.frame(x)}: Attempts to coerce the result of
-      \code{as(from, "DataFrame")} to a \code{data.frame}.
-    }
     \item{}{\code{as.list(x)}: Coerces \code{x} to a list of integers,
       grouping the the right node hits for each left node.
     }

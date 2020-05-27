@@ -12,20 +12,6 @@
 ### Coercion
 ###
 
-setAs("Hits", "DFrame", function(from) {
-  from_mcols <- mcols(from, use.names=FALSE)
-  DataFrame(as.matrix(from),
-            if (!is.null(from_mcols)) from_mcols
-            else make_zero_col_DFrame(length(from)))
-})
-
-.as.data.frame.Hits <- function(x, row.names=NULL, optional=FALSE, ...)
-{
-    as.data.frame(as(x, "DataFrame"), row.names=row.names, optional=optional,
-                  ...)
-}
-setMethod("as.data.frame", "Hits", .as.data.frame.Hits)
-
 ### Turn SortedByQueryHits object 'from' into a PartitioningByEnd object that
 ### describes the grouping of hits by query.
 .from_SortedByQueryHits_to_PartitioningByEnd <- function(from)
