@@ -394,3 +394,44 @@ setMethod("revElements", "CompressedList",
     }
 )
 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Recycling
+###
+
+repLengthOneElements <- function(x, times) {
+    x@unlistData <- rep(x@unlistData, times)
+    x@partitioning@end <- cumsum(times)
+    x
+}
+
+recycleListElements <- function(x, newlen) {
+    x_eltNROWS <- elementNROWS(x)
+    if (identical(x_eltNROWS, newlen)) {
+        return(x)
+    }
+    if (all(x_eltNROWS == 1L)) {
+        ans <- repLengthOneElements(x, newlen)
+    } else {
+        if (any(x_eltNROWS == 0L & newlen > 0L)) {
+            if (is(x, "AtomicList")) {
+                x[x_eltNROWS == 0L & newlen > 0L] <- list(NA)
+            } else {
+                stop("recycling of zero-length elements not supported")
+            }
+            x_eltNROWS <- elementNROWS(x)
+        }
+        times <- ceiling(newlen / x_eltNROWS)
+        times[x_eltNROWS == 0L] <- 0L
+        ans_ir <- rep(as(PartitioningByEnd(x), "IRanges"), times)
+        remainder <- newlen %/% x_eltNROWS
+        if (any(remainder > 0L)) {
+            last <- cumsum(times)
+            width(ans_ir)[last[remainder > 0]] <- remainder[remainder > 0]
+            warning("Some element lengths are not multiples of their ",
+                    "corresponding element length in ", deparse(substitute(x)))
+        }
+        ans <- relist(extractROWS(unlist(x, use.names=FALSE), ans_ir),
+                      PartitioningByWidth(newlen))
+    }
+    ans
+}

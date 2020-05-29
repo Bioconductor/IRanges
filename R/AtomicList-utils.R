@@ -32,29 +32,6 @@ setMethod("Ops",
               as(Map(.Generic, e1, e2), "List")
           })
 
-repLengthOneElements <- function(x, times) {
-  x@unlistData <- rep(x@unlistData, times)
-  x@partitioning@end <- cumsum(times)
-  x
-}
-
-recycleListElements <- function(x, newlen) {
-  x_eltNROWS <- elementNROWS(x)
-  if (identical(x_eltNROWS, newlen)) {
-    return(x)
-  }
-  if (all(x_eltNROWS == 1L)) {
-    ans <- repLengthOneElements(x, newlen)
-  } else {
-    ans <- rep(x, newlen / x_eltNROWS)
-    if (length(unlist(ans, use.names=FALSE)) != sum(newlen)) {
-      stop("Some element lengths are not multiples of their corresponding ",
-           "element length in ", deparse(substitute(x)))
-    }
-  }
-  ans
-}
-
 setMethod("Ops",
           signature(e1 = "AtomicList", e2 = "atomic"),
           function(e1, e2)
