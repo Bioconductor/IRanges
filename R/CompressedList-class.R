@@ -423,7 +423,8 @@ recycleListElements <- function(x, newlen) {
         times <- ceiling(newlen / x_eltNROWS)
         times[x_eltNROWS == 0L] <- 0L
         ans_ir <- rep(as(PartitioningByEnd(x), "IRanges"), times)
-        remainder <- newlen %/% x_eltNROWS
+        remainder <- newlen %% x_eltNROWS
+        remainder[x_eltNROWS == 0L] <- 0L
         if (any(remainder > 0L)) {
             last <- cumsum(times)
             width(ans_ir)[last[remainder > 0]] <- remainder[remainder > 0]
