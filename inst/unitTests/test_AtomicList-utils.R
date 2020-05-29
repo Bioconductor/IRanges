@@ -170,3 +170,21 @@ test_RleList_methods <- function() {
     }
 }
 
+test_AtomicList_repElements <- function() {
+    test_addition <- function(x, y) {
+        current <- x + y
+        target <- IntegerList(Map(function(x, y) x + y, x, y))
+        checkIdentical(current, target)
+    }
+
+    test_addition(IntegerList(NULL), IntegerList(NULL))
+    test_addition(IntegerList(11:13), IntegerList(NULL))
+    test_addition(IntegerList(11:13, NULL), IntegerList(NULL, NULL))
+    test_addition(IntegerList(11:13, NULL), IntegerList(NULL, 10:12))
+    test_addition(IntegerList(11:13, NULL), IntegerList(10:12, NULL))
+    test_addition(IntegerList(11:13), IntegerList(NULL, 10:12))
+
+    test_addition(IntegerList(11:12), IntegerList(10:13))
+    test_addition(IntegerList(11:12), IntegerList(10:12))
+    test_addition(IntegerList(11:13, 11:12), IntegerList(10:12))
+}
