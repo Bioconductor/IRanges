@@ -106,8 +106,8 @@ static int solve_range(int start, int end, int width,
 /* --- .Call ENTRY POINT ---
   'start' and 'width' can be used **as-is** to construct the IRanges object
   to return if they satisfy at least both criteria:
-    (a) They don't have a "dim" or "names" attribute on them.
-    (b) They don't contain NAs.
+	(a) They don't have a "dim" or "names" attribute on them.
+	(b) They don't contain NAs.
   Note that this just reflects what validObject() expects to see in the
   "start" and "width" slots of an IRanges object.
   If they can't be used **as-is** then they need to be modified (i.e. the
@@ -116,75 +116,70 @@ static int solve_range(int start, int end, int width,
   Of course they also must define valid ranges, that is, after resolution
   of the NAs, the width must be >= 0 and < 2^31, the start must be > -2^31
   and < 2^31, and the implicit end must be > -2^31 and < 2^31. This is
-  checked early and an error is raised on the first invalid range (see 1st
-  pass below).
+  checked when resolving the NAs.
 */
 SEXP solve_user_SEW0(SEXP start, SEXP end, SEXP width)
 {
-	int ans_len, use_start_as_is, use_width_as_is,
-	    i, solved_start, solved_width;
-	const int *start_p, *end_p, *width_p;
-	SEXP ans, ans_start, ans_width;
+	int ans_len, 
+		use_start_as_is,use_width_as_is,
+	    i, solved_start, solved_width,
+		start_value, end_value, width_value;
+	SEXP ans, ans_start, ans_width,
+		check_start_NA, check_width_NA;
 
-	if (!(IS_INTEGER(start) && IS_INTEGER(end) && IS_INTEGER(width)))
-		error("the supplied 'start', 'end', and 'width', "
-                      "must be integer vectors");
 	ans_len = LENGTH(start);
-	if (LENGTH(end) != ans_len || LENGTH(width) != ans_len)
-		error("'start', 'end', and 'width' must have the same length");
+	/* Check if start/width contains NA
+	  The function anyNA can be more efficient than a loop in C.*/
+	PROTECT(check_start_NA = lang2(install("anyNA"), start));
+	PROTECT(check_width_NA = lang2(install("anyNA"), width));
 
 	use_start_as_is = GET_DIM(start) == R_NilValue &&
-			  GET_NAMES(start) == R_NilValue;
+		GET_NAMES(start) == R_NilValue &&
+		!asLogical(R_tryEval(check_start_NA, R_GlobalEnv, NULL));
 	use_width_as_is = GET_DIM(width) == R_NilValue &&
-			  GET_NAMES(width) == R_NilValue;
-
-	/* 1st pass: Solve and check the supplied ranges and determine
-           whether 'start' and/or 'width' can be used as-is or not. */
-	start_p = INTEGER(start);
-	end_p = INTEGER(end);
-	width_p = INTEGER(width);
-	for (i = 0; i < ans_len; i++) {
-		if (solve_range(*start_p, *end_p, *width_p,
-				&solved_start, &solved_width) != 0)
-			error("In range %d: %s.", i + 1, errmsg_buf);
-		if (use_start_as_is && *start_p == NA_INTEGER)
-			use_start_as_is = 0;
-		if (use_width_as_is && *width_p == NA_INTEGER)
-			use_width_as_is = 0;
-		start_p++;
-		end_p++;
-		width_p++;
-	}
-
+		GET_NAMES(width) == R_NilValue &&
+		!asLogical(R_tryEval(check_width_NA, R_GlobalEnv, NULL));
+	
 	ans_start = start;
 	ans_width = width;
 	if (!(use_start_as_is && use_width_as_is)) {
-		/* 2nd pass: Allocate and populate 'ans_start'
-                   and/or 'ans_width'. */
-		if (!use_start_as_is)
-			PROTECT(ans_start = NEW_INTEGER(ans_len));
-		if (!use_width_as_is)
-			PROTECT(ans_width = NEW_INTEGER(ans_len));
-		start_p = INTEGER(start);
-		end_p = INTEGER(end);
-		width_p = INTEGER(width);
+		/* Allocate and populate 'ans_start' and/or 'ans_width'. 
+		   Call the duplicate function to duplicate an object for
+		   an ALTREP might has a more efficient way to duplicate itself
+		   NAMES and DIM attribute will be removed(duplicate will preserve them)
+		   */
+		if (!use_start_as_is) {
+			PROTECT(ans_start = duplicate(start));
+			SET_NAMES(ans_start, R_NilValue);
+			SET_DIM(ans_start, R_NilValue);
+		}
+		if (!use_width_as_is) {
+			PROTECT(ans_width = duplicate(width));
+			SET_NAMES(ans_width, R_NilValue);
+			SET_DIM(ans_width, R_NilValue);
+		}
+
 		for (i = 0; i < ans_len; i++) {
-			/* All ranges got validated during the 1st pass so
-			   we don't need to check the returned value again. */
-			solve_range(*start_p, *end_p, *width_p,
-				    &solved_start, &solved_width);
+			start_value = INTEGER_ELT(start, i);
+			end_value = INTEGER_ELT(end, i);
+			width_value = INTEGER_ELT(width, i);
+			if (solve_range(start_value, end_value, width_value,
+				&solved_start, &solved_width) != 0)
+				error("In range %d: %s.", i + 1, errmsg_buf);
+			/*The if statement is used to avoid unnecessary assignment*/
 			if (!use_start_as_is)
-				INTEGER(ans_start)[i] = solved_start;
+				SET_INTEGER_ELT(ans_start, i, solved_start);
 			if (!use_width_as_is)
-				INTEGER(ans_width)[i] = solved_width;
-			start_p++;
-			end_p++;
-			width_p++;
+				SET_INTEGER_ELT(ans_width, i, solved_width);
 		}
 	}
+	
+	
+	
+
 	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width,
 					      R_NilValue));
-	UNPROTECT(1 + !use_start_as_is + !use_width_as_is);
+	UNPROTECT(3 + !use_start_as_is + !use_width_as_is);
 	return ans;
 }
 
@@ -249,18 +244,21 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
 			 "negative values or NAs are not allowed in 'refwidths'");
 		return -1;
 	}
+
 	if (start != NA_INTEGER) {
 		if (translate_negative_coord0)
 			start = translate_negative_startorend(refwidth, start);
 		if (check_start(refwidth, start, "supplied") != 0)
 			return -1;
 	}
+
 	if (end != NA_INTEGER) {
 		if (translate_negative_coord0)
 			end = translate_negative_startorend(refwidth, end);
 		if (check_end(refwidth, end, "supplied") != 0)
 			return -1;
 	}
+
 	if (width == NA_INTEGER) {
 		if (start == NA_INTEGER)
 			start = 1;
@@ -295,8 +293,10 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
 				return -1;
 		}
 	}
+
 	*solved_start = start;
 	*solved_width = width;
+
 	return 0;
 }
 
@@ -306,32 +306,96 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
 SEXP solve_user_SEW(SEXP refwidths, SEXP start, SEXP end, SEXP width,
 		SEXP translate_negative_coord, SEXP allow_nonnarrowing)
 {
-	SEXP ans, ans_start, ans_width;
-	int ans_len, i0, i1, i2, i3;
+	SEXP ans, ans_start, ans_width,
+		check_start_NA, check_width_NA;
+	int ans_len, i0, i1, i2, i3,
+		refwidths_value, start_value, width_value, end_value,
+		use_start_as_is, use_width_as_is,
+		solved_start, solved_width;
 
 	translate_negative_coord0 = LOGICAL(translate_negative_coord)[0];
 	nonnarrowing_is_OK = LOGICAL(allow_nonnarrowing)[0];
 	ans_len = LENGTH(refwidths);
-	PROTECT(ans_start = NEW_INTEGER(ans_len));
-	PROTECT(ans_width = NEW_INTEGER(ans_len));
+
+	/*Prepare the expression to check any NA values in start and width
+	  The function anyNA can be more efficient than a loop in C.*/
+	PROTECT(check_start_NA = lang2(install("anyNA"), start));
+	PROTECT(check_width_NA = lang2(install("anyNA"), width));
+
+	/*Please see comments in solve_user_SEW0
+	  The length should alse be check since it is not checked in R*/
+	use_start_as_is = GET_DIM(start) == R_NilValue &&
+		GET_NAMES(start) == R_NilValue &&
+		!asLogical(R_tryEval(check_start_NA, R_GlobalEnv, NULL)) &&
+		LENGTH(start) == ans_len;
+
+	use_width_as_is = GET_DIM(width) == R_NilValue &&
+		GET_NAMES(width) == R_NilValue &&
+		!asLogical(R_tryEval(check_width_NA, R_GlobalEnv, NULL)) &&
+		LENGTH(width) == ans_len;
+
+	ans_start = start;
+	ans_width = width;
+
+	/*
+	If user's input cannot be used `as-is`, , depending on the vector's length:
+	  1. If the length is the same as ans_len, the vector will be duplicated
+	  2. If the length is different from ans_len, a new vector will be created.
+	NAMES and DIM attribute will be removed(duplicate will preserve them)
+	*/
+	if (!use_start_as_is) {
+		if (LENGTH(start) == ans_len)
+			PROTECT(ans_start = duplicate(start));
+		else
+			PROTECT(ans_start = NEW_INTEGER(ans_len));
+		SET_NAMES(ans_start, R_NilValue);
+		SET_DIM(ans_start, R_NilValue);
+	}
+	else {
+		ans_start = start;
+	}
+
+	if (!use_width_as_is) {
+		if (LENGTH(width) == ans_len)
+			PROTECT(ans_width = duplicate(width));
+		else
+			PROTECT(ans_width = NEW_INTEGER(ans_len));
+		SET_NAMES(ans_width, R_NilValue);
+		SET_DIM(ans_width, R_NilValue);
+	}
+	else {
+		ans_width = width;
+	}
+
 	for (i0 = i1 = i2 = i3 = 0; i0 < ans_len; i0++, i1++, i2++, i3++) {
 		/* recycling */
 		if (i1 >= LENGTH(start)) i1 = 0;
 		if (i2 >= LENGTH(end)) i2 = 0;
 		if (i3 >= LENGTH(width)) i3 = 0;
-		if (solve_user_SEW_row(INTEGER(refwidths)[i0],
-				       INTEGER(start)[i1],
-				       INTEGER(end)[i2],
-				       INTEGER(width)[i3],
-				       INTEGER(ans_start) + i0,
-				       INTEGER(ans_width) + i0) != 0)
+
+		refwidths_value = INTEGER_ELT(refwidths, i0);
+		start_value = INTEGER_ELT(start, i1);
+		end_value = INTEGER_ELT(end, i2);
+		width_value = INTEGER_ELT(width, i3);
+
+		if (solve_user_SEW_row(refwidths_value,
+			           start_value,
+			           end_value,
+			           width_value,
+			           &solved_start,
+			           &solved_width
+				       ) != 0)
 		{
-			UNPROTECT(2);
+			UNPROTECT(2 + use_start_as_is + use_width_as_is);
 			error("solving row %d: %s", i0 + 1, errmsg_buf);
 		}
+		if (!use_start_as_is)
+			SET_INTEGER_ELT(ans_start, i0, solved_start);
+		if (!use_width_as_is)
+			SET_INTEGER_ELT(ans_width, i0, solved_width);
 	}
 	PROTECT(ans = _new_IRanges("IRanges", ans_start, ans_width, R_NilValue));
-	UNPROTECT(3);
+	UNPROTECT(3 + !use_start_as_is + !use_width_as_is);
 	return ans;
 }
 
