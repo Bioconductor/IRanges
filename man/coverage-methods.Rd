@@ -171,14 +171,45 @@ coverage(x, weight=as.integer(10^(0:7)))  # integer-Rle
 coverage(x, weight=c(2.8, -10))  # numeric-Rle, 'shift' gets recycled
 
 ## ---------------------------------------------------------------------
-## B. COVERAGE OF AN IPos OBJECT
+## B. FLOATING POINT ARITHMETIC CAN BRING A SURPRISE
+## ---------------------------------------------------------------------
+## Please be aware that rounding errors in floating point arithmetic can
+## lead to some surprising results when computing a weighted coverage:
+y <- IRanges(c(4, 10), c(18, 15))
+w1 <- 0.958
+w2 <- 1e4
+cvg <- coverage(y, width=100, weight=c(w1, w2))
+cvg  # non-zero coverage at positions 19 to 100!
+
+## This is an artefact of floating point arithmetic and the algorithm
+## used to compute the weighted coverage. It can be observed with basic
+## floating point arithmetic:
+w1 + w2 - w2 - w1  # very small non-zero value!
+
+## These very small non-zero coverage values in the no-coverage regions
+## of the numeric-Rle object returned by coverage() are not always
+## present. But when they are, they can cause problems downstream or
+## in unit tests. For example downstream code that relies on things
+## like 'cvg != 0' to find regions with coverage won't work properly.
+## This can be mitigated by "cleaning" 'cvg' first e.g. with something
+## like 'cvg <- round(cvg, digits)' where 'digits' is a carefully chosen
+## number of digits:
+cvg <- round(cvg, digits=3)
+
+## Note that this rounding will also have the interesting side effect of
+## reducing the memory footprint of the Rle object in general (because
+## some runs might get merged into a single run as a consequence of the
+## rounding).
+
+## ---------------------------------------------------------------------
+## C. COVERAGE OF AN IPos OBJECT
 ## ---------------------------------------------------------------------
 pos_runs <- IRanges(c(1, 5, 9), c(10, 8, 15))
 ipos <- IPos(pos_runs)
 coverage(ipos)
 
 ## ---------------------------------------------------------------------
-## C. COVERAGE OF AN IRangesList OBJECT
+## D. COVERAGE OF AN IRangesList OBJECT
 ## ---------------------------------------------------------------------
 x <- IRangesList(A=IRanges(3*(4:-1), width=1:3), B=IRanges(2:10, width=5))
 cvg <- coverage(x)
@@ -200,7 +231,7 @@ cvg2  # 1st coverage vector is an integer-Rle, 2nd is a numeric-Rle
 identical(mapply(coverage, x=x, weight=weight), as.list(cvg2))
 
 ## ---------------------------------------------------------------------
-## D. SOME MATHEMATICAL PROPERTIES OF THE coverage() FUNCTION
+## E. SOME MATHEMATICAL PROPERTIES OF THE coverage() FUNCTION
 ## ---------------------------------------------------------------------
 
 ## PROPERTY 1: The coverage vector is not affected by reordering the
@@ -292,7 +323,7 @@ stopifnot(identical(coverage(disjoin(x)), shaved_cvg0))
 stopifnot(identical(coverage(reduce(x)), shaved_cvg0))
 
 ## ---------------------------------------------------------------------
-## E. SOME SANITY CHECKS
+## F. SOME SANITY CHECKS
 ## ---------------------------------------------------------------------
 dummy_coverage <- function(x, shift=0L, width=NULL)
 {
