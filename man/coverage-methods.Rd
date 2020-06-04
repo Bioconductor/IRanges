@@ -19,10 +19,10 @@
 coverage(x, shift=0L, width=NULL, weight=1L, ...)
 
 \S4method{coverage}{IntegerRanges}(x, shift=0L, width=NULL, weight=1L,
-            method=c("auto", "sort", "hash"))
+            method=c("auto", "sort", "hash", "naive"))
 
 \S4method{coverage}{IntegerRangesList}(x, shift=0L, width=NULL, weight=1L,
-            method=c("auto", "sort", "hash"))
+            method=c("auto", "sort", "hash", "naive"))
 }
 
 \arguments{
@@ -104,8 +104,8 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
   \item{method}{
     If \code{method} is set to \code{"sort"}, then \code{x} is sorted
     previous to the calculation of the coverage. If \code{method} is set
-    to \code{hash}, then \code{x} is hashed directly to a vector of length
-    \code{width} without previous sorting.
+    to \code{"hash"} or \code{"naive"}, then \code{x} is hashed directly
+    to a vector of length \code{width} without previous sorting.
 
     The \code{"hash"} method is faster than the \code{"sort"} method when
     \code{x} is large (i.e. contains a lot of ranges). When \code{x} is small
@@ -113,8 +113,16 @@ coverage(x, shift=0L, width=NULL, weight=1L, ...)
     aligned to a big chromosome), then \code{method="sort"} is faster and
     uses less memory than \code{method="hash"}.
 
-    Using \code{method="auto"} selects the best method based on
-    \code{length(x)} and \code{width}.
+    The \code{"naive"} method is a slower version of the \code{"hash"}
+    method that has the advantage of avoiding floating point artefacts
+    in the no-coverage regions of the numeric-Rle object returned by
+    \code{coverage()} when the weights are supplied as a numeric vector
+    of type \code{double}. See "FLOATING POINT ARITHMETIC CAN BRING A
+    SURPRISE" section in the Examples below for more information.
+
+    Using \code{method="auto"} selects between the \code{"sort"} and
+    \code{"hash"} methods, picking the one that is predicted to be faster
+    based on \code{length(x)} and \code{width}.
   }
   \item{...}{
     Further arguments to be passed to or from other methods.
@@ -186,14 +194,21 @@ cvg  # non-zero coverage at positions 19 to 100!
 ## floating point arithmetic:
 w1 + w2 - w2 - w1  # very small non-zero value!
 
+## Note that this only happens with the "sort" and "hash" methods but
+## not with the "naive" method:
+coverage(y, width=100, weight=c(w1, w2), method="sort")
+coverage(y, width=100, weight=c(w1, w2), method="hash")
+coverage(y, width=100, weight=c(w1, w2), method="naive")
+
 ## These very small non-zero coverage values in the no-coverage regions
 ## of the numeric-Rle object returned by coverage() are not always
 ## present. But when they are, they can cause problems downstream or
 ## in unit tests. For example downstream code that relies on things
 ## like 'cvg != 0' to find regions with coverage won't work properly.
-## This can be mitigated by "cleaning" 'cvg' first e.g. with something
-## like 'cvg <- round(cvg, digits)' where 'digits' is a carefully chosen
-## number of digits:
+## This can be mitigated either by selecting the "naive" method (be aware
+## that this can slow down things significantly) or by "cleaning" 'cvg'
+## first e.g. with something like 'cvg <- round(cvg, digits)' where
+## 'digits' is a carefully chosen number of digits:
 cvg <- round(cvg, digits=3)
 
 ## Note that this rounding will also have the interesting side effect of

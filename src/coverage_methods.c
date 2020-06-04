@@ -248,7 +248,7 @@ static SEXP int_coverage_hash(
 		const int *weight, int weight_len,
 		int cvg_len)
 {
-	int *cvg_buf, *cvg_p, w, cumsum,
+	int *cvg_buf, w, *cvg_p, cumsum,
 	    i, j;
 
 	cvg_buf = (int *) R_alloc((long) cvg_len + 1, sizeof(int));
@@ -259,8 +259,8 @@ static SEXP int_coverage_hash(
 			R_CheckUserInterrupt();
 		if (j >= weight_len)
 			j = 0; /* recycle j */
-		cvg_p = cvg_buf + *x_start - 1;
 		w = weight[j];
+		cvg_p = cvg_buf + *x_start - 1;
 		*cvg_p = safe_int_add(*cvg_p, w);
 		cvg_p += *x_width;
 		*cvg_p = safe_int_add(*cvg_p, - w);
@@ -281,7 +281,7 @@ static SEXP double_coverage_hash(
 		const double *weight, int weight_len,
 		int cvg_len)
 {
-	double *cvg_buf, *cvg_p, w, cumsum;
+	double *cvg_buf, w, *cvg_p, cumsum;
 	int i, j;
 
 	cvg_buf = (double *) R_alloc((long) cvg_len + 1, sizeof(double));
@@ -292,8 +292,8 @@ static SEXP double_coverage_hash(
 			R_CheckUserInterrupt();
 		if (j >= weight_len)
 			j = 0; /* recycle j */
-		cvg_p = cvg_buf + *x_start - 1;
 		w = weight[j];
+		cvg_p = cvg_buf + *x_start - 1;
 		*cvg_p += w;
 		cvg_p += *x_width;
 		*cvg_p -= w;
@@ -317,6 +317,82 @@ static SEXP coverage_hash(const int *x_start, const int *x_width, int x_len,
 	       int_coverage_hash(x_start, x_width, x_len,
 				INTEGER(weight), weight_len, cvg_len) :
 	       double_coverage_hash(x_start, x_width, x_len,
+				REAL(weight), weight_len, cvg_len);
+}
+
+
+/****************************************************************************
+ *                              "naive" method                              *
+ ****************************************************************************/
+
+static SEXP int_coverage_naive(
+		const int *x_start, const int *x_width, int x_len,
+		const int *weight, int weight_len,
+		int cvg_len)
+{
+	int *cvg_buf, w, *cvg_p,
+	    i, j, k;
+
+	cvg_buf = (int *) R_alloc((long) cvg_len + 1, sizeof(int));
+	memset(cvg_buf, 0, cvg_len * sizeof(int));
+	reset_ovflow_flag(); /* we use safe_int_add() in loop below */
+	for (i = j = 0; i < x_len; i++, j++, x_start++, x_width++) {
+		if (i % 500000 == 499999)
+			R_CheckUserInterrupt();
+		if (j >= weight_len)
+			j = 0; /* recycle j */
+		w = weight[j];
+		for (k = 0, cvg_p = cvg_buf + *x_start - 1;
+		     k < *x_width;
+		     k++, cvg_p++)
+		{
+			*cvg_p = safe_int_add(*cvg_p, w);
+		}
+	}
+	check_recycling_was_round(j, weight_len, weight_label, x_label);
+	if (get_ovflow_flag())
+		warning("NAs produced by integer overflow");
+	return construct_integer_Rle(cvg_len, cvg_buf, NULL, 0);
+}
+
+static SEXP double_coverage_naive(
+		const int *x_start, const int *x_width, int x_len,
+		const double *weight, int weight_len,
+		int cvg_len)
+{
+	double *cvg_buf, w, *cvg_p;
+	int i, j, k;
+
+	cvg_buf = (double *) R_alloc((long) cvg_len + 1, sizeof(double));
+	for (i = 0, cvg_p = cvg_buf; i < cvg_len; i++, cvg_p++)
+		*cvg_p = 0.0;
+	for (i = j = 0; i < x_len; i++, j++, x_start++, x_width++) {
+		if (i % 500000 == 499999)
+			R_CheckUserInterrupt();
+		if (j >= weight_len)
+			j = 0; /* recycle j */
+		w = weight[j];
+		for (k = 0, cvg_p = cvg_buf + *x_start - 1;
+		     k < *x_width;
+		     k++, cvg_p++)
+		{
+			*cvg_p += w;
+		}
+	}
+	check_recycling_was_round(j, weight_len, weight_label, x_label);
+	return construct_numeric_Rle(cvg_len, cvg_buf, NULL, 0);
+}
+
+static SEXP coverage_naive(const int *x_start, const int *x_width, int x_len,
+		SEXP weight, int cvg_len)
+{
+	int weight_len;
+
+	weight_len = LENGTH(weight);
+	return IS_INTEGER(weight) ?
+	       int_coverage_naive(x_start, x_width, x_len,
+				INTEGER(weight), weight_len, cvg_len) :
+	       double_coverage_naive(x_start, x_width, x_len,
 				REAL(weight), weight_len, cvg_len);
 }
 
@@ -515,7 +591,7 @@ static int shift_and_clip_ranges(const IRanges_holder *x_holder,
  *   weight:     A numeric (integer or double) vector parallel to 'x' (will
  *               get recycled if necessary).
  *   circle_len: A single integer. NA or > 0.
- *   method:     Either "auto", "sort", or "hash".
+ *   method:     Either "auto", "sort", "hash", or "naive".
  * Returns an Rle object.
  */
 static SEXP compute_coverage_from_IRanges_holder(
@@ -527,6 +603,7 @@ static SEXP compute_coverage_from_IRanges_holder(
 	    effective_method, take_short_path;
 	const int *x_start, *x_width;
 	const char *method0;
+	SEXP ans;
 
 	x_len = _get_length_from_IRanges_holder(x_holder);
 	cvg_len = shift_and_clip_ranges(x_holder, shift, width, circle_len,
@@ -553,8 +630,11 @@ static SEXP compute_coverage_from_IRanges_holder(
 		effective_method = 1;
 	} else if (strcmp(method0, "hash") == 0) {
 		effective_method = 2;
+	} else if (strcmp(method0, "naive") == 0) {
+		effective_method = 3;
 	} else {
-		error("'method' must be \"auto\", \"sort\", or \"hash\"");
+		error("'method' must be \"auto\", \"sort\", \"hash\", "
+		      "or \"naive\"");
 	}
 
 	//Rprintf("out_ranges_are_tiles = %d\n", out_ranges_are_tiles);
@@ -585,9 +665,18 @@ static SEXP compute_coverage_from_IRanges_holder(
 		}
 	}
 	//Rprintf("taking normal path\n");
-	return effective_method == 1 ?
-	       coverage_sort(x_start, x_width, x_len, weight, cvg_len) :
-	       coverage_hash(x_start, x_width, x_len, weight, cvg_len);
+	switch (effective_method) {
+	    case 1:
+		ans = coverage_sort(x_start, x_width, x_len, weight, cvg_len);
+		break;
+	    case 2:
+		ans = coverage_hash(x_start, x_width, x_len, weight, cvg_len);
+		break;
+	    default:
+		ans = coverage_naive(x_start, x_width, x_len, weight, cvg_len);
+		break;
+	}
+	return ans;
 }
 
 /* --- .Call ENTRY POINT ---
@@ -599,7 +688,7 @@ static SEXP compute_coverage_from_IRanges_holder(
  *   weight:     A numeric (integer or double) vector parallel to 'x' (will
  *               get recycled if necessary).
  *   circle_len: A single integer. NA or > 0.
- *   method:     Either "auto", "sort", or "hash".
+ *   method:     Either "auto", "sort", "hash", or "naive".
  * Returns an Rle object.
  */
 SEXP C_coverage_IRanges(SEXP x, SEXP shift, SEXP width, SEXP weight,
@@ -649,7 +738,7 @@ SEXP C_coverage_IRanges(SEXP x, SEXP shift, SEXP width, SEXP weight,
  *                recycled if necessary.
  *   circle_lens: An integer vector of length N (will get recycled if
  *                necessary). Values must be NAs or > 0.
- *   method:      Either "auto", "sort", or "hash".
+ *   method:      Either "auto", "sort", "hash", or "naive".
  * Returns a list of N RleList objects.
  */
 SEXP C_coverage_CompressedIRangesList(SEXP x,

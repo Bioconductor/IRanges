@@ -23,7 +23,7 @@
 ### Returns an Rle object.
 .coverage_IRanges <- function(x, shift=0L, width=NULL,
                                  weight=1L, circle.length=NA,
-                                 method=c("auto", "sort", "hash"))
+                                 method=c("auto", "sort", "hash", "naive"))
 {
     ## Check 'x'.
     if (!is(x, "IRanges"))
@@ -57,10 +57,10 @@
 
     ## Ready to go...
     ans <- .Call2("C_coverage_IRanges", x,
-                              shift, width,
-                              weight, circle.length,
-                              method,
-                              PACKAGE="IRanges")
+                                        shift, width,
+                                        weight, circle.length,
+                                        method,
+                                        PACKAGE="IRanges")
 
     if (is.na(circle.length))
         return(ans)
@@ -116,11 +116,11 @@
 
 ### NOT exported but used in the GenomicRanges package.
 ### Return a SimpleRleList object of the length of 'x'.
-coverage_CompressedIRangesList <- function(x,
-                                           shift=0L, width=NULL,
-                                           weight=1L, circle.length=NA,
-                                           method=c("auto", "sort", "hash"),
-                                           x_names.label="'x' names")
+coverage_CompressedIRangesList <-
+        function(x, shift=0L, width=NULL,
+                    weight=1L, circle.length=NA,
+                    method=c("auto", "sort", "hash", "naive"),
+                    x_names.label="'x' names")
 {
     ## Check 'x'.
     if (!is(x, "CompressedIRangesList"))
@@ -226,7 +226,7 @@ replace_with_mcol_if_single_string <- function(arg, x)
 
 setMethod("coverage", "IntegerRanges",
     function(x, shift=0L, width=NULL, weight=1L,
-                method=c("auto", "sort", "hash"))
+                method=c("auto", "sort", "hash", "naive"))
     {
         shift <- replace_with_mcol_if_single_string(shift, x)
         weight <- replace_with_mcol_if_single_string(weight, x)
@@ -239,7 +239,7 @@ setMethod("coverage", "IntegerRanges",
 ### Overwrite above method with optimized method for StitchedIPos objects.
 setMethod("coverage", "StitchedIPos",
     function(x, shift=0L, width=NULL, weight=1L,
-                method=c("auto", "sort", "hash"))
+                method=c("auto", "sort", "hash", "naive"))
     {
         CAN_ONLY_ETC <- c(" can only be a single number when ",
                           "calling coverage() on a StitchedIPos object")
@@ -254,7 +254,7 @@ setMethod("coverage", "StitchedIPos",
 
 setMethod("coverage", "Views",
     function(x, shift=0L, width=NULL, weight=1L,
-                method=c("auto", "sort", "hash"))
+                method=c("auto", "sort", "hash", "naive"))
     {
         if (is.null(width))
             width <- length(subject(x))
@@ -268,7 +268,7 @@ setMethod("coverage", "Views",
 
 setMethod("coverage", "IntegerRangesList",
     function(x, shift=0L, width=NULL, weight=1L,
-                method=c("auto", "sort", "hash"))
+                method=c("auto", "sort", "hash", "naive"))
     {
         x_mcols <- mcols(x, use.names=FALSE)
         x_mcolnames <- colnames(x_mcols)
