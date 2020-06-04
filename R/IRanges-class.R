@@ -77,7 +77,7 @@ setMethod("ranges", "IntegerRanges",
 ###
 
 .isNormal_IRanges <- function(x)
-    .Call2("IRanges_isNormal", x, PACKAGE="IRanges")
+    .Call2("C_isNormal_IRanges", x, PACKAGE="IRanges")
 
 setMethod("isNormal", "IRanges", .isNormal_IRanges)
 
@@ -173,14 +173,16 @@ setAs("logical", "IRanges",
     function(from) as(as(from, "NormalIRanges"), "IRanges")
 )
 
-setAs("logical", "NormalIRanges",
-    function(from) .Call2("NormalIRanges_from_logical", from, PACKAGE="IRanges")
-)
+.from_logical_to_NormalIRanges <- function(from)
+    .Call2("C_from_logical_to_NormalIRanges", from, PACKAGE="IRanges")
+
+setAs("logical", "NormalIRanges", .from_logical_to_NormalIRanges)
 
 ### coercion from integer
-setAs("integer", "IRanges",
-    function(from) .Call2("IRanges_from_integer", from, PACKAGE="IRanges")
-)
+.from_integer_to_IRanges <- function(from)
+    .Call2("C_from_integer_to_IRanges", from, PACKAGE="IRanges")
+
+setAs("integer", "IRanges", .from_integer_to_IRanges)
 
 setAs("integer", "NormalIRanges",
     function(from) newNormalIRangesFromIRanges(as(from, "IRanges"))

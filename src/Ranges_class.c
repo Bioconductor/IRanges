@@ -11,7 +11,7 @@
  * Doesn't raise an error but returns NULL or a single string describing the
  * first encountered validity failure.
  */
-SEXP Ranges_validate(SEXP x_start, SEXP x_end, SEXP x_width)
+SEXP C_validate_Ranges(SEXP x_start, SEXP x_end, SEXP x_width)
 {
 	static char validity_failures[200];
 

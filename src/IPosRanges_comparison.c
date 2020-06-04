@@ -145,8 +145,8 @@ static void pcompare_ranges(
  * object, except if M or N is 0 in which case the object with length != 0 is
  * truncated to length 0.
  */
-SEXP IPosRanges_pcompare(SEXP x_start, SEXP x_width,
-			 SEXP y_start, SEXP y_width)
+SEXP C_pcompare_IPosRanges(SEXP x_start, SEXP x_width,
+			   SEXP y_start, SEXP y_width)
 {
 	int x_len, y_len, ans_len;
 	const int *x_start_p, *x_width_p, *y_start_p, *y_width_p;

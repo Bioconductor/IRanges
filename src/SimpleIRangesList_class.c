@@ -9,7 +9,7 @@
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP SimpleIRangesList_isNormal(SEXP x, SEXP use_names)
+SEXP C_isNormal_SimpleIRangesList(SEXP x, SEXP use_names)
 {
 	SEXP list_ir, ans, ans_names;
 	IRanges_holder ir_holder;
@@ -34,7 +34,7 @@ SEXP SimpleIRangesList_isNormal(SEXP x, SEXP use_names)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP SimpleNormalIRangesList_min(SEXP x)
+SEXP C_min_SimpleNormalIRangesList(SEXP x)
 {
 	SEXP list_ir, ans, ans_names;
 	IRanges_holder ir_holder;
@@ -62,7 +62,7 @@ SEXP SimpleNormalIRangesList_min(SEXP x)
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP SimpleNormalIRangesList_max(SEXP x)
+SEXP C_max_SimpleNormalIRangesList(SEXP x)
 {
 	SEXP list_ir, ans, ans_names;
 	IRanges_holder ir_holder;

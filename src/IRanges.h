@@ -10,7 +10,7 @@
 
 /* Ranges_class.c */
 
-SEXP Ranges_validate(
+SEXP C_validate_Ranges(
 	SEXP x_start,
 	SEXP x_end,
 	SEXP x_width
@@ -30,7 +30,7 @@ int _invert_overlap_code(
 	int code
 );
 
-SEXP IPosRanges_pcompare(
+SEXP C_pcompare_IPosRanges(
 	SEXP x_start,
 	SEXP x_width,
 	SEXP y_start,
@@ -112,22 +112,22 @@ SEXP _alloc_IRanges(
 
 int _is_normal_IRanges_holder(const IRanges_holder *x_holder);
 
-SEXP IRanges_isNormal(SEXP x);
+SEXP C_isNormal_IRanges(SEXP x);
 
-SEXP IRanges_from_integer(SEXP x);
+SEXP C_from_integer_to_IRanges(SEXP x);
 
-SEXP NormalIRanges_from_logical(SEXP x);
+SEXP C_from_logical_to_NormalIRanges(SEXP x);
 
 
 /* IRanges_constructor.c */
 
-SEXP solve_user_SEW0(
+SEXP C_solve_user_SEW0(
 	SEXP start,
 	SEXP end,
 	SEXP width
 );
 
-SEXP solve_user_SEW(
+SEXP C_solve_user_SEW(
 	SEXP refwidths,
 	SEXP start,
 	SEXP end,
@@ -153,24 +153,57 @@ SEXP _new_PartitioningByEnd(
 	SEXP names
 );
 
-SEXP H2LGrouping_members(
+SEXP C_members_H2LGrouping(
 	SEXP x,
 	SEXP group_ids
 );
 
-SEXP H2LGrouping_vmembers(
+SEXP C_vmembers_H2LGrouping(
 	SEXP x,
 	SEXP group_ids_list
 );
 
 
+/* RleViews_utils.c */
+
+SEXP C_viewMins_RleViews(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP C_viewMaxs_RleViews(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP C_viewSums_RleViews(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP C_viewMeans_RleViews(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP C_viewWhichMins_RleViews(
+	SEXP x,
+	SEXP na_rm
+);
+
+SEXP C_viewWhichMaxs_RleViews(
+	SEXP x,
+	SEXP na_rm
+);
+
+
 /* SimpleIRangesList_class.c */
 
-SEXP SimpleIRangesList_isNormal(SEXP x, SEXP use_names);
+SEXP C_isNormal_SimpleIRangesList(SEXP x, SEXP use_names);
 
-SEXP SimpleNormalIRangesList_min(SEXP x);
+SEXP C_min_SimpleNormalIRangesList(SEXP x);
 
-SEXP SimpleNormalIRangesList_max(SEXP x);
+SEXP C_max_SimpleNormalIRangesList(SEXP x);
 
 
 /* CompressedList_class.c */
@@ -203,39 +236,6 @@ Ints_holder _get_elt_from_CompressedIntsList_holder(
 );
 
 
-/* RleViews_utils.c */
-
-SEXP RleViews_viewMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewMaxs(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewSums(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewMeans(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewWhichMins(
-	SEXP x,
-	SEXP na_rm
-);
-
-SEXP RleViews_viewWhichMaxs(
-	SEXP x,
-	SEXP na_rm
-);
-
-
 /* CompressedIRangesList_class.c */
 
 CompressedIRangesList_holder _hold_CompressedIRangesList(SEXP x);
@@ -254,21 +254,21 @@ int _get_eltNROWS_from_CompressedIRangesList_holder(
 	int i
 );
 
-SEXP CompressedIRangesList_isNormal(
+SEXP C_isNormal_CompressedIRangesList(
 	SEXP x,
 	SEXP use_names
 );
 
-SEXP CompressedIRangesList_summary(
+SEXP C_summary_CompressedIRangesList(
 	SEXP object
 );
 
-SEXP CompressedNormalIRangesList_min(
+SEXP C_min_CompressedNormalIRangesList(
 	SEXP x,
 	SEXP use_names
 );
 
-SEXP CompressedNormalIRangesList_max(
+SEXP C_max_CompressedNormalIRangesList(
 	SEXP x,
 	SEXP use_names
 );
@@ -276,9 +276,9 @@ SEXP CompressedNormalIRangesList_max(
 
 /* inter_range_methods.c */
 
-SEXP IRanges_range(SEXP x);
+SEXP C_range_IRanges(SEXP x);
 
-SEXP IntegerRanges_reduce(
+SEXP C_reduce_IntegerRanges(
 	SEXP x_start,
 	SEXP x_width,
 	SEXP drop_empty_ranges,
@@ -287,27 +287,27 @@ SEXP IntegerRanges_reduce(
 	SEXP with_inframe_start
 );
 
-SEXP CompressedIRangesList_reduce(
+SEXP C_reduce_CompressedIRangesList(
 	SEXP x,
 	SEXP drop_empty_ranges,
 	SEXP min_gapwidth,
 	SEXP with_revmap
 );
 
-SEXP IRanges_gaps(
+SEXP C_gaps_IntegerRanges(
 	SEXP x_start,
 	SEXP x_width,
 	SEXP start,
 	SEXP end
 );
 
-SEXP CompressedIRangesList_gaps(
+SEXP C_gaps_CompressedIRangesList(
 	SEXP x,
 	SEXP start,
 	SEXP end
 );
 
-SEXP IntegerRanges_disjointBins(
+SEXP C_disjointBins_IntegerRanges(
 	SEXP x_start,
 	SEXP x_width
 );
@@ -315,7 +315,7 @@ SEXP IntegerRanges_disjointBins(
 
 /* coverage_methods.c */
 
-SEXP IRanges_coverage(
+SEXP C_coverage_IRanges(
 	SEXP x,
 	SEXP shift,
 	SEXP width,
@@ -324,7 +324,7 @@ SEXP IRanges_coverage(
 	SEXP method
 );
 
-SEXP CompressedIRangesList_coverage(
+SEXP C_coverage_CompressedIRangesList(
 	SEXP x,
 	SEXP shift,
 	SEXP width,
@@ -336,28 +336,26 @@ SEXP CompressedIRangesList_coverage(
 
 /* NCList.c */
 
-SEXP NCList_new();
+SEXP C_new_NCList();
 
-SEXP NCList_free(SEXP nclist_xp);
+SEXP C_free_NCList(SEXP nclist_xp);
 
-SEXP NCList_build(
+SEXP C_build_NCList(
 	SEXP nclist_xp,
 	SEXP x_start,
 	SEXP x_end,
 	SEXP x_subset
 );
 
-SEXP new_NCListAsINTSXP_from_NCList(
-	SEXP nclist_xp
-);
+SEXP C_new_NCListAsINTSXP_from_NCList(SEXP nclist_xp);
 
-SEXP NCListAsINTSXP_print(
+SEXP C_print_NCListAsINTSXP(
 	SEXP x_nclist,
 	SEXP x_start,
 	SEXP x_end
 );
 
-SEXP NCList_find_overlaps(
+SEXP C_find_overlaps_NCList(
 	SEXP q_start,
 	SEXP q_end,
 	SEXP s_start,
@@ -371,7 +369,7 @@ SEXP NCList_find_overlaps(
 	SEXP circle_length
 );
 
-SEXP NCList_find_overlaps_in_groups(
+SEXP C_find_overlaps_in_groups_NCList(
 	SEXP q_start,
 	SEXP q_end,
 	SEXP q_space,
@@ -391,90 +389,99 @@ SEXP NCList_find_overlaps_in_groups(
 
 /* CompressedAtomicList_utils.c */
 
-SEXP CompressedLogicalList_sum(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_sum_CompressedLogicalList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedIntegerList_sum(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_sum_CompressedIntegerList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedNumericList_sum(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_sum_CompressedNumericList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedLogicalList_prod(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_prod_CompressedLogicalList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedIntegerList_prod(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_prod_CompressedIntegerList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedNumericList_prod(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_prod_CompressedNumericList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedLogicalList_min(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_min_CompressedLogicalList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedLogicalList_which_min(
-  SEXP x);
+SEXP C_min_CompressedIntegerList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedIntegerList_min(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_min_CompressedNumericList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedIntegerList_which_min(
-  SEXP x);
+SEXP C_max_CompressedLogicalList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedNumericList_min(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_max_CompressedIntegerList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedNumericList_which_min(
-  SEXP x);
+SEXP C_max_CompressedNumericList(
+	SEXP x,
+	SEXP na_rm
+);
 
-SEXP CompressedLogicalList_max(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_which_min_CompressedLogicalList(SEXP x);
 
-SEXP CompressedLogicalList_which_max(
-  SEXP x);
+SEXP C_which_min_CompressedIntegerList(SEXP x);
 
-SEXP CompressedIntegerList_max(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_which_min_CompressedNumericList(SEXP x);
 
-SEXP CompressedIntegerList_which_max(
-  SEXP x);
+SEXP C_which_max_CompressedLogicalList(SEXP x);
 
-SEXP CompressedNumericList_max(
-  SEXP x,
-  SEXP na_rm);
+SEXP C_which_max_CompressedIntegerList(SEXP x);
 
-SEXP CompressedNumericList_which_max(
-  SEXP x);
+SEXP C_which_max_CompressedNumericList(SEXP x);
 
-SEXP CompressedLogicalList_is_unsorted(
-  SEXP x,
-  SEXP na_rm,
-  SEXP strictly);
+SEXP C_is_unsorted_CompressedLogicalList(
+	SEXP x,
+	SEXP na_rm,
+	SEXP strictly
+);
 
-SEXP CompressedIntegerList_is_unsorted(
-  SEXP x,
-  SEXP na_rm,
-  SEXP strictly);
+SEXP C_is_unsorted_CompressedIntegerList(
+	SEXP x,
+	SEXP na_rm,
+	SEXP strictly
+);
 
-SEXP CompressedNumericList_is_unsorted(
-  SEXP x,
-  SEXP na_rm,
-  SEXP strictly);
+SEXP C_is_unsorted_CompressedNumericList(
+	SEXP x,
+	SEXP na_rm,
+	SEXP strictly
+);
 
 /* extractListFragments.c */
 
-SEXP find_partition_overlaps(
+SEXP C_find_partition_overlaps(
 	SEXP q_end,
 	SEXP s_end,
 	SEXP with_split_partitions

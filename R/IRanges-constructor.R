@@ -55,7 +55,7 @@ solveUserSEW0 <- function(start=NULL, end=NULL, width=NULL)
         else
             width <- S4Vectors:::recycleVector(width, max123)
     }
-    .Call2("solve_user_SEW0", start, end, width, PACKAGE="IRanges")
+    .Call2("C_solve_user_SEW0", start, end, width, PACKAGE="IRanges")
 }
 
 
@@ -165,10 +165,10 @@ solveUserSEW <- function(refwidths, start=NA, end=NA, width=NA,
         }
     }
 
-    .Call2("solve_user_SEW",
-          refwidths, start, end, width,
-          translate.negative.coord, allow.nonnarrowing,
-          PACKAGE="IRanges")
+    .Call2("C_solve_user_SEW",
+           refwidths, start, end, width,
+           translate.negative.coord, allow.nonnarrowing,
+           PACKAGE="IRanges")
 }
 
 ### Returns an IRanges instance of length 1. Not exported.

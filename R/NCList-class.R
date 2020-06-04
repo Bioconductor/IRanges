@@ -98,17 +98,17 @@ setMethod("width", "NCList", function(x) width(x@ranges))
 ### Returns an external pointer to the NCList C struct.
 .NCList_xp <- function(x_start, x_end, x_subset)
 {
-    ans <- .Call2("NCList_new", PACKAGE="IRanges")
+    ans <- .Call2("C_new_NCList", PACKAGE="IRanges")
     reg.finalizer(ans,
-        function(e) .Call("NCList_free", e, PACKAGE="IRanges")
+        function(e) .Call("C_free_NCList", e, PACKAGE="IRanges")
     )
-    .Call2("NCList_build", ans, x_start, x_end, x_subset, PACKAGE="IRanges")
+    .Call2("C_build_NCList", ans, x_start, x_end, x_subset, PACKAGE="IRanges")
 }
 
 .nclist <- function(x_start, x_end, x_subset=NULL)
 {
     nclist_xp <- .NCList_xp(x_start, x_end, x_subset)
-    .Call2("new_NCListAsINTSXP_from_NCList", nclist_xp, PACKAGE="IRanges")
+    .Call2("C_new_NCListAsINTSXP_from_NCList", nclist_xp, PACKAGE="IRanges")
 }
 
 NCList <- function(x, circle.length=NA_integer_)
@@ -133,8 +133,8 @@ print_NCList <- function(x)
 {
     if (!is(x, "NCList"))
         stop("'x' must be an NCList object")
-    .Call2("NCListAsINTSXP_print", x@nclist, start(x@ranges), end(x@ranges),
-                                   PACKAGE="IRanges")
+    .Call2("C_print_NCListAsINTSXP", x@nclist, start(x@ranges), end(x@ranges),
+                                     PACKAGE="IRanges")
     invisible(NULL)
 }
 
@@ -206,7 +206,7 @@ findOverlaps_NCList <- function(query, subject,
         query <- .shift_ranges_to_first_circle(query, circle.length)
         subject <- .shift_ranges_to_first_circle(subject, circle.length)
     }
-    .Call2("NCList_find_overlaps",
+    .Call2("C_find_overlaps_NCList",
            start(query), end(query),
            start(subject), end(subject),
            nclist, nclist_is_q,
@@ -322,12 +322,12 @@ setAs("IntegerRangesList", "NCLists", function(from) NCLists(from))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### NCList_find_overlaps_in_groups()
+### find_overlaps_in_groups_NCList()
 ###
 
 ### NOT exported. Workhorse behind findOverlaps_NCLists() below and behind
 ### GenomicRanges:::findOverlaps_GNCList().
-NCList_find_overlaps_in_groups <- function(
+find_overlaps_in_groups_NCList <- function(
              q, q_space, q_groups,
              s, s_space, s_groups,
              nclists, nclist_is_q,
@@ -362,7 +362,7 @@ NCList_find_overlaps_in_groups <- function(
     s_circle_len <- circle.length
     s_circle_len[which(!nclist_is_q)] <- NA_integer_
     s <- .shift_ranges_in_groups_to_first_circle(s, s_groups, s_circle_len)
-    .Call2("NCList_find_overlaps_in_groups",
+    .Call2("C_find_overlaps_in_groups_NCList",
            start(q), end(q), q_space, q_groups,
            start(s), end(s), s_space, s_groups,
            nclists, nclist_is_q,
@@ -452,7 +452,7 @@ findOverlaps_NCLists <- function(query, subject,
     s <- unlist(subject, use.names=FALSE)
     s_groups <- .extract_groups_from_RangesList(subject)
 
-    all_hits <- NCList_find_overlaps_in_groups(
+    all_hits <- find_overlaps_in_groups_NCList(
                         q, NULL, q_groups,
                         s, NULL, s_groups,
                         nclists, nclist_is_q,

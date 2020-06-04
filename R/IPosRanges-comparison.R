@@ -20,7 +20,7 @@ setMethod("pcompareRecursively", "IPosRanges", function(x) FALSE)
 setMethod("pcompare", c("IPosRanges", "IPosRanges"),
     function(x, y)
     {
-        .Call2("IPosRanges_pcompare",
+        .Call2("C_pcompare_IPosRanges",
                start(x), width(x), start(y), width(y),
                PACKAGE="IRanges")
     }

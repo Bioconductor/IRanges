@@ -67,7 +67,7 @@ int _get_eltNROWS_from_CompressedIRangesList_holder(
  */
 
 /* --- .Call ENTRY POINT --- */
-SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
+SEXP C_isNormal_CompressedIRangesList(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
 	CompressedIRangesList_holder x_holder;
@@ -92,7 +92,7 @@ SEXP CompressedIRangesList_isNormal(SEXP x, SEXP use_names)
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP CompressedIRangesList_summary(SEXP object)
+SEXP C_summary_CompressedIRangesList(SEXP object)
 {
 	int ans_len;
 	SEXP part_end;
@@ -139,7 +139,7 @@ SEXP CompressedIRangesList_summary(SEXP object)
  */
 
 /* --- .Call ENTRY POINT --- */
-SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
+SEXP C_min_CompressedNormalIRangesList(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
 	CompressedIRangesList_holder x_holder;
@@ -169,7 +169,7 @@ SEXP CompressedNormalIRangesList_min(SEXP x, SEXP use_names)
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP CompressedNormalIRangesList_max(SEXP x, SEXP use_names)
+SEXP C_max_CompressedNormalIRangesList(SEXP x, SEXP use_names)
 {
 	SEXP ans, ans_names;
 	CompressedIRangesList_holder x_holder;

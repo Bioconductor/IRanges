@@ -78,7 +78,7 @@ INCOMPATIBLE_ARANGES_MSG <- c(
     if (S4Vectors:::last_or(x_end, 0L) !=
         S4Vectors:::last_or(aranges_end, 0L))
         stop(wmsg(msg.if.incompatible))
-    C_ans <- .Call2("find_partition_overlaps",
+    C_ans <- .Call2("C_find_partition_overlaps",
                     x_end, aranges_end, !hits.only, PACKAGE="IRanges")
     if (hits.only)
         return(C_ans)

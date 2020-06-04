@@ -53,7 +53,7 @@ setMethod("range", "IntegerRanges",
                        function(arg) IRanges(start(arg), width=width(arg)))
         ir <- do.call(c, args)
 
-        ans <- .Call2("IRanges_range", ir, PACKAGE="IRanges")
+        ans <- .Call2("C_range_IRanges", ir, PACKAGE="IRanges")
         if (is(x, "NormalIRanges"))
             ans <- as(ans, "NormalIRanges")
         if (with.revmap){
@@ -152,7 +152,7 @@ setMethod("reduce", "IntegerRanges",
             stop("'with.revmap' must be TRUE or FALSE")
         if (!isTRUEorFALSE(with.inframe.attrib))
             stop("'with.inframe.attrib' must be TRUE or FALSE")
-        C_ans <- .Call2("IntegerRanges_reduce",
+        C_ans <- .Call2("C_reduce_IntegerRanges",
                         start(x), width(x),
                         drop.empty.ranges, min.gapwidth,
                         with.revmap,
@@ -222,7 +222,7 @@ setMethod("reduce", "IntegerRangesList",
     if (!identical(with.inframe.attrib, FALSE))
         stop("'with.inframe.attrib' argument not yet supported ",
              "when reducing a CompressedIRangesList object")
-    C_ans <- .Call2("CompressedIRangesList_reduce",
+    C_ans <- .Call2("C_reduce_CompressedIRangesList",
                     x, drop.empty.ranges, min.gapwidth, with.revmap,
                     PACKAGE="IRanges")
     unlisted_ans <- new2("IRanges", start=C_ans$start,
@@ -254,7 +254,7 @@ setMethod("gaps", "IntegerRanges",
     {
         start <- S4Vectors:::normargSingleStartOrNA(start)
         end <- S4Vectors:::normargSingleEndOrNA(end)
-        C_ans <- .Call2("IRanges_gaps",
+        C_ans <- .Call2("C_gaps_IntegerRanges",
                         start(x), width(x), start, end,
                         PACKAGE="IRanges")
         ans <- new2("IRanges", start=C_ans$start,
@@ -326,7 +326,7 @@ setMethod("gaps", "IntegerRangesList", .gaps_RangesList)
     chunksize <- 10000000L
     if (length(x) <= chunksize) {
         ## Process all at once.
-        ans <- .Call2("CompressedIRangesList_gaps",
+        ans <- .Call2("C_gaps_CompressedIRangesList",
                       x, start, end,
                       PACKAGE="IRanges")
         return(ans)
@@ -511,7 +511,7 @@ setMethod("disjointBins", "IntegerRanges",
             x_ord <- order(x)
             x <- x[x_ord]
         }
-        bins <- .Call2("IntegerRanges_disjointBins", start(x), width(x),
+        bins <- .Call2("C_disjointBins_IntegerRanges", start(x), width(x),
                        PACKAGE="IRanges")
         if (!is.null(x_ord)) {
             rev_ord <- integer(length(x_ord))

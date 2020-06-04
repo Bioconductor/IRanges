@@ -91,7 +91,7 @@ SEXP _new_PartitioningByEnd(const char *classname, SEXP end, SEXP names)
  *                        --- .Call ENTRY POINTS ---                        *
  ****************************************************************************/
 
-SEXP H2LGrouping_members(SEXP x, SEXP group_ids)
+SEXP C_members_H2LGrouping(SEXP x, SEXP group_ids)
 {
 	SEXP ans, x_high2low, x_low2high, x_low2high_elt;
 	int x_length, nids, ans_length, i, j, group_id, *ans_elt;
@@ -144,7 +144,7 @@ SEXP H2LGrouping_members(SEXP x, SEXP group_ids)
 	return ans;
 }
 
-SEXP H2LGrouping_vmembers(SEXP x, SEXP group_ids_list)
+SEXP C_vmembers_H2LGrouping(SEXP x, SEXP group_ids_list)
 {
 	SEXP ans, group_ids;
 	int ans_length, i;
@@ -155,7 +155,7 @@ SEXP H2LGrouping_vmembers(SEXP x, SEXP group_ids_list)
 		group_ids = VECTOR_ELT(group_ids_list, i);
 		if (TYPEOF(group_ids) != INTSXP)
 			error("'L' must be a list of integer vectors");
-		SET_VECTOR_ELT(ans, i, H2LGrouping_members(x, group_ids));
+		SET_VECTOR_ELT(ans, i, C_members_H2LGrouping(x, group_ids));
 	}
 	UNPROTECT(1);
 	return ans;

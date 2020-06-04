@@ -20,27 +20,27 @@ setMethod("viewApply", "RleViews",
 
 setMethod("viewMins", "RleViews",
           function(x, na.rm = FALSE)
-          .Call2("RleViews_viewMins", trim(x), na.rm, PACKAGE="IRanges"))
+          .Call2("C_viewMins_RleViews", trim(x), na.rm, PACKAGE="IRanges"))
 
 setMethod("viewMaxs", "RleViews",
           function(x, na.rm = FALSE)
-          .Call2("RleViews_viewMaxs", trim(x), na.rm, PACKAGE="IRanges"))
+          .Call2("C_viewMaxs_RleViews", trim(x), na.rm, PACKAGE="IRanges"))
 
 setMethod("viewSums", "RleViews",
           function(x, na.rm = FALSE)
-          .Call2("RleViews_viewSums", trim(x), na.rm, PACKAGE="IRanges"))
+          .Call2("C_viewSums_RleViews", trim(x), na.rm, PACKAGE="IRanges"))
 
 setMethod("viewMeans", "RleViews",
           function(x, na.rm = FALSE)
-          .Call2("RleViews_viewMeans", trim(x), na.rm, PACKAGE="IRanges"))
+          .Call2("C_viewMeans_RleViews", trim(x), na.rm, PACKAGE="IRanges"))
 
 setMethod("viewWhichMins", "RleViews",
           function(x, na.rm = FALSE)
-          .Call2("RleViews_viewWhichMins", trim(x), na.rm, PACKAGE="IRanges"))
+          .Call2("C_viewWhichMins_RleViews", trim(x), na.rm, PACKAGE="IRanges"))
 
 setMethod("viewWhichMaxs", "RleViews",
           function(x, na.rm = FALSE)
-          .Call2("RleViews_viewWhichMaxs", trim(x), na.rm, PACKAGE="IRanges"))
+          .Call2("C_viewWhichMaxs_RleViews", trim(x), na.rm, PACKAGE="IRanges"))
 
 setMethod("viewRangeMaxs", "RleViews",
           function(x, na.rm = FALSE) {

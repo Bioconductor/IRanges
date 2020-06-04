@@ -56,7 +56,7 @@
     method <- match.arg(method)
 
     ## Ready to go...
-    ans <- .Call2("IRanges_coverage", x,
+    ans <- .Call2("C_coverage_IRanges", x,
                               shift, width,
                               weight, circle.length,
                               method,
@@ -168,7 +168,7 @@ coverage_CompressedIRangesList <- function(x,
     method <- match.arg(method)
 
     ## Ready to go...
-    ans_listData <- .Call2("CompressedIRangesList_coverage", x,
+    ans_listData <- .Call2("C_coverage_CompressedIRangesList", x,
                            shift, width,
                            weight, circle.length,
                            method,

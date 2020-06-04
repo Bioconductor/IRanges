@@ -35,23 +35,23 @@
 
 % NormalIRangesList objects:
 \alias{class:NormalIRangesList}
-\alias{class:CompressedNormalIRangesList}
 \alias{class:SimpleNormalIRangesList}
+\alias{class:CompressedNormalIRangesList}
 \alias{NormalIRangesList-class}
-\alias{CompressedNormalIRangesList-class}
 \alias{SimpleNormalIRangesList-class}
+\alias{CompressedNormalIRangesList-class}
 \alias{NormalIRangesList}
-\alias{CompressedNormalIRangesList}
 \alias{SimpleNormalIRangesList}
+\alias{CompressedNormalIRangesList}
 
 \alias{isNormal,SimpleIRangesList-method}
 \alias{isNormal,CompressedIRangesList-method}
 
 % general
-\alias{max,CompressedNormalIRangesList-method}
-\alias{max,SimpleNormalIRangesList-method}
-\alias{min,CompressedNormalIRangesList-method}
 \alias{min,SimpleNormalIRangesList-method}
+\alias{min,CompressedNormalIRangesList-method}
+\alias{max,SimpleNormalIRangesList-method}
+\alias{max,CompressedNormalIRangesList-method}
 \alias{summary,CompressedIRangesList-method}
 
 % more coercions
@@ -66,11 +66,11 @@
 \alias{coerce,IntegerRangesList,NormalIRangesList-method}
 
 \alias{coerce,LogicalList,NormalIRangesList-method}
-\alias{coerce,LogicalList,CompressedNormalIRangesList-method}
 \alias{coerce,LogicalList,SimpleNormalIRangesList-method}
+\alias{coerce,LogicalList,CompressedNormalIRangesList-method}
 \alias{coerce,RleList,NormalIRangesList-method}
-\alias{coerce,RleList,CompressedNormalIRangesList-method}
 \alias{coerce,RleList,SimpleNormalIRangesList-method}
+\alias{coerce,RleList,CompressedNormalIRangesList-method}
 
 \title{List of IRanges and NormalIRanges}
 \description{\code{\linkS4class{IRangesList}} and

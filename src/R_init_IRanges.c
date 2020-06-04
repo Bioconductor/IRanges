@@ -8,89 +8,89 @@
 static const R_CallMethodDef callMethods[] = {
 
 /* Ranges_class.c */
-	CALLMETHOD_DEF(Ranges_validate, 3),
+	CALLMETHOD_DEF(C_validate_Ranges, 3),
 
 /* IPosRanges_comparison.c */
-	CALLMETHOD_DEF(IPosRanges_pcompare, 4),
+	CALLMETHOD_DEF(C_pcompare_IPosRanges, 4),
 
 /* IRanges_class.c */
-	CALLMETHOD_DEF(IRanges_isNormal, 1),
-	CALLMETHOD_DEF(IRanges_from_integer, 1),
-	CALLMETHOD_DEF(NormalIRanges_from_logical, 1),
+	CALLMETHOD_DEF(C_isNormal_IRanges, 1),
+	CALLMETHOD_DEF(C_from_integer_to_IRanges, 1),
+	CALLMETHOD_DEF(C_from_logical_to_NormalIRanges, 1),
 
 /* IRanges_constructor.c */
-	CALLMETHOD_DEF(solve_user_SEW0, 3),
-	CALLMETHOD_DEF(solve_user_SEW, 6),
+	CALLMETHOD_DEF(C_solve_user_SEW0, 3),
+	CALLMETHOD_DEF(C_solve_user_SEW, 6),
 
 /* Grouping_class.c */
-	CALLMETHOD_DEF(H2LGrouping_members, 2),
-	CALLMETHOD_DEF(H2LGrouping_vmembers, 2),
+	CALLMETHOD_DEF(C_members_H2LGrouping, 2),
+	CALLMETHOD_DEF(C_vmembers_H2LGrouping, 2),
 
 /* RleViews_utils.c */
-	CALLMETHOD_DEF(RleViews_viewMins, 2),
-	CALLMETHOD_DEF(RleViews_viewMaxs, 2),
-	CALLMETHOD_DEF(RleViews_viewSums, 2),
-	CALLMETHOD_DEF(RleViews_viewMeans, 2),
-	CALLMETHOD_DEF(RleViews_viewWhichMins, 2),
-	CALLMETHOD_DEF(RleViews_viewWhichMaxs, 2),
+	CALLMETHOD_DEF(C_viewMins_RleViews, 2),
+	CALLMETHOD_DEF(C_viewMaxs_RleViews, 2),
+	CALLMETHOD_DEF(C_viewSums_RleViews, 2),
+	CALLMETHOD_DEF(C_viewMeans_RleViews, 2),
+	CALLMETHOD_DEF(C_viewWhichMins_RleViews, 2),
+	CALLMETHOD_DEF(C_viewWhichMaxs_RleViews, 2),
 
 /* SimpleIRangesList_class.c */
-	CALLMETHOD_DEF(SimpleIRangesList_isNormal, 2),
-	CALLMETHOD_DEF(SimpleNormalIRangesList_min, 1),
-	CALLMETHOD_DEF(SimpleNormalIRangesList_max, 1),
+	CALLMETHOD_DEF(C_isNormal_SimpleIRangesList, 2),
+	CALLMETHOD_DEF(C_min_SimpleNormalIRangesList, 1),
+	CALLMETHOD_DEF(C_max_SimpleNormalIRangesList, 1),
 
 /* CompressedIRangesList_class.c */
-	CALLMETHOD_DEF(CompressedIRangesList_isNormal, 2),
-	CALLMETHOD_DEF(CompressedIRangesList_summary, 1),
-	CALLMETHOD_DEF(CompressedNormalIRangesList_min, 2),
-	CALLMETHOD_DEF(CompressedNormalIRangesList_max, 2),
+	CALLMETHOD_DEF(C_isNormal_CompressedIRangesList, 2),
+	CALLMETHOD_DEF(C_summary_CompressedIRangesList, 1),
+	CALLMETHOD_DEF(C_min_CompressedNormalIRangesList, 2),
+	CALLMETHOD_DEF(C_max_CompressedNormalIRangesList, 2),
 
 /* inter_range_methods.c */
-	CALLMETHOD_DEF(IRanges_range, 1),
-	CALLMETHOD_DEF(IntegerRanges_reduce, 6),
-	CALLMETHOD_DEF(CompressedIRangesList_reduce, 4),
-	CALLMETHOD_DEF(IRanges_gaps, 4),
-	CALLMETHOD_DEF(CompressedIRangesList_gaps, 3),
-	CALLMETHOD_DEF(IntegerRanges_disjointBins, 2),
+	CALLMETHOD_DEF(C_range_IRanges, 1),
+	CALLMETHOD_DEF(C_reduce_IntegerRanges, 6),
+	CALLMETHOD_DEF(C_reduce_CompressedIRangesList, 4),
+	CALLMETHOD_DEF(C_gaps_IntegerRanges, 4),
+	CALLMETHOD_DEF(C_gaps_CompressedIRangesList, 3),
+	CALLMETHOD_DEF(C_disjointBins_IntegerRanges, 2),
 
 /* coverage_methods.c */
-	CALLMETHOD_DEF(IRanges_coverage, 6),
-	CALLMETHOD_DEF(CompressedIRangesList_coverage, 6),
+	CALLMETHOD_DEF(C_coverage_IRanges, 6),
+	CALLMETHOD_DEF(C_coverage_CompressedIRangesList, 6),
 
 /* NCList.c */
-	CALLMETHOD_DEF(NCList_new, 0),
-	CALLMETHOD_DEF(NCList_free, 1),
-	CALLMETHOD_DEF(NCList_build, 4),
-	CALLMETHOD_DEF(new_NCListAsINTSXP_from_NCList, 1),
-	CALLMETHOD_DEF(NCListAsINTSXP_print, 3),
-	CALLMETHOD_DEF(NCList_find_overlaps, 11),
-	CALLMETHOD_DEF(NCList_find_overlaps_in_groups, 15),
+	CALLMETHOD_DEF(C_new_NCList, 0),
+	CALLMETHOD_DEF(C_free_NCList, 1),
+	CALLMETHOD_DEF(C_build_NCList, 4),
+	CALLMETHOD_DEF(C_new_NCListAsINTSXP_from_NCList, 1),
+	CALLMETHOD_DEF(C_print_NCListAsINTSXP, 3),
+	CALLMETHOD_DEF(C_find_overlaps_NCList, 11),
+	CALLMETHOD_DEF(C_find_overlaps_in_groups_NCList, 15),
 
 /* CompressedAtomicList_utils.c */
-	CALLMETHOD_DEF(CompressedLogicalList_sum, 2),
-	CALLMETHOD_DEF(CompressedIntegerList_sum, 2),
-	CALLMETHOD_DEF(CompressedNumericList_sum, 2),
-	CALLMETHOD_DEF(CompressedLogicalList_prod, 2),
-	CALLMETHOD_DEF(CompressedIntegerList_prod, 2),
-	CALLMETHOD_DEF(CompressedNumericList_prod, 2),
-	CALLMETHOD_DEF(CompressedLogicalList_min, 2),
-	CALLMETHOD_DEF(CompressedLogicalList_which_min, 1),
-	CALLMETHOD_DEF(CompressedIntegerList_min, 2),
-	CALLMETHOD_DEF(CompressedIntegerList_which_min, 1),
-	CALLMETHOD_DEF(CompressedNumericList_min, 2),
-	CALLMETHOD_DEF(CompressedNumericList_which_min, 1),
-	CALLMETHOD_DEF(CompressedLogicalList_max, 2),
-	CALLMETHOD_DEF(CompressedLogicalList_which_max, 1),
-	CALLMETHOD_DEF(CompressedIntegerList_max, 2),
-	CALLMETHOD_DEF(CompressedIntegerList_which_max, 1),
-	CALLMETHOD_DEF(CompressedNumericList_max, 2),
-	CALLMETHOD_DEF(CompressedNumericList_which_max, 1),
-	CALLMETHOD_DEF(CompressedLogicalList_is_unsorted, 3),
-	CALLMETHOD_DEF(CompressedIntegerList_is_unsorted, 3),
-	CALLMETHOD_DEF(CompressedNumericList_is_unsorted, 3),
+	CALLMETHOD_DEF(C_sum_CompressedLogicalList, 2),
+	CALLMETHOD_DEF(C_sum_CompressedIntegerList, 2),
+	CALLMETHOD_DEF(C_sum_CompressedNumericList, 2),
+	CALLMETHOD_DEF(C_prod_CompressedLogicalList, 2),
+	CALLMETHOD_DEF(C_prod_CompressedIntegerList, 2),
+	CALLMETHOD_DEF(C_prod_CompressedNumericList, 2),
+	CALLMETHOD_DEF(C_min_CompressedLogicalList, 2),
+	CALLMETHOD_DEF(C_min_CompressedIntegerList, 2),
+	CALLMETHOD_DEF(C_min_CompressedNumericList, 2),
+	CALLMETHOD_DEF(C_max_CompressedLogicalList, 2),
+	CALLMETHOD_DEF(C_max_CompressedIntegerList, 2),
+	CALLMETHOD_DEF(C_max_CompressedNumericList, 2),
+	CALLMETHOD_DEF(C_which_min_CompressedLogicalList, 1),
+	CALLMETHOD_DEF(C_which_min_CompressedIntegerList, 1),
+	CALLMETHOD_DEF(C_which_min_CompressedNumericList, 1),
+	CALLMETHOD_DEF(C_which_max_CompressedLogicalList, 1),
+	CALLMETHOD_DEF(C_which_max_CompressedIntegerList, 1),
+	CALLMETHOD_DEF(C_which_max_CompressedNumericList, 1),
+	CALLMETHOD_DEF(C_is_unsorted_CompressedLogicalList, 3),
+	CALLMETHOD_DEF(C_is_unsorted_CompressedIntegerList, 3),
+	CALLMETHOD_DEF(C_is_unsorted_CompressedNumericList, 3),
 
 /* extractListFragments.c */
-	CALLMETHOD_DEF(find_partition_overlaps, 3),
+	CALLMETHOD_DEF(C_find_partition_overlaps, 3),
 
 	{NULL, NULL, 0}
 };

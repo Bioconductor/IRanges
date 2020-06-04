@@ -112,7 +112,8 @@ setCompressedNumericalListMethod <-
     types <- c("Logical", "Integer", "Numeric")
     classNames <- paste0("Compressed", types, "List")
     lapply(classNames, function(className) {
-               C_fun <- paste0(className, "_", sub(".", "_", fun, fixed=TRUE))
+               C_fun <- paste0("C_", sub(".", "_", fun, fixed=TRUE),
+                               "_", className)
                body(def) <- eval(call("substitute", body(def)))
                setMethod(fun, className, def, where=where)
            })
@@ -122,7 +123,7 @@ setCompressedNumericalListMethod("is.unsorted",
                                  function(x, na.rm = FALSE, strictly=FALSE) {
                                      stopifnot(isTRUEorFALSE(na.rm))
                                      stopifnot(isTRUEorFALSE(strictly))
-                                     .Call(C_fun, x, na.rm, strictly)
+                                     .Call2(C_fun, x, na.rm, strictly)
                                  })
 
 
@@ -368,7 +369,7 @@ setCompressedListSummaryMethod <- function(fun, where=topenv(parent.frame()))
 {
     setCompressedNumericalListMethod(fun, function(x, na.rm = FALSE) {
         stopifnot(isTRUEorFALSE(na.rm))
-        .Call(C_fun, x, na.rm, PACKAGE="IRanges")
+        .Call2(C_fun, x, na.rm, PACKAGE="IRanges")
     }, where)
 }
 
@@ -578,7 +579,7 @@ setCompressedListWhichSummaryMethod <-
     {
         def <- function(x, global = FALSE) {
             stopifnot(isTRUEorFALSE(global))
-            ans <- .Call(C_fun, x)
+            ans <- .Call2(C_fun, x)
             if (global) {
                 ans <- toglobal(ans, x)
             }

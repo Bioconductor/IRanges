@@ -602,7 +602,7 @@ static SEXP compute_coverage_from_IRanges_holder(
  *   method:     Either "auto", "sort", or "hash".
  * Returns an Rle object.
  */
-SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
+SEXP C_coverage_IRanges(SEXP x, SEXP shift, SEXP width, SEXP weight,
 		SEXP circle_len, SEXP method)
 {
 	IRanges_holder x_holder;
@@ -652,7 +652,7 @@ SEXP IRanges_coverage(SEXP x, SEXP shift, SEXP width, SEXP weight,
  *   method:      Either "auto", "sort", or "hash".
  * Returns a list of N RleList objects.
  */
-SEXP CompressedIRangesList_coverage(SEXP x,
+SEXP C_coverage_CompressedIRangesList(SEXP x,
 		SEXP shift, SEXP width, SEXP weight, SEXP circle_lens,
 		SEXP method)
 {

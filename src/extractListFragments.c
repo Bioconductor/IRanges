@@ -27,8 +27,8 @@
  * object obtained by splitting the query by the subject (or vice-versa, this
  * split is commutative).
  */
-SEXP find_partition_overlaps(SEXP q_end, SEXP s_end,
-			     SEXP with_split_partitions)
+SEXP C_find_partition_overlaps(SEXP q_end, SEXP s_end,
+			       SEXP with_split_partitions)
 {
 	int q_len, s_len, q_prev_end, s_prev_end, i, j;
 	IntPairAE *hits_buf;

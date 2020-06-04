@@ -10,7 +10,7 @@ static char errmsg_buf[200];
 
 
 /****************************************************************************
- * solve_user_SEW0()
+ * C_solve_user_SEW0()
  */
 
 /* Return -1 if the range specified by 'start', 'end', and 'width' is
@@ -119,7 +119,7 @@ static int solve_range(int start, int end, int width,
   checked early and an error is raised on the first invalid range (see 1st
   pass below).
 */
-SEXP solve_user_SEW0(SEXP start, SEXP end, SEXP width)
+SEXP C_solve_user_SEW0(SEXP start, SEXP end, SEXP width)
 {
 	int ans_len, use_start_as_is, use_width_as_is,
 	    i, solved_start, solved_width;
@@ -190,7 +190,7 @@ SEXP solve_user_SEW0(SEXP start, SEXP end, SEXP width)
 
 
 /****************************************************************************
- * solve_user_SEW()
+ * C_solve_user_SEW()
  */
 
 static int translate_negative_coord0;
@@ -303,7 +303,7 @@ static int solve_user_SEW_row(int refwidth, int start, int end, int width,
 /*
  * --- .Call ENTRY POINT ---
  */
-SEXP solve_user_SEW(SEXP refwidths, SEXP start, SEXP end, SEXP width,
+SEXP C_solve_user_SEW(SEXP refwidths, SEXP start, SEXP end, SEXP width,
 		SEXP translate_negative_coord, SEXP allow_nonnarrowing)
 {
 	SEXP ans, ans_start, ans_width;

@@ -5,10 +5,8 @@
 
 #define R_INT_MIN	(1+INT_MIN)
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
+/* --- .Call ENTRY POINT --- */
+SEXP C_viewMins_RleViews(SEXP x, SEXP na_rm)
 {
 	char type = '?';
 	int i, start, width, ans_len, index, lower_run, upper_run, upper_bound;
@@ -115,10 +113,8 @@ SEXP RleViews_viewMins(SEXP x, SEXP na_rm)
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
+/* --- .Call ENTRY POINT --- */
+SEXP C_viewMaxs_RleViews(SEXP x, SEXP na_rm)
 {
 	char type = '?';
 	int i, start, width, ans_len, index, lower_run, upper_run, upper_bound;
@@ -225,10 +221,8 @@ SEXP RleViews_viewMaxs(SEXP x, SEXP na_rm)
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
+/* --- .Call ENTRY POINT --- */
+SEXP C_viewSums_RleViews(SEXP x, SEXP na_rm)
 {
 	char type = '?';
 	int i, start, width, ans_len, index,
@@ -379,10 +373,8 @@ SEXP RleViews_viewSums(SEXP x, SEXP na_rm)
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP RleViews_viewMeans(SEXP x, SEXP na_rm)
+/* --- .Call ENTRY POINT --- */
+SEXP C_viewMeans_RleViews(SEXP x, SEXP na_rm)
 {
 	char type = '?';
 	int i, n, start, width, ans_len, index,
@@ -567,10 +559,8 @@ SEXP RleViews_viewMeans(SEXP x, SEXP na_rm)
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
+/* --- .Call ENTRY POINT --- */
+SEXP C_viewWhichMins_RleViews(SEXP x, SEXP na_rm)
 {
 	char type = '?';
 	int i, start, width, ans_len, index,
@@ -683,10 +673,8 @@ SEXP RleViews_viewWhichMins(SEXP x, SEXP na_rm)
 	return ans;
 }
 
-/*
- * --- .Call ENTRY POINT ---
- */
-SEXP RleViews_viewWhichMaxs(SEXP x, SEXP na_rm)
+/* --- .Call ENTRY POINT --- */
+SEXP C_viewWhichMaxs_RleViews(SEXP x, SEXP na_rm)
 {
 	char type = '?';
 	int i, start, width, ans_len, index,

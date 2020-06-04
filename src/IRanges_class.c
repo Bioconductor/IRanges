@@ -277,7 +277,7 @@ int _is_normal_IRanges_holder(const IRanges_holder *x_holder)
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP IRanges_isNormal(SEXP x)
+SEXP C_isNormal_IRanges(SEXP x)
 {
 	IRanges_holder ir_holder;
 
@@ -291,7 +291,7 @@ SEXP IRanges_isNormal(SEXP x)
  */
 
 /* --- .Call ENTRY POINT --- */
-SEXP IRanges_from_integer(SEXP x)
+SEXP C_from_integer_to_IRanges(SEXP x)
 {
 	SEXP ans, ans_start, ans_width;
 	int i, x_length, ans_length;
@@ -338,7 +338,7 @@ SEXP IRanges_from_integer(SEXP x)
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP NormalIRanges_from_logical(SEXP x)
+SEXP C_from_logical_to_NormalIRanges(SEXP x)
 {
 	SEXP ans, ans_start, ans_width;
 	int i, x_length, buf_length, ans_length;

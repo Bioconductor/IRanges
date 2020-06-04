@@ -47,11 +47,11 @@ static int append_IRanges_holder_to_IntPairAE(IntPairAE *intpair_ae,
 
 
 /****************************************************************************
- * "range" method.
+ * range() method for IRanges objects
  */
 
 /* --- .Call ENTRY POINT --- */
-SEXP IRanges_range(SEXP x)
+SEXP C_range_IRanges(SEXP x)
 {
 	int x_len, min, max, i, end;
 	const int *start_p, *width_p;
@@ -88,7 +88,7 @@ SEXP IRanges_range(SEXP x)
 
 
 /****************************************************************************
- * "ranges" methods.
+ * reduce() methods for IntegerRanges and CompressedIRangesList objects
  */
 
 /* WARNING: The reduced ranges are *appended* to 'out_ranges'!
@@ -174,7 +174,7 @@ static int reduce_ranges(const int *x_start, const int *x_width, int x_len,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP IntegerRanges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
+SEXP C_reduce_IntegerRanges(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
 		SEXP min_gapwidth, SEXP with_revmap, SEXP with_inframe_start)
 {
 	int x_len, *inframe_start;
@@ -229,7 +229,7 @@ SEXP IntegerRanges_reduce(SEXP x_start, SEXP x_width, SEXP drop_empty_ranges,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
+SEXP C_reduce_CompressedIRangesList(SEXP x, SEXP drop_empty_ranges,
 		SEXP min_gapwidth, SEXP with_revmap)
 {
 	SEXP ans, ans_names, ans_revmap, ans_breakpoints;
@@ -298,7 +298,7 @@ SEXP CompressedIRangesList_reduce(SEXP x, SEXP drop_empty_ranges,
 
 
 /****************************************************************************
- * "gaps" methods.
+ * gaps() methods for IntegerRanges and CompressedIRangesList objects
  */
 
 /* WARNING: The ranges representing the gaps are *appended* to 'out_ranges'!
@@ -360,7 +360,7 @@ static int gaps_ranges(const int *x_start, const int *x_width, int x_len,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP IRanges_gaps(SEXP x_start, SEXP x_width, SEXP start, SEXP end)
+SEXP C_gaps_IntegerRanges(SEXP x_start, SEXP x_width, SEXP start, SEXP end)
 {
 	int x_len;
 	const int *x_start_p, *x_width_p;
@@ -390,7 +390,7 @@ SEXP IRanges_gaps(SEXP x_start, SEXP x_width, SEXP start, SEXP end)
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
+SEXP C_gaps_CompressedIRangesList(SEXP x, SEXP start, SEXP end)
 {
 	SEXP ans, ans_names, ans_unlistData, ans_breakpoints, ans_partitioning;
 	CompressedIRangesList_holder x_holder;
@@ -442,13 +442,13 @@ SEXP CompressedIRangesList_gaps(SEXP x, SEXP start, SEXP end)
 
 
 /****************************************************************************
- * "disjointBins" method.
+ * disjointBins() method for IntegerRanges objects
  */
 
 /* --- .Call ENTRY POINT ---
  * Worst case complexity of O(n^2) :(, but in practice very fast.
  */
-SEXP IntegerRanges_disjointBins(SEXP x_start, SEXP x_width)
+SEXP C_disjointBins_IntegerRanges(SEXP x_start, SEXP x_width)
 {
   SEXP ans;
   IntAE *bin_ends = new_IntAE(128, 0, 0);

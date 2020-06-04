@@ -349,30 +349,30 @@ static void free_NCList(const NCList *top_nclist)
 
 
 /****************************************************************************
- * NCList_new() and NCList_free()
+ * C_new_NCList() and C_free_NCList()
  */
 
 /* --- .Call ENTRY POINT --- */
-SEXP NCList_new()
+SEXP C_new_NCList()
 {
 	NCList *top_nclist;
 
 	//init_clock("preprocessing: T1 = ");
 	top_nclist = (NCList *) malloc(sizeof(NCList));
 	if (top_nclist == NULL)
-		error("NCList_new: memory allocation failed");
+		error("C_new_NCList: memory allocation failed");
 	init_NCList(top_nclist);
 	return R_MakeExternalPtr(top_nclist, R_NilValue, R_NilValue);
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP NCList_free(SEXP nclist_xp)
+SEXP C_free_NCList(SEXP nclist_xp)
 {
 	NCList *top_nclist;
 
 	top_nclist = (NCList *) R_ExternalPtrAddr(nclist_xp);
 	if (top_nclist == NULL)
-		error("NCList_free: pointer to NCList struct is NULL");
+		error("C_free_NCList: pointer to NCList struct is NULL");
 	free_NCList(top_nclist);
 	free(top_nclist);
 	R_SetExternalPtrAddr(nclist_xp, NULL);
@@ -381,7 +381,7 @@ SEXP NCList_free(SEXP nclist_xp)
 
 
 /****************************************************************************
- * NCList_build()
+ * C_build_NCList()
  */
 
 static void extend_NCList(NCList *nclist)
@@ -505,7 +505,7 @@ static void build_NCList(NCList *top_nclist,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP NCList_build(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
+SEXP C_build_NCList(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
 {
 	NCList *top_nclist;
 	int x_len;
@@ -513,7 +513,7 @@ SEXP NCList_build(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
 
 	top_nclist = (NCList *) R_ExternalPtrAddr(nclist_xp);
 	if (top_nclist == NULL)
-		error("NCList_build: pointer to NCList struct is NULL");
+		error("C_build_NCList: pointer to NCList struct is NULL");
 	x_len = check_integer_pairs(x_start, x_end,
 				    &x_start_p, &x_end_p,
 				    "start(x)", "end(x)");
@@ -529,7 +529,7 @@ SEXP NCList_build(SEXP nclist_xp, SEXP x_start, SEXP x_end, SEXP x_subset)
 
 
 /****************************************************************************
- * new_NCListAsINTSXP_from_NCList()
+ * C_new_NCListAsINTSXP_from_NCList()
  */
 
 /*
@@ -604,7 +604,7 @@ static int dump_NCList_to_int_array_rec(const NCList *nclist, int *out)
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP new_NCListAsINTSXP_from_NCList(SEXP nclist_xp)
+SEXP C_new_NCListAsINTSXP_from_NCList(SEXP nclist_xp)
 {
 	SEXP ans;
 	const NCList *top_nclist;
@@ -612,7 +612,7 @@ SEXP new_NCListAsINTSXP_from_NCList(SEXP nclist_xp)
 
 	top_nclist = (NCList *) R_ExternalPtrAddr(nclist_xp);
 	if (top_nclist == NULL)
-		error("new_NCListAsINTSXP_from_NCList: "
+		error("C_new_NCListAsINTSXP_from_NCList: "
 		      "pointer to NCList struct is NULL");
 	ans_len = compute_NCListAsINTSXP_length(top_nclist);
 	PROTECT(ans = NEW_INTEGER(ans_len));
@@ -624,7 +624,7 @@ SEXP new_NCListAsINTSXP_from_NCList(SEXP nclist_xp)
 
 
 /****************************************************************************
- * NCListAsINTSXP_print()
+ * C_print_NCListAsINTSXP()
  */
 
 /* Recursive! 
@@ -656,7 +656,7 @@ static int print_NCListAsINTSXP_rec(const int *nclist,
 }
 
 /* --- .Call ENTRY POINT --- */
-SEXP NCListAsINTSXP_print(SEXP x_nclist, SEXP x_start, SEXP x_end)
+SEXP C_print_NCListAsINTSXP(SEXP x_nclist, SEXP x_start, SEXP x_end)
 {
 	const int *top_nclist;
 	int x_len, max_digits, maxdepth;
@@ -1343,8 +1343,8 @@ static int find_overlaps(
 
 
 /****************************************************************************
- * Helper functions shared by NCList_find_overlaps() and
- * NCList_find_overlaps_in_groups()
+ * Helper functions shared by C_find_overlaps_NCList() and
+ * C_find_overlaps_in_groups_NCList()
  */
 
 static int get_overlap_type(SEXP type)
@@ -1435,7 +1435,7 @@ static SEXP new_direct_out(int q_len, int select_mode)
 
 
 /****************************************************************************
- * NCList_find_overlaps()
+ * C_find_overlaps_NCList()
  *
  * --- .Call ENTRY POINT ---
  * Args:
@@ -1450,7 +1450,7 @@ static SEXP new_direct_out(int q_len, int select_mode)
  *   select:         See _get_select_mode() C function in S4Vectors.
  *   circle_length:  A single positive integer or NA_INTEGER.
  */
-SEXP NCList_find_overlaps(
+SEXP C_find_overlaps_NCList(
 		SEXP q_start, SEXP q_end,
 		SEXP s_start, SEXP s_end,
 		SEXP nclist, SEXP nclist_is_q,
@@ -1503,7 +1503,7 @@ SEXP NCList_find_overlaps(
 
 
 /****************************************************************************
- * NCList_find_overlaps_in_groups()
+ * C_find_overlaps_in_groups_NCList()
  *
  * --- .Call ENTRY POINT ---
  * Args:
@@ -1528,7 +1528,7 @@ SEXP NCList_find_overlaps(
  *   circle_length:  An integer vector of length >= min(NG1, NG2) with positive
  *                   or NA values.
  */
-SEXP NCList_find_overlaps_in_groups(
+SEXP C_find_overlaps_in_groups_NCList(
 		SEXP q_start, SEXP q_end, SEXP q_space, SEXP q_groups,
 		SEXP s_start, SEXP s_end, SEXP s_space, SEXP s_groups,
 		SEXP nclists, SEXP nclist_is_q,

@@ -92,13 +92,13 @@ setMethod(".replaceSEW", "CompressedRangesList",
 
 setMethod("isNormal", "CompressedIRangesList",
     function(x, use.names=FALSE)
-        .Call2("CompressedIRangesList_isNormal", x, use.names,
+        .Call2("C_isNormal_CompressedIRangesList", x, use.names,
                PACKAGE="IRanges")
 )
 
 setMethod("summary", "CompressedIRangesList",
     function(object)
-        .Call2("CompressedIRangesList_summary", object,
+        .Call2("C_summary_CompressedIRangesList", object,
                PACKAGE="IRanges")
 )
 
@@ -185,27 +185,29 @@ setMethod("getListElement", "CompressedNormalIRangesList",
     function(x, i, exact=TRUE) newNormalIRangesFromIRanges(callNextMethod())
 )
 
-.max_CompressedNormalIRangesList <- function(x, use.names)
-{
-    if (!is(x, "CompressedNormalIRangesList"))
-        stop("'x' must be a CompressedNormalIRangesList object")
-    use.names <- S4Vectors:::normargUseNames(use.names)
-    .Call2("CompressedNormalIRangesList_max", x, use.names, PACKAGE="IRanges")
-}
-
-setMethod("max", "CompressedNormalIRangesList",
-          function(x, ..., na.rm) .max_CompressedNormalIRangesList(x, TRUE))
-
 .min_CompressedNormalIRangesList <- function(x, use.names)
 {
     if (!is(x, "CompressedNormalIRangesList"))
         stop("'x' must be a CompressedNormalIRangesList object")
     use.names <- S4Vectors:::normargUseNames(use.names)
-    .Call2("CompressedNormalIRangesList_min", x, use.names, PACKAGE="IRanges")
+    .Call2("C_min_CompressedNormalIRangesList", x, use.names,
+						PACKAGE="IRanges")
 }
 
 setMethod("min", "CompressedNormalIRangesList",
           function(x, ..., na.rm) .min_CompressedNormalIRangesList(x, TRUE))
+
+.max_CompressedNormalIRangesList <- function(x, use.names)
+{
+    if (!is(x, "CompressedNormalIRangesList"))
+        stop("'x' must be a CompressedNormalIRangesList object")
+    use.names <- S4Vectors:::normargUseNames(use.names)
+    .Call2("C_max_CompressedNormalIRangesList", x, use.names,
+						PACKAGE="IRanges")
+}
+
+setMethod("max", "CompressedNormalIRangesList",
+          function(x, ..., na.rm) .max_CompressedNormalIRangesList(x, TRUE))
 
 ### Coercion from list to CompressedNormalIRangesList.
 .as.list.CompressedNormalIRangesList <- function(x, use.names=TRUE)
