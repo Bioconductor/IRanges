@@ -208,7 +208,7 @@ exportMethods(
     updateObject,
     bindROWS,
     extractROWS, replaceROWS, getListElement,
-    vertical_slot_names,
+    parallel_slot_names,
     values, "values<-",
     classNameForDisplay,
     from, to,

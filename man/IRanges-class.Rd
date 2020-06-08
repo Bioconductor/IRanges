@@ -5,7 +5,7 @@
 \alias{class:IRanges}
 \alias{IRanges-class}
 
-\alias{vertical_slot_names,IRanges-method}
+\alias{parallel_slot_names,IRanges-method}
 
 % Accessors
 \alias{start,IRanges-method}

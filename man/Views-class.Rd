@@ -4,7 +4,7 @@
 \alias{class:Views}
 \alias{Views-class}
 
-\alias{vertical_slot_names,Views-method}
+\alias{parallel_slot_names,Views-method}
 
 \alias{subject}
 \alias{subject,Views-method}

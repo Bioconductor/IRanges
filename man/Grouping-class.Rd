@@ -93,7 +93,7 @@
 \alias{Partitioning-class}
 \alias{Partitioning}
 
-\alias{vertical_slot_names,Partitioning-method}
+\alias{parallel_slot_names,Partitioning-method}
 \alias{extractROWS,Partitioning-method}
 \alias{bindROWS,Partitioning-method}
 
@@ -105,7 +105,7 @@
 \alias{PartitioningByEnd-class}
 \alias{PartitioningByEnd}
 
-\alias{vertical_slot_names,PartitioningByEnd-method}
+\alias{parallel_slot_names,PartitioningByEnd-method}
 
 \alias{end,PartitioningByEnd-method}
 \alias{length,PartitioningByEnd-method}
@@ -118,7 +118,7 @@
 \alias{PartitioningByWidth-class}
 \alias{PartitioningByWidth}
 
-\alias{vertical_slot_names,PartitioningByWidth-method}
+\alias{parallel_slot_names,PartitioningByWidth-method}
 
 \alias{width,PartitioningByWidth-method}
 \alias{length,PartitioningByWidth-method}

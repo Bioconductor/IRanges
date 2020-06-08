@@ -12,11 +12,11 @@ setClass("IPos",
     )
 )
 
-### Combine the new "vertical slots" with those of the parent class. Make
-### sure to put the new vertical slots **first**. See R/bindROWS.R file in
-### the S4Vectors package for what slots should or should not be considered
-### "vertical".
-setMethod("vertical_slot_names", "IPos",
+### Combine the new "parallel slots" with those of the parent class. Make
+### sure to put the new parallel slots **first**. See R/Vector-class.R file
+### in the S4Vectors package for what slots should or should not be considered
+### "parallel".
+setMethod("parallel_slot_names", "IPos",
     function(x) c("NAMES", callNextMethod())
 )
 
@@ -27,11 +27,11 @@ setClass("UnstitchedIPos",
     )
 )
 
-### Combine the new "vertical slots" with those of the parent class. Make
-### sure to put the new vertical slots **first**. See R/bindROWS.R file in
-### the S4Vectors package for what slots should or should not be considered
-### "vertical".
-setMethod("vertical_slot_names", "UnstitchedIPos",
+### Combine the new "parallel slots" with those of the parent class. Make
+### sure to put the new parallel slots **first**. See R/Vector-class.R file
+### in the S4Vectors package for what slots should or should not be considered
+### "parallel".
+setMethod("parallel_slot_names", "UnstitchedIPos",
     function(x) c("pos", callNextMethod())
 )
 
