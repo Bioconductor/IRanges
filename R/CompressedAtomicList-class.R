@@ -579,7 +579,7 @@ setCompressedListWhichSummaryMethod <-
     {
         def <- function(x, global = FALSE) {
             stopifnot(isTRUEorFALSE(global))
-            ans <- .Call2(C_fun, x)
+            ans <- .Call2(C_fun, x, PACKAGE="IRanges")
             if (global) {
                 ans <- toglobal(ans, x)
             }
