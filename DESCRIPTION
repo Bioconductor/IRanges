@@ -7,18 +7,20 @@ Description: Provides efficient low-level and highly reusable S4
 	neighbors. Defines efficient list-like classes for storing,
 	transforming and aggregating large grouped data, i.e., collections
 	of atomic vectors and DataFrames.
+biocViews: Infrastructure, DataRepresentation
+URL: https://bioconductor.org/packages/IRanges
+BugReports: https://github.com/Bioconductor/IRanges/issues
 Version: 2.23.10
+License: Artistic-2.0
 Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
-biocViews: Infrastructure, DataRepresentation
 Depends: R (>= 3.1.0), methods, utils, stats,
 	BiocGenerics (>= 0.25.3), S4Vectors (>= 0.27.12)
 Imports: stats4
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, Rsamtools, GenomicAlignments, GenomicFeatures,
 	BSgenome.Celegans.UCSC.ce2, pasillaBamSubset, RUnit, BiocStyle
-License: Artistic-2.0
 Collate: range-squeezers.R
 	Vector-class-leftovers.R
 	DataFrameList-class.R
