@@ -1,3 +1,25 @@
+CHANGES IN VERSION 2.24.0
+-------------------------
+
+NEW FEATURES
+
+    o coverage() now supports 'method="naive"'. This is in addition to the
+      already supported methods "sort" and "hash". This new method is a slower
+      version of the "hash" method that has the advantage of avoiding floating
+      point artefacts in the no-coverage regions of the numeric-Rle object
+      returned by coverage() when the weights are supplied as a numeric vector
+      of type 'double'. See "FLOATING POINT ARITHMETIC CAN BRING A SURPRISE"
+      example in '?IRanges'.
+
+DEPRECATED AND DEFUNCT
+
+    o Removed RangedData class and anything related to RangedData objects.
+
+BUG FIXES
+
+    o Fix bug in list element recycling.
+
+
 CHANGES IN VERSION 2.22.0
 -------------------------
 
