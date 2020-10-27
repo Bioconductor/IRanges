@@ -9,7 +9,7 @@ NEW FEATURES
       point artefacts in the no-coverage regions of the numeric-Rle object
       returned by coverage() when the weights are supplied as a numeric vector
       of type 'double'. See "FLOATING POINT ARITHMETIC CAN BRING A SURPRISE"
-      example in '?IRanges'.
+      example in '?coverage'.
 
 DEPRECATED AND DEFUNCT
 
