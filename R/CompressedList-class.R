@@ -384,11 +384,12 @@ setMethod("revElements", "CompressedList",
         i <- normalizeSingleBracketSubscript(i, x, as.NSBS=TRUE)
         if (length(i) == 0L)
             return(x)
-        x_eltNROWS <- elementNROWS(x)
-        offset <- cumsum(c(0L, x_eltNROWS[-length(x_eltNROWS)]))
         rev <- logical(length(x))
         rev <- replaceROWS(rev, i, TRUE)
-        ii <- S4Vectors:::fancy_mseq(x_eltNROWS, offset=offset, rev=rev)
+        x_partitioning <- PartitioningByEnd(x)
+        from <- ifelse(rev, end(x_partitioning), start(x_partitioning))
+        by <- ifelse(rev, -1L, 1L)
+        ii <- sequence(width(x_partitioning), from, by)
         x@unlistData <- extractROWS(x@unlistData, ii)
         x
     }

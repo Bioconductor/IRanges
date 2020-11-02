@@ -445,8 +445,7 @@ extract_pos_runs_by_ranges <- function(pos_runs, i)
     mapped_range_span <- map[[2L]]
     mapped_range_Ltrim <- map[[3L]]
     mapped_range_Rtrim <- map[[4L]]
-    run_idx <- S4Vectors:::fancy_mseq(mapped_range_span,
-                                      mapped_range_offset)
+    run_idx <- sequence(mapped_range_span, from=mapped_range_offset+1L)
     pos_runs <- pos_runs[run_idx]
     if (length(run_idx) != 0L) {
         Rtrim_idx <- cumsum(mapped_range_span)

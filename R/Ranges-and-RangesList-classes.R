@@ -122,7 +122,7 @@ unlist_as_integer <- function(x)
     stopifnot(is(x, "Ranges"))
     if (is(x, "Pos"))
         return(pos(x))
-    S4Vectors:::fancy_mseq(width(x), offset=start(x)-1L)
+    sequence(width(x), from=start(x))
 }
 
 
