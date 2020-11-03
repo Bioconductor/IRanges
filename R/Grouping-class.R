@@ -935,7 +935,7 @@ findOverlaps_IntegerRanges_Partitioning <-
     q_end2subject <- findInterval(q_end, vec)
     q_hits <- rep.int(seq_along(q_start),
                       q_end2subject - q_start2subject + 1L)
-    s_hits <- S4Vectors:::mseq(q_start2subject, q_end2subject)
+    s_hits <- sequence(q_end2subject - q_start2subject + 1L, q_start2subject)
     ## If 'query' is a Partitioning object, all hits are guaranteed to be
     ## valid.
     if (!is(query, "Partitioning")) {
