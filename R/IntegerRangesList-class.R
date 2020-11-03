@@ -79,23 +79,6 @@ setMethod("whichFirstNotNormal", "IntegerRangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Constructor.
-###
-
-RangesList <- function(...)
-{
-  msg <- c("The RangesList() constructor is defunct. ",
-           "Please coerce to IRangesList instead e.g. do ",
-           "'as(list(x1, x2), \"IRangesList\")' instead of ",
-           "'RangesList(x1, x2)'. Alternatively, you can use ",
-           "the IRangesList() constructor e.g. ",
-           "'IRangesList(x1, x2, compress=FALSE)'. See '?IRangesList' ",
-           "for more information.")
-  .Defunct(msg=wmsg(msg))
-}
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### The "show" method.
 ###
 

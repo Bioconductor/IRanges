@@ -242,7 +242,6 @@ export(
     H2LGrouping, Dups,
     PartitioningByEnd, PartitioningByWidth, PartitioningMap,
     RangedSelection,
-    RangesList,
     IRangesList,
     RleViewsList,
     "%over%", "%within%", "%outside%",
