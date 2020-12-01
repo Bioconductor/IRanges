@@ -70,7 +70,7 @@ setMethod("Summary", "AtomicList",
         })
 
 setMethod("Complex", "AtomicList",
-          function(z) as(lapply(x, .Generic), "List"))
+          function(z) as(lapply(z, .Generic), "List"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
