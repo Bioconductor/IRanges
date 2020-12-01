@@ -120,6 +120,10 @@
 \alias{unstrsplit,CharacterList-method}
 \alias{unstrsplit,RleList-method}
 \alias{paste,CompressedAtomicList-method}
+\alias{startsWith,CharacterList,ANY-method}
+\alias{startsWith,RleList,ANY-method}
+\alias{endsWith,CharacterList,ANY-method}
+\alias{endsWith,RleList,ANY-method}
 
 \alias{rank,CompressedAtomicList-method}
 \alias{order,CompressedAtomicList-method}
@@ -188,7 +192,8 @@
     \item{Running Window}{\code{smoothEnds}, \code{runmed}. \code{runmean},
                           \code{runsum}, \code{runwtsum}, \code{runq}}
     \item{Character}{\code{nchar}, \code{chartr}, \code{tolower},
-                     \code{toupper}, \code{sub}, \code{gsub}}
+                     \code{toupper}, \code{sub}, \code{gsub},
+                     \code{startsWith}, \code{endsWith}}
   }
 
   The \code{which.min} and \code{which.max} functions have an extra

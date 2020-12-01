@@ -190,7 +190,7 @@ exportMethods(
     diff,
     mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
     "window<-", transform,
-    nchar, chartr, tolower, toupper, sub, gsub,
+    nchar, chartr, tolower, toupper, sub, gsub, startsWith, endsWith,
     unlist, stack, "split<-", unsplit,
     relist,
     append,
