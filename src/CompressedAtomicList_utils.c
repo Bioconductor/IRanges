@@ -144,7 +144,7 @@ SEXP C_max_CompressedNumericList(SEXP x, SEXP na_rm)
 #define PARTITIONED_WHICH_AGG(C_TYPE, ACCESSOR, NA_CHECK, INIT, RELOP)      \
 {                                                                           \
 	SEXP na_rm = ScalarLogical(TRUE);                                   \
-	PARTITIONED_AGG(int, ACCESSOR, INTSXP, INTEGER,                     \
+	PARTITIONED_AGG(C_TYPE, ACCESSOR, INTSXP, INTEGER,                  \
 		NA_CHECK, NA_INTEGER,                                       \
 		if (val RELOP summary_val)                                  \
 			(summary_val = val, summary = j - prev_end + 1),    \
