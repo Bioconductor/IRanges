@@ -131,7 +131,7 @@
   \describe{
     \item{}{\code{dim(x)}: Get the two element integer vector indicating
       the number of rows and columns over the entire dataset.}
-    \item{}{\code{dimnames(x)}: Get the list of two character vectors,
+    \item{}{\code{dimnames(x)}: Get the list of two CharacterLists,
       the first holding the rownames (possibly \code{NULL}) and the second
       the column names.
     }
