@@ -297,6 +297,7 @@ export(
     extractList,
 
     ## DataFrameList-class.R:
+    commonColnames, "commonColnames<-",
     columnMetadata, "columnMetadata<-",
 
     ## IntegerRangesList-class.R:
@@ -364,6 +365,7 @@ exportMethods(
     high2low, low2high, grouprank, togrouprank, mapOrder,
     findRange, splitRanges,
     extractList,
+    commonColnames, "commonColnames<-",
     columnMetadata, "columnMetadata<-",
     space,
     nir_list,
