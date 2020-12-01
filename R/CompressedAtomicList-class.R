@@ -203,7 +203,7 @@ setMethod("lapply", "CompressedAtomicList",
 ### Group generic methods
 ###
 
-doBinaryCompressedListOp <- function(OP, e1, e2, skeleton) {
+.do_CompressedList_binary_op <- function(OP, e1, e2, skeleton) {
   if (!missing(skeleton)) {
     n <- length(skeleton)
   } else {
@@ -243,7 +243,7 @@ setMethod("Ops",
               if (length(e1) == 0L || length(e2) == 0L) {
                 return(emptyOpsReturnValue(.Generic, e1, e2, compress = TRUE))
               }
-              doBinaryCompressedListOp(function(x, y) {
+              .do_CompressedList_binary_op(function(x, y) {
                 .Generic <- .Generic
                 callGeneric(x, y)
               }, e1, e2)
@@ -556,7 +556,7 @@ setMethods("ifelse2", list(c("CompressedLogicalList", "ANY", "ANY"),
                            c("CompressedLogicalList", "List", "ANY"),
                            c("CompressedLogicalList", "List", "List")),
            function(test, yes, no) {
-             doBinaryCompressedListOp(function(yes, no) {
+             .do_CompressedList_binary_op(function(yes, no) {
                ifelse(unlist(test, use.names=FALSE), yes, no)
              }, as(yes, "List"), as(no, "List"), test)
            })

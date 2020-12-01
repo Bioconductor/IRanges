@@ -20,7 +20,7 @@ recycleList <- function(x, length.out) {
 }
 
 setMethod("Ops",
-          signature(e1 = "SimpleAtomicList", e2 = "SimpleAtomicList"),
+          signature(e1 = "AtomicList", e2 = "AtomicList"),
           function(e1, e2)
           {
               if (length(e1) == 0L || length(e2) == 0L) {
@@ -36,7 +36,7 @@ setMethod("Ops",
           signature(e1 = "AtomicList", e2 = "atomic"),
           function(e1, e2)
           {
-              e2 <- as(e2, "List")
+              e2 <- as(e2, class(e1))
               callGeneric(e1, e2)
           })
 
@@ -44,35 +44,24 @@ setMethod("Ops",
           signature(e1 = "atomic", e2 = "AtomicList"),
           function(e1, e2)
           {
-              e1 <- as(e1, "List")
+              e1 <- as(e1, class(e2))
               callGeneric(e1, e2)
           })
 
-setMethod("Ops",
-          signature(e1 = "SimpleAtomicList", e2 = "atomic"),
-          function(e1, e2)
-          {
-              e2 <- as(e2, "SimpleList")
-              callGeneric(e1, e2)
-          })
+### Only to make unary + and - work (i.e. '+x' and '-x').
+setMethod("Ops", c("AtomicList", "missing"),
+    function(e1, e2) callGeneric(0L, e1)
+)
 
-setMethod("Ops",
-          signature(e1 = "atomic", e2 = "SimpleAtomicList"),
-          function(e1, e2)
-          {
-              e1 <- as(e1, "SimpleList")
-              callGeneric(e1, e2)
-          })
+setMethod("Math", "AtomicList",
+          function(x) as(lapply(x, .Generic), "List"))
 
-setMethod("Math", "SimpleAtomicList",
-          function(x) as(lapply(x@listData, .Generic), "List"))
-
-setMethod("Math2", "SimpleAtomicList",
+setMethod("Math2", "AtomicList",
           function(x, digits)
           {
               if (missing(digits))
                   digits <- ifelse(.Generic == "round", 0, 6)
-              as(lapply(x@listData, .Generic, digits = digits), "List")
+              as(lapply(x, .Generic, digits = digits), "List")
           })
 
 setMethod("Summary", "AtomicList",
@@ -80,8 +69,8 @@ setMethod("Summary", "AtomicList",
             sapply(x, .Generic, na.rm = na.rm)
         })
 
-setMethod("Complex", "SimpleAtomicList",
-          function(z) as(lapply(z@listData, .Generic), "List"))
+setMethod("Complex", "AtomicList",
+          function(z) as(lapply(x, .Generic), "List"))
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

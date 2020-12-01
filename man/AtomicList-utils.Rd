@@ -2,24 +2,24 @@
 
 \alias{AtomicList-utils}
 
+\alias{Ops,AtomicList,AtomicList-method}
 \alias{Ops,CompressedAtomicList,CompressedAtomicList-method}
-\alias{Ops,SimpleAtomicList,SimpleAtomicList-method}
 \alias{Ops,SimpleAtomicList,CompressedAtomicList-method}
 \alias{Ops,CompressedAtomicList,SimpleAtomicList-method}
 \alias{Ops,AtomicList,atomic-method}
 \alias{Ops,atomic,AtomicList-method}
+\alias{Ops,AtomicList,missing-method}
 \alias{Ops,CompressedAtomicList,atomic-method}
 \alias{Ops,atomic,CompressedAtomicList-method}
-\alias{Ops,SimpleAtomicList,atomic-method}
-\alias{Ops,atomic,SimpleAtomicList-method}
+
+\alias{Math,AtomicList-method}
 \alias{Math,CompressedAtomicList-method}
-\alias{Math,SimpleAtomicList-method}
+\alias{Math2,AtomicList-method}
 \alias{Math2,CompressedAtomicList-method}
-\alias{Math2,SimpleAtomicList-method}
 \alias{Summary,AtomicList-method}
 \alias{Summary,CompressedRleList-method}
+\alias{Complex,AtomicList-method}
 \alias{Complex,CompressedAtomicList-method}
-\alias{Complex,SimpleAtomicList-method}
 \alias{sum,CompressedIntegerList-method}
 \alias{sum,CompressedLogicalList-method}
 \alias{sum,CompressedNumericList-method}
