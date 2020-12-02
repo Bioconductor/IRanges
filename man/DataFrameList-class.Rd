@@ -73,6 +73,12 @@
 \alias{columnMetadata<-,SimpleSplitDataFrameList-method}
 \alias{columnMetadata,CompressedSplitDataFrameList-method}
 \alias{columnMetadata<-,CompressedSplitDataFrameList-method}
+\alias{commonColnames}
+\alias{commonColnames<-}
+\alias{commonColnames,SimpleSplitDataFrameList-method}
+\alias{commonColnames<-,SimpleSplitDataFrameList-method}
+\alias{commonColnames,CompressedSplitDataFrameList-method}
+\alias{commonColnames<-,CompressedSplitDataFrameList-method}
 
 % subsetting
 \alias{[,SimpleSplitDataFrameList-method}
@@ -135,6 +141,14 @@
       the first holding the rownames (possibly \code{NULL}) and the second
       the column names.
     }
+  }
+
+  In the following code snippets, \code{x} is a \code{SplitDataFrameList}.
+  \describe{
+    \item{}{\code{commonColnames(x)}: Get the character vector of 
+      column names present in the individual DataFrames in \code{x}.} 
+    \item{}{\code{commonColnames(x) <- value}: Set the column names of 
+      the DataFrames in \code{x}.}
     \item{}{\code{columnMetadata(x)}: Get the \code{DataFrame} of
       metadata along the columns, i.e., where each column in \code{x} is
       represented by a row in the metadata. The metadata is common
@@ -241,6 +255,28 @@
       \code{List} man page for details (?\code{List}). 
     }
   }
+}
+
+\examples{
+# Making a DataFrameList, which has different columns.
+out <- DataFrameList(DataFrame(X=1, Y=2), DataFrame(A=1:2, B=3:4))
+out[[1]]
+
+# A more interesting SplitDataFrameList, which is guaranteed
+# to have the same columns.
+out <- DataFrameList(DataFrame(X=1, Y=2), DataFrame(X=1:2, Y=3:4))
+out[[1]]
+out[,"X"]
+out[,"Y"]
+
+commonColnames(out)
+commonColnames(out) <- c("x", "y")
+out[[1]]
+
+# We can also create these split objects using various split() functions:
+out <- splitAsList(DataFrame(X=runif(100), Y=rpois(100, 5)), 
+    sample(letters, 100, replace=TRUE))
+out[[1]]
 }
 
 \author{ Michael Lawrence }
