@@ -264,7 +264,7 @@ out[[1]]
 
 # A more interesting SplitDataFrameList, which is guaranteed
 # to have the same columns.
-out <- DataFrameList(DataFrame(X=1, Y=2), DataFrame(X=1:2, Y=3:4))
+out <- SplitDataFrameList(DataFrame(X=1, Y=2), DataFrame(X=1:2, Y=3:4))
 out[[1]]
 out[,"X"]
 out[,"Y"]
@@ -276,7 +276,7 @@ out[[1]]
 # We can also create these split objects using various split() functions:
 out <- splitAsList(DataFrame(X=runif(100), Y=rpois(100, 5)), 
     sample(letters, 100, replace=TRUE))
-out[[1]]
+out[['a']]
 }
 
 \author{ Michael Lawrence }
