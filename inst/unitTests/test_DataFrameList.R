@@ -125,6 +125,29 @@ test_SplitDataFrameList_as.data.frame <- function() {
     }
 }
 
+test_SplitDataFrameList_columnUtils <- function() {
+    set.seed(100001)
+    original <- splitAsList(DataFrame(X=runif(100), Y=rpois(100, 5)), 
+        sample(letters, 100, replace=TRUE))
+
+    out <- original
+    checkIdentical(commonColnames(out), c("X", "Y"))
+
+    commonColnames(out) <- c("a", "b")
+    checkIdentical(commonColnames(out), c("a", "b"))
+    checkIdentical(colnames(out[[1]]), c("a", "b"))
+    checkIdentical(colnames(out[[length(out)]]), c("a", "b"))
+
+    # Same behavior for SimpleSDFLs.
+    alt <- as(original, "SimpleSplitDataFrameList")
+    checkIdentical(commonColnames(alt), c("X", "Y"))
+
+    commonColnames(alt) <- c("a", "b")
+    checkIdentical(commonColnames(alt), c("a", "b"))
+    checkIdentical(colnames(alt[[1]]), c("a", "b"))
+    checkIdentical(colnames(alt[[length(alt)]]), c("a", "b"))
+}
+
 test_DataFrameList_replace <- function() {
     checkDFL2dfl <- function(DFL, dfl) {
         checkIdentical(lapply(as.list(DFL), as.data.frame), dfl)
