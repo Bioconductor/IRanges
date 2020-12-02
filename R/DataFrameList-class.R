@@ -164,23 +164,19 @@ setMethod("ROWNAMES", "DataFrameList", function(x) names(x))
 
 setGeneric("commonColnames", function(x) standardGeneric("commonColnames"))
 
-setMethod("commonColnames", "DataFrameList",
+setMethod("commonColnames", "SimpleSplitDataFrameList",
           function(x) {
             if (length(x)) 
-              Reduce(intersect, colnames(x))
+              colnames(x[[1]])
             else NULL
           })
 
 setGeneric("commonColnames<-", function(x, value) standardGeneric("commonColnames<-"))
 
-setReplaceMethod("commonColnames", "SimpleDataFrameList", 
+setReplaceMethod("commonColnames", "SimpleSplitDataFrameList", 
                  function(x, value) {
-                   old <- commonColnames(x)
-                   stopifnot(length(old)==length(value))
                    x@listData <- lapply(x@listData, function(xi) {
-                     m <- match(colnames(xi), old)
-                     present <- !is.na(m)
-                     colnames(xi)[present] <- value[m[present]]
+                     colnames(xi) <- value
                      xi
                    })
                    x
