@@ -138,6 +138,8 @@ test_SplitDataFrameList_columnUtils <- function() {
     checkIdentical(colnames(out[[1]]), c("a", "b"))
     checkIdentical(colnames(out[[length(out)]]), c("a", "b"))
 
+    checkIdentical(commonColnames(out[0]), c("a", "b"))
+
     # Same behavior for SimpleSDFLs.
     alt <- as(original, "SimpleSplitDataFrameList")
     checkIdentical(commonColnames(alt), c("X", "Y"))
@@ -146,6 +148,8 @@ test_SplitDataFrameList_columnUtils <- function() {
     checkIdentical(commonColnames(alt), c("a", "b"))
     checkIdentical(colnames(alt[[1]]), c("a", "b"))
     checkIdentical(colnames(alt[[length(alt)]]), c("a", "b"))
+
+    checkIdentical(commonColnames(alt[0]), NULL)
 }
 
 test_DataFrameList_replace <- function() {
