@@ -173,7 +173,7 @@ setMethod("commonColnames", "SimpleSplitDataFrameList",
 
 setGeneric("commonColnames<-", function(x, value) standardGeneric("commonColnames<-"))
 
-setReplaceMethod("commonColnames", "SimpleSplitDataFrameList", 
+setReplaceMethod("commonColnames", "SplitDataFrameList", 
                  function(x, value) {
                    colnames(x) <- value
                    x

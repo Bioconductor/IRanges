@@ -82,12 +82,6 @@ setReplaceMethod("colnames", "CompressedSplitDataFrameList",
 setMethod("commonColnames", "CompressedSplitDataFrameList",
           function(x) colnames(unlist(x, use.names=FALSE)))
 
-setReplaceMethod("commonColnames", "CompressedSplitDataFrameList",
-                 function(x, value) {
-                   colnames(x@unlistData) <- value
-                   x
-                 })
-
 setMethod("columnMetadata", "CompressedSplitDataFrameList", function(x) {
   mcols(x@unlistData, use.names=FALSE)
 })
