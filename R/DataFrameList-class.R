@@ -175,10 +175,7 @@ setGeneric("commonColnames<-", function(x, value) standardGeneric("commonColname
 
 setReplaceMethod("commonColnames", "SimpleSplitDataFrameList", 
                  function(x, value) {
-                   x@listData <- lapply(x@listData, function(xi) {
-                     colnames(xi) <- value
-                     xi
-                   })
+                   colnames(x) <- value
                    x
                  })
 
