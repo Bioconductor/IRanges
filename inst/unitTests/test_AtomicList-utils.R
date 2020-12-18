@@ -56,7 +56,7 @@ test_AtomicList_numerical <- function() {
             checkIdentical(median(list1, na.rm=TRUE),
                            sapply(list1, median, na.rm=TRUE))
             checkIdentical(quantile(list1, na.rm=TRUE),
-                           sapply(list1, quantile, na.rm=TRUE))
+                           do.call(rbind, lapply(list1, quantile, na.rm=TRUE)))
             checkIdentical(mad(list1, na.rm=TRUE),
                            sapply(list1, mad, na.rm=TRUE))
             checkIdentical(IQR(list1, na.rm=TRUE),

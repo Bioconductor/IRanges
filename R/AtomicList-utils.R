@@ -176,7 +176,7 @@ setMethod("median", "AtomicList",
 )
 
 setMethod("quantile", "AtomicList",
-    function(x, ...) sapply(x, quantile, ...)
+    function(x, ...) do.call(rbind, lapply(x, quantile, ...))
 )
 
 setMethod("mad", "AtomicList",
