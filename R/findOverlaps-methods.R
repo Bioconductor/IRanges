@@ -524,9 +524,11 @@ mergeByOverlaps <- function(query, subject, ...) {
 ###
 
 findOverlapPairs <- function(query, subject, ...) {
-    hits <- findOverlaps(query, subject, ...)
     if (missing(subject)) {
+        hits <- findOverlaps(query, ...)
         subject <- query
+    } else {
+        hits <- findOverlaps(query, subject, ...)
     }
     Pairs(query, subject, hits=hits)
 }
