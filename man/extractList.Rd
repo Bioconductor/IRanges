@@ -4,7 +4,6 @@
 \alias{relist,ANY,PartitioningByEnd-method}
 \alias{relist,ANY,List-method}
 \alias{relist,Vector,list-method}
-\alias{relist,ANY,PartitioningByEnd-method}
 
 \alias{extractList}
 \alias{extractList,ANY,ANY-method}
@@ -53,9 +52,6 @@ regroup(x, g)
   \item{skeleton}{
     A list-like object. Only the "shape" (i.e. element lengths) of
     \code{skeleton} matters. Its exact content is ignored.
-  }
-  \item{f}{
-    An atomic vector or a factor (possibly in \link{Rle} form).
   }
   \item{i}{
     A list-like object. Unlike for \code{skeleton}, the content here matters
@@ -134,20 +130,24 @@ regroup(x, g)
 
 \seealso{
   \itemize{
+    \item The \code{\link[S4Vectors]{relistToClass}} function and
+          \code{\link[S4Vectors]{split}} methods defined in the
+          \pkg{S4Vectors} package.
+
     \item The \code{\link[base]{unlist}} and \code{\link[utils]{relist}}
           functions in the \pkg{base} and \pkg{utils} packages, respectively.
 
     \item The \code{\link[base]{split}} and \code{\link[base]{unsplit}}
           functions in the \pkg{base} package.
 
-    \item The \code{\link[S4Vectors]{split}} methods defined in the
-          \pkg{S4Vectors} package.
+    \item \link{PartitioningByEnd} objects. These objects are used inside
+          \link{CompressedList} derivatives to keep track of the
+          \emph{partitioning} of the single vector-like object made of
+          all the list elements concatenated together.
 
     \item \link[S4Vectors]{Vector}, \link[S4Vectors]{List},
           \link[S4Vectors]{Rle}, and \link[S4Vectors]{DataFrame} objects
-          in the \pkg{S4Vectors} package.
-          \code{\link[S4Vectors]{relistToClass}} is documented in the man
-          page for \link[S4Vectors]{List} objects.
+          implemented in the \pkg{S4Vectors} package.
 
     \item \link{IntegerRanges} objects.
   }

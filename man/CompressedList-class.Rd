@@ -84,11 +84,23 @@
   Unlike for \link[S4Vectors]{SimpleList} objects, there is no
   \code{CompressedList} constructor function.
 
-  However, many constructor functions for \link[S4Vectors]{List} objects
-  have a switch that lets the user choose between the CompressedList and
-  \link[S4Vectors]{SimpleList} representation at construction time.
-  For example, a \link{CompressedCharacterList} object can be constructed
-  with \code{CharacterList(..., compress=TRUE)}.
+  However, many constructor functions for \link[S4Vectors]{List} derivatives
+  provide the \code{compress} argument that lets the user choose between the
+  CompressedList and \link[S4Vectors]{SimpleList} representations at
+  construction time.
+  For example, depending on whether the \code{compress} argument of the
+  \code{\link{CharacterList}()} constructor is set to \code{TRUE} or
+  \code{FALSE}, a \link{CompressedCharacterList} or \link{SimpleCharacterList}
+  instance will be returned.
+
+  Finally let's mention that the most efficient way to construct a CompressedList
+  derivative is with
+\preformatted{    relist(unlisted, partitioning)
+}
+  where \code{unlisted} is a vector-like object and \code{partitioning} a
+  \link{PartitioningByEnd} object describing a partitioning of \code{unlisted}.
+  The cost of this relist operation is virtually zero because \code{unlisted}
+  and \code{partitioning} get stored \emph{as-is} in the returned object.
 }
 
 \section{Accessors}{
@@ -121,28 +133,55 @@
 
 \seealso{
   \itemize{
-    \item The \link[S4Vectors]{List} class defined and documented in the
-          \pkg{S4Vectors} package for the parent class.
+    \item \link[S4Vectors]{List} in the \pkg{S4Vectors} package for an
+          introduction to List objects and their derivatives (CompressedList
+          is a direct subclass of List which makes CompressedList objects
+          List derivatives).
 
-    \item The \link[S4Vectors]{SimpleList} class defined and documented in the
-          \pkg{S4Vectors} package for an alternative to CompressedList.
+    \item The \link[S4Vectors]{SimpleList} class defined and documented in
+          the \pkg{S4Vectors} package for an alternative to CompressedList.
 
-    \item The \link{CompressedIntegerList} class for a CompressedList
-          subclass example.
+    \item \link[IRanges]{relist} and \link[IRanges]{extractList} for
+          efficiently constructing a \link{List} derivative from a
+          vector-like object.
+
+    \item The \link{CompressedNumericList} class for an example of a
+          concrete CompressedList subclass.
+
+    \item \link{PartitioningByEnd} objects. These objects are used inside
+          CompressedList derivatives to keep track of the \emph{partitioning}
+          of the single vector-like object made of all the list elements
+          concatenated together.
   }
 }
 
 \examples{
+## Fastest way to construct a CompressedList object:
+unlisted <- runif(12)
+partitioning <- PartitioningByEnd(c(5, 5, 10, 12), names=LETTERS[1:4])
+partitioning
+
+x1 <- relist(unlisted, partitioning)
+x1
+
+stopifnot(identical(lengths(partitioning), lengths(x1)))
+
+## Note that the class of the CompressedList derivative returned by
+## relist() is determined by relistToClass():
+relistToClass(unlisted)
+stopifnot(relistToClass(unlisted) == class(x1))
+
 ## Displaying a CompressedList object:
-x <- IntegerList(11:12, integer(0), 3:-2, compress=TRUE)
-class(x)
+x2 <- IntegerList(11:12, integer(0), 3:-2, compress=TRUE)
+class(x2)
 
 ## The "Simple" prefix is removed from the real class name of the
 ## object:
-x
+x2
 
 ## This is controlled by internal helper classNameForDisplay():
-classNameForDisplay(x)
+classNameForDisplay(x2)
+classNameForDisplay(x1)
 }
 \keyword{methods}
 \keyword{classes}
