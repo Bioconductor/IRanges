@@ -5,62 +5,158 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The SEW0 interface: start=NULL/end=NULL/width=NULL
+### Low-level IRanges constructor
 ###
 
-.normargSEW0 <- function(x, argname)
+.new_empty_IRanges <- function() new2("IRanges", check=FALSE)
+
+.start_as_integer <- function(start, what="a start")
 {
-    if (is.null(x))
-        return(integer())
-    if (!is.numeric(x) && !(is.atomic(x) && all(is.na(x))))
-        stop("'", argname, "' must be a numeric vector (or NULL)")
-    if (!is.integer(x))
-        x <- as.integer(x)
-    x
+    if (is.integer(start))
+        return(unname(start))
+    old_warn <- getOption("warn")
+    options(warn=2L)
+    on.exit(options(warn=old_warn))
+    start <- try(as.integer(start), silent=TRUE)
+    if (inherits(start, "try-error"))
+        stop(wmsg("each range must have ", what, " that ",
+                  "is < 2^31 and > - 2^31"))
+    start
 }
 
-### Some of the functions that support the SEW0 interface: IRanges(), Views(),
-### etc...
-solveUserSEW0 <- function(start=NULL, end=NULL, width=NULL)
+.width_as_integer <- function(width, msg="a width that is >= 0")
 {
-    start <- .normargSEW0(start, "start")
-    end <- .normargSEW0(end, "end")
-    width <- .normargSEW0(width, "width")
+    if (min(width) < 0)
+        stop(wmsg("each range must have ", msg))
+    if (is.integer(width))
+        return(unname(width))
+    old_warn <- getOption("warn")
+    options(warn=2L)
+    on.exit(options(warn=old_warn))
+    width <- try(as.integer(width), silent=TRUE)
+    if (inherits(width, "try-error"))
+        stop(wmsg("each range must have a width that is < 2^31"))
+    width
+}
+
+.normalize_start_end <- function(start, end)
+{
+    if (!is.numeric(start) || !is.numeric(end))
+        stop(wmsg("'start' and 'end' must be numeric vectors"))
+    if (anyNA(start) || anyNA(end))
+        stop(wmsg("'start' and 'end' cannot contain NAs"))
+    if (length(start) == 0L || length(end) == 0L)
+        return(.new_empty_IRanges())
+    start <- .start_as_integer(start)
+    end <- .start_as_integer(end, what="an end")
+    ## We want to perform this operation in "double" space rather
+    ## than in "integer" space so we use 1.0 instead of 1L.
+    width <- 1.0 + end - start
+    width <- .width_as_integer(width,
+                 msg="an end that is greater or equal to its start minus one")
+    start <- S4Vectors:::recycleVector(start, length(width))
+    new2("IRanges", start=start, width=width, check=FALSE)
+}
+
+.normalize_start_width <- function(start, width)
+{
+    if (!is.numeric(start) || !is.numeric(width))
+        stop(wmsg("'start' and 'width' must be numeric vectors"))
+    if (anyNA(start) || anyNA(width))
+        stop(wmsg("'start' and 'width' cannot contain NAs"))
+    if (length(start) == 0L || length(width) == 0L)
+        return(.new_empty_IRanges())
+    start <- .start_as_integer(start)
+    width <- .width_as_integer(width)
+    ## We want to perform this operation in "double" space rather
+    ## than in "integer" space so we use -1.0 instead of -1L.
+    end <- -1.0 + start + width
+    end <- .start_as_integer(end, what="an end")
+    start <- S4Vectors:::recycleVector(start, length(end))
+    width <- S4Vectors:::recycleVector(width, length(end))
+    new2("IRanges", start=start, width=width, check=FALSE)
+}
+
+.normalize_end_width <- function(end, width)
+{
+    if (!is.numeric(end) || !is.numeric(width))
+        stop(wmsg("'end' and 'width' must be numeric vectors"))
+    if (anyNA(end) || anyNA(width))
+        stop(wmsg("'end' and 'width' cannot contain NAs"))
+    if (length(end) == 0L || length(width) == 0L)
+        return(.new_empty_IRanges())
+    end <- .start_as_integer(end, what="an end")
+    width <- .width_as_integer(width)
+    ## We want to perform this operation in "double" space rather
+    ## than in "integer" space so we use 1.0 instead of 1L.
+    start <- 1.0 + end - width
+    start <- .start_as_integer(start)
+    start <- suppressWarnings(as.integer(start))
+    width <- S4Vectors:::recycleVector(width, length(start))
+    new2("IRanges", start=start, width=width, check=FALSE)
+}
+
+.is_numeric_or_NAs <- function(x)
+{
+    is.numeric(x) || is.logical(x) && all(is.na(x))
+}
+
+.solve_start_width_end <- function(start, end, width)
+{
+    if (!.is_numeric_or_NAs(start)
+     || !.is_numeric_or_NAs(end)
+     || !.is_numeric_or_NAs(width))
+        stop(wmsg("'start', 'end', and 'width', must be numeric vectors"))
     L1 <- length(start)
     L2 <- length(end)
     L3 <- length(width)
-    L123 <- c(L1, L2, L3)
-    max123 <- max(L123)
-    ## We want IRanges(start=integer(0), width=5) and
-    ## IRanges(end=integer(0), width=5) to work and return an empty IRanges
-    ## object.
-    if (max123 == 0L || L1 == 0L && L2 == 0L && L3 == 1L)
-        return(new("IRanges"))
-    ## Recycle start/end/width.
-    if (L1 < max123) {
-        if (L1 == 0L)
-            start <- rep.int(NA_integer_, max123)
-        else
-            start <- S4Vectors:::recycleVector(start, max123)
+    if (min(L1, L2, L3) == 0L)
+        return(.new_empty_IRanges())
+    if (is.logical(start)) {
+        start <- as.integer(start)
+    } else {
+        start <- .start_as_integer(start)
     }
-    if (L2 < max123) {
-        if (L2 == 0L)
-            end <- rep.int(NA_integer_, max123)
-        else
-            end <- S4Vectors:::recycleVector(end, max123)
+    if (is.logical(end)) {
+        end <- as.integer(end)
+    } else {
+        end <- .start_as_integer(end, what="an end")
     }
-    if (L3 < max123) {
-        if (L3 == 0L)
-            width <- rep.int(NA_integer_, max123)
-        else
-            width <- S4Vectors:::recycleVector(width, max123)
+    if (is.logical(width)) {
+        width <- as.integer(width)
+    } else {
+        width <- .width_as_integer(width)
     }
-    .Call2("C_solve_user_SEW0", start, end, width, PACKAGE="IRanges")
+    ans_len <- max(L1, L2, L3)
+    start <- S4Vectors:::recycleVector(start, ans_len)
+    end <- S4Vectors:::recycleVector(end, ans_len)
+    width <- S4Vectors:::recycleVector(width, ans_len)
+    .Call2("C_solve_start_width_end", start, end, width, PACKAGE="IRanges")
+}
+
+.new_IRanges <- function(start=NULL, end=NULL, width=NULL)
+{
+    start_is_null <- is.null(start)
+    end_is_null <- is.null(end)
+    width_is_null <- is.null(width)
+    nb_of_nulls <- sum(start_is_null, end_is_null, width_is_null)
+    if (nb_of_nulls == 3L)
+        return(.new_empty_IRanges())
+    if (nb_of_nulls == 2L)
+        stop(wmsg("at least two of the 'start', 'end', and 'width' ",
+                  "arguments must be supplied"))
+    if (width_is_null)
+        return(.normalize_start_end(start, end))
+    if (end_is_null)
+        return(.normalize_start_width(start, width))
+    if (start_is_null)
+        return(.normalize_end_width(end, width))
+    .solve_start_width_end(start, end, width)
 }
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### The safe and user-friendly "IRanges" constructor.
+### High-level IRanges constructor
 ###
 
 IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL, ...)
@@ -70,7 +166,7 @@ IRanges <- function(start=NULL, end=NULL, width=NULL, names=NULL, ...)
     if (!is.null(start) && is.null(end) && is.null(width)) {
         ans <- as(start, "IRanges")
     } else {
-        ans <- solveUserSEW0(start=start, end=end, width=width)
+        ans <- .new_IRanges(start=start, end=end, width=width)
     }
 
     if (!is.null(names))

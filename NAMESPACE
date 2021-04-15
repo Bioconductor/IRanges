@@ -230,7 +230,7 @@ exportMethods(
 
 export(
     multisplit,
-    solveUserSEW0, IRanges, solveUserSEW,
+    IRanges, solveUserSEW,
     successiveIRanges,
     slidingIRanges,
     breakInChunks,

@@ -121,7 +121,7 @@ SEXP C_from_logical_to_NormalIRanges(SEXP x);
 
 /* IRanges_constructor.c */
 
-SEXP C_solve_user_SEW0(
+SEXP C_solve_start_width_end(
 	SEXP start,
 	SEXP end,
 	SEXP width

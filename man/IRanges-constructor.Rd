@@ -2,7 +2,6 @@
 
 \alias{IRanges-constructor}
 \alias{IRanges}
-\alias{solveUserSEW0}
 \alias{solveUserSEW}
 
 
@@ -12,8 +11,8 @@
   The \code{IRanges} function is a constructor that can be used
   to create IRanges instances.
 
-  \code{solveUserSEW0} and \code{solveUserSEW} are utility functions that
-  solve a set of user-supplied start/end/width values.
+  \code{solveUserSEW} is a low-level utility function for solving
+  a set of user-supplied start/end/width triplets.
 }
 
 \usage{
@@ -21,7 +20,6 @@
 IRanges(start=NULL, end=NULL, width=NULL, names=NULL, ...)
 
 ## Supporting functions (not for the end user):
-solveUserSEW0(start=NULL, end=NULL, width=NULL)
 solveUserSEW(refwidths, start=NA, end=NA, width=NA,
              rep.refwidths=FALSE,
              translate.negative.coord=TRUE,
@@ -30,8 +28,7 @@ solveUserSEW(refwidths, start=NA, end=NA, width=NA,
 
 \arguments{
   \item{start, end, width}{
-    For \code{IRanges} and \code{solveUserSEW0}: \code{NULL},
-    or vector of integers (eventually with NAs).
+    For \code{IRanges}: \code{NULL} or vector of integers.
 
     For \code{solveUserSEW}: vector of integers (eventually
     with NAs).
@@ -86,9 +83,6 @@ solveUserSEW(refwidths, start=NA, end=NA, width=NA,
 
 \section{Supporting functions}{
   \describe{
-    \item{}{
-      \code{solveUserSEW0(start=NULL, end=NULL, width=NULL)}:
-    }
     \item{}{
       \code{solveUserSEW(refwidths, start=NA, end=NA, width=NA,
                rep.refwidths=FALSE,
