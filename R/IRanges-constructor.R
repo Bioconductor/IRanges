@@ -5,12 +5,12 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Low-level IRanges constructors
+### Two low-level helpers
+###
+### Input can contain NAs. Output must be an unnamed integer vector.
 ###
 
-.new_empty_IRanges <- function() new2("IRanges", check=FALSE)
-
-.start_as_integer <- function(start, what="a start")
+.start_as_unnamed_integer <- function(start, what="a start")
 {
     if (is.integer(start))
         return(unname(start))
@@ -24,9 +24,9 @@
     start
 }
 
-.width_as_integer <- function(width, msg="a non-negative width")
+.width_as_unnamed_integer <- function(width, msg="a non-negative width")
 {
-    if (min(width) < 0)
+    if (any(width < 0, na.rm=TRUE))
         stop(wmsg("each range must have ", msg))
     if (is.integer(width))
         return(unname(width))
@@ -39,6 +39,13 @@
     width
 }
 
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Low-level IRanges constructors
+###
+
+.new_empty_IRanges <- function() new2("IRanges", check=FALSE)
+
 .new_IRanges_from_start_end <- function(start, end)
 {
     if (!is.numeric(start) || !is.numeric(end))
@@ -47,12 +54,12 @@
         stop(wmsg("'start' and 'end' cannot contain NAs"))
     if (length(start) == 0L || length(end) == 0L)
         return(.new_empty_IRanges())
-    start <- .start_as_integer(start)
-    end <- .start_as_integer(end, what="an end")
+    start <- .start_as_unnamed_integer(start)
+    end   <- .start_as_unnamed_integer(end, what="an end")
     ## We want to perform this operation in "double" space rather
     ## than in "integer" space so we use 1.0 instead of 1L.
     width <- 1.0 + end - start
-    width <- .width_as_integer(width,
+    width <- .width_as_unnamed_integer(width,
                  msg="an end that is greater or equal to its start minus one")
     start <- S4Vectors:::recycleVector(start, length(width))
     new2("IRanges", start=start, width=width, check=FALSE)
@@ -66,12 +73,12 @@
         stop(wmsg("'start' and 'width' cannot contain NAs"))
     if (length(start) == 0L || length(width) == 0L)
         return(.new_empty_IRanges())
-    start <- .start_as_integer(start)
-    width <- .width_as_integer(width)
+    start <- .start_as_unnamed_integer(start)
+    width <- .width_as_unnamed_integer(width)
     ## We want to perform this operation in "double" space rather
     ## than in "integer" space so we use -1.0 instead of -1L.
     end <- -1.0 + start + width
-    end <- .start_as_integer(end, what="an end")
+    end <- .start_as_unnamed_integer(end, what="an end")
     start <- S4Vectors:::recycleVector(start, length(end))
     width <- S4Vectors:::recycleVector(width, length(end))
     new2("IRanges", start=start, width=width, check=FALSE)
@@ -85,12 +92,12 @@
         stop(wmsg("'end' and 'width' cannot contain NAs"))
     if (length(end) == 0L || length(width) == 0L)
         return(.new_empty_IRanges())
-    end <- .start_as_integer(end, what="an end")
-    width <- .width_as_integer(width)
+    end   <- .start_as_unnamed_integer(end, what="an end")
+    width <- .width_as_unnamed_integer(width)
     ## We want to perform this operation in "double" space rather
     ## than in "integer" space so we use 1.0 instead of 1L.
     start <- 1.0 + end - width
-    start <- .start_as_integer(start)
+    start <- .start_as_unnamed_integer(start)
     start <- suppressWarnings(as.integer(start))
     width <- S4Vectors:::recycleVector(width, length(start))
     new2("IRanges", start=start, width=width, check=FALSE)
@@ -115,17 +122,17 @@
     if (is.logical(start)) {
         start <- as.integer(start)
     } else {
-        start <- .start_as_integer(start)
+        start <- .start_as_unnamed_integer(start)
     }
     if (is.logical(end)) {
         end <- as.integer(end)
     } else {
-        end <- .start_as_integer(end, what="an end")
+        end <- .start_as_unnamed_integer(end, what="an end")
     }
     if (is.logical(width)) {
         width <- as.integer(width)
     } else {
-        width <- .width_as_integer(width)
+        width <- .width_as_unnamed_integer(width)
     }
     ans_len <- max(L1, L2, L3)
     start <- S4Vectors:::recycleVector(start, ans_len)
