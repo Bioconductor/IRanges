@@ -5,7 +5,7 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Low-level IRanges constructor
+### Low-level IRanges constructors
 ###
 
 .new_empty_IRanges <- function() new2("IRanges", check=FALSE)
@@ -24,7 +24,7 @@
     start
 }
 
-.width_as_integer <- function(width, msg="a width that is >= 0")
+.width_as_integer <- function(width, msg="a non-negative width")
 {
     if (min(width) < 0)
         stop(wmsg("each range must have ", msg))
@@ -39,7 +39,7 @@
     width
 }
 
-.normalize_start_end <- function(start, end)
+.new_IRanges_from_start_end <- function(start, end)
 {
     if (!is.numeric(start) || !is.numeric(end))
         stop(wmsg("'start' and 'end' must be numeric vectors"))
@@ -58,7 +58,7 @@
     new2("IRanges", start=start, width=width, check=FALSE)
 }
 
-.normalize_start_width <- function(start, width)
+.new_IRanges_from_start_width <- function(start, width)
 {
     if (!is.numeric(start) || !is.numeric(width))
         stop(wmsg("'start' and 'width' must be numeric vectors"))
@@ -77,7 +77,7 @@
     new2("IRanges", start=start, width=width, check=FALSE)
 }
 
-.normalize_end_width <- function(end, width)
+.new_IRanges_from_end_width <- function(end, width)
 {
     if (!is.numeric(end) || !is.numeric(width))
         stop(wmsg("'end' and 'width' must be numeric vectors"))
@@ -129,7 +129,7 @@
     }
     ans_len <- max(L1, L2, L3)
     start <- S4Vectors:::recycleVector(start, ans_len)
-    end <- S4Vectors:::recycleVector(end, ans_len)
+    end   <- S4Vectors:::recycleVector(end, ans_len)
     width <- S4Vectors:::recycleVector(width, ans_len)
     .Call2("C_solve_start_width_end", start, end, width, PACKAGE="IRanges")
 }
@@ -146,11 +146,11 @@
         stop(wmsg("at least two of the 'start', 'end', and 'width' ",
                   "arguments must be supplied"))
     if (width_is_null)
-        return(.normalize_start_end(start, end))
+        return(.new_IRanges_from_start_end(start, end))
     if (end_is_null)
-        return(.normalize_start_width(start, width))
+        return(.new_IRanges_from_start_width(start, width))
     if (start_is_null)
-        return(.normalize_end_width(end, width))
+        return(.new_IRanges_from_end_width(end, width))
     .solve_start_width_end(start, end, width)
 }
 
