@@ -5,11 +5,15 @@
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Two low-level helpers
-###
-### Input can contain NAs. Output must be an unnamed integer vector.
+### Tree low-level helpers
 ###
 
+.is_numeric_or_NAs <- function(x)
+{
+    is.numeric(x) || is.logical(x) && all(is.na(x))
+}
+
+### Input can contain NAs. Output must be an unnamed integer vector.
 .start_as_unnamed_integer <- function(start, what="a start")
 {
     if (is.integer(start))
@@ -24,6 +28,7 @@
     start
 }
 
+### Input can contain NAs. Output must be an unnamed integer vector.
 .width_as_unnamed_integer <- function(width, msg="a non-negative width")
 {
     if (any(width < 0, na.rm=TRUE))
@@ -48,10 +53,10 @@
 
 .new_IRanges_from_start_end <- function(start, end)
 {
-    if (!is.numeric(start) || !is.numeric(end))
+    if (!.is_numeric_or_NAs(start) || !.is_numeric_or_NAs(end))
         stop(wmsg("'start' and 'end' must be numeric vectors"))
     if (anyNA(start) || anyNA(end))
-        stop(wmsg("'start' and 'end' cannot contain NAs"))
+        stop(wmsg("'start' or 'end' cannot contain NAs"))
     if (length(start) == 0L || length(end) == 0L)
         return(.new_empty_IRanges())
     start <- .start_as_unnamed_integer(start)
@@ -67,10 +72,10 @@
 
 .new_IRanges_from_start_width <- function(start, width)
 {
-    if (!is.numeric(start) || !is.numeric(width))
+    if (!.is_numeric_or_NAs(start) || !.is_numeric_or_NAs(width))
         stop(wmsg("'start' and 'width' must be numeric vectors"))
     if (anyNA(start) || anyNA(width))
-        stop(wmsg("'start' and 'width' cannot contain NAs"))
+        stop(wmsg("'start' or 'width' cannot contain NAs"))
     if (length(start) == 0L || length(width) == 0L)
         return(.new_empty_IRanges())
     start <- .start_as_unnamed_integer(start)
@@ -86,10 +91,10 @@
 
 .new_IRanges_from_end_width <- function(end, width)
 {
-    if (!is.numeric(end) || !is.numeric(width))
+    if (!.is_numeric_or_NAs(end) || !.is_numeric_or_NAs(width))
         stop(wmsg("'end' and 'width' must be numeric vectors"))
     if (anyNA(end) || anyNA(width))
-        stop(wmsg("'end' and 'width' cannot contain NAs"))
+        stop(wmsg("'end' or 'width' cannot contain NAs"))
     if (length(end) == 0L || length(width) == 0L)
         return(.new_empty_IRanges())
     end   <- .start_as_unnamed_integer(end, what="an end")
@@ -101,11 +106,6 @@
     start <- suppressWarnings(as.integer(start))
     width <- S4Vectors:::recycleVector(width, length(start))
     new2("IRanges", start=start, width=width, check=FALSE)
-}
-
-.is_numeric_or_NAs <- function(x)
-{
-    is.numeric(x) || is.logical(x) && all(is.na(x))
 }
 
 .solve_start_width_end <- function(start, end, width)
