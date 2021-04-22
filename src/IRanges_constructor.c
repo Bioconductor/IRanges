@@ -10,7 +10,7 @@ static char errmsg_buf[200];
 
 
 /****************************************************************************
- * C_solve_start_width_end()
+ * C_solve_start_end_width()
  */
 
 /* Return -1 if the range specified by 'start', 'end', and 'width' is
@@ -119,7 +119,7 @@ static int solve_range(int start, int end, int width,
   checked early and an error is raised on the first invalid range (see 1st
   pass below).
 */
-SEXP C_solve_start_width_end(SEXP start, SEXP end, SEXP width)
+SEXP C_solve_start_end_width(SEXP start, SEXP end, SEXP width)
 {
 	int ans_len, use_start_as_is, use_width_as_is,
 	    i, solved_start, solved_width;

@@ -114,7 +114,7 @@
     new2("IRanges", start=start, width=width, check=FALSE)
 }
 
-.solve_start_width_end <- function(start, end, width)
+.solve_start_end_width <- function(start, end, width)
 {
     if (!.is_numeric_or_NAs(start)
      || !.is_numeric_or_NAs(end)
@@ -144,7 +144,7 @@
     start <- S4Vectors:::recycleVector(start, ans_len)
     end   <- S4Vectors:::recycleVector(end, ans_len)
     width <- S4Vectors:::recycleVector(width, ans_len)
-    .Call2("C_solve_start_width_end", start, end, width, PACKAGE="IRanges")
+    .Call2("C_solve_start_end_width", start, end, width, PACKAGE="IRanges")
 }
 
 .new_IRanges <- function(start=NULL, end=NULL, width=NULL)
@@ -164,7 +164,7 @@
         return(.new_IRanges_from_start_width(start, width))
     if (start_is_null)
         return(.new_IRanges_from_end_width(end, width))
-    .solve_start_width_end(start, end, width)
+    .solve_start_end_width(start, end, width)
 }
 
 

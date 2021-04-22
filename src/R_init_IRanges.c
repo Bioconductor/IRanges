@@ -19,7 +19,7 @@ static const R_CallMethodDef callMethods[] = {
 	CALLMETHOD_DEF(C_from_logical_to_NormalIRanges, 1),
 
 /* IRanges_constructor.c */
-	CALLMETHOD_DEF(C_solve_start_width_end, 3),
+	CALLMETHOD_DEF(C_solve_start_end_width, 3),
 	CALLMETHOD_DEF(C_solve_user_SEW, 6),
 
 /* Grouping_class.c */
