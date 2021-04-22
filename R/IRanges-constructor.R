@@ -17,7 +17,10 @@
 .start_as_unnamed_integer <- function(start, what="a start")
 {
     if (is.integer(start))
-        return(unname(start))
+        ## We still pass 'start' thru 'as.integer()' to drop any troublemaker
+        ## attribute like "names", "dim", or "dimnames".
+        ## See https://github.com/Bioconductor/IRanges/issues/37
+        return(as.integer(start))
     old_warn <- getOption("warn")
     options(warn=2L)
     on.exit(options(warn=old_warn))
@@ -34,7 +37,10 @@
     if (any(width < 0, na.rm=TRUE))
         stop(wmsg("each range must have ", msg))
     if (is.integer(width))
-        return(unname(width))
+        ## We still pass 'width' thru 'as.integer()' to drop any troublemaker
+        ## attribute like "names", "dim", or "dimnames".
+        ## See https://github.com/Bioconductor/IRanges/issues/37
+        return(as.integer(width))
     old_warn <- getOption("warn")
     options(warn=2L)
     on.exit(options(warn=old_warn))
