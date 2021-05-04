@@ -21,6 +21,10 @@ setMethod("unsplit", "List", function(value, f, drop = FALSE) {
   if (NROW(value_flat) != length(f))
     stop("Length of 'unlist(value)' must equal length of 'f'")
   splitAsList(value_flat, f, drop = drop) <- value
+  if (!is.null(names(value_flat))) {
+    nms <- relist(names(value_flat), value)
+    splitAsList(names(value_flat), f, drop = drop) <- nms
+  }
   value_flat
 })
 

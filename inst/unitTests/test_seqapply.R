@@ -11,6 +11,15 @@ test_unsplit <- function() {
 
   v <- 1:5
   l <- splitAsList(v, f)
-  checkIdentical(unsplit(l, Rle(f)), v)    
+  checkIdentical(unsplit(l, Rle(f)), v)
+
+  names(ir) <- letters[1:5]
+  rl <- split(ir, f)
+  checkIdentical(unsplit(rl, f), ir)
+
+  ir <- IRanges(1:5, 11:15)
+  names(ir)[c(1,3,5)] <- letters[1:3]
+  rl <- split(ir, f)
+  checkIdentical(unsplit(rl, f), ir)
 }
 
