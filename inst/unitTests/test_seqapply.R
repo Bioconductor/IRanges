@@ -16,6 +16,10 @@ test_unsplit <- function() {
   names(ir) <- letters[1:5]
   rl <- split(ir, f)
   checkIdentical(unsplit(rl, f), ir)
+  
+  df <- DataFrame(unname(ir), row.names=names(ir))
+  dfl <- split(df, f)
+  checkIdentical(unsplit(dfl, f), df)
 
   ir <- IRanges(1:5, 11:15)
   names(ir)[c(1,3,5)] <- letters[1:3]
