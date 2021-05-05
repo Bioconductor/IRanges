@@ -16,7 +16,7 @@ Encoding: UTF-8
 Author: H. Pagès, P. Aboyoun and M. Lawrence
 Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
 Depends: R (>= 4.0.0), methods, utils, stats,
-	BiocGenerics (>= 0.37.0), S4Vectors (>= 0.27.12)
+	BiocGenerics (>= 0.37.0), S4Vectors (>= 0.29.19)
 Imports: stats4
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, Rsamtools, GenomicAlignments, GenomicFeatures,
