@@ -161,6 +161,10 @@ setReplaceMethod("dimnames", "DataFrameList",
 ### So we need to override them.
 setMethod("NROW", "DataFrameList", function(x) length(x))
 setMethod("ROWNAMES", "DataFrameList", function(x) names(x))
+setReplaceMethod("ROWNAMES", "DataFrameList", function(x, value) {
+    names(x) <- value
+    x
+})
 
 setGeneric("commonColnames", function(x) standardGeneric("commonColnames"))
 
