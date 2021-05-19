@@ -1,3 +1,38 @@
+CHANGES IN VERSION 2.26.0
+-------------------------
+
+NEW FEATURES
+
+    o Add commonColnames() accessor to get or set the character vector of
+      column names present in the individual DataFrames of a SplitDataFrameList
+      object.
+
+    o Implement unary + and - for AtomicList derivatives.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+   o Much improved error handling and messages in IRanges() constructor
+     function
+
+DEPRECATED AND DEFUNCT
+
+    o Remove RangesList() constructor (was deprecated in BioC 3.7 and defunct
+      in BioC 3.8).
+
+BUG FIXES
+
+    o Fix unplit() on named List objects.
+
+    o Fix findOverlapPairs() for missing subject (fixes #35).
+
+    o quantile() on an AtomicList object always returns a matrix (fixes #33).
+
+    o Fix which.min()/which.max() for CompressedNumericList objects (fixes #30).
+
+    o Export startsWith() and endsWith() methods for CharacterList/RleList
+      objects (fixes #26).
+
+
 CHANGES IN VERSION 2.24.0
 -------------------------
 

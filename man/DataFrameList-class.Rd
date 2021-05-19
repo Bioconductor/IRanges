@@ -257,6 +257,12 @@
   }
 }
 
+\author{Michael Lawrence, with contributions from Aaron Lun}
+
+\seealso{
+  \code{\linkS4class{DataFrame}}
+}
+
 \examples{
 # Making a DataFrameList, which has different columns.
 out <- DataFrameList(DataFrame(X=1, Y=2), DataFrame(A=1:2, B=3:4))
@@ -279,9 +285,5 @@ out <- splitAsList(DataFrame(X=runif(100), Y=rpois(100, 5)),
 out[['a']]
 }
 
-\author{ Michael Lawrence }
-\seealso{
-  \code{\linkS4class{DataFrame}}
-}
 \keyword{methods}
 \keyword{classes}
