@@ -11,8 +11,8 @@ NEW FEATURES
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
-   o Much improved error handling and messages in IRanges() constructor
-     function
+    o Much improved error handling and messages in IRanges() constructor
+      function
 
 DEPRECATED AND DEFUNCT
 
