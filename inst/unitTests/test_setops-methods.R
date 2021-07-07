@@ -14,6 +14,46 @@ test_IRanges_intersect <- function() {
   checkIdentical(ans, ans0)  
 }
 
+test_NormalIRanges_IRanges_intersect <- function() {
+    
+    x <- as(object = IRanges(c(1, 4, 9), c(5, 7, 10)),
+            Class = "NormalIRanges")
+    mcols(x)$test1 <- c("a", "b")
+    
+    y <- IRanges(c(2, 2, 10), c(2, 3, 12))
+    
+    ans0 <- as(IRanges(c(2,10),c(3,10)), "NormalIRanges")
+    
+    checkIdentical(intersect(x, y, use.mcols = FALSE), ans0)
+    
+    mcols(ans0) <- DataFrame(test1 = c("a", "b"))
+    checkIdentical(intersect(x, y, use.mcols = TRUE), ans0)
+    
+}
+
+test_NormalIRanges_NormalIRanges_intersect <- function() {
+    
+    x <- as(IRanges(c(1, 9), c(7, 14)), "NormalIRanges")
+    mcols(x)$test1 <- c("a", "b")
+    
+    y <- as(IRanges(c(2, 2, 10), c(2, 3, 12)), "NormalIRanges")
+    mcols(y)$test2 = c("c", "d")
+    
+    ans0 <- as(IRanges(c(2,10),c(3,12)), "NormalIRanges")
+    
+    checkIdentical(intersect(x, y), ans0)
+
+    mcols(ans0) <- DataFrame(test1 = c("a", "b"))
+    checkIdentical(intersect(x, y, use.x.mcols = TRUE), ans0)
+
+    mcols(ans0) <- DataFrame(test2 = c("c", "d"))
+    checkIdentical(intersect(x, y, use.y.mcols = TRUE), ans0)
+
+    mcols(ans0) <- DataFrame(test1 = c("a", "b"), test2 = c("c", "d"))
+    checkIdentical(intersect(x, y, use.x.mcols = TRUE, use.y.mcols = TRUE), ans0)
+
+}
+
 test_IRanges_setdiff <- function() {
   x <- IRanges(c(1, 4, 9), c(5, 7, 10))
   y <- IRanges(c(2, 2, 10), c(2, 3, 12))
@@ -23,6 +63,21 @@ test_IRanges_setdiff <- function() {
   ans <- setdiff(y, x)
   ans0 <- IRanges(c(11), c(12))
   checkIdentical(ans, ans0)
+}
+
+test_NormalIRanges_IRanges_setdiff <- function() {
+    
+    x <- as(IRanges(c(1, 4, 9), c(5, 7, 10)), "NormalIRanges")
+    mcols(x)$test1 <- c("a", "b")
+    
+    y <- IRanges(c(2, 2, 10), c(2, 3, 12))
+    
+    ans0 <- as(IRanges(c(1,4,9), c(1,7,9)), "NormalIRanges")
+    checkIdentical(setdiff(x, y), ans0)
+    
+    
+    mcols(ans0)$test1 <- c("a", "a", "b")
+    checkIdentical(setdiff(x, y, use.mcols = TRUE), ans0)
 }
 
 test_IRanges_punion <- function() {
