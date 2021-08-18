@@ -27,15 +27,33 @@ setClass("CompressedSplitDFrameList",
 ### Accessor methods.
 ###
 
+### Deprecated.
+### IMPORTANT NOTE: We won't be able to go thru the Defunct cycle because
+### a lot of code around assumes that ncol() can be called on an arbitrary
+### object!
 setMethod("ncol", "CompressedSplitDataFrameList",
           function(x)
           {
+            msg <- c("The ncol() method for CompressedSplitDataFrameList ",
+                     "objects is deprecated. Please use ncols() on these ",
+                     "objects instead.")
+            .Deprecated(msg=wmsg(msg))
             if (length(x) == 0L)
               0L
             else
               structure(rep.int(ncol(x@unlistData), length(x)),
                         names = names(x))
           })
+
+setMethod("ncols", "CompressedSplitDataFrameList",
+    function(x, use.names=TRUE)
+    {
+        if (!isTRUEorFALSE(use.names))
+            stop(wmsg("'use.names' must be TRUE or FALSE"))
+        ans_names <- if (use.names) names(x) else NULL
+        structure(rep.int(ncol(x@unlistData), length(x)), names=ans_names)
+    }
+)
 
 setMethod("colnames", "CompressedSplitDataFrameList",
           function(x, do.NULL = TRUE, prefix = "col")

@@ -50,11 +50,11 @@
 \alias{CompressedSplitDFrameList}
 
 % accessors
-\alias{nrow,DataFrameList-method}
-\alias{ncol,DataFrameList-method}
-\alias{ncol,CompressedSplitDataFrameList-method}
-\alias{ncol,SimpleSplitDataFrameList-method}
-\alias{dim,DataFrameList-method}
+\alias{nrows,DataFrameList-method}
+\alias{ncols,DataFrameList-method}
+\alias{ncols,SimpleSplitDataFrameList-method}
+\alias{ncols,CompressedSplitDataFrameList-method}
+\alias{dims,DataFrameList-method}
 \alias{rownames,DataFrameList-method}
 \alias{colnames,DataFrameList-method}
 \alias{colnames,SplitDataFrameList-method}
@@ -126,6 +126,13 @@
 \alias{[[<-,SDFLWrapperForTransform-method}
 \alias{as.env,SDFLWrapperForTransform-method}
 
+% deprecated & defunt
+\alias{nrow,DataFrameList-method}
+\alias{ncol,DataFrameList-method}
+\alias{ncol,SimpleSplitDataFrameList-method}
+\alias{ncol,CompressedSplitDataFrameList-method}
+\alias{dim,DataFrameList-method}
+
 \title{List of DataFrames}
 \description{Represents a list of \code{\linkS4class{DataFrame}} objects.
   The \code{SplitDataFrameList} class contains the additional restriction
@@ -136,7 +143,7 @@
 \section{Accessors}{
   In the following code snippets, \code{x} is a \code{DataFrameList}.
   \describe{
-    \item{}{\code{dim(x)}: Get the two element integer vector indicating
+    \item{}{\code{dims(x)}: Get the two-column matrix indicating
       the number of rows and columns over the entire dataset.}
     \item{}{\code{dimnames(x)}: Get the list of two CharacterLists,
       the first holding the rownames (possibly \code{NULL}) and the second

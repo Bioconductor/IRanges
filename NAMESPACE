@@ -217,6 +217,7 @@ exportMethods(
     table,
     union, intersect, setdiff,
     start, "start<-", end, "end<-", width, "width<-", pos,
+    dims, nrows, ncols,
     updateObject,
 
     ## Methods for generics defined in the S4Vectors package:

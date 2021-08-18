@@ -47,27 +47,72 @@ setClass("SimpleSplitDFrameList",
 ### Accessor methods.
 ###
 
+### Deprecated.
+### IMPORTANT NOTE: We won't be able to go thru the Defunct cycle because
+### a lot of code around assumes that nrow() can be called on an arbitrary
+### object!
 setMethod("nrow", "DataFrameList",
           function(x)
           {
+            msg <- c("The nrow() method for DataFrameList objects is ",
+                     "deprecated. Please use nrows() on these objects ",
+                     "instead.")
+            .Deprecated(msg=wmsg(msg))
             if (length(x) == 0L)
               0L
             else
               elementNROWS(x)
           })
 
+setMethod("nrows", "DataFrameList",
+    function(x, use.names=TRUE)
+    {
+        if (!isTRUEorFALSE(use.names))
+            stop(wmsg("'use.names' must be TRUE or FALSE"))
+        ans <- elementNROWS(x)
+        if (!use.names)
+            names(ans) <- NULL
+        ans
+    }
+)
+
+### Deprecated.
+### IMPORTANT NOTE: We won't be able to go thru the Defunct cycle because
+### a lot of code around assumes that ncol() can be called on an arbitrary
+### object!
 setMethod("ncol", "DataFrameList",
           function(x)
           {
+            msg <- c("The ncol() method for DataFrameList objects is ",
+                     "deprecated. Please use ncols() on these objects ",
+                     "instead.")
+            .Deprecated(msg=wmsg(msg))
             if (length(x) == 0L)
               0L
             else
               unlist(lapply(x, ncol))
           })
 
+setMethod("ncols", "DataFrameList",
+    function(x, use.names=TRUE)
+    {
+        if (!isTRUEorFALSE(use.names))
+            stop(wmsg("'use.names' must be TRUE or FALSE"))
+        vapply(x, ncol, integer(1), USE.NAMES=use.names)
+    }
+)
+
+### Deprecated.
+### IMPORTANT NOTE: We won't be able to go thru the Defunct cycle because
+### a lot of code around assumes that ncol() can be called on an arbitrary
+### object!
 setMethod("ncol", "SimpleSplitDataFrameList",
           function(x)
           {
+            msg <- c("The ncol() method for SimpleSplitDataFrameList objects ",
+                     "is deprecated. Please use ncols() on these objects ",
+                     "instead.")
+            .Deprecated(msg=wmsg(msg))
             if (length(x) == 0L)
               0L
             else
@@ -75,11 +120,36 @@ setMethod("ncol", "SimpleSplitDataFrameList",
                         names = names(x))
           })
 
+setMethod("ncols", "SimpleSplitDataFrameList",
+    function(x, use.names=TRUE)
+    {
+        if (!isTRUEorFALSE(use.names))
+            stop(wmsg("'use.names' must be TRUE or FALSE"))
+        ans_names <- if (use.names) names(x) else NULL
+        structure(rep.int(ncol(x[[1L]]), length(x)), names=ans_names)
+    }
+)
+
+### Deprecated.
+### IMPORTANT NOTE: We won't be able to go thru the Defunct cycle because
+### a lot of code around assumes that dim() can be called on an arbitrary
+### object e.g. in S4Vectors:::.NSBS.character_OR_factor().
 setMethod("dim", "DataFrameList",
           function(x)
           {
+            msg <- c("The dim() method for DataFrameList objects is ",
+                     "deprecated. Please use dims() on these objects ",
+                     "instead.")
+            .Deprecated(msg=wmsg(msg))
             cbind(nrow(x), ncol(x))
           })
+
+setMethod("dims", "DataFrameList",
+    function(x, use.names=TRUE)
+    {
+        cbind(nrows(x, use.names=use.names), ncols(x, use.names=FALSE))
+    }
+)
 
 setMethod("rownames", "DataFrameList",
           function(x, do.NULL = TRUE, prefix = "row")
@@ -284,7 +354,7 @@ setMethod("normalizeSingleBracketReplacementValue", "SplitDataFrameList",
     function(value, x)
     {
         value <- callNextMethod()  # call default method
-        if (length(x) != 0L && ncol(x)[[1L]] == ncol(value)[[1L]])
+        if (length(x) != 0L && ncols(x)[[1L]] == ncols(value)[[1L]])
             colnames(value)[[1L]] <- colnames(x)[[1L]]
         value
     }
