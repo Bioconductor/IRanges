@@ -158,58 +158,72 @@ export(
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Export S4 methods for generics not defined in IRanges
+### Export S4 methods for generics NOT defined in this package
 ###
 
 exportMethods(
+    ## Methods for generics defined in the base package:
     length, "length<-",
     names, "names<-",
-    nrow, NROW,
-    ncol, NCOL,
     dim,
-    rownames, ROWNAMES, "rownames<-", "ROWNAMES<-",
-    colnames, "colnames<-",
     dimnames, "dimnames<-",
     "[", "[<-", "[[", "[[<-",
-    as.vector,
     as.integer,
     as.character,
     as.factor,
     as.matrix,
-    as.data.frame,
-    as.list,
-    coerce,
-    show,
-    match, duplicated, unique, anyDuplicated,
-    is.unsorted, order,
-    Ops, Math, Math2, Summary, Complex,
-    summary,
     drop,
-    start, "start<-", end, "end<-", width, "width<-", pos,
-    min, max, range, which.max, which.min,
+    min, max, range,
     diff,
-    mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
-    "window<-", transform,
-    nchar, chartr, tolower, toupper, sub, gsub, startsWith, endsWith,
-    unlist, stack, "split<-", unsplit,
-    relist,
-    append,
-    "!", which,
+    transform,
+    nchar, chartr, tolower, toupper,
+    sub, gsub,
+    startsWith, endsWith,
+    "split<-",
+    "!",
     merge,
     is.na,
     by,
-    cbind, rbind,
-    lapply,
+
+    ## Methods for generics defined in the methods package:
+    coerce, show,
+    Ops, Math, Math2, Summary, Complex,
+
+    ## Methods for generics defined in the utils package:
+    stack,
+
+    ## Methods for generics defined in the stats package:
+    mean, var, cov, cor, sd, median, quantile, mad, IQR, smoothEnds, runmed,
+    "window<-",
+
+    ## Methods for generics defined in the stats4 package:
+    summary,
+
+    ## Methods for generics defined in the BiocGenerics package:
+    nrow, ncol,
+    NROW, NCOL,
+    rownames, "rownames<-",
+    colnames, "colnames<-",
+    rbind, cbind,
+    unlist, relist, unsplit,
+    lapply, tapply,
+    as.vector, as.list, as.data.frame,
+    which, which.max, which.min,
     pmax, pmin, pmax.int, pmin.int,
+    match, duplicated, unique, anyDuplicated,
+    is.unsorted, order,
+    append,
     paste,
     table,
-    tapply,
     union, intersect, setdiff,
+    start, "start<-", end, "end<-", width, "width<-", pos,
     updateObject,
+
+    ## Methods for generics defined in the S4Vectors package:
+    ROWNAMES, "ROWNAMES<-",
     bindROWS,
     extractROWS, replaceROWS, getListElement,
     parallel_slot_names,
-    values, "values<-",
     classNameForDisplay,
     from, to,
     nLnode, nRnode,
@@ -267,7 +281,7 @@ export(
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Export S4 generics defined in IRanges + export corresponding methods
+### Export S4 generics defined in IRanges, and corresponding methods
 ###
 
 export(
@@ -349,7 +363,7 @@ export(
     ifelse2
 )
 
-### Exactly the same list as above.
+### Same list as above.
 exportMethods(
     ranges, rglist,
     runsum, runmean, runwtsum, runq,
