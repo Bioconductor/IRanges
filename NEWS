@@ -1,3 +1,17 @@
+CHANGES IN VERSION 2.28.0
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Replace dim(), nrow(), and ncol() methods for DataFrameList objects with
+      dims(), nrows(), and ncols() methods.
+
+DEPRECATED AND DEFUNCT
+
+    o Deprecate dim(), nrow(), and ncol() methods for DataFrameList objects
+      in favor of the new dims(), nrows(), and ncols() methods.
+
+
 CHANGES IN VERSION 2.26.0
 -------------------------
 
