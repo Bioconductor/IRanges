@@ -64,6 +64,64 @@ setMethod("union", c("Pairs", "missing"), function(x, y, ...) {
 ### intersect()
 ###
 
+
+### If both inputs are NormalIRanges, return a NormalIRanges
+### with mcols() of both inputs propagated
+setMethod("intersect", c("NormalIRanges", "NormalIRanges"),
+    function(x, y, use.x.mcols = FALSE, use.y.mcols = FALSE)
+    {
+        
+        # browser()
+        if (!isTRUEorFALSE(use.x.mcols))
+            stop("'use.x.mcols' must be TRUE or FALSE")
+        if (!isTRUEorFALSE(use.y.mcols))
+            stop("'use.y.mcols' must be TRUE or FALSE")
+        
+        ans <- as(callNextMethod(), "NormalIRanges")
+        
+        if (use.x.mcols & !use.y.mcols) {
+            xidx <- subjectHits(findOverlaps(ans, x))
+            mcols(ans) <- mcols(x)[xidx,,drop=FALSE]
+        }
+        if (use.y.mcols & !use.x.mcols) {
+            yidx <- subjectHits(findOverlaps(ans, y))
+            mcols(ans) <- mcols(y)[yidx,,drop=FALSE]
+        }
+        if (use.x.mcols & use.y.mcols) {
+            xidx <- subjectHits(findOverlaps(ans, x))
+            yidx <- subjectHits(findOverlaps(ans, y))
+            mcols(ans) <- cbind(mcols(x)[xidx,,drop=FALSE],
+                                mcols(y)[yidx,,drop=FALSE])
+        }
+        ans
+    }
+)
+
+
+### If x input is NormalIRanges and y is IntegerRanges, return a NormalIRanges
+### optionally propagate mcols(x) to result
+### can't propagate mcols(y), bc y may be non-normal
+### (mapping from y -> ans may be many-to-one)
+setMethod("intersect", c("NormalIRanges", "IntegerRanges"),
+    function(x, y, use.mcols = FALSE)
+    {
+        
+        # browser()
+        if (!isTRUEorFALSE(use.mcols))
+            stop("'use.mcols' must be TRUE or FALSE")
+        
+        ans <- as(callNextMethod(x, y), "NormalIRanges")
+        
+        if (use.mcols) {
+            idx <- subjectHits(findOverlaps(ans, x))
+            mcols(ans) <- mcols(x)[idx,,drop=FALSE]
+        }
+        
+        ans
+    }
+)
+
+
 ### Always return an IRanges *instance* whatever IntegerRanges derivatives
 ### are passed to it (e.g. IPos, NCList or NormalIRanges), so does NOT act
 ### like an endomorphism in general.
@@ -113,6 +171,23 @@ setMethod("intersect", c("CompressedAtomicList", "CompressedAtomicList"),
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### setdiff()
 ###
+
+### if input x is NormalIRanges, and y is an IntegerRanges,
+### return a NormalIRanges and optionally propagate mcols(x)
+setMethod("setdiff", c("NormalIRanges", "IRanges"),
+    function(x, y, use.mcols = FALSE)
+    {
+        ans <- as(callNextMethod(), "NormalIRanges")
+
+        if (use.mcols) {
+            idx <- subjectHits(findOverlaps(ans, x))
+            mcols(ans) <- mcols(x)[idx,,drop=FALSE]
+        }
+        
+        ans
+    }
+)
+
 
 ### Always return an IRanges *instance* whatever IntegerRanges derivatives
 ### are passed to it (e.g. IPos, NCList or NormalIRanges), so does NOT act
