@@ -5,7 +5,8 @@
 
 setClass("CompressedDataFrameList",
     contains=c("DataFrameList", "CompressedList"),
-    representation(unlistData="DataFrame")
+    representation("VIRTUAL", unlistData="DataFrame"),
+    prototype(unlistData=new("DFrame"))
 )
 
 setClass("CompressedDFrameList",
@@ -14,7 +15,8 @@ setClass("CompressedDFrameList",
 )
 
 setClass("CompressedSplitDataFrameList",
-    contains=c("SplitDataFrameList", "CompressedDataFrameList")
+    contains=c("SplitDataFrameList", "CompressedDataFrameList"),
+    representation("VIRTUAL")
 )
 
 setClass("CompressedSplitDFrameList",

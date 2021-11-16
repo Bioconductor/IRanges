@@ -16,7 +16,8 @@ setClass("DFrameList",
 )
 
 setClass("SimpleDataFrameList",
-    contains=c("DataFrameList", "SimpleList")
+    contains=c("DataFrameList", "SimpleList"),
+    representation("VIRTUAL")
 )
 
 setClass("SimpleDFrameList",
@@ -34,7 +35,8 @@ setClass("SplitDFrameList",
 )
 
 setClass("SimpleSplitDataFrameList",
-    contains=c("SplitDataFrameList", "SimpleDataFrameList")
+    contains=c("SplitDataFrameList", "SimpleDataFrameList"),
+    representation("VIRTUAL")
 )
 
 setClass("SimpleSplitDFrameList",
