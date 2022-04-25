@@ -1,3 +1,15 @@
+CHANGES IN VERSION 2.30.0
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Like the DataFrame class defined in the S4Vectors package, classes
+      SimpleDataFrameList, CompressedDataFrameList, SimpleSplitDataFrameList,
+      and CompressedSplitDataFrameList, are now virtual. This completes the
+      replacement of DataFrame with DFrame announced in September 2019. See:
+      https://www.bioconductor.org/help/course-materials/2019/BiocDevelForum/02-DataFrame.pdf
+
+
 CHANGES IN VERSION 2.28.0
 -------------------------
 
