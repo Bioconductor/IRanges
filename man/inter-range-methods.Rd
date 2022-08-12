@@ -83,7 +83,7 @@ reduce(x, drop.empty.ranges=FALSE, ...)
 
 ## gaps()
 ## ------
-gaps(x, start=NA, end=NA)
+gaps(x, start=NA, end=NA, ...)
 
 ## disjoin(), isDisjoint(), and disjointBins()
 ## -------------------------------------------

@@ -243,7 +243,7 @@ setMethod("reduce", "CompressedIRangesList", .reduce_CompressedIRangesList)
 ###
 
 setGeneric("gaps", signature="x",
-    function(x, start=NA, end=NA) standardGeneric("gaps")
+    function(x, start=NA, end=NA, ...) standardGeneric("gaps")
 )
 
 ### Always return an IRanges (or NormalIRanges) *instance* whatever
