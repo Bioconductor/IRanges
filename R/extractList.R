@@ -80,8 +80,8 @@ setMethod("relist", c("Vector", "list"),
 ### default_splitAsList()
 ###
 
-### Equivalent to 'unname(.splitAsList_by_integer(x, seq_along(x)))' but
-### slightly faster (e.g. twice faster on 'IRanges(1, 1:500000)').
+### Equivalent to 'setNames(splitAsList(unname(x), seq_along(x)), names(x))'
+### but slightly faster (e.g. twice faster on 'IRanges(1, 1:500000)').
 .dumb_splitAsList <- function(x)
 {
     f <- PartitioningByEnd(seq_along(x), names=names(x))
