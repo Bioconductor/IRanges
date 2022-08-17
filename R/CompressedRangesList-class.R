@@ -134,13 +134,7 @@ setAs("list", "CompressedIRangesList", .from_list_to_CompressedIRangesList)
 {
     if (!is(from, "IRanges"))
         from <- as(from, "IRanges", strict=FALSE)
-    ans_partitioning <- PartitioningByEnd(seq_along(from), names=names(from))
-    names(from) <- NULL
-    ans_mcols <- mcols(from, use.names=FALSE)
-    mcols(from) <- NULL
-    ans <- relist(from, ans_partitioning)
-    mcols(ans) <- ans_mcols
-    ans
+    from_Vector_to_CompressedList(from)
 }
 
 setAs("List", "CompressedIRangesList",
