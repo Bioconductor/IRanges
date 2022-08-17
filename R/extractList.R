@@ -80,6 +80,14 @@ setMethod("relist", c("Vector", "list"),
 ### default_splitAsList()
 ###
 
+### Equivalent to 'unname(.splitAsList_by_integer(x, seq_along(x)))' but
+### slightly faster (e.g. twice faster on 'IRanges(1, 1:500000)').
+.dumb_splitAsList <- function(x)
+{
+    f <- PartitioningByEnd(seq_along(x), names=names(x))
+    relist(unname(x), f)
+}
+
 ### 'f' is assumed to be an integer vector with no NAs.
 .splitAsList_by_integer <- function(x, f, drop)
 {
@@ -191,7 +199,7 @@ setMethod("relist", c("Vector", "list"),
     relist(x, f)
 }
 
-toFactor <- function(x) {
+.to_factor <- function(x) {
     if (is(x, "Rle")) {
         runValue(x) <- as.factor(runValue(x))
         x
@@ -199,10 +207,10 @@ toFactor <- function(x) {
 }
 
 ### Took this out of the still-in-incubation LazyList package
-interaction2 <- function(factors) {
+.interaction2 <- function(factors) {
   nI <- length(factors)
   nx <- length(factors[[1L]])
-  factors <- lapply(factors, toFactor)
+  factors <- lapply(factors, .to_factor)
   useRle <- any(vapply(factors, is, logical(1), "Rle"))
   if (useRle) {
     group <- as(factors[[1L]], "Rle")
@@ -232,7 +240,7 @@ interaction2 <- function(factors) {
   }
 }
 
-normSplitFactor <- function(f, x) {
+.normarg_f <- function(f, x) {
   if (is(f, "formula")) {
     if (length(f) == 3L)
       stop("formula 'f' should not have a left hand side")
@@ -240,9 +248,9 @@ normSplitFactor <- function(f, x) {
   }
   if (is.list(f) || is(f, "List")) {
       if (length(f) == 1L) {
-          f <- toFactor(f[[1L]])
+          f <- .to_factor(f[[1L]])
       } else {
-          f <- interaction2(f)
+          f <- .interaction2(f)
       }
   }
   f_len <- length(f)
@@ -289,7 +297,10 @@ default_splitAsList <- function(x, f, drop=FALSE)
     if (!isTRUEorFALSE(drop))
         stop("'drop' must be TRUE or FALSE")
 
-    f <- normSplitFactor(f, x)
+    if (missing(f))
+        return(.dumb_splitAsList(x))
+
+    f <- .normarg_f(f, x)
     if (anyNA(f)) {
         keep_idx <- which(!is.na(f))
         x <- extractROWS(x, keep_idx)
