@@ -269,7 +269,7 @@ setMethod("relist", c("Vector", "list"),
 ## todo: Would be faster if sort() returned grouping info,
 ##       but then we might coalesce this with the order/split.
 ## todo: if we could pass na.rm=TRUE to grouping(), NAs would be handled
-as.factor2 <- function(x) {
+.as_factor <- function(x) {
     if (is.factor(x))
         return(x)
     if (is.null(x))
@@ -310,7 +310,7 @@ default_splitAsList <- function(x, f, drop=FALSE)
     if (is.integer(f))
         return(.splitAsList_by_integer(x, f, drop))
     if (!is(f, "Rle")) {
-        f <- as.factor2(f)
+        f <- .as_factor(f)
         return(.splitAsList_by_factor(x, f, drop))
     }
     ## From now on, 'f' is guaranteed to be an Rle.
