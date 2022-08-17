@@ -236,6 +236,22 @@ setListCoercions <- function(type) {
   setAs("list", Class, CoercerToList(type, compress = FALSE))
 }
 
+### Used by the following coercion methods to perform a "dumb split" with
+### propagation of the metadata columns:
+###   - from IntegerRanges to CompressedIRangesList
+###   - from GenomicRanges to CompressedGRangesList
+###   - from XStringSet to XStringSetList
+###   - and maybe more...
+### NOT exported.
+from_Vector_to_CompressedList <- function(from)
+{
+    ans_mcols <- mcols(from, use.names=FALSE)
+    mcols(from) <- NULL
+    ans <- splitAsList(from)  # dumb split
+    mcols(ans) <- ans_mcols
+    ans
+}
+
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Subsetting.
