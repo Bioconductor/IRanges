@@ -1,3 +1,18 @@
+CHANGES IN VERSION 2.32.0
+-------------------------
+
+NEW FEATURES
+
+    o splitAsList() can now perform a "dumb split", that is, when
+      no split factor is supplied, 'splitAsList(x)' is equivalent
+      to 'unname(splitAsList(x, seq_along(x)))' but is slightly more
+      efficient.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Add ellipsis argument (...) to the gaps() generic function.
+
+
 CHANGES IN VERSION 2.30.0
 -------------------------
 

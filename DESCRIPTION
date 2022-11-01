@@ -13,8 +13,11 @@ BugReports: https://github.com/Bioconductor/IRanges/issues
 Version: 2.31.2
 License: Artistic-2.0
 Encoding: UTF-8
-Author: H. Pagès, P. Aboyoun and M. Lawrence
-Maintainer: Bioconductor Package Maintainer <maintainer@bioconductor.org>
+Authors@R: c(
+	person("Hervé", "Pagès", role=c("aut", "cre"),
+		email="hpages.on.github@gmail.com"),
+	person("Patrick", "Aboyoun", role="aut"),
+	person("Michael", "Lawrence", role="aut"))
 Depends: R (>= 4.0.0), methods, utils, stats,
 	BiocGenerics (>= 0.39.2), S4Vectors (>= 0.33.3)
 Imports: stats4
