@@ -679,7 +679,15 @@ PartitioningByEnd <- function(x=integer(0), NG=NULL, names=NULL)
             return(x)
         }
         x_names <- names(x)
-        ans_end <- cumsum(elementNROWS(x))
+        if (length(x) == 0L) {
+            ans_end <- integer(0)
+        } else {
+            x_NROWS <- elementNROWS(x)
+            ans_end <- suppressWarnings(cumsum(x_NROWS))
+            if (is.na(ans_end[[length(ans_end)]]))
+                stop(wmsg(class(x)[[1L]], " object 'x' is too big (the ",
+                          "cumulated length of its list elements is >= 2^32)"))
+        }
     } else {
         if (!is.numeric(x))
             stop(wmsg("'x' must be either a list-like object or ",

@@ -100,7 +100,18 @@ AtomicListConstructor <- function(type, compress.default = TRUE) {
       stop("'compress' must be TRUE or FALSE")
     listData <- .dotargsAsList(type, ...)
     CompressedOrSimple <- if (compress) "Compressed" else "Simple"
-    if (is(listData, S4Vectors:::listClassName(CompressedOrSimple, type)))
+    ans_class <- S4Vectors:::listClassName(CompressedOrSimple, type)
+    if (compress && sum(lengths(listData)) > .Machine$integer.max) {
+        contructor_name <- paste0(toupper(substr(type, start=1L, stop=1L)),
+                                  substr(type, start=2L, stop=nchar(type)),
+                                  "List")
+        stop(wmsg("input of ", contructor_name, "() is too big ",
+                  "for 'compress=TRUE' (the cumulated length of the ",
+                  "list elements in the resulting ", ans_class, " object ",
+                  "would exceed 2^31); please call the constructor ",
+                  "with 'compress=FALSE' instead"))
+    }
+    if (is(listData, ans_class))
       listData
     else CoercerToList(type, compress)(listData)
   }, list(type = type)))

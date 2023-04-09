@@ -661,7 +661,7 @@ SEXP C_print_NCListAsINTSXP(SEXP x_nclist, SEXP x_start, SEXP x_end)
 	const int *top_nclist;
 	int x_len, max_digits, maxdepth;
 	const int *x_start_p, *x_end_p;
-	char format[10];
+	char format[15];
 
 	top_nclist = INTEGER(x_nclist);
 	x_len = check_integer_pairs(x_start, x_end,

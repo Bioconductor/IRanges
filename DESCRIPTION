@@ -10,7 +10,7 @@ Description: Provides efficient low-level and highly reusable S4
 biocViews: Infrastructure, DataRepresentation
 URL: https://bioconductor.org/packages/IRanges
 BugReports: https://github.com/Bioconductor/IRanges/issues
-Version: 2.33.0
+Version: 2.33.1
 License: Artistic-2.0
 Encoding: UTF-8
 Authors@R: c(
