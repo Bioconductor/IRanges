@@ -80,23 +80,23 @@
 
 \section{Accessors}{
   In the code snippets below, \code{x} is a \code{IntegerRangesList}
-  object. 
+  object.
 
   All of these accessors collapse over the spaces:
   \describe{
-    \item{}{\code{start(x), start(x) <- value}: Get or set the starts of the
+    \item{\code{start(x), start(x) <- value}:}{ Get or set the starts of the
       ranges. When setting the starts, \code{value} can be an integer vector
       of length \code{sum(elementNROWS(x))} or an IntegerList object of
       length \code{length(x)} and names \code{names(x)}.}
-    \item{}{\code{end(x), end(x) <- value}: Get or set the ends of the
+    \item{\code{end(x), end(x) <- value}:}{ Get or set the ends of the
       ranges. When setting the ends, \code{value} can be an integer vector
       of length \code{sum(elementNROWS(x))} or an IntegerList object of
       length \code{length(x)} and names \code{names(x)}.}
-    \item{}{\code{width(x), width(x) <- value}: Get or set the widths of the
+    \item{\code{width(x), width(x) <- value}:}{ Get or set the widths of the
       ranges. When setting the widths, \code{value} can be an integer vector
       of length \code{sum(elementNROWS(x))} or an IntegerList object of
       length \code{length(x)} and names \code{names(x)}.}
-    \item{}{\code{space(x)}: Gets the spaces of the ranges as a
+    \item{\code{space(x)}:}{ Gets the spaces of the ranges as a
       character vector. This is equivalent to \code{names(x)}, except each
       name is repeated according to the length of its element.
     }
@@ -106,20 +106,18 @@
 \section{Coercion}{
   In the code snippet below, \code{x} is an \code{IntegerRangesList} object.
   \describe{
-    \item{}{
-      \code{as.data.frame(x, row.names = NULL, optional = FALSE,
-         ..., value.name = "value", use.outer.mcols = FALSE, 
-         group_name.as.factor = FALSE)}: 
-      Coerces \code{x} to a \code{data.frame}. See as.data.frame on the 
-      \code{List} man page for details (?\code{List}). 
+    \item{\code{as.data.frame(x, row.names = NULL, optional = FALSE,
+         ..., value.name = "value", use.outer.mcols = FALSE,
+         group_name.as.factor = FALSE)}:}{
+      Coerces \code{x} to a \code{data.frame}. See as.data.frame on the
+      \code{List} man page for details (?\code{List}).
     }
   }
 
   In the following code snippet, \code{from} is something other than a
   \code{IntegerRangesList}:
   \describe{
-    \item{}{
-      \code{as(from, "IntegerRangesList")}: When \code{from} is a
+    \item{\code{as(from, "IntegerRangesList")}:}{ When \code{from} is a
       \code{IntegerRanges}, analogous to \code{as.list} on a vector.
     }
   }

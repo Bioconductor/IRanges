@@ -203,29 +203,24 @@
 
   If \code{x} is a Grouping object:
   \describe{
-    \item{}{
-      \code{length(x)}:
+    \item{\code{length(x)}:}{
       Returns the number of groups (NG).
     }
-    \item{}{
-      \code{names(x)}:
+    \item{\code{names(x)}:}{
       Returns the names of the groups.
     }
-    \item{}{
-      \code{nobj(x)}:
+    \item{\code{nobj(x)}:}{
       Returns the number of objects (NO).
     }
   }
   
   Going from groups to objects:
   \describe{
-    \item{}{
-      \code{x[[i]]}:
+    \item{\code{x[[i]]}:}{
       Returns the indices of the objects (the j's) that belong to G_i.
       This provides the mapping from groups to objects.
     }
-    \item{}{
-      \code{grouplengths(x, i=NULL)}:
+    \item{\code{grouplengths(x, i=NULL)}:}{
       Returns the number of objects in G_i.
       Works in a vectorized fashion (unlike \code{x[[i]]}).
       \code{grouplengths(x)} is equivalent to
@@ -257,14 +252,12 @@
   The ManyToOneGrouping API extends the core Grouping API by adding a couple
   more operations for going from groups to objects:
   \describe{
-    \item{}{
-      \code{members(x, i)}:
+    \item{\code{members(x, i)}:}{
       Equivalent to \code{x[[i]]} if \code{i} is a single integer.
       Otherwise, if \code{i} is an integer vector of arbitrary length, it's
       equivalent to \code{sort(unlist(sapply(i, function(ii) x[[ii]])))}.
     }
-    \item{}{
-      \code{vmembers(x, L)}:
+    \item{\code{vmembers(x, L)}:}{
       A version of \code{members} that works in a vectorized fashion with
       respect to the \code{L} argument (\code{L} must be a list of integer
       vectors). Returns \code{lapply(L, function(i) members(x, i))}.
@@ -273,8 +266,7 @@
 
   And also by adding operations for going from objects to groups:
   \describe{
-    \item{}{
-      \code{togroup(x, j=NULL)}:
+    \item{\code{togroup(x, j=NULL)}:}{
       Returns the index i of the group that O_j belongs to.
       This provides the mapping from objects to groups (many-to-one mapping).
       Works in a vectorized fashion. \code{togroup(x)} is equivalent to
@@ -283,8 +275,7 @@
       If \code{j} is not NULL, \code{togroup(x, j)} is equivalent to
       \code{y <- togroup(x); y[j]}.
     }
-    \item{}{
-      \code{togrouplength(x, j=NULL)}:
+    \item{\code{togrouplength(x, j=NULL)}:}{
       Returns the number of objects that belong to the same group as O_j
       (including O_j itself).
       Equivalent to \code{grouplengths(x, togroup(x, j))}.
@@ -304,16 +295,13 @@
 
   Constructors:
   \describe{
-    \item{}{
-      \code{H2LGrouping(high2low=integer())}:
+    \item{\code{H2LGrouping(high2low=integer())}:}{
       [DOCUMENT ME]
     }
-    \item{}{
-      \code{Dups(high2low=integer())}:
+    \item{\code{Dups(high2low=integer())}:}{
       [DOCUMENT ME]
     }
-    \item{}{
-      \code{ManyToOneGrouping(..., compress=TRUE)}: Collect \code{\dots}
+    \item{\code{ManyToOneGrouping(..., compress=TRUE)}:}{ Collect \code{\dots}
       into a \code{ManyToOneGrouping}. The arguments will be coerced to
       integer vectors and combined into a list, unless there is a single
       list argument, which is taken to be an integer list. The resulting
@@ -334,8 +322,7 @@
 
   Constructors:
   \describe{
-    \item{}{
-      \code{ManyToManyGrouping(x, compress=TRUE)}: Collect \code{\dots}
+    \item{\code{ManyToManyGrouping(x, compress=TRUE)}:}{ Collect \code{\dots}
       into a \code{ManyToManyGrouping}. The arguments will be coerced to
       integer vectors and combined into a list, unless there is a single
       list argument, which is taken to be an integer list. The resulting
@@ -376,8 +363,7 @@
 
   Constructors:
   \describe{
-    \item{}{
-      \code{PartitioningByEnd(x=integer(), NG=NULL, names=NULL)}:
+    \item{\code{PartitioningByEnd(x=integer(), NG=NULL, names=NULL)}:}{
       \code{x} must be either a list-like object or a sorted integer vector.
       \code{NG} must be either \code{NULL} or a single integer.
       \code{names} must be either \code{NULL} or a character vector of
@@ -403,8 +389,7 @@
       If the \code{names} argument is supplied, it is used to name the
       partitions.
     }
-    \item{}{
-      \code{PartitioningByWidth(x=integer(), NG=NULL, names=NULL)}:
+    \item{\code{PartitioningByWidth(x=integer(), NG=NULL, names=NULL)}:}{
       \code{x} must be either a list-like object or an integer vector.
       \code{NG} must be either \code{NULL} or a single integer.
       \code{names} must be either \code{NULL} or a character vector of
@@ -430,8 +415,7 @@
       If the \code{names} argument is supplied, it is used to name the
       partitions.
     }
-    \item{}{
-      \code{PartitioningMap(x=integer(), mapOrder=integer())}:
+    \item{\code{PartitioningMap(x=integer(), mapOrder=integer())}:}{
       \code{x} is a list-like object or a sorted integer vector used to
                construct a PartitioningByEnd object.
       \code{mapOrder} numeric vector of the mapped order.

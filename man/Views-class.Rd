@@ -52,8 +52,7 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{
-      \code{Views(subject, start=NULL, end=NULL, width=NULL, names=NULL)}:
+    \item{\code{Views(subject, start=NULL, end=NULL, width=NULL, names=NULL)}:}{
       This constructor is a generic function with dispatch on argument
       \code{subject}. Specific methods must be defined for the subclasses
       of the Views class. For example a method for
@@ -78,8 +77,7 @@
   In the code snippets below, \code{from} is a Views object:
 
   \describe{
-    \item{}{
-      \code{as(from, "IRanges")}: Creates an \code{IRanges} object
+    \item{\code{as(from, "IRanges")}:}{ Creates an \code{IRanges} object
       containing the view locations in \code{from}.
     }
   }
@@ -91,8 +89,7 @@
   for Views objects:
 
   \describe{
-    \item{}{
-      \code{subject(x)}:
+    \item{\code{subject(x)}:}{
       Return the subject of the views.
     }
   }
@@ -100,11 +97,9 @@
 
 \section{Subsetting}{
   \describe{
-    \item{}{
-      \code{x[i]}: Select the views specified by \code{i}.
+    \item{\code{x[i]}:}{ Select the views specified by \code{i}.
     }
-    \item{}{
-      \code{x[[i]]}:
+    \item{\code{x[[i]]}:}{
       Extracts the view selected by \code{i} as an object of the same class
       as \code{subject(x)}. Subscript \code{i} can be a single integer
       or a character string.
@@ -118,8 +113,7 @@
 
 \section{Concatenation}{
   \describe{
-    \item{}{
-      \code{c(x, ..., ignore.mcols=FALSE)}: Concatenate \code{Views} objects.
+    \item{\code{c(x, ..., ignore.mcols=FALSE)}:}{ Concatenate \code{Views} objects.
       They must have the same subject.
     }
   }
@@ -127,21 +121,18 @@
 
 \section{Other methods}{
   \describe{
-    \item{}{
-       \code{trim(x, use.names=TRUE)}:
+    \item{\code{trim(x, use.names=TRUE)}:}{
        Equivalent to
        \code{restrict(x, start=1L, end=length(subject(x)), keep.all.ranges=TRUE,
                       use.names=use.names)}.
     }
-    \item{}{
-       \code{subviews(x, start=NA, end=NA, width=NA, use.names=TRUE)}:
+    \item{\code{subviews(x, start=NA, end=NA, width=NA, use.names=TRUE)}:}{
        \code{start}, \code{end}, and \code{width} arguments must be vectors
        of integers, eventually with NAs, that contain coordinates relative
        to the current ranges. Equivalent to
        \code{trim(narrow(x, start=start, end=end, width=width, use.names=use.names))}.
     }
-    \item{}{
-       \code{successiveViews(subject, width, gapwidth=0, from=1)}:
+    \item{\code{successiveViews(subject, width, gapwidth=0, from=1)}:}{
        Equivalent to \code{Views(subject, successiveIRanges(width, gapwidth, from))}.
        See \code{?successiveIRanges} for a description of the \code{width},
        \code{gapwidth} and \code{from} arguments.

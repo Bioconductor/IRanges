@@ -67,21 +67,18 @@
 
 \section{Coercion}{
   \describe{
-    \item{}{
-      \code{ranges(x, use.names=FALSE, use.mcols=FALSE)}: Squeeze the ranges
+    \item{\code{ranges(x, use.names=FALSE, use.mcols=FALSE)}:}{ Squeeze the ranges
       out of \link{IntegerRanges} object \code{x} and return them in an IRanges
       object \emph{parallel} to \code{x} (i.e. same length as \code{x}).
     }
-    \item{}{
-      \code{as(from, "IRanges")}: Creates an IRanges instance from an
+    \item{\code{as(from, "IRanges")}:}{ Creates an IRanges instance from an
       \link{IntegerRanges} derivative, or from a logical or integer vector.
       When \code{from} is a logical vector, the resulting IRanges object
       contains the indices for the runs of \code{TRUE} values.
       When \code{from} is an integer vector, the elements are either
       singletons or "increase by 1" sequences.
     }
-    \item{}{
-      \code{as(from, "NormalIRanges")}: Creates a NormalIRanges instance
+    \item{\code{as(from, "NormalIRanges")}:}{ Creates a NormalIRanges instance
       from a logical or integer vector. When \code{from} is an integer vector,
       the elements must be strictly increasing.
     }
@@ -90,8 +87,7 @@
 
 \section{Concatenation}{
   \describe{
-    \item{}{
-      \code{c(x, ..., ignore.mcols=FALSE)}:
+    \item{\code{c(x, ..., ignore.mcols=FALSE)}:}{
       Concatenate IRanges object \code{x} and the IRanges objects in
       \code{...} together.
       See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package for
@@ -102,12 +98,10 @@
 
 \section{Methods for NormalIRanges objects}{
   \describe{
-    \item{}{
-      \code{max(x)}:
+    \item{\code{max(x)}:}{
       The maximum value in the finite set of integers represented by \code{x}.
     }
-    \item{}{
-      \code{min(x)}:
+    \item{\code{min(x)}:}{
       The minimum value in the finite set of integers represented by \code{x}.
     }
   }

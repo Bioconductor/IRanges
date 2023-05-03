@@ -143,9 +143,9 @@
 \section{Accessors}{
   In the following code snippets, \code{x} is a \code{DataFrameList}.
   \describe{
-    \item{}{\code{dims(x)}: Get the two-column matrix indicating
+    \item{\code{dims(x)}:}{ Get the two-column matrix indicating
       the number of rows and columns over the entire dataset.}
-    \item{}{\code{dimnames(x)}: Get the list of two CharacterLists,
+    \item{\code{dimnames(x)}:}{ Get the list of two CharacterLists,
       the first holding the rownames (possibly \code{NULL}) and the second
       the column names.
     }
@@ -153,18 +153,18 @@
 
   In the following code snippets, \code{x} is a \code{SplitDataFrameList}.
   \describe{
-    \item{}{\code{commonColnames(x)}: Get the character vector of 
-      column names present in the individual DataFrames in \code{x}.} 
-    \item{}{\code{commonColnames(x) <- value}: Set the column names of 
+    \item{\code{commonColnames(x)}:}{ Get the character vector of
+      column names present in the individual DataFrames in \code{x}.}
+    \item{\code{commonColnames(x) <- value}:}{ Set the column names of
       the DataFrames in \code{x}.}
-    \item{}{\code{columnMetadata(x)}: Get the \code{DataFrame} of
+    \item{\code{columnMetadata(x)}:}{ Get the \code{DataFrame} of
       metadata along the columns, i.e., where each column in \code{x} is
       represented by a row in the metadata. The metadata is common
       across all elements of \code{x}. Note that
       calling \code{mcols(x)} returns the metadata on
       the \code{DataFrame} elements of \code{x}.
     }
-    \item{}{\code{columnMetadata(x) <- value}: Set the \code{DataFrame}
+    \item{\code{columnMetadata(x) <- value}:}{ Set the \code{DataFrame}
       of metadata for the columns.
     }
   }
@@ -172,11 +172,10 @@
 
 \section{Subsetting}{
   In the following code snippets, \code{x} is a \code{SplitDataFrameList}. In
-  general \code{x} follows the conventions of 
+  general \code{x} follows the conventions of
   \code{SimpleList}/\code{CompressedList} with the following addition:
   \describe{
-    \item{}{
-      \code{x[i,j,drop]}: If matrix subsetting is used, \code{i} selects
+    \item{\code{x[i,j,drop]}:}{ If matrix subsetting is used, \code{i} selects
       either the list elements or the rows within the list elements as
       determined by the \code{[} method for
       \code{SimpleList}/\code{CompressedList}, \code{j} selects the columns,
@@ -184,7 +183,7 @@
       be coerced into an \code{AtomicList} or \code{IntegerRangesList}
       subclass.
     }
-    \item{}{\code{x[i,j] <- value}: If matrix subsetting is used, \code{i}
+    \item{\code{x[i,j] <- value}:}{ If matrix subsetting is used, \code{i}
       selects either the list elements or the rows within the list elements
       as determined by the \code{[<-} method for
       \code{SimpleList}/\code{CompressedList}, \code{j} selects the columns
@@ -195,10 +194,10 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{DataFrameList(...)}: Concatenates the \code{DataFrame}
+    \item{\code{DataFrameList(...)}:}{ Concatenates the \code{DataFrame}
       objects in \code{...} into a new \code{DataFrameList}.}
-      \item{}{\code{SplitDataFrameList(..., compress = TRUE, cbindArgs =
-      FALSE)}: If \code{cbindArgs} is \code{FALSE}, the \code{...}
+    \item{\code{SplitDataFrameList(..., compress = TRUE, cbindArgs =
+      FALSE)}:}{ If \code{cbindArgs} is \code{FALSE}, the \code{...}
       arguments are coerced to \code{DataFrame} objects and concatenated
       to form the result. The arguments must have the same number and
       names of columns. If \code{cbindArgs} is \code{TRUE}, the
@@ -215,12 +214,10 @@
   \code{DataFrameList}.
 
   \describe{
-    \item{}{
-      \code{rbind(...)}: Creates a new \code{DataFrameList} containing
+    \item{\code{rbind(...)}:}{ Creates a new \code{DataFrameList} containing
       the element-by-element row concatenation of the objects in \code{...}.
     }
-    \item{}{
-      \code{cbind(...)}: Creates a new \code{DataFrameList} containing
+    \item{\code{cbind(...)}:}{ Creates a new \code{DataFrameList} containing
       the element-by-element column concatenation of the objects in \code{...}.
     }
   }
@@ -228,7 +225,7 @@
 
 \section{Transformation}{
 \describe{
-    \item{}{\code{transform(`_data`, ...)}: Transforms a
+    \item{\code{transform(`_data`, ...)}:}{ Transforms a
     \code{SplitDataFrame} in a manner analogous to the
     base \code{\link{transform}}, where the columns are \code{List}
     objects adhering to the structure of \code{_data}.
@@ -239,28 +236,27 @@
 \section{Coercion}{
   In the following code snippets, \code{x} is a \code{DataFrameList}.
   \describe{
-    \item{}{\code{as(from, "DataFrame")}: Coerces a
+    \item{\code{as(from, "DataFrame")}:}{ Coerces a
       \code{SplitDataFrameList} to a \code{DataFrame}, which has a column
       for every column in \code{from}, except each column is a
       \code{List} with the same structure as \code{from}.
     }
-    \item{}{\code{as(from, "SplitDataFrameList")}: By default, simply
+    \item{\code{as(from, "SplitDataFrameList")}:}{ By default, simply
       calls the \code{SplitDataFrameList} constructor
       on \code{from}. If \code{from} is a \code{List}, each element
       of \code{from} is passed as an argument
       to \code{SplitDataFrameList}, like calling \code{as.list} on a
       vector. If \code{from} is a \code{DataFrame}, each row becomes an
       element in the list.}
-    \item{}{\code{stack(x, index.var = "name")}: Unlists \code{x} and
+    \item{\code{stack(x, index.var = "name")}:}{ Unlists \code{x} and
       adds a column named \code{index.var} to the result, indicating the
       element of \code{x} from which each row was obtained.
     }
-    \item{}{
-      \code{as.data.frame(x, row.names = NULL, optional = FALSE,
-         ..., value.name = "value", use.outer.mcols = FALSE, 
-         group_name.as.factor = FALSE)}: 
-      Coerces \code{x} to a \code{data.frame}. See as.data.frame on the 
-      \code{List} man page for details (?\code{List}). 
+    \item{\code{as.data.frame(x, row.names = NULL, optional = FALSE,
+         ..., value.name = "value", use.outer.mcols = FALSE,
+         group_name.as.factor = FALSE)}:}{
+      Coerces \code{x} to a \code{data.frame}. See as.data.frame on the
+      \code{List} man page for details (?\code{List}).
     }
   }
 }
@@ -288,7 +284,7 @@ commonColnames(out) <- c("x", "y")
 out[[1]]
 
 # We can also create these split objects using various split() functions:
-out <- splitAsList(DataFrame(X=runif(100), Y=rpois(100, 5)), 
+out <- splitAsList(DataFrame(X=runif(100), Y=rpois(100, 5)),
     sample(letters, 100, replace=TRUE))
 out[['a']]
 }

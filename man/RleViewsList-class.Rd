@@ -29,14 +29,14 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{RleViewsList(..., rleList, rangesList)}:
+    \item{\code{RleViewsList(..., rleList, rangesList)}:}{
       Either \code{...} or the \code{rleList}/\code{rangesList} couplet
       provide the RleViews for the list. If \code{...} is provided, each
       of these arguments must be RleViews objects. Alternatively,
       \code{rleList} and \code{rangesList} accept Rle and IntegerRanges
       objects respectively that are meshed together for form the RleViewsList.
     }
-    \item{}{\code{Views(subject, start=NULL, end=NULL, width=NULL, names=NULL)}:
+    \item{\code{Views(subject, start=NULL, end=NULL, width=NULL, names=NULL)}:}{
       Same as \code{RleViewsList(rleList = subject, rangesList = start)}.
     }
   }
@@ -46,8 +46,7 @@
   In the code snippet below, \code{from} is an RleViewsList object:
 
   \describe{
-    \item{}{
-      \code{as(from, "IRangesList")}: Creates an \code{IRangesList}
+    \item{\code{as(from, "IRangesList")}:}{ Creates an \code{IRangesList}
       object containing the view locations in \code{from}.
     }
   }

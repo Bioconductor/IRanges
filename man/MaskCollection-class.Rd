@@ -84,31 +84,25 @@
   In the code snippets below, \code{x} is a MaskCollection object.
 
   \describe{
-    \item{}{
-      \code{length(x)}:
+    \item{\code{length(x)}:}{
       The number of masks in \code{x}.
     }
-    \item{}{
-      \code{width(x)}:
+    \item{\code{width(x)}:}{
       The common with of all the masks in \code{x}.
       This determines the length of the sequences that \code{x} can be
       "put on".
     }
-    \item{}{
-      \code{active(x)}:
+    \item{\code{active(x)}:}{
       A logical vector of the same length as \code{x} where each
       element indicates whether the corresponding mask is active or not.
     }
-    \item{}{
-      \code{names(x)}:
+    \item{\code{names(x)}:}{
       \code{NULL} or a character vector of the same length as \code{x}.
     }
-    \item{}{
-      \code{desc(x)}:
+    \item{\code{desc(x)}:}{
       \code{NULL} or a character vector of the same length as \code{x}.
     }
-    \item{}{
-      \code{nir_list(x)}:
+    \item{\code{nir_list(x)}:}{
       A list of the same length as \code{x}, where each element is
       a \link{NormalIRanges} object representing a mask in \code{x}.
     }
@@ -117,8 +111,7 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{
-      \code{Mask(mask.width, start=NULL, end=NULL, width=NULL)}:
+    \item{\code{Mask(mask.width, start=NULL, end=NULL, width=NULL)}:}{
       Return a single mask (i.e. a MaskCollection object of length 1)
       of width \code{mask.width} (a single integer >= 1)
       and masking the ranges of positions specified by \code{start},
@@ -134,29 +127,24 @@
   In the code snippets below, \code{x} is a MaskCollection object.
 
   \describe{
-    \item{}{
-      \code{isEmpty(x)}:
+    \item{\code{isEmpty(x)}:}{
       Return a logical vector of the same length as \code{x}, indicating,
       for each mask in \code{x}, whether it's empty or not.
     }
-    \item{}{
-      \code{max(x)}:
+    \item{\code{max(x)}:}{
       The greatest (or last, or rightmost) masked position for each mask.
       This is a numeric vector of the same length as \code{x}.
     }
-    \item{}{
-      \code{min(x)}:
+    \item{\code{min(x)}:}{
       The smallest (or first, or leftmost) masked position for each mask.
       This is a numeric vector of the same length as \code{x}.
     }
-    \item{}{
-      \code{maskedwidth(x)}:
+    \item{\code{maskedwidth(x)}:}{
       The number of masked position for each mask.
       This is an integer vector of the same length as \code{x} where
       all values are >= 0 and <= \code{width(x)}.
     }
-    \item{}{
-      \code{maskedratio(x)}:
+    \item{\code{maskedratio(x)}:}{
       \code{maskedwidth(x) / width(x)}
     }
   }
@@ -167,18 +155,15 @@
   \code{x} and \code{values} are MaskCollection objects.
 
   \describe{
-    \item{}{
-      \code{x[i]}:
+    \item{\code{x[i]}:}{
       Return a new MaskCollection object made of the selected masks.
       Subscript \code{i} can be a numeric, logical or character vector.
     }
-    \item{}{
-      \code{x[[i, exact=TRUE]]}:
+    \item{\code{x[[i, exact=TRUE]]}:}{
       Extract the mask selected by \code{i} as a \link{NormalIRanges} object.
       Subscript \code{i} can be a single integer or a character string.
     }
-    \item{}{
-      \code{append(x, values, after=length(x))}:
+    \item{\code{append(x, values, after=length(x))}:}{
       Add masks in \code{values} to \code{x}.
     }
   }
@@ -188,8 +173,7 @@
   In the code snippets below, \code{x} is a MaskCollection object.
 
   \describe{
-    \item{}{
-      \code{collapse(x)}:
+    \item{\code{collapse(x)}:}{
       Return a MaskCollection object of length 1 obtained by collapsing
       all the active masks in \code{x}.
     }

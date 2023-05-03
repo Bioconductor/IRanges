@@ -211,7 +211,7 @@
 
 \section{Specialized Methods}{
   \describe{
-    \item{}{\code{unstrsplit(x, sep="")}}: A fast
+    \item{\code{unstrsplit(x, sep="")}:}{}: A fast
     \code{sapply(x, paste0, collapse=sep)}. See \code{?\link{unstrsplit}}
     for the details.
   }

@@ -30,12 +30,10 @@
   In the following code snippets, \code{x} is a Vector object.
   
   \describe{
-    \item{}{
-      \code{with(x, expr)}: Evaluates \code{expr} within
+    \item{\code{with(x, expr)}:}{ Evaluates \code{expr} within
       \code{as.env(x)} via \code{eval(x)}.
     }
-    \item{}{
-      \code{eval(expr, envir, enclos=parent.frame())}: Evaluates
+    \item{\code{eval(expr, envir, enclos=parent.frame())}:}{ Evaluates
       \code{expr} within \code{envir}, where \code{envir} is coerced to
       an environment with \code{as.env(envir, enclos)}. The \code{expr}
       is first processed with \code{\link{bquote}}, such that any
@@ -50,8 +48,7 @@
   package and the remaining methods are defined in base R.
 
   \describe{
-    \item{}{
-      \code{window(x, start=NA, end=NA, width=NA) <- value}:
+    \item{\code{window(x, start=NA, end=NA, width=NA) <- value}:}{
       Replace the subsequence window specified on the left (i.e. the
       subsequence in \code{x} specified by \code{start}, \code{end} and
       \code{width}) by \code{value}.
@@ -69,8 +66,7 @@
   In the code snippets below, \code{x} is a Vector object.
 
   \describe{
-    \item{}{
-      \code{tapply(X, INDEX, FUN = NULL, ..., simplify = TRUE)}:
+    \item{\code{tapply(X, INDEX, FUN = NULL, ..., simplify = TRUE)}:}{
       Like the standard \code{\link[base]{tapply}} function defined in the
       base package, the \code{tapply} method for Vector objects applies a
       function to each cell of a ragged array, that is to each (non-empty)
@@ -82,8 +78,7 @@
 
 \section{Coercion}{
   \describe{
-    \item{}{
-      \code{as.list(x)}: coerce a Vector to a list, where the \code{i}th
+    \item{\code{as.list(x)}:}{ coerce a Vector to a list, where the \code{i}th
       element of the result corresponds to \code{x[i]}.
     }
   }

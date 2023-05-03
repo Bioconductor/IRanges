@@ -188,29 +188,29 @@
 
 \section{Constructors}{
   \describe{
-    \item{}{\code{LogicalList(..., compress = TRUE)}: Concatenates the
+    \item{\code{LogicalList(..., compress = TRUE)}:}{ Concatenates the
       \code{logical} vectors in \code{...} into a new \code{LogicalList}.
       If \code{compress}, the internal storage of the data is compressed.}
-    \item{}{\code{IntegerList(..., compress = TRUE)}: Concatenates the
+    \item{\code{IntegerList(..., compress = TRUE)}:}{ Concatenates the
       \code{integer} vectors in \code{...} into a new \code{IntegerList}.
       If \code{compress}, the internal storage of the data is compressed.}
-    \item{}{\code{NumericList(..., compress = TRUE)}: Concatenates the
+    \item{\code{NumericList(..., compress = TRUE)}:}{ Concatenates the
       \code{numeric} vectors in \code{...} into a new \code{NumericList}.
       If \code{compress}, the internal storage of the data is compressed.}
-    \item{}{\code{ComplexList(..., compress = TRUE)}: Concatenates the
+    \item{\code{ComplexList(..., compress = TRUE)}:}{ Concatenates the
       \code{complex} vectors in \code{...} into a new \code{ComplexList}.
       If \code{compress}, the internal storage of the data is compressed.}
-    \item{}{\code{CharacterList(..., compress = TRUE)}: Concatenates the
+    \item{\code{CharacterList(..., compress = TRUE)}:}{ Concatenates the
       \code{character} vectors in \code{...} into a new \code{CharacterList}.
       If \code{compress}, the internal storage of the data is compressed.}
-    \item{}{\code{RawList(..., compress = TRUE)}: Concatenates the
+    \item{\code{RawList(..., compress = TRUE)}:}{ Concatenates the
       \code{raw} vectors in \code{...} into a new \code{RawList}.
       If \code{compress}, the internal storage of the data is compressed.}
-    \item{}{\code{RleList(..., compress = TRUE)}: Concatenates the
+    \item{\code{RleList(..., compress = TRUE)}:}{ Concatenates the
       run-length encoded atomic vectors in \code{...} into a new
       \code{RleList}.
       If \code{compress}, the internal storage of the data is compressed.}
-    \item{}{\code{FactorList(..., compress = TRUE)}: Concatenates the
+    \item{\code{FactorList(..., compress = TRUE)}:}{ Concatenates the
       \code{factor} objects in \code{...} into a new \code{FactorList}.
       If \code{compress}, the internal storage of the data is compressed.}
   }
@@ -218,48 +218,45 @@
 
 \section{Coercion}{
   \describe{
-    \item{}{
-      \code{as(from, "CompressedSplitDataFrameList")},
-      \code{as(from, "SimpleSplitDataFrameList")}: Creates a
+    \item{\code{as(from, "CompressedSplitDataFrameList")},
+      \code{as(from, "SimpleSplitDataFrameList")}:}{ Creates a
       \linkS4class{CompressedSplitDataFrameList}/\linkS4class{SimpleSplitDataFrameList}
       instance from an AtomicList instance.
     }
-    \item{}{
-      \code{as(from, "IRangesList")}, \code{as(from, "CompressedIRangesList")},
-      \code{as(from, "SimpleIRangesList")}: Creates a
+    \item{\code{as(from, "IRangesList")}, \code{as(from, "CompressedIRangesList")},
+      \code{as(from, "SimpleIRangesList")}:}{ Creates a
       \linkS4class{CompressedIRangesList}/\linkS4class{SimpleIRangesList}
       instance from a LogicalList or logical RleList instance. Note that the
       elements of this instance are guaranteed to be normal.
     }
-    \item{}{
-      \code{as(from, "NormalIRangesList")},
+    \item{\code{as(from, "NormalIRangesList")},
       \code{as(from, "CompressedNormalIRangesList")},
-      \code{as(from, "SimpleNormalIRangesList")}: Creates a
+      \code{as(from, "SimpleNormalIRangesList")}:}{ Creates a
       \linkS4class{CompressedNormalIRangesList}/\linkS4class{SimpleNormalIRangesList}
       instance from a LogicalList or logical RleList instance.
     }
-    \item{}{\code{as(from, "CharacterList")},
+    \item{\code{as(from, "CharacterList")},
       \code{as(from, "ComplexList")},
       \code{as(from, "IntegerList")},
       \code{as(from, "LogicalList")},
       \code{as(from, "NumericList")},
       \code{as(from, "RawList")},
-      \code{as(from, "RleList")}:
+      \code{as(from, "RleList")}:}{
       Coerces an \code{AtomicList} \code{from} to another derivative of
       \code{AtomicList}.
     }
-    \item{}{\code{as(from, "AtomicList")}: If \code{from} is a vector,
+    \item{\code{as(from, "AtomicList")}:}{ If \code{from} is a vector,
       converts it to an \code{AtomicList} of the appropriate type.
     }
-    \item{}{\code{drop(x)}: Checks if every element of \code{x} is of
+    \item{\code{drop(x)}:}{ Checks if every element of \code{x} is of
       length one, and, if so, unlists \code{x}. Otherwise, an error is
       thrown.
     }
-    \item{}{\code{as(from, "RleViews")}: Creates an RleViews where each
+    \item{\code{as(from, "RleViews")}:}{ Creates an RleViews where each
       view corresponds to an element of \code{from}. The subject is
       \code{unlist(from)}.
     }
-    \item{}{\code{as.matrix(x, col.names=NULL)}: Maps the elements of
+    \item{\code{as.matrix(x, col.names=NULL)}:}{ Maps the elements of
       the list to rows of a matrix. The column mapping depends on
       whether there are inner names (either on the object or provided
       via \code{col.names} as a List object). If there are no inner
@@ -286,13 +283,13 @@
   AtomicList derivatives.
 
   \describe{
-    \item{}{\code{runLength(x)}: Gets the run lengths of each element of the
+    \item{\code{runLength(x)}:}{ Gets the run lengths of each element of the
       list, as an IntegerList.
     }
-    \item{}{\code{runValue(x)}, \code{runValue(x) <- value}: Gets or
+    \item{\code{runValue(x)}, \code{runValue(x) <- value}:}{ Gets or
       sets the run values of each element of the list, as an AtomicList.
     }
-    \item{}{\code{ranges(x)}: Gets the run ranges as a
+    \item{\code{ranges(x)}:}{ Gets the run ranges as a
       \code{IntegerRangesList}.
     }
   }

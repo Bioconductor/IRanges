@@ -120,8 +120,7 @@ rangeComparisonCodeToLetter(code)
   implicitly when operating on \link{IPosRanges} derivatives.
 
   \describe{
-    \item{}{
-      \code{pcompare(x, y)}:
+    \item{\code{pcompare(x, y)}:}{
       Performs element-wise (aka "parallel") comparison of 2
       \link{IPosRanges} objects of \code{x} and \code{y}, that is,
       returns an integer vector where the i-th element is a code describing
@@ -166,8 +165,7 @@ rangeComparisonCodeToLetter(code)
       of any non-predefined code must tell whether \code{x[i]} is less than,
       or greater than \code{y[i]}.
     }
-    \item{}{
-      \code{rangeComparisonCodeToLetter(x)}:
+    \item{\code{rangeComparisonCodeToLetter(x)}:}{
       Translate the codes returned by \code{pcompare}. The 13 predefined
       codes are translated as follow: -6 -> a; -5 -> b; -4 -> c; -3 -> d;
       -2 -> e; -1 -> f; 0 -> g; 1 -> h; 2 -> i; 3 -> j; 4 -> k; 5-> l; 6 -> m.
@@ -175,20 +173,17 @@ rangeComparisonCodeToLetter(code)
       The translated codes are returned in a factor with 14 levels:
       a, b, ..., l, m, X.
     }
-    \item{}{
-      \code{match(x, table, nomatch=NA_integer_, method=c("auto", "quick", "hash"))}:
+    \item{\code{match(x, table, nomatch=NA_integer_, method=c("auto", "quick", "hash"))}:}{
       Returns an integer vector of the length of \code{x},
       containing the index of the first matching range in \code{table}
       (or \code{nomatch} if there is no matching range) for each range
       in \code{x}.
     }
-    \item{}{
-      \code{selfmatch(x, method=c("auto", "quick", "hash"))}:
+    \item{\code{selfmatch(x, method=c("auto", "quick", "hash"))}:}{
       Equivalent to, but more efficient than,
       \code{match(x, x, method=method)}.
     }
-    \item{}{
-      \code{duplicated(x, fromLast=FALSE, method=c("auto", "quick", "hash"))}:
+    \item{\code{duplicated(x, fromLast=FALSE, method=c("auto", "quick", "hash"))}:}{
       Determines which elements of \code{x} are equal to elements
       with smaller subscripts, and returns a logical vector indicating
       which elements are duplicates. \code{duplicated(x)} is equivalent to,
@@ -197,43 +192,36 @@ rangeComparisonCodeToLetter(code)
       See \code{\link[base]{duplicated}} in the \pkg{base} package for more
       details.
     }
-    \item{}{
-      \code{unique(x, fromLast=FALSE, method=c("auto", "quick", "hash"))}:
+    \item{\code{unique(x, fromLast=FALSE, method=c("auto", "quick", "hash"))}:}{
       Removes duplicate ranges from \code{x}. \code{unique(x)} is equivalent
       to, but more efficient than, \code{unique(as.data.frame(x))} on an
       \link{IPosRanges} derivative.
       See \code{\link[base]{unique}} in the \pkg{base} package for more
       details.
     }
-    \item{}{
-      \code{x \%in\% table}:
+    \item{\code{x \%in\% table}:}{
       A shortcut for finding the ranges in \code{x} that match any of
       the ranges in \code{table}. Returns a logical vector of length
       equal to the number of ranges in \code{x}.
     }
-    \item{}{
-      \code{findMatches(x, table, method=c("auto", "quick", "hash"))}:
+    \item{\code{findMatches(x, table, method=c("auto", "quick", "hash"))}:}{
       An enhanced version of \code{match} that returns all the matches
       in a \link{Hits} object.
     }
-    \item{}{
-      \code{countMatches(x, table, method=c("auto", "quick", "hash"))}:
+    \item{\code{countMatches(x, table, method=c("auto", "quick", "hash"))}:}{
       Returns an integer vector of the length of \code{x} containing the
       number of matches in \code{table} for each element in \code{x}.
     }
-    \item{}{
-      \code{order(...)}:
+    \item{\code{order(...)}:}{
       Returns a permutation which rearranges its first argument (an
       \link{IPosRanges} derivative) into ascending order, breaking ties
       by further arguments (also \link{IPosRanges} derivatives).
     }
-    \item{}{
-      \code{sort(x)}:
+    \item{\code{sort(x)}:}{
       Sorts \code{x}.
       See \code{\link[base]{sort}} in the \pkg{base} package for more details.
     }
-    \item{}{
-      \code{rank(x, na.last=TRUE, ties.method=c("average", "first", "random", "max", "min"))}:
+    \item{\code{rank(x, na.last=TRUE, ties.method=c("average", "first", "random", "max", "min"))}:}{
       Returns the sample ranks of the ranges in \code{x}.
       See \code{\link[base]{rank}} in the \pkg{base} package for more details.
     }

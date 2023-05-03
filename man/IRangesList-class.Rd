@@ -80,7 +80,7 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{IRangesList(..., compress=TRUE)}:
+    \item{\code{IRangesList(..., compress=TRUE)}:}{
       The \code{...} argument accepts either a comma-separated list of
       \code{IRanges} objects, or a single \code{LogicalList} / logical
       \code{RleList} object, or 2 elements named \code{start} and \code{end}
@@ -97,26 +97,26 @@
 \section{Coercion}{
   In the code snippets below, \code{from} is a \emph{list-like} object.
   \describe{
-    \item{}{\code{as(from, "SimpleIRangesList")}: Coerces \code{from},
+    \item{\code{as(from, "SimpleIRangesList")}:}{ Coerces \code{from},
       to a \code{\linkS4class{SimpleIRangesList}}, requiring
       that all \code{IntegerRanges} elements are coerced to internal
       \code{IRanges} elements. This is a convenient way to ensure that all
       \code{IntegerRanges} have been imported into R (and that there is no
       unwanted overhead when accessing them).
     }
-    \item{}{\code{as(from, "CompressedIRangesList")}: Coerces \code{from},
+    \item{\code{as(from, "CompressedIRangesList")}:}{ Coerces \code{from},
       to a \code{\linkS4class{CompressedIRangesList}}, requiring
       that all \code{IntegerRanges} elements are coerced to internal
       \code{IRanges} elements. This is a convenient way to ensure that all
       \code{IntegerRanges} have been imported into R (and that there is no
       unwanted overhead when accessing them).
     }
-    \item{}{\code{as(from, "SimpleNormalIRangesList")}: Coerces \code{from},
+    \item{\code{as(from, "SimpleNormalIRangesList")}:}{ Coerces \code{from},
       to a \code{\linkS4class{SimpleNormalIRangesList}}, requiring
       that all \code{IntegerRanges} elements are coerced to internal
       \code{NormalIRanges} elements.
     }
-    \item{}{\code{as(from, "CompressedNormalIRangesList")}: Coerces
+    \item{\code{as(from, "CompressedNormalIRangesList")}:}{ Coerces
       \code{from}, to a \code{\linkS4class{CompressedNormalIRangesList}},
       requiring that all \code{IntegerRanges} elements are coerced to internal
       \code{NormalIRanges} elements.
@@ -125,7 +125,7 @@
 
   In the code snippet below, \code{x} is an \code{IRangesList} object.
   \describe{
-    \item{}{\code{unlist(x)}: Unlists \code{x}, an \code{IRangesList},
+    \item{\code{unlist(x)}:}{ Unlists \code{x}, an \code{IRangesList},
       by concatenating all of the ranges into a single \code{IRanges}
       instance. If the length of \code{x} is zero, an empty \code{IRanges}
       is returned.
@@ -135,13 +135,11 @@
 
 \section{Methods for NormalIRangesList objects}{
   \describe{
-    \item{}{
-      \code{max(x)}:
+    \item{\code{max(x)}:}{
       An integer vector containing the maximum values of each of the elements
       of \code{x}.
     }
-    \item{}{
-      \code{min(x)}:
+    \item{\code{min(x)}:}{
       An integer vector containing the minimum values of each of the elements
       of \code{x}.
     }

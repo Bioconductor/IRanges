@@ -42,12 +42,12 @@
   object.
   
   \describe{
-    \item{}{\code{as.list(x)}: Coerces \code{x} to a list of integers,
+    \item{\code{as.list(x)}:}{ Coerces \code{x} to a list of integers,
       grouping the the right node hits for each left node.
     }
-    \item{}{\code{as(x, "List")}: Analogous to \code{as.list(x)}.
+    \item{\code{as(x, "List")}:}{ Analogous to \code{as.list(x)}.
     }
-    \item{}{\code{as(x, "Grouping")}: Returns roughly the same object as
+    \item{\code{as(x, "Grouping")}:}{ Returns roughly the same object as
       \code{as(x, "List")}, except it is a ManyToManyGrouping, i.e., it
       knows the number of right nodes.
     }

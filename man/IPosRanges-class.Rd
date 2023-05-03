@@ -105,42 +105,34 @@
   method for \link{IntegerRanges} derivatives is documented.
 
   \describe{
-    \item{}{
-      \code{length(x)}:
+    \item{\code{length(x)}:}{
       The number of ranges in \code{x}.
     }
-    \item{}{
-      \code{start(x)}:
+    \item{\code{start(x)}:}{
       The start values of the ranges.
       This is an integer vector of the same length as \code{x}.
     }
-    \item{}{
-      \code{width(x)}:
+    \item{\code{width(x)}:}{
       The number of integer values in each range.
       This is a vector of non-negative integers of the same length as \code{x}.
     }
-    \item{}{
-      \code{end(x)}:
+    \item{\code{end(x)}:}{
       \code{start(x) + width(x) - 1L}
     }
-    \item{}{
-      \code{mid(x)}: returns the midpoint of the range,
+    \item{\code{mid(x)}:}{ returns the midpoint of the range,
       \code{start(x) + floor((width(x) - 1)/2)}.
     }
-    \item{}{
-      \code{names(x)}:
+    \item{\code{names(x)}:}{
       \code{NULL} or a character vector of the same length as \code{x}.
     }
-    \item{}{
-      \code{tile(x, n, width, ...)}:
+    \item{\code{tile(x, n, width, ...)}:}{
       Splits each range in \code{x} into subranges as specified by \code{n}
       (number of ranges) or \code{width}. Only one of \code{n} or \code{width} 
       can be specified. The return value is a \code{IRangesList} the same 
       length as \code{x}. IPosRanges with a width less than the \code{width}
       argument are returned unchanged.
     }
-    \item{}{
-      \code{slidingWindows(x, width, step=1L)}: Generates sliding
+    \item{\code{slidingWindows(x, width, step=1L)}:}{ Generates sliding
       windows within each range of \code{x}, of width \code{width}, and
       starting every \code{step} positions. The return value is a
       \code{IRangesList} the same length as \code{x}. IPosRanges
@@ -148,31 +140,26 @@
       unchanged. If the sliding windows do not exactly cover \code{x},
       the last window is partial.
     }
-    \item{}{
-      \code{isEmpty(x)}:
+    \item{\code{isEmpty(x)}:}{
       Return a logical value indicating whether \code{x} is empty or not.
     }
-    \item{}{
-      \code{as.matrix(x, ...)}:
+    \item{\code{as.matrix(x, ...)}:}{
       Convert \code{x} into a 2-column integer matrix
       containing \code{start(x)} and \code{width(x)}.
       Extra arguments (\code{...}) are ignored.
     }
-    \item{}{
-      \code{as.data.frame(x, row.names=NULL, optional=FALSE)}:
+    \item{\code{as.data.frame(x, row.names=NULL, optional=FALSE)}:}{
       Convert \code{x} into a standard R data frame object.
       \code{row.names} must be \code{NULL} or a character vector giving
       the row names for the data frame, and \code{optional} is ignored.
       See \code{?\link{as.data.frame}} for more information about these
       arguments.
     }
-    \item{}{
-      \code{x[[i]]}:
+    \item{\code{x[[i]]}:}{
       Return integer vector \code{start(x[i]):end(x[i])} denoted by \code{i}.
       Subscript \code{i} can be a single integer or a character string.
     }
-    \item{}{
-      \code{x[i]}:
+    \item{\code{x[i]}:}{
       Return a new IPosRanges object (of the same type as \code{x}) made
       of the selected ranges.
       \code{i} can be a numeric vector, a logical vector, \code{NULL}
@@ -180,8 +167,7 @@
       \code{i} a positive numeric subscript (i.e. a numeric vector of
       positive values), then \code{i} must be strictly increasing.
     }
-    \item{}{
-      \code{rep(x, times, length.out, each)}:
+    \item{\code{rep(x, times, length.out, each)}:}{
       Repeats the values in \code{x} through one of the following conventions:
       \describe{
         \item{\code{times}}{Vector giving the number of times to repeat each
@@ -193,15 +179,13 @@
           repeated \code{each} times.}
       }
     }
-    \item{}{
-      \code{c(x, ..., ignore.mcols=FALSE)}:
+    \item{\code{c(x, ..., ignore.mcols=FALSE)}:}{
       Concatenate IPosRanges object \code{x} and the IPosRanges objects
       in \code{...} together.
       See \code{?\link[S4Vectors]{c}} in the \pkg{S4Vectors} package
       for more information about concatenating Vector derivatives.
     }
-    \item{}{
-      \code{x * y}:
+    \item{\code{x * y}:}{
       The arithmetic operation \code{x * y} is for centered zooming. It
       symmetrically scales the width of \code{x} by \code{1/y}, where
       \code{y} is a numeric vector that is recycled as necessary. For
@@ -211,12 +195,10 @@
       \code{x * (1/abs(y))}. Thus, \code{x * -2} would double the widths in
       \code{x}. In other words, \code{x} has been \dQuote{zoomed out}.
     }
-    \item{}{
-      \code{x + y}: Expands the ranges in \code{x} on either side by the
+    \item{\code{x + y}:}{ Expands the ranges in \code{x} on either side by the
       corresponding value in the numeric vector \code{y}.
     }
-    \item{}{
-      \code{show(x)}:
+    \item{\code{show(x)}:}{
       By default the \code{show} method displays 5 head and 5 tail
       lines. The number of lines can be altered by setting the global
       options \code{showHeadLines} and \code{showTailLines}. If the 
@@ -266,12 +248,10 @@
   Here are some methods related to the notion of \emph{normal} IPosRanges:
 
   \describe{
-    \item{}{
-      \code{isNormal(x)}:
+    \item{\code{isNormal(x)}:}{
       Return TRUE or FALSE indicating whether \code{x} is \emph{normal} or not.
     }
-    \item{}{
-      \code{whichFirstNotNormal(x)}:
+    \item{\code{whichFirstNotNormal(x)}:}{
       Return \code{NA} if \code{x} is \emph{normal}, or the smallest valid
       indice \code{i} in \code{x} for which \code{x[1:i]} is not \emph{normal}.
     }

@@ -26,12 +26,10 @@
 \section{Coercion}{
   In the code snippets below, \code{from} is an Rle object:
   \describe{
-    \item{}{
-      \code{as(from, "IRanges")}: Creates an \link{IRanges} instance
+    \item{\code{as(from, "IRanges")}:}{ Creates an \link{IRanges} instance
       from a logical Rle. Note that this instance is guaranteed to be normal.
     }
-    \item{}{
-      \code{as(from, "NormalIRanges")}: Creates a \link{NormalIRanges} instance
+    \item{\code{as(from, "NormalIRanges")}:}{ Creates a \link{NormalIRanges} instance
       from a logical Rle.
     }
   }
@@ -41,8 +39,7 @@
   In the code snippets below, \code{x} is an Rle object:
 
   \describe{
-    \item{}{
-      \code{split(x, f, drop=FALSE)}:
+    \item{\code{split(x, f, drop=FALSE)}:}{
       Splits \code{x} according to \code{f} to create a
       \link{CompressedRleList} object.
       If \code{f} is a list-like object then \code{drop} is ignored
@@ -54,13 +51,11 @@
       elements are removed from the returned object if \code{drop} is
       \code{TRUE}.
     }
-    \item{}{
-      \code{findRange(x, vec)}:
+    \item{\code{findRange(x, vec)}:}{
       Returns an \link{IRanges} object representing the ranges in Rle \code{vec}
       that are referenced by the indices in the integer vector \code{x}.
     }
-    \item{}{
-      \code{splitRanges(x)}:
+    \item{\code{splitRanges(x)}:}{
       Returns a \linkS4class{CompressedIRangesList} object that contains the
       ranges for each of the unique run values.
     }

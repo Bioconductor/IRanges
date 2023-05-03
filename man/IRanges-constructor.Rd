@@ -83,11 +83,10 @@ solveUserSEW(refwidths, start=NA, end=NA, width=NA,
 
 \section{Supporting functions}{
   \describe{
-    \item{}{
-      \code{solveUserSEW(refwidths, start=NA, end=NA, width=NA,
+    \item{\code{solveUserSEW(refwidths, start=NA, end=NA, width=NA,
                rep.refwidths=FALSE,
                translate.negative.coord=TRUE,
-               allow.nonnarrowing=FALSE)}:
+               allow.nonnarrowing=FALSE)}:}{
       Use of \code{rep.refwidths=TRUE} is supported only when
       \code{refwidths} is of length 1.
       If \code{rep.refwidths=FALSE} (the default) then

@@ -35,8 +35,8 @@
 
 \section{Constructor}{
   \describe{
-    \item{}{\code{RangedSelection(ranges=IRangesList(),
-        colnames = character())}: Constructors a \code{RangedSelection}
+    \item{\code{RangedSelection(ranges=IRangesList(),
+        colnames = character())}:}{ Constructors a \code{RangedSelection}
         with the given \code{ranges} and \code{colnames}.
     }
   }
@@ -44,7 +44,7 @@
 
 \section{Coercion}{
   \describe{
-    \item{}{\code{as(from, "RangedSelection")}: Coerces \code{from} to a
+    \item{\code{as(from, "RangedSelection")}:}{ Coerces \code{from} to a
       \code{RangedSelection} object. Typically, \code{from} is a
       \code{\linkS4class{IntegerRangesList}}, the ranges of which become the
       ranges in the new \code{RangedSelection}.
@@ -55,11 +55,11 @@
 \section{Accessors}{
   In the code snippets below, \code{x} is always a \code{RangedSelection}.
   \describe{
-    \item{}{\code{ranges(x), ranges(x) <- value}: Gets or sets the
+    \item{\code{ranges(x), ranges(x) <- value}:}{ Gets or sets the
       ranges, a \code{\linkS4class{IntegerRangesList}}, that select rows with
       overlapping intervals.
     }
-    \item{}{\code{colnames(x), colnames(x) <- value}: Gets the 
+    \item{\code{colnames(x), colnames(x) <- value}:}{ Gets the
       names, a \code{character} vector, indicating the columns.
     }
   }
