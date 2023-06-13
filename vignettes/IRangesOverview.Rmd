@@ -4,6 +4,8 @@ author:
   - name: "Patrick Aboyoun"
   - name: "Michael Lawrence"
   - name: "Hervé Pagès"
+  - name: "Sonali Kumari"
+    affiliation: "Vignette translation from Sweave to Rmarkdown / HTML"
 date: "Edited: February 2018; Compiled: `r format(Sys.time(), '%B %d , %Y')`"
 package: IRanges
 vignette: >
