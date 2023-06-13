@@ -4,7 +4,7 @@ author:
   - name: "Patrick Aboyoun"
   - name: "Michael Lawrence"
   - name: "Hervé Pagès"
-date: "`r format(Sys.time(), '%B %d , %Y')`"
+date: "Edited: February 2018; Compiled: `r format(Sys.time(), '%B %d , %Y')`"
 package: IRanges
 vignette: >
   %\VignetteIndexEntry{An Overview of the IRanges package}
@@ -19,30 +19,31 @@ output:
 
 # Introduction
 
-When analyzing sequences, we are often interested in particular
-consecutive subsequences. For example, the vector could be considered a
-sequence of lower-case letters, in alphabetical order. We would call the
-first five letters (*a* to *e*) a consecutive subsequence, while the
-subsequence containing only the vowels would not be consecutive. It is
-not uncommon for an analysis task to focus only on the geometry of the
-regions, while ignoring the underlying sequence values. A list of
-indices would be a simple way to select a subsequence. However, a
-sparser representation for consecutive subsequences would be a range, a
-pairing of a start position and a width, as used when extracting
-sequences with .
+When analyzing sequences, we are often interested in particular consecutive
+subsequences. For example, the vector could be considered a sequence of
+lower-case letters, in alphabetical order. We would call the first five letters
+(*a* to *e*) a consecutive subsequence, while the subsequence containing only
+the vowels would not be consecutive. It is not uncommon for an analysis task to
+focus only on the geometry of the regions, while ignoring the underlying
+sequence values. A list of indices would be a simple way to select a
+subsequence. However, a sparser representation for consecutive subsequences
+would be a range, a pairing of a start position and a width, as used when
+extracting sequences with `window`.
 
-Two central classes are available in Bioconductor for representing
-ranges: the class defined in the package for representing ranges defined
-on a single space, and the class defined in the package for representing
-ranges defined on multiple spaces.
+Two central classes are available in Bioconductor for representing ranges: the
+*IRanges* class defined in the `r Biocpkg("IRanges")` package for representing
+ranges defined on a single space, and the *GRanges* class defined in the 
+`r Biocpkg("GenomicRanges")` package for representing ranges defined on multiple
+spaces.
 
-In this vignette, we will focus on objects. We will rely on simple,
-illustrative example datasets, rather than large, real-world data, so
-that each data structure and algorithm can be explained in an intuitive,
-graphical manner. We expect that packages that apply to a particular
-problem domain will provide vignettes with relevant, realistic examples.
+In this vignette, we will focus on *IRanges* objects. We will rely on simple,
+illustrative example datasets, rather than large, real-world data, so that each
+data structure and algorithm can be explained in an intuitive, graphical manner.
+We expect that packages that apply `r Biocpkg("IRanges")` to a particular problem
+domain will provide vignettes with relevant, realistic examples.
 
-The package is available at bioconductor.org and can be downloaded via :
+The `r Biocpkg("IRanges")` package is available at bioconductor.org and can be
+downloaded via `BiocManager::install`:
 
 ```{r install, eval=FALSE, message=FALSE, warning=FALSE}
 if (!require("BiocManager"))
@@ -54,11 +55,11 @@ BiocManager::install("IRanges")
 library(IRanges)
 ```
 
-#  objects
+#  *IRanges* objects
 
-To construct an object, we call the constructor. Ranges are normally
-specified by passing two out of the three parameters: start, end and
-width (see for more information). 
+To construct an object, we call the `IRanges` constructor. Ranges are normally
+specified by passing two out of the three parameters: start, end and width (see
+`help(IRanges)` for more information).
 
 ```{r iranges-constructor}
 ir1 <- IRanges(start=1:10, width=10:1)
@@ -71,18 +72,11 @@ ir <- IRanges(c(1, 8, 14, 15, 19, 34, 40),
 ir
 ```
 
-All of the above calls construct the same object, using different combinations
-of the , and parameters.
+All of the above calls construct the same *IRanges* object, using different
+combinations of the `start`, `end` and `width` parameters.
 
-All of the above calls construct the same \Rclass{IRanges} object, using
-different combinations of the \Rcode{start}, \Rcode{end} and
-\Rcode{width} parameters.
-
-Accessing the starts, ends and widths is supported via the \Rfunction{start},
-\Rfunction{end} and \Rfunction{width} getters:
-
-In order to illustrate range operations, we'll create a function to plot
-ranges.
+Accessing the starts, ends and widths is supported via the `start`, `end` and
+`width` getters:
 
 ```{r iranges-start}
 start(ir)
@@ -96,8 +90,7 @@ end(ir)
 width(ir)
 ```
 
-Subsetting an \Rclass{IRanges} object is supported, by numeric and logical
-indices:
+Subsetting an *IRanges* object is supported, by numeric and logical indices:
 
 ```{r iranges-subset-numeric}
 ir[1:4]
@@ -107,8 +100,7 @@ ir[1:4]
 ir[start(ir) <= 15]
 ```
 
-In order to illustrate range operations, we'll create a function to plot
-ranges.
+In order to illustrate range operations, we'll create a function to plot ranges.
 
 ```{r plotRanges}
 plotRanges <- function(x, xlim=x, main=deparse(substitute(x)),
@@ -135,22 +127,23 @@ plotRanges(ir)
 ## Normality
 
 Sometimes, it is necessary to formally represent a subsequence, where no
-elements are repeated and order is preserved. Also, it is occasionally
-useful to think of an object as a set of integers, where no elements are
+elements are repeated and order is preserved. Also, it is occasionally useful to
+think of an *IRanges* object as a set of integers, where no elements are
 repeated and order does not matter.
 
-The class formally represents a set of integers. By definition an object
-is said to be *normal* when its ranges are: (a) not empty (i.e. they
-have a non-null width); (b) not overlapping; (c) ordered from left to
-right; (d) not even adjacent (i.e. there must be a non empty gap between
-2 consecutive ranges).
+The *NormalIRanges* class formally represents a set of integers. By definition
+an *IRanges* object is said to be *normal* when its ranges are: (a) not empty
+(i.e. they have a non-null width); (b) not overlapping; (c) ordered from left to
+right; (d) not even adjacent (i.e. there must be a non empty gap between 2
+consecutive ranges).
 
-There are three main advantages of using a *normal* object: (1) it
-guarantees a subsequence encoding or set of integers, (2) it is compact
-in terms of the number of ranges, and (3) it uniquely identifies its
-information, which simplifies comparisons.
+There are three main advantages of using a *normal* *IRanges* object: (1) it
+guarantees a subsequence encoding or set of integers, (2) it is compact in terms
+of the number of ranges, and (3) it uniquely identifies its information, which
+simplifies comparisons.
 
-The function reduces any object to a by merging redundant ranges.
+The `resduce` function reduces any *IRanges* object to a *NormalIRanges* by
+merging redundant ranges.
 
 <a id="fig-ranges-reduce"></a>
 ```{r ranges-reduce, fig.cap = ": Plot of reduced ranges.", fig.height=2.25}
@@ -158,19 +151,19 @@ reduce(ir)
 plotRanges(reduce(ir))
 ```
 
+## Lists of *IRanges* objects
 
-## Lists of objects
+It is common to manipulate collections of *IRanges* objects during an analysis.
+Thus, the `r Biocpkg("IRanges")` package defines some specific classes for
+working with multiple *IRanges* objects.
 
-It is common to manipulate collections of objects during an analysis.
-Thus, the package defines some specific classes for working with
-multiple objects.
+The *IRangesList* class asserts that each element is an *IRanges* object and
+provides convenience methods, such as `start`, `end` and `width` accessors that
+return *Interlist* objects, aligning with the *IRangesList* object. Note that
+*IntegerList* objects will be covered later in more details in the "Lists of
+Atomic Vectors" section of this document.
 
-The class asserts that each element is an object and provides
-convenience methods, such as , and accessors that return objects,
-aligning with the object. Note that objects will be covered later in
-more details in the "Lists of Atomic Vectors" section of this document.
-
-To explicitly construct an , use the function.
+To explicitly construct an *IRangesList*, use the `IRangesList` function.
 
 ```{r rangeslist-contructor}
 rl <- IRangesList(ir, rev(ir))
@@ -182,11 +175,11 @@ start(rl)
 
 ## Vector Extraction
 
-As the elements of an object encode consecutive subsequences, they may
-be used directly in sequence extraction. Note that when a *normal* is
-given as the index, the result is a subsequence, as no elements are
-repeated or reordered. If the sequence is a subclass (i.e. not an
-ordinary ), the canonical function accepts an object.
+As the elements of an *IRanges* object encode consecutive subsequences, they may
+be used directly in sequence extraction. Note that when a *normal* *IRanges* is
+given as the index, the result is a subsequence, as no elements are repeated or
+reordered. If the sequence is a *Vector* subclass (i.e. not an ordinary
+*vector*), the canonical `[` function accepts an *IRanges* object.
 
 ```{r bracket-ranges}
 set.seed(0)
@@ -202,7 +195,7 @@ xRle[irextract]
 
 ## Finding Overlapping Ranges
 
-The function detects overlaps between two objects.
+The function `findOverlaps` detects overlaps between two *IRanges* objects.
 
 ```{r overlap-ranges}
 ol <- findOverlaps(ir, reduce(ir))
@@ -211,7 +204,7 @@ as.matrix(ol)
 
 ## Counting Overlapping Ranges
 
-The function counts the number of ranges over each position.
+The function `coverage` counts the number of ranges over each position.
 
 <a id="fig-ranges-coverage"></a>
 ```{r ranges-coverage, fig.cap= "Plot of ranges with accumulated coverage", fig.height=2.25}
@@ -228,83 +221,82 @@ axis(2)
 
 ## Finding Neighboring Ranges
 
-The function finds the nearest neighbor ranges (overlapping is zero
-distance). The and functions find the non-overlapping nearest neighbors
-on a specific side.
+The `nearest` function finds the nearest neighbor ranges (overlapping is zero
+distance). The `precede` and `follow` functions find the non-overlapping nearest
+neighbors on a specific side.
 
 ## Transforming Ranges
 
-Utilities are available for transforming an object in a variety of ways.
-Some transformations, like introduced above, can be dramatic, while
-others are simple per-range adjustments of the starts, ends or widths.
+Utilities are available for transforming an *IRanges* object in a variety of
+ways. Some transformations, like `reduce` introduced above, can be dramatic,
+while others are simple per-range adjustments of the starts, ends or widths.
 
 ### Adjusting starts, ends and widths
 
-Perhaps the simplest transformation is to adjust the start values by a
-scalar offset, as performed by the function. Below, we shift all ranges
-forward 10 positions.
+Perhaps the simplest transformation is to adjust the start values by a scalar
+offset, as performed by the `shift` function. Below, we shift all ranges forward
+10 positions.
 
 ```{r ranges-shift}
 shift(ir, 10)
 ```
 
-There are several other ways to transform ranges. These include , , , ,
-, and . For example supports the adjustment of start, end and width
-values, which should be relative to each range. These adjustments are
-vectorized over the ranges. As its name suggests, the ranges can only be
-narrowed. 
+There are several other ways to transform ranges. These include `narrow`,
+`resize`, `flank`, `reflect`, `restrict`, and `threebands`. For example `narrow`
+supports the adjustment of start, end and width values, which should be relative
+to each range. These adjustments are vectorized over the ranges. As its name
+suggests, the ranges can only be narrowed.
 
 ```{r ranges-narrow}
 narrow(ir, start=1:5, width=2)
 ```
 
-The function ensures every range falls within a set of bounds. Ranges
-are contracted as necessary, and the ranges that fall completely outside
-of but not adjacent to the bounds are dropped, by default.
+The `restrict` function ensures every range falls within a set of bounds. Ranges
+are contracted as necessary, and the ranges that fall completely outside of but
+not adjacent to the bounds are dropped, by default.
 
 ```{r ranges-restrict}
 restrict(ir, start=2, end=3)
 ```
 
-The \Rfunction{threebands} function extends \Rfunction{narrow} so that
-the remaining left and right regions adjacent to the narrowed region
-are also returned in separate \Rclass{IRanges} objects.
+The `threebands` function extends `narrow` so that the remaining left and right
+regions adjacent to the narrowed region are also returned in separate *IRanges*
+objects.
 
 ```{r ranges-threebands}
 threebands(ir, start=1:5, width=2)
 ```
 
-The arithmetic operators , and change both the start and the end/width
-by symmetrically expanding or contracting each range. Adding or
-subtracting a numeric (integer) vector to an causes each range to be
-expanded or contracted on each side by the corresponding value in the
-numeric vector. 
+The arithmetic operators `+`, `-` and `*` change both the start and the
+end/width by symmetrically expanding or contracting each range. Adding or
+subtracting a numeric (integer) vector to an *IRanges* causes each range to be
+expanded or contracted on each side by the corresponding value in the numeric
+vector.
 
 ```{r ranges-plus}
 ir + seq_len(length(ir))
 ```
 
-The \Rfunction{*} operator symmetrically magnifies an \Rclass{IRanges}
-object by a factor, where positive contracts (zooms in) and negative
-expands (zooms out).
+The `*` operator symmetrically magnifies an *IRanges* object by a factor, where
+positive contracts (zooms in) and negative expands (zooms out).
 
 ```{r ranges-asterisk}
 ir * -2 # double the width
 ```
 
-WARNING: The semantic of these arithmetic operators might be revisited
-at some point. Please restrict their use to the context of interactive
-visualization (where they arguably provide some convenience) but avoid
-to use them programmatically.
+WARNING: The semantic of these arithmetic operators might be revisited at some
+point. Please restrict their use to the context of interactive visualization
+(where they arguably provide some convenience) but avoid to use them
+programmatically.
 
 ### Making ranges disjoint
 
-A more complex type of operation is making a set of ranges disjoint,
-*i.e.* non-overlapping. For example, returns a disjoint set of three
+A more complex type of operation is making a set of ranges disjoint, *i.e.*
+non-overlapping. For example, `threebands` returns a disjoint set of three
 ranges for each input range.
 
-The function makes an object disjoint by fragmenting it into the widest
-ranges where the set of overlapping ranges is the same.
+The `disjoin` function makes an *IRanges* object disjoint by fragmenting it into
+the widest ranges where the set of overlapping ranges is the same.
 
 <a id="fig-ranges-disjoin"></a>
 ```{r ranges-disjoin, fig.cap = "Plot of disjoined ranges.", fig.height=2.25}
@@ -312,28 +304,26 @@ disjoin(ir)
 plotRanges(disjoin(ir))
 ```
 
-A variant of is , which divides the ranges into bins, such that the
-ranges in each bin are disjoint. The return value is an integer vector
-of the bins. 
+A variant of `disjoin` is `disjointBins`, which divides the ranges into bins,
+such that the ranges in each bin are disjoint. The return value is an integer
+vector of the bins.
 
 ```{r ranges-disjointBins}
 disjointBins(ir)
 ```
 
-
 ### Other transformations
 
-Other transformations include \Rfunction{reflect} and
-\Rfunction{flank}. The former ``flips'' each range within a set of common
-reference bounds.
+Other transformations include `reflect` and `flank`. The former "flips" each
+range within a set of common reference bounds.
 
 ```{r ranges-reflect}
 reflect(ir, IRanges(start(ir), width=width(ir)*2))
 ```
 
-The \Rfunction{flank} returns ranges of a specified width that flank,
-to the left (default) or right, each input range. One use case of this
-is forming promoter regions for a set of genes.
+The `flank` returns ranges of a specified width that flank, to the left
+(default) or right, each input range. One use case of this is forming promoter
+regions for a set of genes.
 
 ```{r ranges-flank}
 flank(ir, width=seq_len(length(ir)))
@@ -341,19 +331,19 @@ flank(ir, width=seq_len(length(ir)))
 
 ## Set Operations
 
-Sometimes, it is useful to consider an object as a set of integers,
-although there is always an implicit ordering. This is formalized by ,
-above, and we now present versions of the traditional mathematical set
-operations *complement*, *union*, *intersect*, and *difference* for
-objects. There are two variants for each operation. The first treats
-each object as a set and returns a *normal* value, while the other has a
-"parallel" semantic like / and performs the operation for each range
-pairing separately.
+Sometimes, it is useful to consider an *IRanges* object as a set of integers,
+although there is always an implicit ordering. This is formalized by
+*NormalIRanges*, above, and we now present versions of the traditional
+mathematical set operations *complement*, *union*, *intersect*, and *difference*
+for *IRanges* objects. There are two variants for each operation. The first
+treats each *IRanges* object as a set and returns a *normal* value, while the
+other has a "parallel" semantic like `pmin`/`pmax` and performs the operation
+for each range pairing separately.
 
-The *complement* operation is implemented by the and functions. By
-default, will return the ranges that fall between the ranges in the
-(normalized) input. It is possible to specify a set of bounds, so that
-flanking ranges are included. 
+The *complement* operation is implemented by the `gaps` and `pgap` functions. By
+default, `gaps` will return the ranges that fall between the ranges in the
+(normalized) input. It is possible to specify a set of bounds, so that flanking
+ranges are included.
 
 <a id="fig-ranges-gap"></a>
 ```{r ranges-gaps, fig.cap = "Plot of gaps from ranges.", fig.height=2.25}
@@ -361,17 +351,16 @@ gaps(ir, start=1, end=50)
 plotRanges(gaps(ir, start=1, end=50), c(1,50))
 ```
 
-considers each parallel pairing between two objects and finds the range,
-if any, between them. Note that the function name is singular,
+`pgap` considers each parallel pairing between two *IRanges* objects and finds
+the range, if any, between them. Note that the function name is singular,
 suggesting that only one range is returned per range in the input.
 
 ```{r ranges-pgap}
 ```
 
-The remaining operations, *union*, *intersect* and
-*difference* are implemented by the `[p]union`,
-`[p]intersect` and `[p]setdiff` functions,
-respectively. These are relatively self-explanatory.
+The remaining operations, *union*, *intersect* and *difference* are implemented
+by the `[p]union`, `[p]intersect` and `[p]setdiff` functions, respectively.
+These are relatively self-explanatory.
 
 ```{r ranges-union}
 ```
@@ -395,18 +384,19 @@ respectively. These are relatively self-explanatory.
 
 # Vector Views
 
-The package provides the virtual class, which stores a vector-like
-object, referred to as the "subject", together with an object defining
-ranges on the subject. Each range is said to represent a *view* onto the
-subject.
+The `r Biocpkg("IRanges")` package provides the virtual *Views* class, which
+stores a vector-like object, referred to as the "subject", together with an
+*IRanges* object defining ranges on the subject. Each range is said to represent
+a *view* onto the subject.
 
-Here, we will demonstrate the class, where the subject is of class .
-Other implementations exist, such as in the package.
+Here, we will demonstrate the *RleViews* class, where the subject is of class
+*Rle*. Other *Views* implementations exist, such as *XStringViews* in the 
+`r Biocpkg("Biostrings")` package.
 
 ## Creating Views
 
-There are two basic constructors for creating views: the function based
-on indicators and the based on numeric boundaries.
+There are two basic constructors for creating views: the `Views` function based
+on indicators and the `slice` based on numeric boundaries.
 
 ```{r Views-constructors}
 xViews <- Views(xRle, xRle >= 1)
@@ -415,14 +405,14 @@ xRleList <- RleList(xRle, 2L * rev(xRle))
 xViewsList <- slice(xRleList, 1)
 ```
 
-Note that objects will be covered later in more details in the "Lists of
-Atomic Vectors" section of this document.
+Note that *RleList* objects will be covered later in more details in the "Lists
+of Atomic Vectors" section of this document.
 
 ## Aggregating Views
 
-While can be used to loop over each window, the native functions , , ,
-and provide fast looping to calculate their respective statistical
-summaries.
+While `sapply` can be used to loop over each window, the native functions
+`viewMaxs`, `viewMins`, `viewSums`, and `viewMeans` provide fast looping to
+calculate their respective statistical summaries.
 
 ```{r views-looping}
 head(viewSums(xViews))
@@ -433,35 +423,36 @@ viewMaxs(xViewsList)
 
 # Lists of Atomic Vectors
 
-In addition to the range-based objects described in the previous
-sections, the package provides containers for storing lists of atomic
-vectors such as or objects. The and classes represent lists of vectors
-and objects respectively. They are subclasses of the virtual class which
-is itself a subclass of the virtual class defined in the package.
+In addition to the range-based objects described in the previous sections, the
+`r Biocpkg("IRanges")` package provides containers for storing lists of atomic
+vectors such as *integers* or *Rle* objects. The *IntegerList* and *RleList*
+classes represent lists of *integer* vectors and *Rle* objects respectively.
+They are subclasses of the *AtomicList* virtual class which is itself a subclass
+of the *List* virtual class defined in the `r Biocpkg("S4Vectors")` package.
 
 ```{r AtomicList-intro}
 showClass("RleList")
 ```
 
-As the class definition above shows, the class is virtual with
-subclasses and . A class uses an ordinary list to store the underlying
-elements and the class stores the elements in an unlisted form and keeps
-track of where the element breaks are. The former "simple list\" class
-is useful when the elements are long and the latter "compressed list\"
-class is useful when the list is long and/or sparse (i.e. a number of
-the list elements have length 0).
+As the class definition above shows, the *RleList* class is virtual with
+subclasses *SimpleRleList* and *CompressedRleList*. A *SimpleRleList* class uses
+an ordinary *R* list to store the underlying elements and *CompressedRleList*
+the class stores the elements in an unlisted form and keeps track of where the
+element breaks are. The former "simple list" class is useful when the *Rle*
+elements are long and the latter "compressed list" class is useful when the list
+is long and/or sparse (i.e. a number of the list elements have length 0).
 
-In fact, all of the atomic vector types (logical, integer, numeric,
-complex, character, raw, and factor) have similar list classes that
-derive from the virtual class. For example, there is an virtual class
-with subclasses and .
+In fact, all of the atomic vector types (logical, integer, numeric, complex,
+character, raw, and factor) have similar list classes that derive from the
+*List* virtual class. For example, there is an *IntegerList* virtual class with
+subclasses *SimpleIntegerList* and *CompressedIntegerList*.
 
-Each of the list classes for atomic sequences, be they stored as vectors
-or objects, have a constructor function with a name of the appropriate
-list virtual class, such as , and an optional argument that takes an
-argument to specify whether or not to create the simple list object type
-or the compressed list object type. The default is to create the
-compressed list object type.
+Each of the list classes for atomic sequences, be they stored as vectors or
+*Rle* objects, have a constructor function with a name of the appropriate list
+virtual class, such as *IntegerList*, and an optional argument `compress` that
+takes an argument to specify whether or not to create the simple list object
+type or the compressed list object type. The default is to create the compressed
+list object type.
 
 ```{r list-construct}
 args(IntegerList)
@@ -477,21 +468,21 @@ object.size(cIntList2)
 object.size(sIntList2)
 ```
 
-The function returns the number of elements in a -derived object and,
-for a -derived object like "simple list\" or "compressed list\", the
-function returns an integer vector containing the lengths of each of the
-elements:
+The `length` function returns the number of elements in a *Vector*-derived
+object and, for a *List*-derived object like "simple list" or "compressed list",
+the `lengths` function returns an integer vector containing the lengths of each
+of the elements:
 
 ```{r list-length}
 length(cIntList2)
 Rle(lengths(cIntList2))
 ```
 
-Just as with ordinary objects, -derived object support the for element
-extraction, for concatenating, and / for looping. When looping over
-sparse lists, the "compressed list\" classes can be much faster during
-computations since only the non-empty elements are looped over during
-the / computation and all the empty elements are assigned the
+Just as with ordinary *R* objects, *List*-derived object support the `[[` for
+element extraction, `c` for concatenating, and `lapply`/`sapply` for looping.
+When looping over sparse lists, the "compressed list" classes can be much faster
+during computations since only the non-empty elements are looped over during the
+`lapply`/`sapply` computation and all the empty elements are assigned the
 appropriate value based on their status.
 
 ```{r list-lapply}
@@ -502,8 +493,10 @@ identical(sapply(xExploded, mean), sapply(sIntList2, mean))
 identical(sapply(xExploded, mean), sapply(cIntList2, mean))
 ```
 
-Unlike ordinary objects, objects support the (e.g. , , ), (e.g. , ),
-(e.g. , ), (e.g. , , ), and (e.g. , ) group generics.
+Unlike ordinary *R* *list* objects, *AtomicList* objects support the `Ops`(e.g.
+`+`, `==`, `&`), (e.g. `log`, `sqrt`), `Math2`(e.g. `round`, `signif`),
+`Summary`(e.g. `min`, `max`, `sum`), and `Complex`(e.g. `Re`, `Im`) group
+generics.
 
 ```{r list-groupgenerics}
 xRleList > 0
@@ -512,8 +505,8 @@ xRleList + yRleList
 sum(xRleList > 0 | yRleList > 0)
 ```
 
-Since these atomic lists inherit from , they can also use the looping
-function to perform endomorphisms.
+Since these atomic lists inherit from *List*, they can also use the looping
+function `endoapply` to perform endomorphisms.
 
 ```{r list-endoapply}
 safe.max <- function(x) { if(length(x)) max(x) else integer(0) }
@@ -524,7 +517,8 @@ endoapply(sIntList2, safe.max)[[1]]
 
 # Session Information
 
-Here is the output of on the system on which this document was compiled:
+Here is the output of `sessionInfo()` on the system on which this document was
+compiled:
 
 ```{r SessionInfo, echo=FALSE}
 sessionInfo()
