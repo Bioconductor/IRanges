@@ -22,7 +22,7 @@ output:
 # Introduction
 
 When analyzing sequences, we are often interested in particular consecutive
-subsequences. For example, the vector could be considered a sequence of
+subsequences. For example, the `letters` vector could be considered a sequence of
 lower-case letters, in alphabetical order. We would call the first five letters
 (*a* to *e*) a consecutive subsequence, while the subsequence containing only
 the vowels would not be consecutive. It is not uncommon for an analysis task to
@@ -59,9 +59,9 @@ library(IRanges)
 
 #  *IRanges* objects
 
-To construct an object, we call the `IRanges` constructor. Ranges are normally
-specified by passing two out of the three parameters: start, end and width (see
-`help(IRanges)` for more information).
+To construct an *IRanges* object, we call the `IRanges` constructor. Ranges are
+normally specified by passing two out of the three parameters: start, end and
+width (see `help(IRanges)` for more information).
 
 ```{r iranges-constructor}
 ir1 <- IRanges(start=1:10, width=10:1)
@@ -121,7 +121,6 @@ plotRanges <- function(x, xlim=x, main=deparse(substitute(x)),
 }
 ```
 
-<a id="fig-ir-plotRanges"></a>
 ```{r ir-plotRanges, fig.cap = "Plot of original ranges.", fig.height=2.25}
 plotRanges(ir)
 ```
@@ -144,11 +143,10 @@ guarantees a subsequence encoding or set of integers, (2) it is compact in terms
 of the number of ranges, and (3) it uniquely identifies its information, which
 simplifies comparisons.
 
-The `resduce` function reduces any *IRanges* object to a *NormalIRanges* by
+The `reduce` function reduces any *IRanges* object to a *NormalIRanges* by
 merging redundant ranges.
 
-<a id="fig-ranges-reduce"></a>
-```{r ranges-reduce, fig.cap = ": Plot of reduced ranges.", fig.height=2.25}
+```{r ranges-reduce, fig.cap = "Plot of reduced ranges.", fig.height=2.25}
 reduce(ir)
 plotRanges(reduce(ir))
 ```
@@ -161,7 +159,7 @@ working with multiple *IRanges* objects.
 
 The *IRangesList* class asserts that each element is an *IRanges* object and
 provides convenience methods, such as `start`, `end` and `width` accessors that
-return *Interlist* objects, aligning with the *IRangesList* object. Note that
+return *IntegerList* objects, aligning with the *IRangesList* object. Note that
 *IntegerList* objects will be covered later in more details in the "Lists of
 Atomic Vectors" section of this document.
 
@@ -208,7 +206,6 @@ as.matrix(ol)
 
 The function `coverage` counts the number of ranges over each position.
 
-<a id="fig-ranges-coverage"></a>
 ```{r ranges-coverage, fig.cap= "Plot of ranges with accumulated coverage", fig.height=2.25}
 cov <- coverage(ir)
 plotRanges(ir)
@@ -300,7 +297,6 @@ ranges for each input range.
 The `disjoin` function makes an *IRanges* object disjoint by fragmenting it into
 the widest ranges where the set of overlapping ranges is the same.
 
-<a id="fig-ranges-disjoin"></a>
 ```{r ranges-disjoin, fig.cap = "Plot of disjoined ranges.", fig.height=2.25}
 disjoin(ir)
 plotRanges(disjoin(ir))
@@ -347,7 +343,6 @@ default, `gaps` will return the ranges that fall between the ranges in the
 (normalized) input. It is possible to specify a set of bounds, so that flanking
 ranges are included.
 
-<a id="fig-ranges-gap"></a>
 ```{r ranges-gaps, fig.cap = "Plot of gaps from ranges.", fig.height=2.25}
 gaps(ir, start=1, end=50)
 plotRanges(gaps(ir, start=1, end=50), c(1,50))
@@ -480,8 +475,8 @@ length(cIntList2)
 Rle(lengths(cIntList2))
 ```
 
-Just as with ordinary *R* objects, *List*-derived object support the `[[` for
-element extraction, `c` for concatenating, and `lapply`/`sapply` for looping.
+Just as with ordinary *R* *list* objects, *List*-derived object support the `[[`
+for element extraction, `c` for concatenating, and `lapply`/`sapply` for looping.
 When looping over sparse lists, the "compressed list" classes can be much faster
 during computations since only the non-empty elements are looped over during the
 `lapply`/`sapply` computation and all the empty elements are assigned the
@@ -495,9 +490,9 @@ identical(sapply(xExploded, mean), sapply(sIntList2, mean))
 identical(sapply(xExploded, mean), sapply(cIntList2, mean))
 ```
 
-Unlike ordinary *R* *list* objects, *AtomicList* objects support the `Ops`(e.g.
-`+`, `==`, `&`), (e.g. `log`, `sqrt`), `Math2`(e.g. `round`, `signif`),
-`Summary`(e.g. `min`, `max`, `sum`), and `Complex`(e.g. `Re`, `Im`) group
+Unlike ordinary *R* *list* objects, *AtomicList* objects support the `Ops` (e.g.
+`+`, `==`, `&`), `Math` (e.g. `log`, `sqrt`), `Math2` (e.g. `round`, `signif`),
+`Summary` (e.g. `min`, `max`, `sum`), and `Complex` (e.g. `Re`, `Im`) group
 generics.
 
 ```{r list-groupgenerics}
@@ -525,3 +520,4 @@ compiled:
 ```{r SessionInfo, echo=FALSE}
 sessionInfo()
 ```
+
