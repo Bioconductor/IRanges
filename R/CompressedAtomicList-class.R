@@ -120,11 +120,12 @@ setCompressedNumericalListMethod <-
 }
 
 setCompressedNumericalListMethod("is.unsorted",
-                                 function(x, na.rm = FALSE, strictly=FALSE) {
-                                     stopifnot(isTRUEorFALSE(na.rm))
-                                     stopifnot(isTRUEorFALSE(strictly))
-                                     .Call2(C_fun, x, na.rm, strictly)
-                                 })
+    function(x, na.rm = FALSE, strictly=FALSE) {
+        stopifnot(isTRUEorFALSE(na.rm))
+        stopifnot(isTRUEorFALSE(strictly))
+        .Call2(C_fun, x, na.rm, strictly, PACKAGE="IRanges")
+    }
+)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
