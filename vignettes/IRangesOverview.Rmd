@@ -352,32 +352,9 @@ plotRanges(gaps(ir, start=1, end=50), c(1,50))
 the range, if any, between them. Note that the function name is singular,
 suggesting that only one range is returned per range in the input.
 
-```{r ranges-pgap}
-```
-
 The remaining operations, *union*, *intersect* and *difference* are implemented
 by the `[p]union`, `[p]intersect` and `[p]setdiff` functions, respectively.
 These are relatively self-explanatory.
-
-```{r ranges-union}
-```
-
-```{r ranges-punion}
-```
-
-```{r ranges-intersect}
-```
-
-```{r ranges-pintersect}
-```
-
-```{r ranges-setdiff}
-```
-
-```{r ranges-psetdiff}
-```
-
-<!-- \subsection{Mapping Ranges Between Vectors} --> 
 
 # Vector Views
 
