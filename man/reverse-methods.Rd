@@ -43,11 +43,18 @@ reverse(x, ...)
 }
 
 \seealso{
-  \link[XVector]{reverse-methods},
-  \link{Views-class},
-  \link{MaskCollection-class},
-  \code{\link{endoapply}},
-  \code{\link[base]{rev}}
+  \itemize{
+    \item \code{\link[base]{rev}} in base R.
+
+    \item \code{\link{revElements}} in the \pkg{S4Vectors} package to
+          reverse all or some of the list elements of a list-like object.
+
+    \item \link{Views} objects.
+
+    \item \link{MaskCollection} objects.
+
+    \item \link[XVector]{reverse-methods} in the \pkg{XVector} package.
+  }
 }
 
 \examples{
