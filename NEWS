@@ -1,3 +1,17 @@
+CHANGES IN VERSION 2.36.0
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Add link to revElements() in man page for reverse().
+
+BUG FIXES
+
+    o Fix is.unsorted() methods for Compressed[Integer|Numeric]List
+      objects (they were never working since their introduction years
+      ago).
+
+
 CHANGES IN VERSION 2.34.0
 -------------------------
 
