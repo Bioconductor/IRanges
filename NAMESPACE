@@ -334,7 +334,8 @@ export(
 
     ## intra-range-methods.R:
     update_ranges,
-    shift, resize, flank, reflect, promoters, restrict, threebands,
+    shift, resize, flank, promoters, terminators,
+    reflect, restrict, threebands,
 
     ## inter-range-methods.R:
     reduce, gaps, disjoin, isDisjoint, disjointBins,
@@ -392,7 +393,8 @@ exportMethods(
     poverlaps,
     windows, narrow,
     update_ranges,
-    shift, resize, flank, reflect, promoters, restrict, threebands,
+    shift, resize, flank, promoters, terminators,
+    reflect, restrict, threebands,
     reduce, gaps, disjoin, isDisjoint, disjointBins,
     reverse,
     coverage,

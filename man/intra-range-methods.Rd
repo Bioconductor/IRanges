@@ -25,8 +25,11 @@
 \alias{flank,RangesList-method}
 
 \alias{promoters}
+\alias{terminators}
 \alias{promoters,IntegerRanges-method}
+\alias{terminators,IntegerRanges-method}
 \alias{promoters,RangesList-method}
+\alias{terminators,RangesList-method}
 
 \alias{reflect}
 \alias{reflect,IntegerRanges-method}
@@ -81,6 +84,7 @@ resize(x, width, fix="start", use.names=TRUE, ...)
 flank(x, width, start=TRUE, both=FALSE, use.names=TRUE, ...)
 
 promoters(x, upstream=2000, downstream=200, use.names=TRUE, ...)
+terminators(x, upstream=2000, downstream=200, use.names=TRUE, ...)
 
 reflect(x, bounds, use.names=TRUE)
 
@@ -164,10 +168,14 @@ threebands(x, start=NA, end=NA, width=NA)
     to the transcription start site. Promoter regions are formed by merging
     the upstream and downstream ranges.
 
-    Default values for \code{upstream} and \code{downstream} were chosen based
-    on our current understanding of gene regulation. On average, promoter
-    regions in the mammalian genome are 5000 bp upstream and downstream of the
-    transcription start site.
+    Default values for the \code{upstream} and \code{downstream} arguments
+    of \code{promoters()} were chosen based on our current understanding of
+    gene regulation. On average, promoter regions in the mammalian genome
+    are 5000 bp upstream and downstream of the transcription start site.
+    Note that the same default values are used in \code{terminators()} at
+    the moment. However this could be revisited if the case is made to use
+    values that reflect more closely the biology of terminator regions in
+    mammalian genomes.
   }
   \item{bounds}{
     An \link{IRanges} object to serve as the reference bounds for the
@@ -237,7 +245,7 @@ threebands(x, start=NA, end=NA, width=NA)
     for \code{flank(x, 3, both=TRUE)}:
     \preformatted{    ---***xxxx}
 
-  }\subsection{promoters}{
+  }\subsection{promoters and terminators}{
 
     \code{promoters} generates promoter ranges for each range in \code{x}
     relative to the transcription start site (TSS), where TSS is
@@ -251,6 +259,10 @@ threebands(x, start=NA, end=NA, width=NA)
     \link[GenomicRanges]{GRanges} object see
     \code{?`\link[GenomicRanges]{promoters,GenomicRanges-method}`} in
     the \pkg{GenomicRanges} package.
+
+    \code{terminators} is similar to \code{promoters} except that the
+    generated ranges are relative to the transcription end sites (TES)
+    returned by \code{end(x)}.
 
   }\subsection{reflect}{
 
@@ -369,7 +381,7 @@ resize(collection, width=200)
 ## ---------------------------------------------------------------------
 
 ## On an IRanges object:
-ir3 <- IRanges(c(2,5,1), c(3,7,3))
+ir3 <- IRanges(start=c(2,5,1), end=c(3,7,3))
 flank(ir3, 2)
 flank(ir3, 2, start=FALSE)
 flank(ir3, 2, start=c(FALSE, TRUE, FALSE))
@@ -386,10 +398,12 @@ flank(collection, width=10)
 ## ---------------------------------------------------------------------
 
 ## On an IRanges object:
-ir4 <- IRanges(20:23, width=3)
-promoters(ir4, upstream=0, downstream=0) ## no change
-promoters(ir4, upstream=0, downstream=1) ## start value only
-promoters(ir4, upstream=1, downstream=0) ## single upstream nucleotide
+ir4 <- IRanges(start=10001:10004, end=12000)
+promoters(ir4, upstream=800, downstream=0)
+promoters(ir4, upstream=0, downstream=50)
+promoters(ir4, upstream=800, downstream=50)
+
+promoters(ir4, upstream=0, downstream=1)  # TSS
 
 ## On an IRangesList object:
 promoters(collection, upstream=5, downstream=2)
@@ -399,7 +413,7 @@ promoters(collection, upstream=5, downstream=2)
 ## ---------------------------------------------------------------------
 
 ## On an IRanges object:
-bounds <- IRanges(c(0, 5, 3), c(10, 6, 9))
+bounds <- IRanges(start=c(0, 5, 3), end=c(10, 6, 9))
 reflect(ir3, bounds)
 
 ## reflect() does not yet support IRangesList objects!

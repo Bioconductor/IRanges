@@ -376,7 +376,7 @@ setMethod("flank", "RangesList",
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### promoters()
+### promoters() and terminators()
 ###
 
 setGeneric("promoters", signature="x",
@@ -384,49 +384,75 @@ setGeneric("promoters", signature="x",
         standardGeneric("promoters")
 )
 
+setGeneric("terminators", signature="x",
+    function(x, upstream=2000, downstream=200, use.names=TRUE, ...)
+        standardGeneric("terminators")
+)
+
+.IntegerRanges_promoters <- function(x, upstream, downstream, use.names=TRUE,
+                                     site=c("start", "end"))
+{
+    site <- match.arg(site)
+    if (is(x, "NormalIRanges"))
+        stop(wmsg("promoters() or terminators() is not supported ",
+                  "on a NormalIRanges object"))
+    x_len <- length(x)
+    upstream <- recycleIntegerArg(upstream, "upstream", x_len)
+    downstream <- recycleIntegerArg(downstream, "downstream", x_len)
+    if (x_len == 0L)
+        return(update_ranges(x, use.names=use.names))
+    if (min(upstream) < 0L || min(downstream) < 0L)
+        stop("'upstream' and 'downstream' must be integers >= 0")
+    x_site <- if (site == "start") start(x) else end(x)
+    new_start <- x_site - upstream
+    new_end <- x_site + downstream - 1L
+    update_ranges(x, start=new_start, end=new_end, use.names=use.names)
+}
+
 setMethod("promoters", "IntegerRanges",
     function(x, upstream=2000, downstream=200, use.names=TRUE)
-    {
-        if (is(x, "NormalIRanges"))
-            stop("promoters() is not supported on a NormalIRanges object")
-        x_len <- length(x)
-        upstream <- recycleIntegerArg(upstream, "upstream", x_len)
-        downstream <- recycleIntegerArg(downstream, "downstream", x_len)
-        if (x_len == 0L)
-            return(update_ranges(x, use.names=use.names))
-        if (min(upstream) < 0L || min(downstream) < 0L)
-            stop("'upstream' and 'downstream' must be integers >= 0")
-        x_start <- start(x)
-        new_start <- x_start - upstream
-        new_end <- x_start + downstream - 1L
-        update_ranges(x, start=new_start, end=new_end, use.names=use.names)
-    }
+        .IntegerRanges_promoters(x, upstream, downstream,
+                                 use.names=use.names, site="start")
 )
+
+setMethod("terminators", "IntegerRanges",
+    function(x, upstream=2000, downstream=200, use.names=TRUE)
+        .IntegerRanges_promoters(x, upstream, downstream,
+                                 use.names=use.names, site="end")
+)
+
+.RangesList_promoters <- function(x, FUN, upstream, downstream, use.names=TRUE)
+{
+    if (!is(upstream, "List"))
+        upstream <- as(upstream, "List")
+    upstream <- S4Vectors:::VH_recycle(upstream, x, "upstream", "x")
+    if (!is(downstream, "List"))
+        downstream <- as(downstream, "List")
+    downstream <- S4Vectors:::VH_recycle(downstream, x, "downstream", "x")
+    if (is(x, "CompressedRangesList")) {
+        unlisted_upstream <- unlist(upstream, use.names=FALSE)
+        unlisted_downstream <- unlist(downstream, use.names=FALSE)
+        new_unlistData <- FUN(x@unlistData,
+                              upstream=unlisted_upstream,
+                              downstream=unlisted_downstream,
+                              use.names=use.names)
+        ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
+                                              check=FALSE)
+        return(ans)
+    }
+    mendoapply(FUN, x, upstream, downstream, MoreArgs=list(use.names=use.names))
+}
 
 setMethod("promoters", "RangesList",
     function(x, upstream=2000, downstream=200, use.names=TRUE)
-    {
-        if (!is(upstream, "List"))
-            upstream <- as(upstream, "List")
-        upstream <- S4Vectors:::VH_recycle(upstream, x, "upstream", "x")
-        if (!is(downstream, "List"))
-            downstream <- as(downstream, "List")
-        downstream <- S4Vectors:::VH_recycle(downstream, x, "downstream", "x")
+        .RangesList_promoters(x, promoters, upstream, downstream,
+                              use.names=use.names)
+)
 
-        if (is(x, "CompressedRangesList")) {
-            unlisted_upstream <- unlist(upstream, use.names=FALSE)
-            unlisted_downstream <- unlist(downstream, use.names=FALSE)
-            new_unlistData <- promoters(x@unlistData,
-                                        upstream=unlisted_upstream,
-                                        downstream=unlisted_downstream,
-                                        use.names=use.names)
-            ans <- BiocGenerics:::replaceSlots(x, unlistData=new_unlistData,
-                                                  check=FALSE)
-            return(ans)
-        }
-        mendoapply(promoters, x, upstream, downstream,
-                              MoreArgs=list(use.names=use.names))
-    }
+setMethod("terminators", "RangesList",
+    function(x, upstream=2000, downstream=200, use.names=TRUE)
+        .RangesList_promoters(x, terminators, upstream, downstream,
+                              use.names=use.names)
 )
 
 

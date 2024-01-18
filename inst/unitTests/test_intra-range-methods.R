@@ -137,36 +137,47 @@ test_flank_IRangesList <- function() {
   }
 }
 
-test_promoters <- function() {
+test_promoters_IntegerRanges <- function() {
   ir <- IRanges(c(10, 10), width=c(0, 1))
-  checkIdentical(width(promoters(ir, 0, 0)), c(0L, 0L))
-  checkIdentical(width(promoters(ir, 1, 0)), c(1L, 1L))
-  checkIdentical(start(promoters(ir, 1, 0)), c(9L, 9L))
-  checkIdentical(width(promoters(ir, 0, 1)), c(1L, 1L))
-  checkIdentical(start(promoters(ir, 0, 1)), c(10L, 10L))
-  ir <- IRanges(c(5, 2, 20), width=1)
-  checkIdentical(start(promoters(ir, 5, 2)), c(0L, -3L, 15L))
+  checkIdentical(promoters(ir, 0, 0), IRanges(c(10, 10), width=0))
+  checkIdentical(terminators(ir, 0, 0), IRanges(c(9, 10), width=0))
+  checkIdentical(promoters(ir, 1, 0), IRanges(c(9, 9), width=1))
+  checkIdentical(terminators(ir, 1, 0), IRanges(c(8, 9), width=1))
+  checkIdentical(promoters(ir, 0, 1), IRanges(c(10, 10), width=1))
+  checkIdentical(terminators(ir, 0, 1), IRanges(c(9, 10), width=1))
 
-  rl <- IRangesList("A"=IRanges(5:7, width=1), "B"=IRanges(10:12, width=5))
-  current <- promoters(rl, 0, 0)
-  checkIdentical(names(current), names(rl))
-  checkIdentical(start(current), start(rl))
-  current <- promoters(rl, 2, 0)
-  checkIdentical(unique(unlist(width(current))), 2L)
+  ir <- IRanges(c(5, 2, 20), width=1)
+  checkIdentical(promoters(ir, 5, 2), IRanges(c(0, -3, 15), width=7))
+  checkIdentical(terminators(ir, 5, 2), promoters(ir, 5, 2))
 
   library(XVector)
   subject <- XInteger(10, 3:-6)
   view <- Views(subject, start=4:2, end=4:6)
   current <- promoters(view, 0, 0)
   checkIdentical(start(current), start(view))
-  current <- promoters(view, 2, 0)
-  checkIdentical(unique(width(current)), 2L)
+  checkIdentical(width(current), rep.int(0L, length(view)))
+  current <- terminators(view, 0, 0)
+  checkIdentical(start(current), end(view))
+  checkIdentical(width(current), rep.int(0L, length(view)))
+  current <- promoters(view, 3, 10)
+  checkIdentical(start(current), start(view) - 3L)
+  checkIdentical(end(current), start(view) + 9L)
+  current <- terminators(view, 3, 10)
+  checkIdentical(start(current), end(view) - 3L)
+  checkIdentical(end(current), end(view) + 9L)
+}
 
-  cmp <- IRangesList("A"=IRanges(5:7, width=1), "B"=IRanges(10:12, width=5))
-  current <- promoters(rl, 0, 0)
-  checkIdentical(names(current), names(rl))
-  checkIdentical(start(current), start(rl))
-  current <- promoters(rl, 2, 0)
+test_promoters_IRangesList <- function() {
+  irl <- IRangesList("A"=IRanges(5:7, width=1), "B"=IRanges(10:12, width=5))
+  current <- promoters(irl, 0, 0)
+  checkIdentical(names(current), names(irl))
+  checkIdentical(start(current), start(irl))
+  current <- terminators(irl, 0, 0)
+  checkIdentical(names(current), names(irl))
+  checkIdentical(start(current), end(irl))
+  current <- promoters(irl, 2, 0)
+  checkIdentical(unique(unlist(width(current))), 2L)
+  current <- terminators(irl, 2, 0)
   checkIdentical(unique(unlist(width(current))), 2L)
 }
 
