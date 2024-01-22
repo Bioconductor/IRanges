@@ -138,13 +138,18 @@ test_flank_IRangesList <- function() {
 }
 
 test_promoters_IntegerRanges <- function() {
-  ir <- IRanges(c(10, 10), width=c(0, 1))
-  checkIdentical(promoters(ir, 0, 0), IRanges(c(10, 10), width=0))
-  checkIdentical(terminators(ir, 0, 0), IRanges(c(9, 10), width=0))
-  checkIdentical(promoters(ir, 1, 0), IRanges(c(9, 9), width=1))
-  checkIdentical(terminators(ir, 1, 0), IRanges(c(8, 9), width=1))
-  checkIdentical(promoters(ir, 0, 1), IRanges(c(10, 10), width=1))
-  checkIdentical(terminators(ir, 0, 1), IRanges(c(9, 10), width=1))
+  ir0 <- IRanges(score=integer(0))  # zero-length
+  checkIdentical(promoters(ir0, 5, 2), ir0)
+  checkIdentical(terminators(ir0, 5, 2), ir0)
+
+  score <- c(0.8, 0.55)
+  ir <- IRanges(c(10, 10), width=c(0, 1), score=score)
+  checkIdentical(promoters(ir, 0, 0), IRanges(c(10, 10), width=0, score=score))
+  checkIdentical(terminators(ir, 0, 0), IRanges(c(9, 10), width=0, score=score))
+  checkIdentical(promoters(ir, 1, 0), IRanges(c(9, 9), width=1, score=score))
+  checkIdentical(terminators(ir, 1, 0), IRanges(c(8, 9), width=1, score=score))
+  checkIdentical(promoters(ir, 0, 1), IRanges(c(10, 10), width=1, score=score))
+  checkIdentical(terminators(ir, 0, 1), IRanges(c(9, 10), width=1, score=score))
 
   ir <- IRanges(c(5, 2, 20), width=1)
   checkIdentical(promoters(ir, 5, 2), IRanges(c(0, -3, 15), width=7))

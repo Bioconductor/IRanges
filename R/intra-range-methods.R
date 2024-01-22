@@ -389,8 +389,11 @@ setGeneric("terminators", signature="x",
         standardGeneric("terminators")
 )
 
+### Computes the promoter regions if 'site' is set to "TSS" (Transcription
+### Start Site), or the terminator regions if it's set to "TES" (Transcription
+### End Site).
 .IntegerRanges_promoters <- function(x, upstream, downstream, use.names=TRUE,
-                                     site=c("start", "end"))
+                                     site=c("TSS", "TES"))
 {
     site <- match.arg(site)
     if (is(x, "NormalIRanges"))
@@ -403,7 +406,7 @@ setGeneric("terminators", signature="x",
         return(update_ranges(x, use.names=use.names))
     if (min(upstream) < 0L || min(downstream) < 0L)
         stop("'upstream' and 'downstream' must be integers >= 0")
-    x_site <- if (site == "start") start(x) else end(x)
+    x_site <- if (site == "TSS") start(x) else end(x)
     new_start <- x_site - upstream
     new_end <- x_site + downstream - 1L
     update_ranges(x, start=new_start, end=new_end, use.names=use.names)
@@ -411,14 +414,14 @@ setGeneric("terminators", signature="x",
 
 setMethod("promoters", "IntegerRanges",
     function(x, upstream=2000, downstream=200, use.names=TRUE)
-        .IntegerRanges_promoters(x, upstream, downstream,
-                                 use.names=use.names, site="start")
+        .IntegerRanges_promoters(x, upstream, downstream, use.names=use.names,
+                                 site="TSS")
 )
 
 setMethod("terminators", "IntegerRanges",
     function(x, upstream=2000, downstream=200, use.names=TRUE)
-        .IntegerRanges_promoters(x, upstream, downstream,
-                                 use.names=use.names, site="end")
+        .IntegerRanges_promoters(x, upstream, downstream, use.names=use.names,
+                                 site="TES")
 )
 
 .RangesList_promoters <- function(x, FUN, upstream, downstream, use.names=TRUE)
