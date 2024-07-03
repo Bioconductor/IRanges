@@ -217,6 +217,8 @@ coerceToCompressedList <- function(from, element.type = NULL, ...) {
   }
   to <- relist(v, part)
   names(to) <- names(from)
+  if (is(from, "List"))
+    mcols(to) <- mcols(from)
   to
 }
 
