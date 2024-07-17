@@ -480,7 +480,7 @@ static void build_NCList(NCList *top_nclist,
 				 x_start_p, x_end_p,
 				 0, 1,
 				 1, NULL, NULL);
-	if (retcode != 0) {
+	if (retcode < 0) {
 		free(base);
 		error("build_NCList: memory allocation failed");
 	}
