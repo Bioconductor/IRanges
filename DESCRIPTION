@@ -15,15 +15,17 @@ License: Artistic-2.0
 Encoding: UTF-8
 Authors@R: c(
 	person("Hervé", "Pagès", role=c("aut", "cre"),
-		email="hpages.on.github@gmail.com"),
+	        email="hpages.on.github@gmail.com"),
 	person("Patrick", "Aboyoun", role="aut"),
-	person("Michael", "Lawrence", role="aut"))
+	person("Michael", "Lawrence", role="aut"),
+	person("Sonali", "Kumari", role="ctb",
+                comment="Converted IrangesOverview vignette from Sweave to RMarkdown / HTML."))
 Depends: R (>= 4.0.0), methods, utils, stats,
 	BiocGenerics (>= 0.39.2), S4Vectors (>= 0.43.2)
 Imports: stats4
 LinkingTo: S4Vectors
 Suggests: XVector, GenomicRanges, Rsamtools, GenomicAlignments, GenomicFeatures,
-	BSgenome.Celegans.UCSC.ce2, pasillaBamSubset, RUnit, BiocStyle
+	BSgenome.Celegans.UCSC.ce2, pasillaBamSubset, RUnit, BiocStyle, knitr
 Collate: range-squeezers.R
 	Vector-class-leftovers.R
 	DataFrameList-class.R
@@ -79,3 +81,4 @@ Collate: range-squeezers.R
 	tile-methods.R
 	extractListFragments.R
 	zzz.R
+VignetteBuilder: knitr
