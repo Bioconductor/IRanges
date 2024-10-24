@@ -6,3 +6,4 @@
 
 See https://bioconductor.org/packages/IRanges for more information including how to install the release version of the package (please refrain from installing directly from GitHub).
 
+<sub>_IRanges sticker courtesy of [Roberto Bonelli](https://github.com/Robbie90)._</sub>
