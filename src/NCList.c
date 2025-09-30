@@ -1223,8 +1223,8 @@ static void pp_find_overlaps(
 					xh_buf2, yh_buf, hits_buf, direct_out);
 		}
 		omp_set_num_threads(old_max_threads);
-#endif
 	}
+#endif
 	return;
 }
 
