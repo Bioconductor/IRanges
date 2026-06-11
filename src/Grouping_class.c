@@ -134,8 +134,9 @@ SEXP C_members_H2LGrouping(SEXP x, SEXP group_ids)
 		x_low2high_elt = VECTOR_ELT(x_low2high, i);
 		if (x_low2high_elt == R_NilValue)
 			continue;
-		memcpy(ans_elt, INTEGER(x_low2high_elt),
-			sizeof(int) * LENGTH(x_low2high_elt));
+		if (LENGTH(x_low2high_elt))
+			memcpy(ans_elt, INTEGER(x_low2high_elt),
+		    sizeof(int) * LENGTH(x_low2high_elt));
 		ans_elt += LENGTH(x_low2high_elt);
 	}
 
