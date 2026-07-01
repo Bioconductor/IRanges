@@ -486,7 +486,7 @@ static void build_NCList(NCList *top_nclist,
 	if (x_subset_p == NULL) {
 		for (rgid = 0; rgid < x_len; rgid++)
 			base[rgid] = rgid;
-	} else if (xlen != 0) {
+	} else if (x_len != 0) {
 		memcpy(base, x_subset_p, sizeof(int) * x_len);
 	}
 	retcode = sort_int_pairs(base, x_len,
