@@ -205,12 +205,14 @@ setAs("numeric", "NormalIRanges",
     error_msg <- wmsg(
         "The character vector to convert to an IRanges object must ",
         "contain strings of the form \"start-end\" or \"start..end\", ",
-        "with end >= start - 1, or just \"pos\". For example: \"2501-2900\", ",
-        "\"2501..2900\", or \"740\"."
+        "with end >= start - 1, or just \"pos\". pos and end can have ",
+        "digit group separators in form of a space or a comma. ",
+        "For example: \"2501-2900\", \"2,501..2,900\", or \"740\"."
     )
-    ## We want to split on the first occurence of  "-" that is preceeded by
-    ## a digit (ignoring and removing the spaces in between if any).
-    from <- sub("([[:digit:]])[[:space:]]*-", "\\1..", from)
+    from <- gsub("[,[:space:]]", "", from)
+    ## We want to split on the first occurence of "-" that is preceeded by
+    ## a digit.
+    from <- sub("([[:digit:]])-", "\\1..", from)
     split2 <- CharacterList(strsplit(from, "..", fixed=TRUE))
     split2_eltNROWS <- elementNROWS(split2)
     if (!all(split2_eltNROWS <= 2L))
