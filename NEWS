@@ -1,3 +1,20 @@
+CHANGES IN VERSION 2.48.0
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Minor tweaks to as.data.frame.IPosRanges() and as.data.frame.IPos()
+
+    o Revisit show() method for MaskCollection objects.
+
+BUG FIXES
+
+    o Fix handling of names and mcols in ranges() method for Views objects.
+
+    o Various small tweaks and fixes by Michael Chirico <chiricom@google.com>.
+      See #65, #66, #61, and #67.
+
+
 CHANGES IN VERSION 2.46.0
 -------------------------
 
